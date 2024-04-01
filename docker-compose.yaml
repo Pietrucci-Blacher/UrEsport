@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  database:
+    extends:
+      file: back/docker-compose.yaml
+      service: database
+
+  adminer:
+    image: adminer:latest
+    ports:
+      - "9090:8080"
+
+volumes:
+  database_data:
