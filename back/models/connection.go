@@ -2,14 +2,15 @@ package models
 
 import (
 	"fmt"
+	"os"
+
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"os"
 )
 
 var DB *gorm.DB
 
-func ConnectDB(migrate bool) error {
+func ConnectDB() error {
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
@@ -25,11 +26,21 @@ func ConnectDB(migrate bool) error {
 		return err
 	}
 
-	if migrate {
-		database.AutoMigrate(&User{})
-	}
-
 	DB = database
 
 	return nil
+}
+
+func Migration() error {
+	if err := DB.AutoMigrate(&User{}); err != nil {
+		return err
+	}
+	return nil
+}
+
+type Model interface {
+	FindOne(key string, value interface{})
+	FindOneById(id int) error
+	Save() error
+	Delete() error
 }

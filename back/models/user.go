@@ -1,16 +1,28 @@
 package models
 
-import "time"
+import (
+	"time"
 
+	"golang.org/x/crypto/bcrypt"
+)
+
+// implements Model
 type User struct {
-	ID        uint      `json:"id" gorm:"primaryKey"`
-	Firstname string    `json:"name"`
-	Lastname  string    `json:"last_name"`
-	Username  string    `json:"username"`
-	Email     string    `json:"email"`
+	ID        int       `json:"id" gorm:"primaryKey"`
+	Firstname string    `json:"firstname" gorm:"type:varchar(100)"`
+	Lastname  string    `json:"lastname" gorm:"type:varchar(100)"`
+	Username  string    `json:"username" gorm:"type:varchar(100)"`
+	Email     string    `json:"email" gorm:"type:varchar(100)"`
 	Password  string    `json:"password"`
+	Roles     []string  `json:"roles" gorm:"json"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
+}
+
+func UserExists(id int) bool {
+	var count int64
+	DB.Model(&User{}).Where("id = ?", id).Count(&count)
+	return count > 0
 }
 
 func FindAllUsers() ([]User, error) {
@@ -19,23 +31,55 @@ func FindAllUsers() ([]User, error) {
 	return users, err
 }
 
-func FindUserById(id uint) (User, error) {
-	var user User
-	err := DB.First(&user, id).Error
-	return user, err
+func CoutUsersByEmail(email string) (int64, error) {
+	var count int64
+	err := DB.Model(&User{}).Where("email = ?", email).Count(&count).Error
+	return count, err
 }
 
-func CreateUser(user *User) error {
-	err := DB.Create(&user).Error
-	return err
+func CoutUsersByUsername(username string) (int64, error) {
+	var count int64
+	err := DB.Model(&User{}).Where("username = ?", username).Count(&count).Error
+	return count, err
 }
 
-func (u *User) UpdateUser(user *User) error {
-	err := DB.Model(&u).Updates(&user).Error
-	return err
+func (u *User) IsAdmin() bool {
+	for _, r := range u.Roles {
+		if r == "admin" {
+			return true
+		}
+	}
+	return false
 }
 
-func (u *User) DeleteUser() error {
-	err := DB.Delete(&u).Error
-	return err
+func (u *User) HashPassword() error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
+	if err != nil {
+		return err
+	}
+
+	u.Password = string(bytes)
+
+	return nil
+}
+
+func (u *User) ComparePassword(password string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
+	return err == nil
+}
+
+func (u *User) FindOneById(id int) error {
+	return DB.First(&u, id).Error
+}
+
+func (u *User) FindOne(key string, value interface{}) error {
+	return DB.Where(key+" = ?", value).First(&u).Error
+}
+
+func (u *User) Delete() error {
+	return DB.Delete(&u).Error
+}
+
+func (u *User) Save() error {
+	return DB.Save(&u).Error
 }
