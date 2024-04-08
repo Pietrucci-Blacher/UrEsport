@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"challenge/models"
-	"encoding/json"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
+	validator "github.com/go-playground/validator/v10"
 )
 
 func GetUsers(c *gin.Context) {
@@ -37,22 +37,34 @@ func GetUser(c *gin.Context) {
 
 func CreateUser(c *gin.Context) {
 	var user models.User
+	var data models.CreateUserDto
 
-	if err := c.BindJSON(&user); err != nil {
+	if err := c.BindJSON(&data); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	if count, err := models.CoutUsersByEmail(user.Email); err != nil || count > 0 {
+	if count, err := models.CoutUsersByEmail(data.Email); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Email already exists"})
 		return
 	}
 
-	if count, err := models.CoutUsersByUsername(user.Username); err != nil || count > 0 {
+	if count, err := models.CoutUsersByUsername(data.Username); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Username already exists"})
 		return
 	}
 
+	validate := validator.New()
+	if err := validate.Struct(data); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	user.Firstname = data.Firstname
+	user.Lastname = data.Lastname
+	user.Username = data.Username
+	user.Email = data.Email
+	user.Password = data.Password
 	user.Roles = []string{"user"}
 
 	if err := user.HashPassword(); err != nil {
@@ -69,8 +81,8 @@ func CreateUser(c *gin.Context) {
 }
 
 func UpdateUser(c *gin.Context) {
-	var body map[string]string
 	var user models.User
+	var body models.UpdateUserDto
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -88,25 +100,33 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if count, err := models.CoutUsersByEmail(body["email"]); err != nil || count > 0 {
+	if count, err := models.CoutUsersByEmail(body.Email); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Email already exists"})
 		return
 	}
 
-	if count, err := models.CoutUsersByUsername(body["username"]); err != nil || count > 0 {
+	if count, err := models.CoutUsersByUsername(body.Username); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Username already exists"})
 		return
 	}
 
-	dbBody, err := json.Marshal(body)
-	if err != nil {
+	validate := validator.New()
+	if err := validate.Struct(body); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})
 		return
 	}
 
-	if err := json.Unmarshal([]byte(dbBody), &user); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
+	if body.Firstname != "" {
+		user.Firstname = body.Firstname
+	}
+	if body.Lastname != "" {
+		user.Lastname = body.Lastname
+	}
+	if body.Username != "" {
+		user.Username = body.Username
+	}
+	if body.Email != "" {
+		user.Email = body.Email
 	}
 
 	if err := user.Save(); err != nil {

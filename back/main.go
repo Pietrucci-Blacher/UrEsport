@@ -32,7 +32,10 @@ func main() {
 	}
 
 	r := gin.Default()
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
 	controllers.RegisterRoutes(r)
+
 	if err := r.Run(":8080"); err != nil {
 		panic("Failed to start server")
 	}

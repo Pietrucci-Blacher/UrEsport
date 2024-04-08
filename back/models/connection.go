@@ -32,14 +32,11 @@ func ConnectDB() error {
 }
 
 func Migration() error {
-	if err := DB.AutoMigrate(&User{}); err != nil {
-		return err
-	}
-	return nil
+	return DB.AutoMigrate(&User{})
 }
 
 type Model interface {
-	FindOne(key string, value interface{})
+	FindOne(key string, value any)
 	FindOneById(id int) error
 	Save() error
 	Delete() error

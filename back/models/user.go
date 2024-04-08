@@ -19,6 +19,21 @@ type User struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
+type CreateUserDto struct {
+	Firstname string `json:"firstname" validate:"required"`
+	Lastname  string `json:"lastname" validate:"required"`
+	Username  string `json:"username" validate:"required"`
+	Email     string `json:"email" validate:"required,email"`
+	Password  string `json:"password" validate:"required"`
+}
+
+type UpdateUserDto struct {
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+	Username  string `json:"username"`
+	Email     string `json:"email" validate:"email"`
+}
+
 func UserExists(id int) bool {
 	var count int64
 	DB.Model(&User{}).Where("id = ?", id).Count(&count)
@@ -53,7 +68,7 @@ func (u *User) IsAdmin() bool {
 }
 
 func (u *User) HashPassword() error {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(u.Password), 14)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
 	if err != nil {
 		return err
 	}
@@ -72,7 +87,7 @@ func (u *User) FindOneById(id int) error {
 	return DB.First(&u, id).Error
 }
 
-func (u *User) FindOne(key string, value interface{}) error {
+func (u *User) FindOne(key string, value any) error {
 	return DB.Where(key+" = ?", value).First(&u).Error
 }
 
