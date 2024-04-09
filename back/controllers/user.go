@@ -2,12 +2,22 @@ package controllers
 
 import (
 	"challenge/models"
+	_ "challenge/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
 )
 
+// GetUsers godoc
+// @Summary      get all users
+// @Description  get all users
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} []models.User
+// @Failure      400  {object} utils.HttpError
+// @Router       /users/ [get]
 func GetUsers(c *gin.Context) {
 	users, err := models.FindAllUsers()
 	if err != nil {
@@ -18,6 +28,16 @@ func GetUsers(c *gin.Context) {
 	c.JSON(200, users)
 }
 
+// GetUser godoc
+// @Summary      get users by id
+// @Description  get users by id
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} models.User
+// @Failure      400  {object} utils.HttpError
+// @Failure      404  {object} utils.HttpError
+// @Router       /users/{id} [get]
 func GetUser(c *gin.Context) {
 	var user models.User
 
@@ -35,6 +55,15 @@ func GetUser(c *gin.Context) {
 	c.JSON(200, user)
 }
 
+// CreateUser godoc
+// @Summary      create user
+// @Description  create user
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Success      201  {object} models.User
+// @Failure      400  {object} utils.HttpError
+// @Router       /users/ [post]
 func CreateUser(c *gin.Context) {
 	var user models.User
 	var data models.CreateUserDto
@@ -80,6 +109,16 @@ func CreateUser(c *gin.Context) {
 	c.JSON(201, user)
 }
 
+// UpdateUser godoc
+// @Summary      update user
+// @Description  update user
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} models.User
+// @Failure      400  {object} utils.HttpError
+// @Failure      404  {object} utils.HttpError
+// @Router       /users/{id} [patch]
 func UpdateUser(c *gin.Context) {
 	var user models.User
 	var body models.UpdateUserDto
@@ -137,6 +176,16 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(200, user)
 }
 
+// DeleteUser godoc
+// @Summary      delete user
+// @Description  delete user
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Success      204  {object} models.User
+// @Failure      400  {object} utils.HttpError
+// @Failure      400  {object} utils.HttpError
+// @Router       /users/{id} [delete]
 func DeleteUser(c *gin.Context) {
 	var user models.User
 
