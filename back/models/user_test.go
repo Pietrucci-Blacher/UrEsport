@@ -3,33 +3,15 @@ package models
 import (
 	"testing"
 
-	"github.com/jaswdr/faker/v2"
+	faker "github.com/jaswdr/faker/v2"
 )
 
 var fake = faker.New()
-var users []User
 
-// func addUser(nb int) error {
-// 	for i := 0; i < nb; i++ {
-// 		user := User{
-// 			Firstname: fake.Person().FirstName(),
-// 			Lastname:  fake.Person().LastName(),
-// 			Username:  fake.Person().Name(),
-// 			Email:     fake.Internet().Email(),
-// 			Password:  fake.Internet().Password(),
-// 		}
-// 		if err := user.Save(); err != nil {
-// 			return err
-// 		}
-// 		users = append(users, user)
-// 	}
-
-// 	return nil
-// }
-
-func TestCreateUser(t *testing.T) {
+func TestSave(t *testing.T) {
 	var nbUsers int = 10
-	var userTest User
+	var result []User
+	var users []User
 
 	if err := ConnectDB(true); err != nil {
 		t.Error(err)
@@ -44,33 +26,37 @@ func TestCreateUser(t *testing.T) {
 			Email:     fake.Internet().Email(),
 			Password:  fake.Internet().Password(),
 		}
+		users = append(users, user)
 		if err := user.Save(); err != nil {
 			t.Error(err)
 		}
-		users = append(users, user)
 	}
 
 	if len(users) != nbUsers {
 		t.Error("Expected 10 users, got", len(users))
 	}
 
-	for _, user := range users {
-		DB.First(&userTest, user.ID)
+	DB.Find(&result)
 
-		if user.Firstname != userTest.Firstname {
-			t.Error("Expected", user.Firstname, "got", userTest.Firstname)
+	for i, res := range result {
+		if res.ID == 0 {
+			t.Error("Expected user ID to be set")
 		}
 
-		if user.Lastname != userTest.Lastname {
-			t.Error("Expected", user.Lastname, "got", userTest.Lastname)
+		if res.Firstname != users[i].Firstname {
+			t.Error("Expected", res.Firstname, "got", users[i].Firstname)
 		}
 
-		if user.Username != userTest.Username {
-			t.Error("Expected", user.Username, "got", userTest.Username)
+		if res.Lastname != users[i].Lastname {
+			t.Error("Expected", res.Lastname, "got", users[i].Lastname)
 		}
 
-		if user.Email != userTest.Email {
-			t.Error("Expected", user.Email, "got", userTest.Email)
+		if res.Username != users[i].Username {
+			t.Error("Expected", res.Username, "got", users[i].Username)
+		}
+
+		if res.Email != users[i].Email {
+			t.Error("Expected", res.Email, "got", users[i].Email)
 		}
 	}
 }
