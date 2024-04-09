@@ -34,6 +34,7 @@ func GetUsers(c *gin.Context) {
 // @Tags         user
 // @Accept       json
 // @Produce      json
+// @Param        id path int true "Feature ID"
 // @Success      200  {object} models.User
 // @Failure      400  {object} utils.HttpError
 // @Failure      404  {object} utils.HttpError
@@ -61,6 +62,7 @@ func GetUser(c *gin.Context) {
 // @Tags         user
 // @Accept       json
 // @Produce      json
+// @Param        user body models.CreateUserDto true "User"
 // @Success      201  {object} models.User
 // @Failure      400  {object} utils.HttpError
 // @Router       /users/ [post]
@@ -115,6 +117,8 @@ func CreateUser(c *gin.Context) {
 // @Tags         user
 // @Accept       json
 // @Produce      json
+// @Param        user body models.UpdateUserDto true "User"
+// @Param        id path int true "User ID"
 // @Success      200  {object} models.User
 // @Failure      400  {object} utils.HttpError
 // @Failure      404  {object} utils.HttpError
@@ -182,6 +186,7 @@ func UpdateUser(c *gin.Context) {
 // @Tags         user
 // @Accept       json
 // @Produce      json
+// @Param        id path int true "User ID"
 // @Success      204  {object} models.User
 // @Failure      400  {object} utils.HttpError
 // @Failure      400  {object} utils.HttpError

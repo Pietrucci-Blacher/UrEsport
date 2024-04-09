@@ -2,12 +2,22 @@ package controllers
 
 import (
 	"challenge/models"
+	_ "challenge/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
 )
 
+// GetUsers godoc
+// @Summary      get all features
+// @Description  get all features
+// @Tags         feature
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} []models.Feature
+// @Failure      400  {object} utils.HttpError
+// @Router       /features/ [get]
 func GetFeatures(c *gin.Context) {
 	feature, err := models.FindAllFeature()
 	if err != nil {
@@ -18,6 +28,17 @@ func GetFeatures(c *gin.Context) {
 	c.JSON(200, feature)
 }
 
+// GetUsers godoc
+// @Summary      get features by id
+// @Description  get features by id
+// @Tags         feature
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Feature ID"
+// @Success      200  {object} models.Feature
+// @Failure      400  {object} utils.HttpError
+// @Failure      404  {object} utils.HttpError
+// @Router       /features/{id} [get]
 func GetFeature(c *gin.Context) {
 	var feature models.Feature
 
@@ -35,6 +56,16 @@ func GetFeature(c *gin.Context) {
 	c.JSON(200, feature)
 }
 
+// GetUsers godoc
+// @Summary      create features
+// @Description  create features
+// @Tags         feature
+// @Accept       json
+// @Produce      json
+// @Param        feature body models.CreateFeatureDto true "Feature"
+// @Success      200  {object} models.Feature
+// @Failure      400  {object} utils.HttpError
+// @Router       /features/ [post]
 func CreateFeature(c *gin.Context) {
 	var feature models.Feature
 	var data models.CreateFeatureDto
@@ -67,6 +98,18 @@ func CreateFeature(c *gin.Context) {
 	c.JSON(201, feature)
 }
 
+// GetUsers godoc
+// @Summary      update features
+// @Description  update features
+// @Tags         feature
+// @Accept       json
+// @Produce      json
+// @Param        feature body models.UpdateFeatureDto true "Feature"
+// @Param        id path int true "Feature ID"
+// @Success      200  {object} models.Feature
+// @Failure      400  {object} utils.HttpError
+// @Failure      404  {object} utils.HttpError
+// @Router       /features/{id} [patch]
 func UpdateFeature(c *gin.Context) {
 	var feature models.Feature
 	var data models.UpdateFeatureDto
@@ -107,6 +150,17 @@ func UpdateFeature(c *gin.Context) {
 	c.JSON(200, feature)
 }
 
+// GetUsers godoc
+// @Summary      delete features by id
+// @Description  delete features by id
+// @Tags         feature
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Feature ID"
+// @Success      204
+// @Failure      400  {object} utils.HttpError
+// @Failure      404  {object} utils.HttpError
+// @Router       /features/{id} [delete]
 func DeleteFeature(c *gin.Context) {
 	var feature models.Feature
 
@@ -129,6 +183,17 @@ func DeleteFeature(c *gin.Context) {
 	c.JSON(204, gin.H{})
 }
 
+// GetUsers godoc
+// @Summary      toggle features by id
+// @Description  toggle features by id
+// @Tags         feature
+// @Accept       json
+// @Produce      json
+// @Param        id path int true "Feature ID"
+// @Success      200  {object} models.Feature
+// @Failure      400  {object} utils.HttpError
+// @Failure      404  {object} utils.HttpError
+// @Router       /features/{id}/toggle [get]
 func ToggleFeature(c *gin.Context) {
 	var feature models.Feature
 
