@@ -21,7 +21,6 @@ func ConnectDB() error {
 	)
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
-
 	if err != nil {
 		return err
 	}
@@ -32,7 +31,7 @@ func ConnectDB() error {
 }
 
 func Migration() error {
-	return DB.AutoMigrate(&User{})
+	return DB.AutoMigrate(&User{}, &Feature{})
 }
 
 type Model interface {
