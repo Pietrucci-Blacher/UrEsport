@@ -58,9 +58,9 @@ func CoutUsersByUsername(username string) (int64, error) {
 	return count, err
 }
 
-func (u *User) IsAdmin() bool {
+func (u *User) IsRole(role string) bool {
 	for _, r := range u.Roles {
-		if r == "admin" {
+		if r == role {
 			return true
 		}
 	}

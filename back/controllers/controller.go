@@ -20,5 +20,14 @@ func RegisterRoutes(r *gin.Engine) {
 			users.PATCH("/:id", UpdateUser)
 			users.DELETE("/:id", DeleteUser)
 		}
+		features := api.Group("/features")
+		{
+			features.GET("/", GetFeatures)
+			features.POST("/", CreateFeature)
+			features.GET("/:id", GetFeature)
+			features.GET("/:id/toggle", ToggleFeature)
+			features.PATCH("/:id", UpdateFeature)
+			features.DELETE("/:id", DeleteFeature)
+		}
 	}
 }
