@@ -10,12 +10,6 @@ import (
 // gin-swagger middleware
 // swagger embed files
 
-func ping(c *gin.Context) {
-	c.JSON(200, gin.H{
-		"message": "pong",
-	})
-}
-
 func RegisterRoutes(r *gin.Engine) {
 	// programmatically set swagger info
 	docs.SwaggerInfo.Title = "Swagger Example API"
@@ -27,16 +21,19 @@ func RegisterRoutes(r *gin.Engine) {
 
 	api := r.Group("/")
 	{
+<<<<<<< Updated upstream
 		api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 		api.GET("/ping", ping)
+=======
+>>>>>>> Stashed changes
 		users := api.Group("/users")
 		{
 			users.GET("/", GetUsers)
-			users.POST("/", CreateUser)
 			users.GET("/:id", GetUser)
 			users.PATCH("/:id", UpdateUser)
 			users.DELETE("/:id", DeleteUser)
 		}
+<<<<<<< Updated upstream
 		features := api.Group("/features")
 		{
 			features.GET("/", GetFeatures)
@@ -45,6 +42,14 @@ func RegisterRoutes(r *gin.Engine) {
 			features.GET("/:id/toggle", ToggleFeature)
 			features.PATCH("/:id", UpdateFeature)
 			features.DELETE("/:id", DeleteFeature)
+=======
+
+		auth := api.Group("/auth")
+		{
+			auth.POST("/login", Login)
+			auth.POST("/register", Register)
+			//auth.POST("/logout", Logout)
+>>>>>>> Stashed changes
 		}
 	}
 }

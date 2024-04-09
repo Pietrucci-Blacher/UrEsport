@@ -31,7 +31,14 @@ func ConnectDB() error {
 }
 
 func Migration() error {
+<<<<<<< Updated upstream
 	return DB.AutoMigrate(&User{}, &Feature{})
+=======
+	return DB.AutoMigrate(
+		&User{},
+		&Token{},
+	)
+>>>>>>> Stashed changes
 }
 
 type Model interface {

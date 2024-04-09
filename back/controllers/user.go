@@ -55,6 +55,7 @@ func GetUser(c *gin.Context) {
 	c.JSON(200, user)
 }
 
+<<<<<<< Updated upstream
 // CreateUser godoc
 // @Summary      create user
 // @Description  create user
@@ -119,6 +120,8 @@ func CreateUser(c *gin.Context) {
 // @Failure      400  {object} utils.HttpError
 // @Failure      404  {object} utils.HttpError
 // @Router       /users/{id} [patch]
+=======
+>>>>>>> Stashed changes
 func UpdateUser(c *gin.Context) {
 	var user models.User
 	var body models.UpdateUserDto
@@ -139,12 +142,12 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if count, err := models.CoutUsersByEmail(body.Email); err != nil || count > 0 {
+	if count, err := models.CountUsersByEmail(body.Email); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Email already exists"})
 		return
 	}
 
-	if count, err := models.CoutUsersByUsername(body.Username); err != nil || count > 0 {
+	if count, err := models.CountUsersByUsername(body.Username); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Username already exists"})
 		return
 	}

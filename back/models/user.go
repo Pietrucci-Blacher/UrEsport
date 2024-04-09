@@ -6,7 +6,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// implements Model
+// User implements Model
 type User struct {
 	ID        int       `json:"id" gorm:"primaryKey"`
 	Firstname string    `json:"firstname" gorm:"type:varchar(100)"`
@@ -46,13 +46,13 @@ func FindAllUsers() ([]User, error) {
 	return users, err
 }
 
-func CoutUsersByEmail(email string) (int64, error) {
+func CountUsersByEmail(email string) (int64, error) {
 	var count int64
 	err := DB.Model(&User{}).Where("email = ?", email).Count(&count).Error
 	return count, err
 }
 
-func CoutUsersByUsername(username string) (int64, error) {
+func CountUsersByUsername(username string) (int64, error) {
 	var count int64
 	err := DB.Model(&User{}).Where("username = ?", username).Count(&count).Error
 	return count, err

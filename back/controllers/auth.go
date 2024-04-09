@@ -1,5 +1,108 @@
-package main
+package controllers
 
-func main() {
+import (
+	"challenge/models"
+	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
+	"net/http"
+	"os"
+	"strconv"
+)
 
+func Login(c *gin.Context) {
+	var loginRequest struct {
+		Email    string `json:"email"`
+		Password string `json:"password"`
+	}
+
+	if err := c.BindJSON(&loginRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
+	var user models.User
+	if err := user.FindOne("email", loginRequest.Email); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	if !user.ComparePassword(loginRequest.Password) {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	token, err := models.GenerateJWTToken(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	cookieSecure, _ := strconv.ParseBool(os.Getenv("COOKIE_SECURE"))
+
+	c.SetCookie("auth_token", token, 3600, "/", "", cookieSecure, true)
+
+	c.JSON(http.StatusOK, gin.H{"token": token})
+}
+
+func Register(c *gin.Context) {
+	var user models.User
+	var data models.CreateUserDto
+
+	if err := c.BindJSON(&data); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if count, err := models.CountUsersByEmail(data.Email); err != nil || count > 0 {
+		c.JSON(400, gin.H{"error": "Email already exists"})
+		return
+	}
+
+	if count, err := models.CountUsersByUsername(data.Username); err != nil || count > 0 {
+		c.JSON(400, gin.H{"error": "Username already exists"})
+		return
+	}
+
+	validate := validator.New()
+	if err := validate.Struct(data); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	user.Firstname = data.Firstname
+	user.Lastname = data.Lastname
+	user.Username = data.Username
+	user.Email = data.Email
+	user.Password = data.Password
+	user.Roles = []string{"user"}
+
+	if err := user.HashPassword(); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := user.Save(); err != nil {
+		c.JSON(400, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(201, user)
+}
+
+func Logout(c *gin.Context) {
+	//sessionToken, err := c.Cookie("session_token")
+	//if err != nil {
+	//	c.Redirect(http.StatusSeeOther, "/login")
+	//	return
+	//}
+	//
+	//err = utils.EndSession(sessionToken)
+	//if err != nil {
+	//	c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to end session"})
+	//	return
+	//}
+	//
+	//c.SetCookie("session_token", "", -1, "/", "", false, true)
+	//
+	//c.Redirect(http.StatusSeeOther, "/login")
 }
