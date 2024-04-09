@@ -1,15 +1,42 @@
 package main
 
 import (
+	"challenge/controllers"
+	"challenge/models"
+	"fmt"
+	"os"
+
 	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	if err := godotenv.Load(); err != nil {
+		panic("Failed to load env file")
+	}
+
+	if err := models.ConnectDB(); err != nil {
+		panic("Failed to connect to database")
+	}
+
+	if len(os.Args) == 2 && os.Args[1] == "migrate" {
+		if err := models.Migration(); err != nil {
+			panic("Failed to migrate database")
+		}
+		fmt.Println("Database migrated")
+		return
+	}
+
+	if len(os.Args) == 2 && os.Args[1] == "fixtures" {
+		// TODO: Implement fixtures
+	}
+
 	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "pong from back",
-		})
-	})
-	r.Run(":8080")
+	r.Use(gin.Logger())
+	r.Use(gin.Recovery())
+	controllers.RegisterRoutes(r)
+
+	if err := r.Run(":8080"); err != nil {
+		panic("Failed to start server")
+	}
 }
