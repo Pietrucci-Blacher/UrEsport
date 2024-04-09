@@ -31,7 +31,11 @@ func ConnectDB() error {
 }
 
 func Migration() error {
-	return DB.AutoMigrate(&User{}, &Feature{}, &Token{})
+	return DB.AutoMigrate(
+		&User{},
+        &Feature{},
+		&Token{},
+	)
 }
 
 type Model interface {

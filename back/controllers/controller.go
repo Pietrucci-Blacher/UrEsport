@@ -21,7 +21,6 @@ func RegisterRoutes(r *gin.Engine) {
 	api := r.Group("/")
 	{
 		api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-		api.GET("/ping", ping)
 
 		users := api.Group("/users")
 		{
@@ -39,7 +38,7 @@ func RegisterRoutes(r *gin.Engine) {
 			features.GET("/:id/toggle", ToggleFeature)
 			features.PATCH("/:id", UpdateFeature)
 			features.DELETE("/:id", DeleteFeature)
-		}
+        }
 
 		auth := api.Group("/auth")
 		{

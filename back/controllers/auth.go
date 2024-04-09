@@ -4,6 +4,7 @@ import (
 	"challenge/models"
 	"challenge/services"
 	"github.com/gin-gonic/gin"
+	"github.com/go-playground/validator/v10"
 	"net/http"
 	"os"
 	"strconv"
