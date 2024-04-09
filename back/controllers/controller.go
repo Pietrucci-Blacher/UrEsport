@@ -1,5 +1,6 @@
 package controllers
 
+<<<<<<< Updated upstream
 import (
 	"challenge/docs"
 	"github.com/gin-gonic/gin"
@@ -26,6 +27,13 @@ func RegisterRoutes(r *gin.Engine) {
 		api.GET("/ping", ping)
 =======
 >>>>>>> Stashed changes
+=======
+import "github.com/gin-gonic/gin"
+
+func RegisterRoutes(r *gin.Engine) {
+	api := r.Group("/")
+	{
+>>>>>>> Stashed changes
 		users := api.Group("/users")
 		{
 			users.GET("/", GetUsers)
@@ -33,6 +41,7 @@ func RegisterRoutes(r *gin.Engine) {
 			users.PATCH("/:id", UpdateUser)
 			users.DELETE("/:id", DeleteUser)
 		}
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 		features := api.Group("/features")
 		{
@@ -43,12 +52,18 @@ func RegisterRoutes(r *gin.Engine) {
 			features.PATCH("/:id", UpdateFeature)
 			features.DELETE("/:id", DeleteFeature)
 =======
+=======
+>>>>>>> Stashed changes
 
 		auth := api.Group("/auth")
 		{
 			auth.POST("/login", Login)
 			auth.POST("/register", Register)
+<<<<<<< Updated upstream
 			//auth.POST("/logout", Logout)
+>>>>>>> Stashed changes
+=======
+			auth.POST("/logout", Logout)
 >>>>>>> Stashed changes
 		}
 	}

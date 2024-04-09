@@ -2,13 +2,17 @@ package controllers
 
 import (
 	"challenge/models"
+<<<<<<< Updated upstream
 	_ "challenge/utils"
+=======
+>>>>>>> Stashed changes
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
 )
 
+<<<<<<< Updated upstream
 // GetUsers godoc
 // @Summary      get all users
 // @Description  get all users
@@ -18,6 +22,8 @@ import (
 // @Success      200  {object} []models.User
 // @Failure      400  {object} utils.HttpError
 // @Router       /users/ [get]
+=======
+>>>>>>> Stashed changes
 func GetUsers(c *gin.Context) {
 	users, err := models.FindAllUsers()
 	if err != nil {
@@ -28,6 +34,7 @@ func GetUsers(c *gin.Context) {
 	c.JSON(200, users)
 }
 
+<<<<<<< Updated upstream
 // GetUser godoc
 // @Summary      get users by id
 // @Description  get users by id
@@ -38,6 +45,8 @@ func GetUsers(c *gin.Context) {
 // @Failure      400  {object} utils.HttpError
 // @Failure      404  {object} utils.HttpError
 // @Router       /users/{id} [get]
+=======
+>>>>>>> Stashed changes
 func GetUser(c *gin.Context) {
 	var user models.User
 
@@ -55,6 +64,7 @@ func GetUser(c *gin.Context) {
 	c.JSON(200, user)
 }
 
+<<<<<<< Updated upstream
 <<<<<<< Updated upstream
 // CreateUser godoc
 // @Summary      create user
@@ -122,6 +132,8 @@ func CreateUser(c *gin.Context) {
 // @Router       /users/{id} [patch]
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
 func UpdateUser(c *gin.Context) {
 	var user models.User
 	var body models.UpdateUserDto
@@ -179,6 +191,7 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(200, user)
 }
 
+<<<<<<< Updated upstream
 // DeleteUser godoc
 // @Summary      delete user
 // @Description  delete user
@@ -189,6 +202,8 @@ func UpdateUser(c *gin.Context) {
 // @Failure      400  {object} utils.HttpError
 // @Failure      400  {object} utils.HttpError
 // @Router       /users/{id} [delete]
+=======
+>>>>>>> Stashed changes
 func DeleteUser(c *gin.Context) {
 	var user models.User
 

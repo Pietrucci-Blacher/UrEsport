@@ -21,6 +21,10 @@ func ConnectDB() error {
 	)
 
 	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+<<<<<<< Updated upstream
+=======
+
+>>>>>>> Stashed changes
 	if err != nil {
 		return err
 	}
@@ -32,12 +36,18 @@ func ConnectDB() error {
 
 func Migration() error {
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
 	return DB.AutoMigrate(&User{}, &Feature{})
 =======
+=======
+>>>>>>> Stashed changes
 	return DB.AutoMigrate(
 		&User{},
 		&Token{},
 	)
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 }
 

@@ -9,6 +9,10 @@ import (
 // User implements Model
 type User struct {
 	ID        int       `json:"id" gorm:"primaryKey"`
+<<<<<<< Updated upstream
+=======
+	Token     Token     `json:"token" gorm:"foreignKey:UserID"`
+>>>>>>> Stashed changes
 	Firstname string    `json:"firstname" gorm:"type:varchar(100)"`
 	Lastname  string    `json:"lastname" gorm:"type:varchar(100)"`
 	Username  string    `json:"username" gorm:"type:varchar(100)"`
@@ -58,9 +62,15 @@ func CountUsersByUsername(username string) (int64, error) {
 	return count, err
 }
 
+<<<<<<< Updated upstream
 func (u *User) IsRole(role string) bool {
 	for _, r := range u.Roles {
 		if r == role {
+=======
+func (u *User) IsAdmin() bool {
+	for _, r := range u.Roles {
+		if r == "admin" {
+>>>>>>> Stashed changes
 			return true
 		}
 	}

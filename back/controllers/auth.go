@@ -2,6 +2,10 @@ package controllers
 
 import (
 	"challenge/models"
+<<<<<<< Updated upstream
+=======
+	"challenge/services"
+>>>>>>> Stashed changes
 	"github.com/gin-gonic/gin"
 	"github.com/go-playground/validator/v10"
 	"net/http"
@@ -86,10 +90,20 @@ func Register(c *gin.Context) {
 		return
 	}
 
+<<<<<<< Updated upstream
+=======
+	err := services.SendEmail(user.Email, services.WelcomeEmail)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+
+>>>>>>> Stashed changes
 	c.JSON(201, user)
 }
 
 func Logout(c *gin.Context) {
+<<<<<<< Updated upstream
 	//sessionToken, err := c.Cookie("session_token")
 	//if err != nil {
 	//	c.Redirect(http.StatusSeeOther, "/login")
@@ -105,4 +119,25 @@ func Logout(c *gin.Context) {
 	//c.SetCookie("session_token", "", -1, "/", "", false, true)
 	//
 	//c.Redirect(http.StatusSeeOther, "/login")
+=======
+	tokenString, err := c.Cookie("auth_token")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No session found"})
+		return
+	}
+
+	var token models.Token
+	if err := models.DB.Where("token = ?", tokenString).First(&token).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Session not found"})
+		return
+	}
+
+	if err := models.DB.Delete(&token).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to end session"})
+		return
+	}
+
+	c.SetCookie("auth_token", "", -1, "/", "", false, true)
+	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
+>>>>>>> Stashed changes
 }
