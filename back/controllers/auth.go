@@ -10,6 +10,16 @@ import (
 	"strconv"
 )
 
+// Login godoc
+// @Summary      Login user
+// @Description  Login user
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        login body models.LoginUserDto true "Login user"
+// @Success      200  {object} models.Token
+// @Failure      400  {object} utils.HttpError
+// @Router       /auth/login [post]
 func Login(c *gin.Context) {
 	var loginRequest struct {
 		Email    string `json:"email"`
@@ -45,6 +55,16 @@ func Login(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"token": token})
 }
 
+// Register godoc
+// @Summary      Register user
+// @Description  Register user
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Param        register body models.CreateUserDto true "Register user"
+// @Success      201
+// @Failure      400  {object} utils.HttpError
+// @Router       /auth/register [post]
 func Register(c *gin.Context) {
 	var user models.User
 	var data models.CreateUserDto
@@ -93,9 +113,18 @@ func Register(c *gin.Context) {
 		return
 	}
 
-	c.JSON(201, user)
+	c.JSON(201, nil)
 }
 
+// Logout godoc
+// @Summary      Logout user
+// @Description  Logout user
+// @Tags         auth
+// @Accept       json
+// @Produce      json
+// @Success      201
+// @Failure      400  {object} utils.HttpError
+// @Router       /auth/logout [post]
 func Logout(c *gin.Context) {
 	tokenString, err := c.Cookie("auth_token")
 	if err != nil {

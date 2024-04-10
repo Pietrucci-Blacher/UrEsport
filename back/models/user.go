@@ -35,6 +35,11 @@ type UpdateUserDto struct {
 	Email     string `json:"email" validate:"email"`
 }
 
+type LoginUserDto struct {
+    Email    string `json:"email" validate:"required,email"`
+    Password string `json:"password" validate:"required"`
+}
+
 func UserExists(id int) bool {
 	var count int64
 	DB.Model(&User{}).Where("id = ?", id).Count(&count)
