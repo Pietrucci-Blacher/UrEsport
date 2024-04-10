@@ -2,6 +2,7 @@ package services
 
 import (
 	"os"
+	"github.com/resend/resend-go/v2"
 )
 
 type EmailTemplate string
