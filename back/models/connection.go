@@ -55,7 +55,11 @@ func CloseDB() error {
 }
 
 func Migration() error {
-	return DB.AutoMigrate(&User{}, &Feature{})
+	return DB.AutoMigrate(
+		&User{},
+		&Feature{},
+		&Token{},
+	)
 }
 
 type Model interface {

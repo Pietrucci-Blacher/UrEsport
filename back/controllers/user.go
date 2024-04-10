@@ -75,12 +75,12 @@ func CreateUser(c *gin.Context) {
 		return
 	}
 
-	if count, err := models.CoutUsersByEmail(data.Email); err != nil || count > 0 {
+	if count, err := models.CountUsersByEmail(data.Email); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Email already exists"})
 		return
 	}
 
-	if count, err := models.CoutUsersByUsername(data.Username); err != nil || count > 0 {
+	if count, err := models.CountUsersByUsername(data.Username); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Username already exists"})
 		return
 	}
@@ -143,12 +143,12 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	if count, err := models.CoutUsersByEmail(body.Email); err != nil || count > 0 {
+	if count, err := models.CountUsersByEmail(body.Email); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Email already exists"})
 		return
 	}
 
-	if count, err := models.CoutUsersByUsername(body.Username); err != nil || count > 0 {
+	if count, err := models.CountUsersByUsername(body.Username); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Username already exists"})
 		return
 	}

@@ -6,9 +6,10 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// implements Model
+// User implements Model
 type User struct {
 	ID        int       `json:"id" gorm:"primaryKey"`
+	Token     Token     `json:"token" gorm:"foreignKey:UserID"`
 	Firstname string    `json:"firstname" gorm:"type:varchar(100)"`
 	Lastname  string    `json:"lastname" gorm:"type:varchar(100)"`
 	Username  string    `json:"username" gorm:"type:varchar(100)"`
@@ -34,6 +35,11 @@ type UpdateUserDto struct {
 	Email     string `json:"email" validate:"email"`
 }
 
+type LoginUserDto struct {
+    Email    string `json:"email" validate:"required,email"`
+    Password string `json:"password" validate:"required"`
+}
+
 func UserExists(id int) bool {
 	var count int64
 	DB.Model(&User{}).Where("id = ?", id).Count(&count)
@@ -46,13 +52,13 @@ func FindAllUsers() ([]User, error) {
 	return users, err
 }
 
-func CoutUsersByEmail(email string) (int64, error) {
+func CountUsersByEmail(email string) (int64, error) {
 	var count int64
 	err := DB.Model(&User{}).Where("email = ?", email).Count(&count).Error
 	return count, err
 }
 
-func CoutUsersByUsername(username string) (int64, error) {
+func CountUsersByUsername(username string) (int64, error) {
 	var count int64
 	err := DB.Model(&User{}).Where("username = ?", username).Count(&count).Error
 	return count, err

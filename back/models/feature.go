@@ -27,7 +27,7 @@ func FindAllFeature() ([]Feature, error) {
 	return features, err
 }
 
-func CoutFeatureByName(name string) (int64, error) {
+func CountFeatureByName(name string) (int64, error) {
 	var count int64
 	err := DB.Model(&Feature{}).Where("name = ?", name).Count(&count).Error
 	return count, err

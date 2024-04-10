@@ -75,7 +75,7 @@ func CreateFeature(c *gin.Context) {
 		return
 	}
 
-	if count, err := models.CoutFeatureByName(data.Name); err != nil || count > 0 {
+	if count, err := models.CountFeatureByName(data.Name); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Feature already exists"})
 		return
 	}
@@ -130,7 +130,7 @@ func UpdateFeature(c *gin.Context) {
 		return
 	}
 
-	if count, err := models.CoutFeatureByName(data.Name); err != nil || count > 0 {
+	if count, err := models.CountFeatureByName(data.Name); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Feature already exists"})
 		return
 	}

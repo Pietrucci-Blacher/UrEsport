@@ -235,7 +235,7 @@ func TestCountUsersByEmail(t *testing.T) {
 		DB.Create(&user)
 	}
 
-	count, err := CoutUsersByEmail(testEmail)
+	count, err := CountUsersByEmail(testEmail)
 	if err != nil {
 		t.Error(err)
 	}
@@ -274,7 +274,7 @@ func TestCountUsersByUsername(t *testing.T) {
 		DB.Create(&user)
 	}
 
-	count, err := CoutUsersByUsername(testUsername)
+	count, err := CountUsersByUsername(testUsername)
 	if err != nil {
 		t.Error(err)
 	}
