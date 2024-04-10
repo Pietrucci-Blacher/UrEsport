@@ -142,7 +142,7 @@ func Logout(c *gin.Context) {
 		return
 	}
 
-	if err := models.DB.Delete(&token).Error; err != nil {
+	if err := token.Delete(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to end session"})
 		return
 	}
