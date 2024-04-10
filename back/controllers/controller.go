@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"challenge/docs"
+	"challenge/middlewares"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -27,7 +28,8 @@ func RegisterRoutes(r *gin.Engine) {
 			users.GET("/", GetUsers)
 			users.GET("/:id", GetUser)
 			users.PATCH("/:id", UpdateUser)
-			users.DELETE("/:id", DeleteUser)
+			// users.DELETE("/:id", middlewares.IsLoggedIn(), middlewares.IsAdmin(), DeleteUser)
+			users.DELETE("/:id", middlewares.IsLoggedIn(), DeleteUser)
 		}
 
 		features := api.Group("/features")

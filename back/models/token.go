@@ -2,7 +2,7 @@ package models
 
 import (
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
+	jwt "github.com/golang-jwt/jwt/v5"
 	"log"
 	"os"
 	"time"
