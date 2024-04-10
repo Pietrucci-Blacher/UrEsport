@@ -15,7 +15,7 @@ func main() {
 		panic("Failed to load env file")
 	}
 
-	if err := models.ConnectDB(); err != nil {
+	if err := models.ConnectDB(false); err != nil {
 		panic("Failed to connect to database")
 	}
 
