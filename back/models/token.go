@@ -2,8 +2,8 @@ package models
 
 import (
 	"fmt"
-	"log"
 	"github.com/golang-jwt/jwt/v5"
+	"log"
 	"os"
 	"time"
 )
@@ -79,11 +79,11 @@ func ParseJWTToken(tokenString string) (*UserClaims, error) {
 }
 
 func (t *Token) FindOne(key string, value any) error {
-   return DB.Where(key + " = ?", value).First(&t).Error
+	return DB.Where(key+" = ?", value).First(&t).Error
 }
 
 func (t *Token) FindOneById(id int) error {
-    return DB.First(&t, id).Error
+	return DB.First(&t, id).Error
 }
 
 func (t *Token) Save() error {
