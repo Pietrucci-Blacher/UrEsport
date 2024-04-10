@@ -21,7 +21,6 @@ func RegisterRoutes(r *gin.Engine) {
 	api := r.Group("/")
 	{
 		api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
-
 		users := api.Group("/users")
 		{
 			users.GET("/", GetUsers)

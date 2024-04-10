@@ -78,12 +78,16 @@ func ParseJWTToken(tokenString string) (*UserClaims, error) {
 	return claims, nil
 }
 
+func (t *Token) FindOne(key string, value any) error {
+   return DB.Where(key + " = ?", value).First(&t).Error
+}
+
 func (t *Token) FindOneById(id int) error {
-	return DB.First(t, id).Error
+    return DB.First(&t, id).Error
 }
 
 func (t *Token) Save() error {
-	if err := DB.Save(t).Error; err != nil {
+	if err := DB.Save(&t).Error; err != nil {
 		log.Printf("Error saving token: %v", err)
 		return err
 	}
@@ -91,5 +95,5 @@ func (t *Token) Save() error {
 }
 
 func (t *Token) Delete() error {
-	return DB.Delete(t).Error
+	return DB.Delete(&t).Error
 }

@@ -21,15 +21,18 @@ import (
 // @Failure      400  {object} utils.HttpError
 // @Router       /auth/login [post]
 func Login(c *gin.Context) {
-	var loginRequest struct {
-		Email    string `json:"email"`
-		Password string `json:"password"`
-	}
+	var loginRequest models.LoginUserDto
 
 	if err := c.BindJSON(&loginRequest); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
 		return
 	}
+
+	validate := validator.New()
+    if err := validate.Struct(loginRequest); err != nil {
+    	c.JSON(400, gin.H{"error": err.Error()})
+    	return
+    }
 
 	var user models.User
 	if err := user.FindOne("email", loginRequest.Email); err != nil {
@@ -126,14 +129,15 @@ func Register(c *gin.Context) {
 // @Failure      400  {object} utils.HttpError
 // @Router       /auth/logout [post]
 func Logout(c *gin.Context) {
+    var token models.Token
+
 	tokenString, err := c.Cookie("auth_token")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "No session found"})
 		return
 	}
 
-	var token models.Token
-	if err := models.DB.Where("token = ?", tokenString).First(&token).Error; err != nil {
+	if err := token.FindOne("token", tokenString); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Session not found"})
 		return
 	}
