@@ -56,7 +56,6 @@ func GetUser(c *gin.Context) {
 	c.JSON(200, user)
 }
 
-<<<<<<< Updated upstream
 // CreateUser godoc
 // @Summary      create user
 // @Description  create user
@@ -124,8 +123,6 @@ func CreateUser(c *gin.Context) {
 // @Failure      400  {object} utils.HttpError
 // @Failure      404  {object} utils.HttpError
 // @Router       /users/{id} [patch]
-=======
->>>>>>> Stashed changes
 func UpdateUser(c *gin.Context) {
 	var user models.User
 	var body models.UpdateUserDto
