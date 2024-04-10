@@ -33,7 +33,7 @@ func ConnectDB() error {
 func Migration() error {
 	return DB.AutoMigrate(
 		&User{},
-        &Feature{},
+    &Feature{},
 		&Token{},
 	)
 }

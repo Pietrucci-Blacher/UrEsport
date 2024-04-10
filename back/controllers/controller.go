@@ -38,7 +38,7 @@ func RegisterRoutes(r *gin.Engine) {
 			features.GET("/:id/toggle", ToggleFeature)
 			features.PATCH("/:id", UpdateFeature)
 			features.DELETE("/:id", DeleteFeature)
-        }
+    }
 
 		auth := api.Group("/auth")
 		{
