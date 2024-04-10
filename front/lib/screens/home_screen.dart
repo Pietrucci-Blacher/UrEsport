@@ -7,7 +7,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Esports App'),
+        title: const Text('UrEsport'),
       ),
       body: const Center(
         child: Text('Welcome to the Home Screen!'),

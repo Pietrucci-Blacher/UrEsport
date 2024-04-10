@@ -11,7 +11,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'My Esports App',
+      title: 'UrEsport',
       debugShowCheckedModeBanner: false,
       home: const SplashScreen(),
       theme: ThemeData(
