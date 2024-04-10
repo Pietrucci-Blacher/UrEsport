@@ -2,26 +2,17 @@ package models
 
 import (
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
-<<<<<<< Updated upstream
-=======
 	"log"
->>>>>>> Stashed changes
 	"os"
 	"time"
 )
 
 type Token struct {
-<<<<<<< Updated upstream
-	UserID int    `json:"user_id" gorm:"primaryKey"`
-	Token  string `json:"token" gorm:"type:varchar(255)"`
-=======
 	ID        int       `json:"id" gorm:"primaryKey"`
 	UserID    int       `json:"user_id" gorm:"primaryKey;references:ID"`
 	Token     string    `json:"token" gorm:"type:varchar(255)"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
->>>>>>> Stashed changes
 }
 
 var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
@@ -32,8 +23,6 @@ type UserClaims struct {
 	UserID int `json:"user_id"`
 }
 
-<<<<<<< Updated upstream
-=======
 func NewToken(tokenString string, userID int) error {
 	token := Token{
 		UserID:    userID,
@@ -44,7 +33,6 @@ func NewToken(tokenString string, userID int) error {
 	return token.Save()
 }
 
->>>>>>> Stashed changes
 func GenerateJWTToken(userID int) (string, error) {
 	now := time.Now()
 
@@ -63,10 +51,6 @@ func GenerateJWTToken(userID int) (string, error) {
 		return "", fmt.Errorf("failed to sign the token: %w", err)
 	}
 
-<<<<<<< Updated upstream
-	return tokenString, nil
-}
-=======
 	err = NewToken(tokenString, userID)
 	if err != nil {
 		return "", fmt.Errorf("failed to save the token: %w", err)
@@ -108,4 +92,3 @@ func (t *Token) Save() error {
 func (t *Token) Delete() error {
 	return DB.Delete(t).Error
 }
->>>>>>> Stashed changes
