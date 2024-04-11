@@ -3,11 +3,12 @@ package controllers
 import (
 	"challenge/models"
 	"challenge/services"
-	"github.com/gin-gonic/gin"
-	validator "github.com/go-playground/validator/v10"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/gin-gonic/gin"
+	validator "github.com/go-playground/validator/v10"
 )
 
 // Login godoc
@@ -98,7 +99,7 @@ func Register(c *gin.Context) {
 	user.Username = data.Username
 	user.Email = data.Email
 	user.Password = data.Password
-	user.Roles = []string{"user"}
+	user.Roles = []string{models.ROLE_USER}
 
 	if err := user.HashPassword(); err != nil {
 		c.JSON(400, gin.H{"error": err.Error()})

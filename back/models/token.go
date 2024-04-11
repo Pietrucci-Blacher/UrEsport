@@ -2,10 +2,11 @@ package models
 
 import (
 	"fmt"
-	jwt "github.com/golang-jwt/jwt/v5"
 	"log"
 	"os"
 	"time"
+
+	jwt "github.com/golang-jwt/jwt/v5"
 )
 
 type Token struct {

@@ -3,6 +3,7 @@ package controllers
 import (
 	"challenge/models"
 	_ "challenge/utils"
+	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -16,16 +17,16 @@ import (
 // @Accept       json
 // @Produce      json
 // @Success      200  {object} []models.Feature
-// @Failure      400  {object} utils.HttpError
+// @Failure      500  {object} utils.HttpError
 // @Router       /features/ [get]
 func GetFeatures(c *gin.Context) {
 	feature, err := models.FindAllFeature()
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, feature)
+	c.JSON(http.StatusOK, feature)
 }
 
 // GetUsers godoc
@@ -36,24 +37,24 @@ func GetFeatures(c *gin.Context) {
 // @Produce      json
 // @Param        id path int true "Feature ID"
 // @Success      200  {object} models.Feature
-// @Failure      400  {object} utils.HttpError
 // @Failure      404  {object} utils.HttpError
+// @Failure      500  {object} utils.HttpError
 // @Router       /features/{id} [get]
 func GetFeature(c *gin.Context) {
 	var feature models.Feature
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := feature.FindOneById(id); err != nil {
-		c.JSON(404, gin.H{"error": "Feature not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
 		return
 	}
 
-	c.JSON(200, feature)
+	c.JSON(http.StatusOK, feature)
 }
 
 // GetUsers godoc
@@ -63,26 +64,28 @@ func GetFeature(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        feature body models.CreateFeatureDto true "Feature"
-// @Success      200  {object} models.Feature
+// @Success      201  {object} models.Feature
 // @Failure      400  {object} utils.HttpError
+// @Failure      401  {object} utils.HttpError
+// @Failure      500  {object} utils.HttpError
 // @Router       /features/ [post]
 func CreateFeature(c *gin.Context) {
 	var feature models.Feature
 	var data models.CreateFeatureDto
 
 	if err := c.BindJSON(&data); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if count, err := models.CountFeatureByName(data.Name); err != nil || count > 0 {
-		c.JSON(400, gin.H{"error": "Feature already exists"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Feature already exists"})
 		return
 	}
 
 	validate := validator.New()
 	if err := validate.Struct(data); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
@@ -91,11 +94,11 @@ func CreateFeature(c *gin.Context) {
 	feature.Active = false
 
 	if err := feature.Save(); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(201, feature)
+	c.JSON(http.StatusCreated, feature)
 }
 
 // GetUsers godoc
@@ -108,7 +111,9 @@ func CreateFeature(c *gin.Context) {
 // @Param        id path int true "Feature ID"
 // @Success      200  {object} models.Feature
 // @Failure      400  {object} utils.HttpError
+// @Failure      401  {object} utils.HttpError
 // @Failure      404  {object} utils.HttpError
+// @Failure      500  {object} utils.HttpError
 // @Router       /features/{id} [patch]
 func UpdateFeature(c *gin.Context) {
 	var feature models.Feature
@@ -116,22 +121,22 @@ func UpdateFeature(c *gin.Context) {
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := feature.FindOneById(id); err != nil {
-		c.JSON(404, gin.H{"error": "Feature not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
 		return
 	}
 
 	if err := c.BindJSON(&data); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if count, err := models.CountFeatureByName(data.Name); err != nil || count > 0 {
-		c.JSON(400, gin.H{"error": "Feature already exists"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Feature already exists"})
 		return
 	}
 
@@ -143,11 +148,11 @@ func UpdateFeature(c *gin.Context) {
 	}
 
 	if err := feature.Save(); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, feature)
+	c.JSON(http.StatusOK, feature)
 }
 
 // GetUsers godoc
@@ -160,27 +165,28 @@ func UpdateFeature(c *gin.Context) {
 // @Success      204
 // @Failure      400  {object} utils.HttpError
 // @Failure      404  {object} utils.HttpError
+// @Failure      500  {object} utils.HttpError
 // @Router       /features/{id} [delete]
 func DeleteFeature(c *gin.Context) {
 	var feature models.Feature
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := feature.FindOneById(id); err != nil {
-		c.JSON(404, gin.H{"error": "Feature not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
 		return
 	}
 
 	if err := feature.Delete(); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(204, gin.H{})
+	c.JSON(http.StatusNoContent, gin.H{})
 }
 
 // GetUsers godoc
@@ -193,27 +199,28 @@ func DeleteFeature(c *gin.Context) {
 // @Success      200  {object} models.Feature
 // @Failure      400  {object} utils.HttpError
 // @Failure      404  {object} utils.HttpError
+// @Failure      500  {object} utils.HttpError
 // @Router       /features/{id}/toggle [get]
 func ToggleFeature(c *gin.Context) {
 	var feature models.Feature
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := feature.FindOneById(id); err != nil {
-		c.JSON(404, gin.H{"error": "Feature not found"})
+		c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
 		return
 	}
 
 	feature.Toggle()
 
 	if err := feature.Save(); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, feature)
+	c.JSON(http.StatusOK, feature)
 }
