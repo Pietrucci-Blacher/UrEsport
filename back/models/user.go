@@ -103,7 +103,15 @@ func (u *User) FindOne(key string, value any) error {
 }
 
 func (u *User) Delete() error {
-	// TODO : delete token
+	tokenToDelete, err := FindTokensByUserID(u.ID)
+	if err != nil {
+		return err
+	}
+
+	for _, token := range tokenToDelete {
+		token.Delete()
+	}
+
 	return DB.Delete(&u).Error
 }
 

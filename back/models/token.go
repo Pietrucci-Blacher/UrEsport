@@ -35,6 +35,12 @@ func NewToken(tokenString string, userID int) error {
 	return token.Save()
 }
 
+func FindTokensByUserID(userID int) ([]Token, error) {
+	var tokens []Token
+	err := DB.Where("user_id = ?", userID).Find(&tokens).Error
+	return tokens, err
+}
+
 func GenerateJWTToken(userID int) (string, error) {
 	now := time.Now()
 

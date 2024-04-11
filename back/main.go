@@ -19,11 +19,24 @@ func main() {
 		panic("Failed to connect to database")
 	}
 
+	if len(os.Args) == 2 && os.Args[1] == "--help" {
+		fmt.Printf("Usage: %s [migrate|drop-table|fixtures]\n", os.Args[0])
+		return
+	}
+
 	if len(os.Args) == 2 && os.Args[1] == "migrate" {
 		if err := models.Migration(); err != nil {
 			panic("Failed to migrate database")
 		}
 		fmt.Println("Database migrated")
+		return
+	}
+
+	if len(os.Args) == 2 && os.Args[1] == "drop-table" {
+		if err := models.DropTables(); err != nil {
+			panic("Failed to drop table")
+		}
+		fmt.Println("Table dropped")
 		return
 	}
 
