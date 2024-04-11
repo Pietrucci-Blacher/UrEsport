@@ -6,10 +6,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+const (
+	ROLE_ADMIN = "admin"
+	ROLE_USER  = "user"
+)
+
 // User implements Model
 type User struct {
 	ID        int       `json:"id" gorm:"primaryKey"`
-	Token     Token     `json:"token" gorm:"foreignKey:UserID"`
+	Token     Token     `json:"token" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
 	Firstname string    `json:"firstname" gorm:"type:varchar(100)"`
 	Lastname  string    `json:"lastname" gorm:"type:varchar(100)"`
 	Username  string    `json:"username" gorm:"type:varchar(100)"`
@@ -32,7 +37,7 @@ type UpdateUserDto struct {
 	Firstname string `json:"firstname"`
 	Lastname  string `json:"lastname"`
 	Username  string `json:"username"`
-	Email     string `json:"email" validate:"email"`
+	Email     string `json:"email"`
 }
 
 type LoginUserDto struct {
@@ -98,6 +103,15 @@ func (u *User) FindOne(key string, value any) error {
 }
 
 func (u *User) Delete() error {
+	tokenToDelete, err := FindTokensByUserID(u.ID)
+	if err != nil {
+		return err
+	}
+
+	for _, token := range tokenToDelete {
+		token.Delete()
+	}
+
 	return DB.Delete(&u).Error
 }
 

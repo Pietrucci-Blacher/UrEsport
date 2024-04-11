@@ -62,6 +62,14 @@ func Migration() error {
 	)
 }
 
+func DropTables() error {
+	return DB.Migrator().DropTable(
+		&User{},
+		&Feature{},
+		&Token{},
+	)
+}
+
 type Model interface {
 	FindOne(key string, value any)
 	FindOneById(id int) error

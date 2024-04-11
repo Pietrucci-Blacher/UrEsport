@@ -2,10 +2,11 @@ package models
 
 import (
 	"fmt"
-	"github.com/golang-jwt/jwt/v5"
 	"log"
 	"os"
 	"time"
+
+	jwt "github.com/golang-jwt/jwt/v5"
 )
 
 type Token struct {
@@ -32,6 +33,12 @@ func NewToken(tokenString string, userID int) error {
 		UpdatedAt: time.Now(),
 	}
 	return token.Save()
+}
+
+func FindTokensByUserID(userID int) ([]Token, error) {
+	var tokens []Token
+	err := DB.Where("user_id = ?", userID).Find(&tokens).Error
+	return tokens, err
 }
 
 func GenerateJWTToken(userID int) (string, error) {
