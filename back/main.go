@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"os"
 
+	"challenge/fixtures"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -42,6 +43,9 @@ func main() {
 
 	if len(os.Args) == 2 && os.Args[1] == "fixtures" {
 		// TODO: Implement fixtures
+		fixtures.ImportFixtures()
+		fmt.Println("Fixtures imported")
+		return
 	}
 
 	r := gin.Default()

@@ -118,3 +118,10 @@ func (u *User) Delete() error {
 func (u *User) Save() error {
 	return DB.Save(&u).Error
 }
+
+func ClearUsers() error {
+	if err := DB.Exec("DELETE FROM users").Error; err != nil {
+		return err
+	}
+	return nil
+}
