@@ -3,9 +3,9 @@ module challenge
 go 1.22.2
 
 require (
-	github.com/bxcodec/faker/v3 v3.8.1
 	github.com/gin-gonic/gin v1.9.1
 	github.com/go-playground/validator/v10 v10.19.0
+	github.com/jaswdr/faker/v2 v2.1.0
 	github.com/joho/godotenv v1.5.1
 	github.com/swaggo/files v1.0.1
 	github.com/swaggo/gin-swagger v1.6.0

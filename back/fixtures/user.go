@@ -2,11 +2,9 @@ package fixtures
 
 import (
 	"challenge/models"
-	"github.com/bxcodec/faker/v3"
-	"golang.org/x/crypto/bcrypt"
+	faker "github.com/jaswdr/faker/v2"
 	"math/rand"
 	"strings"
-	"time"
 )
 
 func LoadUsers() error {
@@ -14,16 +12,18 @@ func LoadUsers() error {
 		return err
 	}
 	for i := 0; i < 20; i++ {
-		firstname := faker.FirstName()
-		lastname := faker.LastName()
+		fake := faker.New() // Création d'une instance de faker
+		firstname := fake.FirstName()
+		lastname := fake.LastName()
 
 		// Création du username à partir du nom et du prénom
 		username := strings.ToLower(strings.ReplaceAll(firstname+"."+lastname, " ", ""))
 
 		// Création de l'email à partir du nom et du prénom
-		email := strings.ToLower(strings.ReplaceAll(firstname+"."+lastname+"@gmail.com", " ", ""))
+		internet := fake.Internet() // Création d'une instance de Internet
+		email := internet.Email()   // Utilisation de l'instance pour générer un email
 
-		password := faker.Password()
+		password := fake.Password()
 		roles := []string{"user", "admin"} // Rôles possibles
 
 		// Choix aléatoire du rôle
@@ -36,16 +36,12 @@ func LoadUsers() error {
 			Email:     email,
 			Password:  password,
 			Roles:     []string{role},
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
 		}
 
 		// Hachage du mot de passe
-		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
-		if err != nil {
+		if err := user.HashPassword(); err != nil {
 			return err
 		}
-		user.Password = string(hashedPassword)
 
 		if err := user.Save(); err != nil {
 			return err
