@@ -13,16 +13,17 @@ const (
 
 // User implements Model
 type User struct {
-	ID        int       `json:"id" gorm:"primaryKey"`
-	Token     Token     `json:"token" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
-	Firstname string    `json:"firstname" gorm:"type:varchar(100)"`
-	Lastname  string    `json:"lastname" gorm:"type:varchar(100)"`
-	Username  string    `json:"username" gorm:"type:varchar(100)"`
-	Email     string    `json:"email" gorm:"type:varchar(100)"`
-	Password  string    `json:"password"`
-	Roles     []string  `json:"roles" gorm:"json"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          int          `json:"id" gorm:"primaryKey"`
+	Token       Token        `json:"token" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	Firstname   string       `json:"firstname" gorm:"type:varchar(100)"`
+	Lastname    string       `json:"lastname" gorm:"type:varchar(100)"`
+	Username    string       `json:"username" gorm:"type:varchar(100)"`
+	Email       string       `json:"email" gorm:"type:varchar(100)"`
+	Password    string       `json:"password"`
+	Roles       []string     `json:"roles" gorm:"json"`
+	Tournaments []Tournament `json:"tournaments" gorm:"many2many:tournament_participants;"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
 }
 
 type CreateUserDto struct {
@@ -53,7 +54,7 @@ func UserExists(id int) bool {
 
 func FindAllUsers() ([]User, error) {
 	var users []User
-	err := DB.Find(&users).Error
+	err := DB.Model(&User{}).Preload("Token").Find(&users).Error
 	return users, err
 }
 
@@ -95,11 +96,11 @@ func (u *User) ComparePassword(password string) bool {
 }
 
 func (u *User) FindOneById(id int) error {
-	return DB.First(&u, id).Error
+	return DB.Model(&User{}).Preload("Token").First(&u, id).Error
 }
 
 func (u *User) FindOne(key string, value any) error {
-	return DB.Where(key+" = ?", value).First(&u).Error
+	return DB.Model(&User{}).Where(key, value).Preload("Token").First(&u).Error
 }
 
 func (u *User) Delete() error {

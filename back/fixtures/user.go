@@ -2,9 +2,10 @@ package fixtures
 
 import (
 	"challenge/models"
-	faker "github.com/jaswdr/faker/v2"
 	"math/rand"
 	"strings"
+
+	faker "github.com/jaswdr/faker/v2"
 )
 
 var fake = faker.New()

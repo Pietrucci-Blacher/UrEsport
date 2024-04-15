@@ -2,11 +2,11 @@ package main
 
 import (
 	"challenge/controllers"
+	"challenge/fixtures"
 	"challenge/models"
 	"fmt"
 	"os"
 
-	"challenge/fixtures"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -20,8 +20,8 @@ func main() {
 		panic("Failed to connect to database")
 	}
 
-	if len(os.Args) == 2 && os.Args[1] == "--help" {
-		fmt.Printf("Usage: %s [migrate|drop-table|fixtures]\n", os.Args[0])
+	if len(os.Args) == 2 && os.Args[1] == "help" {
+		fmt.Printf("Usage: %s [migrate|droptable|fixtures]\n", os.Args[0])
 		return
 	}
 
@@ -33,7 +33,7 @@ func main() {
 		return
 	}
 
-	if len(os.Args) == 2 && os.Args[1] == "drop-table" {
+	if len(os.Args) == 2 && os.Args[1] == "droptable" {
 		if err := models.DropTables(); err != nil {
 			panic("Failed to drop table")
 		}
@@ -42,7 +42,9 @@ func main() {
 	}
 
 	if len(os.Args) == 2 && os.Args[1] == "fixtures" {
-		fixtures.ImportFixtures()
+		if err := fixtures.ImportFixtures(); err != nil {
+			panic("Failed to import fixtures")
+		}
 		fmt.Println("Fixtures imported")
 		return
 	}
