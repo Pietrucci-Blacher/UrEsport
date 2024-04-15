@@ -7,23 +7,23 @@ import (
 	"strings"
 )
 
+var fake = faker.New()
+
 func LoadUsers() error {
 	if err := models.ClearUsers(); err != nil {
 		return err
 	}
-	for i := 0; i < 20; i++ {
-		fake := faker.New() // Création d'une instance de faker
-		firstname := fake.FirstName()
-		lastname := fake.LastName()
+	for i := 0; i < 20; i++ { // Création d'une instance de faker
+		firstname := fake.Person().FirstName()
+		lastname := fake.Person().LastName()
 
 		// Création du username à partir du nom et du prénom
 		username := strings.ToLower(strings.ReplaceAll(firstname+"."+lastname, " ", ""))
 
-		// Création de l'email à partir du nom et du prénom
-		internet := fake.Internet() // Création d'une instance de Internet
-		email := internet.Email()   // Utilisation de l'instance pour générer un email
+		// Création de l'email à partir du nom et du prénom // Création d'une instance de Internet
+		email := fake.Internet().Email() // Utilisation de l'instance pour générer un email
 
-		password := fake.Password()
+		password := fake.Internet().Password()
 		roles := []string{"user", "admin"} // Rôles possibles
 
 		// Choix aléatoire du rôle
