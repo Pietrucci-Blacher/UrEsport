@@ -42,7 +42,6 @@ func main() {
 	}
 
 	if len(os.Args) == 2 && os.Args[1] == "fixtures" {
-		// TODO: Implement fixtures
 		fixtures.ImportFixtures()
 		fmt.Println("Fixtures imported")
 		return
