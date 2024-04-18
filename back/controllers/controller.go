@@ -9,9 +9,6 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-// gin-swagger middleware
-// swagger embed files
-
 func RegisterRoutes(r *gin.Engine) {
 	docs.SwaggerInfo.Title = "UrEsport API"
 	docs.SwaggerInfo.Description = "This is a sample server for UrEsport API."
@@ -23,12 +20,14 @@ func RegisterRoutes(r *gin.Engine) {
 	api := r.Group("/")
 	{
 		api.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
+
 		users := api.Group("/users")
 		{
-			users.GET("/", GetUsers)
-			users.GET("/:id", GetUser)
+			users.GET("/", middlewares.IsLoggedIn(), middlewares.IsAdmin(), GetUsers)
+			users.GET("/:id", middlewares.IsLoggedIn(), GetUser)
 			users.PATCH("/:id", middlewares.IsLoggedIn(), UpdateUser)
 			users.DELETE("/:id", middlewares.IsLoggedIn(), DeleteUser)
+			users.GET("/me", middlewares.IsLoggedIn(), GetUserMe)
 		}
 
 		features := api.Group("/features")
@@ -46,6 +45,19 @@ func RegisterRoutes(r *gin.Engine) {
 			auth.POST("/login", Login)
 			auth.POST("/register", Register)
 			auth.POST("/logout", Logout)
+		}
+
+		tournaments := api.Group("/tournaments")
+		{
+			tournaments.GET("/", GetTournaments)
+			tournaments.POST("/", middlewares.IsLoggedIn(), CreateTournament)
+			tournaments.GET("/:id", GetTournament)
+			tournaments.PATCH("/:id", middlewares.IsLoggedIn(), UpdateTournament)
+			tournaments.DELETE("/:id", middlewares.IsLoggedIn(), DeleteTournament)
+			tournaments.POST("/:id/join", middlewares.IsLoggedIn(), JoinTournament)
+			tournaments.POST("/:id/invite", middlewares.IsLoggedIn(), InviteUserToTournament)
+			tournaments.DELETE("/:id/leave", middlewares.IsLoggedIn(), LeaveTournament)
+			tournaments.DELETE("/:id/kick", middlewares.IsLoggedIn(), KickUserFromTournament)
 		}
 	}
 }

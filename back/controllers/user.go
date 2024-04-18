@@ -57,6 +57,19 @@ func GetUser(c *gin.Context) {
 	c.JSON(http.StatusOK, user)
 }
 
+// GetUserMe godoc
+// @Summary      get connected user
+// @Description  get connected user
+// @Tags         user
+// @Accept       json
+// @Produce      json
+// @Success      200  {object} models.User
+// @Router       /users/me [get]
+func GetUserMe(c *gin.Context) {
+	connectedUser, _ := c.MustGet("user").(models.User)
+	c.JSON(http.StatusOK, connectedUser)
+}
+
 // UpdateUser godoc
 // @Summary      update user
 // @Description  update user

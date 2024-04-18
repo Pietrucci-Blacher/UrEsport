@@ -41,20 +41,23 @@ type UpdateUserDto struct {
 	Email     string `json:"email"`
 }
 
+type SanitizedUser struct {
+	ID        int    `json:"id"`
+	Username  string `json:"username"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+}
+
 type LoginUserDto struct {
 	Email    string `json:"email" validate:"required,email"`
 	Password string `json:"password" validate:"required"`
 }
 
-func UserExists(id int) bool {
-	var count int64
-	DB.Model(&User{}).Where("id = ?", id).Count(&count)
-	return count > 0
-}
-
 func FindAllUsers() ([]User, error) {
 	var users []User
-	err := DB.Model(&User{}).Preload("Token").Find(&users).Error
+	err := DB.Model(&User{}).
+		Preload("Tournaments").
+		Find(&users).Error
 	return users, err
 }
 
@@ -66,8 +69,19 @@ func CountUsersByEmail(email string) (int64, error) {
 
 func CountUsersByUsername(username string) (int64, error) {
 	var count int64
-	err := DB.Model(&User{}).Where("username = ?", username).Count(&count).Error
+	err := DB.Model(&User{}).
+		Where("username = ?", username).
+		Count(&count).Error
 	return count, err
+}
+
+func (u *User) Sanitize() User {
+	return User{
+		ID:        u.ID,
+		Username:  u.Username,
+		Firstname: u.Firstname,
+		Lastname:  u.Lastname,
+	}
 }
 
 func (u *User) IsRole(role string) bool {
@@ -96,11 +110,16 @@ func (u *User) ComparePassword(password string) bool {
 }
 
 func (u *User) FindOneById(id int) error {
-	return DB.Model(&User{}).Preload("Token").First(&u, id).Error
+	return DB.Model(&User{}).
+		Preload("Tournaments").
+		First(&u, id).Error
 }
 
 func (u *User) FindOne(key string, value any) error {
-	return DB.Model(&User{}).Where(key, value).Preload("Token").First(&u).Error
+	return DB.Model(&User{}).
+		Where(key, value).
+		Preload("Tournaments").
+		First(&u).Error
 }
 
 func (u *User) Delete() error {
@@ -110,7 +129,9 @@ func (u *User) Delete() error {
 	}
 
 	for _, token := range tokenToDelete {
-		token.Delete()
+		if err := token.Delete(); err != nil {
+			return err
+		}
 	}
 
 	return DB.Delete(&u).Error
