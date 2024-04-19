@@ -58,6 +58,7 @@ func RegisterRoutes(r *gin.Engine) {
 			tournaments.POST("/:id/invite", middlewares.IsLoggedIn(), InviteUserToTournament)
 			tournaments.DELETE("/:id/leave", middlewares.IsLoggedIn(), LeaveTournament)
 			tournaments.DELETE("/:id/kick", middlewares.IsLoggedIn(), KickUserFromTournament)
+			tournaments.PATCH("/:id/toggle-private", middlewares.IsLoggedIn(), TogglePrivateTournament)
 		}
 	}
 }

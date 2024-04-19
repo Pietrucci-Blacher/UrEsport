@@ -36,6 +36,21 @@ type UpdateTournamentDto struct {
 	Image       string    `json:"image"`
 }
 
+type SanitizedTournament struct {
+	ID           int             `json:"id"`
+	Name         string          `json:"name"`
+	Description  string          `json:"description"`
+	StartDate    time.Time       `json:"start_date"`
+	EndDate      time.Time       `json:"end_date"`
+	Location     string          `json:"location"`
+	Image        string          `json:"image"`
+	Private      bool            `json:"private"`
+	OrganizerID  int             `json:"organizer"`
+	Participants []SanitizedUser `json:"participants"`
+	CreatedAt    time.Time       `json:"created_at"`
+	UpdatedAt    time.Time       `json:"updated_at"`
+}
+
 type InviteUserDto struct {
 	Username string `json:"username" validate:"required"`
 }
@@ -50,14 +65,14 @@ func FindAllTournaments() ([]Tournament, error) {
 	return tournaments, err
 }
 
-func (t *Tournament) Sanitize() Tournament {
-	var participants []User
+func (t *Tournament) Sanitize() SanitizedTournament {
+	var participants []SanitizedUser
 
 	for _, p := range t.Participants {
 		participants = append(participants, p.Sanitize())
 	}
 
-	return Tournament{
+	return SanitizedTournament{
 		ID:           t.ID,
 		Name:         t.Name,
 		Description:  t.Description,
@@ -66,10 +81,15 @@ func (t *Tournament) Sanitize() Tournament {
 		Location:     t.Location,
 		Image:        t.Image,
 		Private:      t.Private,
+		OrganizerID:  t.OrganizerID,
+		Participants: participants,
 		CreatedAt:    t.CreatedAt,
 		UpdatedAt:    t.UpdatedAt,
-		Participants: participants,
 	}
+}
+
+func (t *Tournament) TogglePrivate() {
+	t.Private = !t.Private
 }
 
 func (t *Tournament) AddParticipant(user User) error {
@@ -78,6 +98,10 @@ func (t *Tournament) AddParticipant(user User) error {
 
 func (t *Tournament) RemoveParticipant(user User) error {
 	return DB.Model(t).Association("Participants").Delete(&user)
+}
+
+func (t *Tournament) RemoveAllParticipants() error {
+	return DB.Model(t).Association("Participants").Clear()
 }
 
 func (t *Tournament) Save() error {
@@ -98,5 +122,8 @@ func (t *Tournament) FindOne(key string, value any) error {
 }
 
 func (t *Tournament) Delete() error {
+	if err := t.RemoveAllParticipants(); err != nil {
+		return err
+	}
 	return DB.Delete(t).Error
 }

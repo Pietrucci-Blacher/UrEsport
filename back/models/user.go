@@ -14,7 +14,6 @@ const (
 // User implements Model
 type User struct {
 	ID          int          `json:"id" gorm:"primaryKey"`
-	Token       Token        `json:"token" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
 	Firstname   string       `json:"firstname" gorm:"type:varchar(100)"`
 	Lastname    string       `json:"lastname" gorm:"type:varchar(100)"`
 	Username    string       `json:"username" gorm:"type:varchar(100)"`
@@ -42,10 +41,12 @@ type UpdateUserDto struct {
 }
 
 type SanitizedUser struct {
-	ID        int    `json:"id"`
-	Username  string `json:"username"`
-	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
+	ID        int       `json:"id"`
+	Username  string    `json:"username"`
+	Firstname string    `json:"firstname"`
+	Lastname  string    `json:"lastname"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type LoginUserDto struct {
@@ -55,9 +56,11 @@ type LoginUserDto struct {
 
 func FindAllUsers() ([]User, error) {
 	var users []User
+
 	err := DB.Model(&User{}).
 		Preload("Tournaments").
 		Find(&users).Error
+
 	return users, err
 }
 
@@ -69,18 +72,22 @@ func CountUsersByEmail(email string) (int64, error) {
 
 func CountUsersByUsername(username string) (int64, error) {
 	var count int64
+
 	err := DB.Model(&User{}).
 		Where("username = ?", username).
 		Count(&count).Error
+
 	return count, err
 }
 
-func (u *User) Sanitize() User {
-	return User{
+func (u *User) Sanitize() SanitizedUser {
+	return SanitizedUser{
 		ID:        u.ID,
 		Username:  u.Username,
 		Firstname: u.Firstname,
 		Lastname:  u.Lastname,
+		CreatedAt: u.CreatedAt,
+		UpdatedAt: u.UpdatedAt,
 	}
 }
 
@@ -123,15 +130,8 @@ func (u *User) FindOne(key string, value any) error {
 }
 
 func (u *User) Delete() error {
-	tokenToDelete, err := FindTokensByUserID(u.ID)
-	if err != nil {
+	if err := DeleteTokensByUserID(u.ID); err != nil {
 		return err
-	}
-
-	for _, token := range tokenToDelete {
-		if err := token.Delete(); err != nil {
-			return err
-		}
 	}
 
 	return DB.Delete(&u).Error
