@@ -2,11 +2,13 @@ name: autofix.ci
 
 on:
   pull_request:
-permissions:
-  contents: read
+    types: [opened, synchronize, reopened]
+    paths:
+      - "front/**"
+      - ".github/workflows/ci-front.yaml"
 
 jobs:
-  autofix:
+  ci-front:
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -15,7 +17,3 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-
-
-      - name: Autofix
-        uses: autofix-ci/action@ea32e3a12414e6d3183163c3424a7d7a8631ad84
