@@ -15,17 +15,23 @@ import (
 // @Tags         tournament
 // @Accept       json
 // @Produce      json
-// @Success      200  {object} []models.Tournament
+// @Success      200  {object} []models.SanitizedTournament
 // @Failure      500  {object} utils.HttpError
 // @Router       /tournaments/ [get]
 func GetTournaments(c *gin.Context) {
+	var sanitized []models.SanitizedTournament
+
 	tournaments, err := models.FindAllTournaments()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, tournaments)
+	for i := range tournaments {
+		sanitized = append(sanitized, tournaments[i].Sanitize())
+	}
+
+	c.JSON(http.StatusOK, sanitized)
 }
 
 // GetTournament godoc
@@ -35,7 +41,7 @@ func GetTournaments(c *gin.Context) {
 // @Accept       json
 // @Produce      json
 // @Param        id path int true "Tournament ID"
-// @Success      200  {object} models.Tournament
+// @Success      200  {object} models.SanitizedTournament
 // @Failure      404  {object} utils.HttpError
 // @Failure      500  {object} utils.HttpError
 // @Router       /tournaments/{id} [get]
@@ -53,7 +59,9 @@ func GetTournament(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, tournament)
+	sanitize := tournament.Sanitize()
+
+	c.JSON(http.StatusOK, sanitize)
 }
 
 // CreateTournament godoc
@@ -114,7 +122,7 @@ func CreateTournament(c *gin.Context) {
 // @Failure      401  {object} utils.HttpError
 // @Failure      404  {object} utils.HttpError
 // @Failure      500  {object} utils.HttpError
-// @Router       /tournaments/{id} [put]
+// @Router       /tournaments/{id} [patch]
 func UpdateTournament(c *gin.Context) {
 	var tournament models.Tournament
 	var data models.UpdateTournamentDto
@@ -221,8 +229,8 @@ func DeleteTournament(c *gin.Context) {
 }
 
 // JoinTournament godoc
-// @Summary      add participant to tournament
-// @Description  add participant to tournament
+// @Summary      join yourself to a tournament
+// @Description  join yourself to a tournament
 // @Tags         tournament
 // @Param        id path int true "Tournament ID"
 // @Success      204
@@ -260,8 +268,8 @@ func JoinTournament(c *gin.Context) {
 }
 
 // LeaveTournament godoc
-// @Summary      remove participant from tournament
-// @Description  remove participant from tournament
+// @Summary      leave yourself from a tournament
+// @Description  leave yourself from a tournament
 // @Tags         tournament
 // @Param        id path int true "Tournament ID"
 // @Success      204
@@ -294,8 +302,8 @@ func LeaveTournament(c *gin.Context) {
 }
 
 // InviteUser godoc
-// @Summary      invite user to tournament
-// @Description  invite user to tournament
+// @Summary      invite user to your tournament
+// @Description  invite user to your tournament
 // @Tags         tournament
 // @Param        id path int true "Tournament ID"
 // @Param        invite body models.InviteUserDto  true "Invite"
@@ -355,8 +363,8 @@ func InviteUserToTournament(c *gin.Context) {
 }
 
 // KickUserFromTournament godoc
-// @Summary      kick user from tournament
-// @Description  kick user from tournament
+// @Summary      kick user from your tournament
+// @Description  kick user from your tournament
 // @Tags         tournament
 // @Param        id path int true "Tournament ID"
 // @Param        kick body models.InviteUserDto  true "Kick"
@@ -408,6 +416,50 @@ func KickUserFromTournament(c *gin.Context) {
 	}
 
 	if err := tournament.RemoveParticipant(userToKick); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+// TogglePrivateTournament godoc
+// @Summary      toggle tournament privacy
+// @Description  toggle tournament privacy
+// @Tags         tournament
+// @Param        id path int true "Tournament ID"
+// @Success      204
+// @Failure      401  {object} utils.HttpError
+// @Failure      404  {object} utils.HttpError
+// @Failure      500  {object} utils.HttpError
+// @Router       /tournaments/{id}/toggle-private [patch]
+func TogglePrivateTournament(c *gin.Context) {
+	var tournament models.Tournament
+
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := tournament.FindOneById(id); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
+		return
+	}
+
+	connectedUser, _ := c.MustGet("user").(models.User)
+
+	if connectedUser.ID != tournament.OrganizerID && !connectedUser.IsRole(models.ROLE_ADMIN) {
+		c.JSON(
+			http.StatusUnauthorized,
+			gin.H{"error": "You are not allowed to toggle this tournament privacy"},
+		)
+		return
+	}
+
+	tournament.TogglePrivate()
+
+	if err := tournament.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
