@@ -1,9 +1,13 @@
+name: autofix.ci
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
     paths:
       - "back/**"
       - ".github/workflows/ci-back.yaml"
+permissions:
+  contents: read
 
 jobs:
   ci-back:
@@ -24,8 +28,17 @@ jobs:
       - name: Install dependencies
         run: go mod download
 
+      - name: Clean
+        run: go mod tidy
+
       - name: Build
         run: go build -v ./...
 
-      - name: Test
-        run: go test -v ./...
+      - name: Vet
+        run: go vet ./...
+
+      - name: format
+        run: go fmt ./...
+
+      - name: Autofix
+        uses: autofix-ci/action@ea32e3a12414e6d3183163c3424a7d7a8631ad84
