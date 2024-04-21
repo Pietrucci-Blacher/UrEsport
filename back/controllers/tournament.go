@@ -3,7 +3,6 @@ package controllers
 import (
 	"challenge/models"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
@@ -46,18 +45,7 @@ func GetTournaments(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /tournaments/{id} [get]
 func GetTournament(c *gin.Context) {
-	var tournament models.Tournament
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := tournament.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
-		return
-	}
+	tournament, _ := c.MustGet("tournament").(models.Tournament)
 
 	sanitize := tournament.Sanitize()
 
@@ -124,29 +112,9 @@ func CreateTournament(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /tournaments/{id} [patch]
 func UpdateTournament(c *gin.Context) {
-	var tournament models.Tournament
 	var data models.UpdateTournamentDto
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := tournament.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
-		return
-	}
-
-	connectedUser, _ := c.MustGet("user").(models.User)
-
-	if connectedUser.ID != tournament.OrganizerID && !connectedUser.IsRole(models.ROLE_ADMIN) {
-		c.JSON(
-			http.StatusUnauthorized,
-			gin.H{"error": "You are not allowed to update this tournament"},
-		)
-		return
-	}
+	tournament, _ := c.MustGet("tournament").(models.Tournament)
 
 	if err := c.BindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -197,28 +165,7 @@ func UpdateTournament(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /tournaments/{id} [delete]
 func DeleteTournament(c *gin.Context) {
-	var tournament models.Tournament
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := tournament.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
-		return
-	}
-
-	connectedUser, _ := c.MustGet("user").(models.User)
-
-	if connectedUser.ID != tournament.OrganizerID && !connectedUser.IsRole(models.ROLE_ADMIN) {
-		c.JSON(
-			http.StatusUnauthorized,
-			gin.H{"error": "You are not allowed to delete this tournament"},
-		)
-		return
-	}
+	tournament, _ := c.MustGet("tournament").(models.Tournament)
 
 	if err := tournament.Delete(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -239,18 +186,7 @@ func DeleteTournament(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /tournaments/{id}/join [post]
 func JoinTournament(c *gin.Context) {
-	var tournament models.Tournament
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := tournament.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
-		return
-	}
+	tournament, _ := c.MustGet("tournament").(models.Tournament)
 
 	if tournament.Private {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "This tournament is private"})
@@ -278,19 +214,7 @@ func JoinTournament(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /tournaments/{id}/leave [delete]
 func LeaveTournament(c *gin.Context) {
-	var tournament models.Tournament
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := tournament.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
-		return
-	}
-
+	tournament, _ := c.MustGet("tournament").(models.Tournament)
 	connectedUser, _ := c.MustGet("user").(models.User)
 
 	if err := tournament.RemoveParticipant(connectedUser); err != nil {
@@ -313,30 +237,10 @@ func LeaveTournament(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /tournaments/{id}/invite [post]
 func InviteUserToTournament(c *gin.Context) {
-	var tournament models.Tournament
 	var data models.InviteUserDto
 	var userToInvite models.User
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := tournament.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
-		return
-	}
-
-	connectedUser, _ := c.MustGet("user").(models.User)
-
-	if connectedUser.ID != tournament.OrganizerID && !connectedUser.IsRole(models.ROLE_ADMIN) {
-		c.JSON(
-			http.StatusUnauthorized,
-			gin.H{"error": "You are not allowed to invite user to this tournament"},
-		)
-		return
-	}
+	tournament, _ := c.MustGet("tournament").(models.Tournament)
 
 	if err := c.BindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -374,30 +278,10 @@ func InviteUserToTournament(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /tournaments/{id}/kick [delete]
 func KickUserFromTournament(c *gin.Context) {
-	var tournament models.Tournament
 	var data models.InviteUserDto
 	var userToKick models.User
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := tournament.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
-		return
-	}
-
-	connectedUser, _ := c.MustGet("user").(models.User)
-
-	if connectedUser.ID != tournament.OrganizerID && !connectedUser.IsRole(models.ROLE_ADMIN) {
-		c.JSON(
-			http.StatusUnauthorized,
-			gin.H{"error": "You are not allowed to kick user from this tournament"},
-		)
-		return
-	}
+	tournament, _ := c.MustGet("tournament").(models.Tournament)
 
 	if err := c.BindJSON(&data); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -434,28 +318,7 @@ func KickUserFromTournament(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /tournaments/{id}/toggle-private [patch]
 func TogglePrivateTournament(c *gin.Context) {
-	var tournament models.Tournament
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := tournament.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
-		return
-	}
-
-	connectedUser, _ := c.MustGet("user").(models.User)
-
-	if connectedUser.ID != tournament.OrganizerID && !connectedUser.IsRole(models.ROLE_ADMIN) {
-		c.JSON(
-			http.StatusUnauthorized,
-			gin.H{"error": "You are not allowed to toggle this tournament privacy"},
-		)
-		return
-	}
+	tournament, _ := c.MustGet("tournament").(models.Tournament)
 
 	tournament.TogglePrivate()
 
