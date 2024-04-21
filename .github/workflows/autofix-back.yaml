@@ -31,11 +31,9 @@ jobs:
       - name: Clean
         run: go mod tidy
 
-      - name: Build
-        run: go build -v ./...
-
-      - name: Vet
-        run: go vet ./...
+      - name: Format and Check Imports
+        run: |
+          run: goimports -l -w .
 
       - name: format
         run: go fmt ./...

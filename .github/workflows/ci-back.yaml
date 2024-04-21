@@ -6,8 +6,7 @@ on:
       - ".github/workflows/ci-back.yaml"
 
 jobs:
-  build:
-    name: Build and Test
+  ci-back:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
@@ -35,13 +34,15 @@ jobs:
           version: v1.54
           args: --timeout 5m
 
-      - name: Format
-        uses: daixijun/goimports-action@v1
-        with:
-          args: -l -w .
+      - name: Format and Check Imports
+        run: |
+          goimports -l -w . || exit 1
 
       - name: Build
         run: go build -v ./...
+
+      - name: Vet
+        run: go vet ./...
 
       - name: Test with Coverage
         run: |
@@ -54,7 +55,7 @@ jobs:
           git diff --exit-code
 
       - name: Upload Coverage Report
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: coverage-report
           path: coverage.html
