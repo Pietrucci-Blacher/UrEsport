@@ -42,6 +42,18 @@ func IsLoggedIn() gin.HandlerFunc {
 	}
 }
 
+func IsNotLoggedIn() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if _, err := c.Cookie("auth_token"); err == nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Already Logged In"})
+			c.Abort()
+			return
+		}
+
+		c.Next()
+	}
+}
+
 func IsAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		user, _ := c.MustGet("user").(models.User)

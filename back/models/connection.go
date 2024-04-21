@@ -69,6 +69,7 @@ func DropTables() error {
 		&Feature{},
 		&Token{},
 		&Tournament{},
+		"tournament_participants",
 	)
 }
 

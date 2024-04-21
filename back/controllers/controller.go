@@ -23,42 +23,116 @@ func RegisterRoutes(r *gin.Engine) {
 
 		users := api.Group("/users")
 		{
-			users.GET("/", middlewares.IsLoggedIn(), middlewares.IsAdmin(), GetUsers)
-			users.GET("/:id", middlewares.IsLoggedIn(), GetUser)
-			users.PATCH("/:id", middlewares.IsLoggedIn(), UpdateUser)
-			users.DELETE("/:id", middlewares.IsLoggedIn(), DeleteUser)
+			users.GET("/",
+				middlewares.IsLoggedIn(),
+				middlewares.IsAdmin(),
+				GetUsers,
+			)
+			users.GET("/:id",
+				middlewares.IsLoggedIn(),
+				middlewares.GetUser(),
+				middlewares.IsMe(),
+				GetUser,
+			)
+			users.PATCH("/:id",
+				middlewares.IsLoggedIn(),
+				middlewares.GetUser(),
+				middlewares.IsMe(),
+				UpdateUser,
+			)
+			users.DELETE("/:id",
+				middlewares.IsLoggedIn(),
+				middlewares.GetUser(),
+				middlewares.IsMe(),
+				DeleteUser,
+			)
 			users.GET("/me", middlewares.IsLoggedIn(), GetUserMe)
 		}
 
 		features := api.Group("/features")
 		{
 			features.GET("/", GetFeatures)
-			features.POST("/", middlewares.IsLoggedIn(), middlewares.IsAdmin(), CreateFeature)
+			features.POST("/",
+				middlewares.IsLoggedIn(),
+				middlewares.IsAdmin(),
+				CreateFeature,
+			)
 			features.GET("/:id", GetFeature)
-			features.GET("/:id/toggle", middlewares.IsLoggedIn(), middlewares.IsAdmin(), ToggleFeature)
-			features.PATCH("/:id", middlewares.IsLoggedIn(), middlewares.IsAdmin(), UpdateFeature)
-			features.DELETE("/:id", middlewares.IsLoggedIn(), middlewares.IsAdmin(), DeleteFeature)
+			features.GET("/:id/toggle",
+				middlewares.IsLoggedIn(),
+				middlewares.IsAdmin(),
+				ToggleFeature,
+			)
+			features.PATCH("/:id",
+				middlewares.IsLoggedIn(),
+				middlewares.IsAdmin(),
+				UpdateFeature,
+			)
+			features.DELETE("/:id",
+				middlewares.IsLoggedIn(),
+				middlewares.IsAdmin(),
+				DeleteFeature,
+			)
 		}
 
 		auth := api.Group("/auth")
 		{
 			auth.POST("/login", Login)
 			auth.POST("/register", Register)
-			auth.POST("/logout", Logout)
+			auth.POST("/logout", middlewares.IsLoggedIn(), Logout)
 		}
 
 		tournaments := api.Group("/tournaments")
 		{
 			tournaments.GET("/", GetTournaments)
-			tournaments.POST("/", middlewares.IsLoggedIn(), CreateTournament)
-			tournaments.GET("/:id", GetTournament)
-			tournaments.PATCH("/:id", middlewares.IsLoggedIn(), UpdateTournament)
-			tournaments.DELETE("/:id", middlewares.IsLoggedIn(), DeleteTournament)
-			tournaments.POST("/:id/join", middlewares.IsLoggedIn(), JoinTournament)
-			tournaments.POST("/:id/invite", middlewares.IsLoggedIn(), InviteUserToTournament)
-			tournaments.DELETE("/:id/leave", middlewares.IsLoggedIn(), LeaveTournament)
-			tournaments.DELETE("/:id/kick", middlewares.IsLoggedIn(), KickUserFromTournament)
-			tournaments.PATCH("/:id/toggle-private", middlewares.IsLoggedIn(), TogglePrivateTournament)
+			tournaments.POST("/",
+				middlewares.IsLoggedIn(),
+				CreateTournament,
+			)
+			tournaments.GET("/:id",
+				middlewares.GetTournament(),
+				GetTournament,
+			)
+			tournaments.PATCH("/:id",
+				middlewares.IsLoggedIn(),
+				middlewares.GetTournament(),
+				middlewares.IsTournamentOwner(),
+				UpdateTournament,
+			)
+			tournaments.DELETE("/:id",
+				middlewares.IsLoggedIn(),
+				middlewares.GetTournament(),
+				middlewares.IsTournamentOwner(),
+				DeleteTournament,
+			)
+			tournaments.POST("/:id/join",
+				middlewares.IsLoggedIn(),
+				middlewares.GetTournament(),
+				JoinTournament,
+			)
+			tournaments.POST("/:id/invite",
+				middlewares.IsLoggedIn(),
+				middlewares.GetTournament(),
+				middlewares.IsTournamentOwner(),
+				InviteUserToTournament,
+			)
+			tournaments.DELETE("/:id/leave",
+				middlewares.IsLoggedIn(),
+				middlewares.GetTournament(),
+				LeaveTournament,
+			)
+			tournaments.DELETE("/:id/kick",
+				middlewares.IsLoggedIn(),
+				middlewares.GetTournament(),
+				middlewares.IsTournamentOwner(),
+				KickUserFromTournament,
+			)
+			tournaments.PATCH("/:id/toggle-private",
+				middlewares.IsLoggedIn(),
+				middlewares.GetTournament(),
+				middlewares.IsTournamentOwner(),
+				TogglePrivateTournament,
+			)
 		}
 	}
 }

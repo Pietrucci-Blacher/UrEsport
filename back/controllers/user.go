@@ -4,7 +4,6 @@ import (
 	"challenge/models"
 	_ "challenge/utils"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
@@ -41,19 +40,7 @@ func GetUsers(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /users/{id} [get]
 func GetUser(c *gin.Context) {
-	var user models.User
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := user.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		return
-	}
-
+	user, _ := c.MustGet("findedUser").(models.User)
 	c.JSON(http.StatusOK, user)
 }
 
@@ -85,26 +72,9 @@ func GetUserMe(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /users/{id} [patch]
 func UpdateUser(c *gin.Context) {
-	var user models.User
 	var body models.UpdateUserDto
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	connectedUser, _ := c.MustGet("user").(models.User)
-
-	if connectedUser.ID != id && !connectedUser.IsRole(models.ROLE_ADMIN) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	if err := user.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		return
-	}
+	user, _ := c.MustGet("findedUser").(models.User)
 
 	if err := c.BindJSON(&body); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -162,25 +132,7 @@ func UpdateUser(c *gin.Context) {
 // @Failure      500  {object} utils.HttpError
 // @Router       /users/{id} [delete]
 func DeleteUser(c *gin.Context) {
-	var user models.User
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	connectedUser, _ := c.MustGet("user").(models.User)
-
-	if connectedUser.ID != id && !connectedUser.IsRole(models.ROLE_ADMIN) {
-		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
-		return
-	}
-
-	if err := user.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-		return
-	}
+	user, _ := c.MustGet("findedUser").(models.User)
 
 	if err := user.Delete(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
