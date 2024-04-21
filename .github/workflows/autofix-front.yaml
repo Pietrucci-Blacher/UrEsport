@@ -7,13 +7,51 @@ on:
       - "front/**"
       - ".github/workflows/ci-front.yaml"
 
+env:
+  FLUTTER_CHANNEL: stable
+  CACHE_VERSION: v1
+
 jobs:
-  ci-front:
+  setup:
+    runs-on: ubuntu-latest
+    outputs:
+      flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        id: flutter-setup
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+          cache-key: "flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}-${{ hashFiles('**/pubspec.yaml') }}"
+          cache-path: "${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}"
+          pub-cache-key: "flutter-pub-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}-${{ hashFiles('**/pubspec.lock') }}"
+          pub-cache-path: "${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}"
+
+  autofix:
+    needs: setup
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: front
-
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - name: Use Flutter Setup from Setup Job
+        uses: actions/cache@v4
+        with:
+          path: ${{ runner.tool_cache }}/flutter
+          key: ${{ needs.setup.outputs.flutter-version }}
+
+      - name: Install dependencies
+        run: flutter pub get
+
+      - name: Format code
+        run: flutter format .
+
+      - name: Fix linting errors
+        run: flutter analyze --fix
+
+      - name: Autofix
+        uses: autofix-ci/action@ea32e3a12414e6d3183163c3424a7d7a8631ad84
