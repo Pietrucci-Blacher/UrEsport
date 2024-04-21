@@ -6,8 +6,13 @@ on:
       - ".github/workflows/ci-back.yaml"
 
 jobs:
-  ci-back:
-    runs-on: ubuntu-latest
+  build:
+    name: Build and Test
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        go-version: ['1.22.0']
     defaults:
       run:
         working-directory: back
@@ -16,16 +21,40 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Golang
+      - name: Setup Go
         uses: actions/setup-go@v5
         with:
-          go-version: '>=1.22.0'
+          go-version: ${{ matrix.go-version }}
 
-      - name: Install dependencies
+      - name: Install Dependencies
         run: go mod download
+
+      - name: Lint
+        uses: golangci/golangci-lint-action@v4
+        with:
+          version: v1.54
+          args: --timeout 5m
+
+      - name: Format
+        uses: daixijun/goimports-action@v1
+        with:
+          args: -l -w .
 
       - name: Build
         run: go build -v ./...
 
-      - name: Test
-        run: go test -v ./...
+      - name: Test with Coverage
+        run: |
+          go test -v -coverprofile=coverage.out ./...
+          go tool cover -html=coverage.out -o coverage.html
+
+      - name: Check for unused dependencies
+        run: |
+          go mod tidy
+          git diff --exit-code
+
+      - name: Upload Coverage Report
+        uses: actions/upload-artifact@v2
+        with:
+          name: coverage-report
+          path: coverage.html
