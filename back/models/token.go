@@ -27,10 +27,8 @@ type UserClaims struct {
 
 func NewToken(tokenString string, userID int) error {
 	token := Token{
-		UserID:    userID,
-		Token:     tokenString,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		UserID: userID,
+		Token:  tokenString,
 	}
 	return token.Save()
 }
@@ -39,6 +37,10 @@ func FindTokensByUserID(userID int) ([]Token, error) {
 	var tokens []Token
 	err := DB.Where("user_id = ?", userID).Find(&tokens).Error
 	return tokens, err
+}
+
+func DeleteTokensByUserID(userID int) error {
+	return DB.Where("user_id = ?", userID).Delete(&Token{}).Error
 }
 
 func GenerateJWTToken(userID int) (string, error) {

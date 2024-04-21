@@ -46,14 +46,9 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	tokenToDelete, err := models.FindTokensByUserID(user.ID)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to find tokens"})
+	if err := models.DeleteTokensByUserID(user.ID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete tokens"})
 		return
-	}
-
-	for _, token := range tokenToDelete {
-		token.Delete()
 	}
 
 	token, err := models.GenerateJWTToken(user.ID)
