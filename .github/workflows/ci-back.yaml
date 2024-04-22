@@ -37,20 +37,11 @@ jobs:
           version: v1.54
           args: --timeout 5m
 
-      - name: Verify goimports installation
-        run: |
-          echo "PATH: $PATH"
-          ls $(go env GOPATH)/bin
-
       - name: Format and Check Imports
-        run: |
-          goimports -l -w .
+        run: go run golang.org/x/tools/cmd/goimports -w .
 
       - name: Build
         run: go build -v ./...
-
-      - name: Vet
-        run: go vet ./...
 
       - name: Test with Coverage
         run: |
