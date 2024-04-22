@@ -28,6 +28,9 @@ jobs:
       - name: Install Dependencies
         run: go mod download
 
+      - name: Install goImports
+        run: go get golang.org/x/tools/cmd/goimports
+
       - name: Lint
         uses: golangci/golangci-lint-action@v4
         with:
@@ -36,7 +39,7 @@ jobs:
 
       - name: Format and Check Imports
         run: |
-          goimports -l -w . || exit 1
+          goimports -l -w .
 
       - name: Build
         run: go build -v ./...
