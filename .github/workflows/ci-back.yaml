@@ -36,6 +36,7 @@ jobs:
         with:
           version: v1.54
           args: --timeout 5m
+          working-directory: back
 
       - name: Format and Check Imports
         run: go run golang.org/x/tools/cmd/goimports -w .
