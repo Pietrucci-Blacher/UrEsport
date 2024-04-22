@@ -40,7 +40,7 @@ jobs:
         run: go mod tidy
 
       - name: Format and Check Imports
-        run: goimports -l -w .
+        run: go run golang.org/x/tools/cmd/goimports -w .
 
       - name: format
         run: go fmt ./...
