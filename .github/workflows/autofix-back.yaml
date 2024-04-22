@@ -32,8 +32,7 @@ jobs:
         run: go mod tidy
 
       - name: Format and Check Imports
-        run: |
-          run: goimports -l -w .
+        run: goimports -l -w .
 
       - name: format
         run: go fmt ./...
