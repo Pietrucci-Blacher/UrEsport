@@ -31,6 +31,11 @@ jobs:
       - name: Install goImports
         run: go get golang.org/x/tools/cmd/goimports
 
+      - name: Verify goimports installation
+        run: |
+          echo "PATH: $PATH"
+          ls $(go env GOPATH)/bin
+
       - name: Clean
         run: go mod tidy
 
