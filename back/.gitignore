@@ -1,3 +1,5 @@
 # Dependencies
 vendor
 challenge
+.env
+docs

@@ -1,6 +1,6 @@
 {
-    "name": "front_project",
-    "short_name": "front_project",
+    "name": "uresport",
+    "short_name": "uresport",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
