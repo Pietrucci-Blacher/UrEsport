@@ -16,6 +16,7 @@ func TestSave(t *testing.T) {
 
 	if err := ConnectDB(true); err != nil {
 		t.Error(err)
+		return
 	}
 	defer CloseDB()
 
@@ -31,10 +32,14 @@ func TestSave(t *testing.T) {
 		users = append(users, user)
 		if err := user.Save(); err != nil {
 			t.Error(err)
+			return
 		}
 	}
 
-	DB.Find(&result)
+	if err := DB.Find(&result).Error; err != nil {
+		t.Error("Failed to find users:", err)
+		return
+	}
 
 	if len(users) != nbUsers {
 		t.Error("Expected 10 users, got", len(users))
@@ -85,6 +90,7 @@ func TestFindAllUsers(t *testing.T) {
 
 	if err := ConnectDB(true); err != nil {
 		t.Error(err)
+		return
 	}
 	defer CloseDB()
 
@@ -98,12 +104,16 @@ func TestFindAllUsers(t *testing.T) {
 			Roles:     []string{"user"},
 		}
 		users = append(users, user)
-		DB.Create(&user)
+		if err := DB.Create(&user).Error; err != nil {
+			t.Error("Failed to create user:", err)
+			return
+		}
 	}
 
 	result, err := FindAllUsers()
 	if err != nil {
 		t.Error(err)
+		return
 	}
 
 	if len(users) != nbUsers {
@@ -155,6 +165,7 @@ func TestFindOneById(t *testing.T) {
 
 	if err := ConnectDB(true); err != nil {
 		t.Error(err)
+		return
 	}
 	defer CloseDB()
 
@@ -167,10 +178,14 @@ func TestFindOneById(t *testing.T) {
 		Roles:     []string{"user"},
 	}
 
-	DB.Create(&user)
+	if err := DB.Create(&user).Error; err != nil { // Check the error on DB.Create
+		t.Error("Failed to create user:", err)
+		return
+	}
 
 	if err := result.FindOneById(user.ID); err != nil {
 		t.Error(err)
+		return
 	}
 
 	if result.ID == 0 {
