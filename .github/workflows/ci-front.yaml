@@ -44,14 +44,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Use Flutter Setup from Setup Job
+      - name: Restore Flutter from Cache
         uses: actions/cache@v4
         with:
           path: ${{ needs.setup.outputs.cache-path }}
           key: ${{ needs.setup.outputs.cache-key }}
 
-      - name: List directory structure
-        run: ls -lR
+      - name: Set Flutter PATH
+        run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
 
       - name: Install dependencies
         run: flutter pub get
