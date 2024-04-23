@@ -31,15 +31,19 @@ func TestLoadUsers(t *testing.T) {
 		},
 	}
 
-	actualUsers := fixtures.LoadUsers()
+	actualUsers, err := fixtures.LoadUsers() // Assume this function now returns ([]*models.User, error)
+	if err != nil {
+		t.Errorf("Erreur lors du chargement des utilisateurs : %v", err)
+		return
+	}
 
-	// Vérifiez si le nombre d'utilisateurs chargés correspond au nombre attendu
+	// Verify if the number of loaded users matches the expected number
 	if len(actualUsers) != len(expectedUsers) {
 		t.Errorf("Le nombre d'utilisateurs chargés ne correspond pas. Attendu : %d, Reçu : %d", len(expectedUsers), len(actualUsers))
 		return
 	}
 
-	// Vérifiez si chaque utilisateur chargé correspond à celui attendu
+	// Verify if each loaded user matches the expected user
 	for i, expectedUser := range expectedUsers {
 		actualUser := actualUsers[i]
 
@@ -54,7 +58,7 @@ func TestLoadUsers(t *testing.T) {
 	}
 }
 
-// Fonction utilitaire pour comparer deux slices de chaînes
+// Utility function to compare two slices of strings
 func compareStringSlices(slice1, slice2 []string) bool {
 	if len(slice1) != len(slice2) {
 		return false
