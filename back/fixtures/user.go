@@ -10,27 +10,23 @@ import (
 
 var fake = faker.New()
 
-func LoadUsers() error {
+func LoadUsers() ([]*models.User, error) {
+	var users []*models.User
+
 	if err := models.ClearUsers(); err != nil {
-		return err
+		return nil, err
 	}
-	for i := 0; i < 20; i++ { // Création d'une instance de faker
+
+	for i := 0; i < 20; i++ {
 		firstname := fake.Person().FirstName()
 		lastname := fake.Person().LastName()
-
-		// Création du username à partir du nom et du prénom
 		username := strings.ToLower(strings.ReplaceAll(firstname+"."+lastname, " ", ""))
-
-		// Création de l'email à partir du nom et du prénom // Création d'une instance de Internet
-		email := fake.Internet().Email() // Utilisation de l'instance pour générer un email
-
+		email := fake.Internet().Email()
 		password := fake.Internet().Password()
-		roles := []string{"user", "admin"} // Rôles possibles
-
-		// Choix aléatoire du rôle
+		roles := []string{"user", "admin"}
 		role := roles[rand.Intn(len(roles))]
 
-		user := models.User{
+		user := &models.User{
 			Firstname: firstname,
 			Lastname:  lastname,
 			Username:  username,
@@ -39,14 +35,16 @@ func LoadUsers() error {
 			Roles:     []string{role},
 		}
 
-		// Hachage du mot de passe
 		if err := user.HashPassword(); err != nil {
-			return err
+			return nil, err
 		}
 
 		if err := user.Save(); err != nil {
-			return err
+			return nil, err
 		}
+
+		users = append(users, user)
 	}
-	return nil
+
+	return users, nil
 }

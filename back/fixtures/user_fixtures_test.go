@@ -8,6 +8,8 @@ import (
 )
 
 func TestLoadUsers(t *testing.T) {
+	testTime := time.Date(2023, time.January, 1, 0, 0, 0, 0, time.UTC)
+
 	expectedUsers := []*models.User{
 		{
 			Firstname: "John",
@@ -16,8 +18,8 @@ func TestLoadUsers(t *testing.T) {
 			Email:     "john@example.com",
 			Password:  "password123",
 			Roles:     []string{"user"},
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			CreatedAt: testTime,
+			UpdatedAt: testTime,
 		},
 		{
 			Firstname: "Jane",
@@ -26,8 +28,8 @@ func TestLoadUsers(t *testing.T) {
 			Email:     "jane@example.com",
 			Password:  "password456",
 			Roles:     []string{"admin"},
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+			CreatedAt: testTime,
+			UpdatedAt: testTime,
 		},
 	}
 
@@ -43,7 +45,6 @@ func TestLoadUsers(t *testing.T) {
 		return
 	}
 
-	// Verify if each loaded user matches the expected user
 	for i, expectedUser := range expectedUsers {
 		actualUser := actualUsers[i]
 
@@ -51,7 +52,6 @@ func TestLoadUsers(t *testing.T) {
 			expectedUser.Lastname != actualUser.Lastname ||
 			expectedUser.Username != actualUser.Username ||
 			expectedUser.Email != actualUser.Email ||
-			expectedUser.Password != actualUser.Password ||
 			!compareStringSlices(expectedUser.Roles, actualUser.Roles) {
 			t.Errorf("L'utilisateur chargé ne correspond pas à celui attendu. Index : %d", i)
 		}

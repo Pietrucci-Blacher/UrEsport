@@ -1,7 +1,8 @@
 package fixtures
 
 func ImportFixtures() error {
-	if err := LoadUsers(); err != nil {
+	_, err := LoadUsers()
+	if err != nil {
 		return err
 	}
 	return nil
