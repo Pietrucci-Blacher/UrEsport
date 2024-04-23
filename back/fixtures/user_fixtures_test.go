@@ -31,7 +31,7 @@ func TestLoadUsers(t *testing.T) {
 		},
 	}
 
-	actualUsers, err := fixtures.LoadUsers() // Assume this function now returns ([]*models.User, error)
+	actualUsers, err := fixtures.LoadUsers()
 	if err != nil {
 		t.Errorf("Erreur lors du chargement des utilisateurs : %v", err)
 		return
