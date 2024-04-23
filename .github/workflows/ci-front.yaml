@@ -72,6 +72,13 @@ jobs:
       - name: Run static analysis
         run: flutter analyze
 
+      - name: Set up JDK 17
+        if: matrix.platform == 'apk'
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+
       - name: Build for ${{ matrix.platform }}
         run: |
           flutter build ${{ matrix.platform }}
