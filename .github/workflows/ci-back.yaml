@@ -5,6 +5,10 @@ on:
       - "back/**"
       - ".github/workflows/ci-back.yaml"
 
+permissions:
+  contents: read
+  pull-requests: read
+
 jobs:
   ci-back:
     runs-on: ${{ matrix.os }}
