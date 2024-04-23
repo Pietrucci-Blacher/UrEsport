@@ -57,15 +57,17 @@ jobs:
         run: flutter pub get
 
       - name: Run tests and generate coverage report
-        run: |
-          flutter test --coverage
-          lcov --list coverage/lcov.info
+        run: flutter test --coverage
 
-      - name: Upload coverage report
-        uses: actions/upload-artifact@v4
+      - name: Upload coverage report to Codecov
+        uses: codecov/codecov-action@v4
         with:
-          name: coverage-report
-          path: coverage/
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/lcov.info
+          flags: unittests
+          slug: Pietrucci-Blacher/Challenge-Stack-2-5IW
+          fail_ci_if_error: true
+          verbose: true
 
       - name: Run static analysis
         run: flutter analyze
