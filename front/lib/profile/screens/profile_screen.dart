@@ -4,10 +4,10 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   bool isLoggedIn = false;
 
   @override
@@ -24,19 +24,18 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Simuler une connexion
+                // Simulate a login
                 setState(() {
                   isLoggedIn = true;
                 });
               },
               child: const Text('Log In'),
             ),
-            const SizedBox(height: 10),  // Espacement entre les boutons
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                // Simuler un enregistrement ou ouvrir un formulaire d'enregistrement
                 setState(() {
-                  isLoggedIn = true; // Modifier selon votre logique d'authentification réelle
+                  isLoggedIn = true;
                 });
               },
               child: const Text('Register'),
