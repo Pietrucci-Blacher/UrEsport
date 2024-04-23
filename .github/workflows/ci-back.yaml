@@ -25,13 +25,13 @@ jobs:
         with:
           go-version: ${{ matrix.go-version }}
 
-      - name: Install Dependencies
-        run: go mod download
-
       - name: Lint
         uses: golangci/golangci-lint-action@v4
         with:
           version: v1.54
+
+      - name: Install Dependencies
+        run: go mod download
 
       - name: Install goImports
         run: go get golang.org/x/tools/cmd/goimports
