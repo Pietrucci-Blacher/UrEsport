@@ -46,6 +46,10 @@ jobs:
           path: ${{ needs.setup.outputs.cache-path }}
           key: ${{ needs.setup.outputs.cache-key }}
 
+
+      - name: List directory structure
+        run: ls -lR
+
       - name: Install dependencies
         run: flutter pub get
 
