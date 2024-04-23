@@ -8,6 +8,7 @@ on:
 permissions:
   contents: read
   pull-requests: read
+  checks: write
 
 jobs:
   ci-back:
@@ -33,6 +34,7 @@ jobs:
         uses: golangci/golangci-lint-action@v4
         with:
           version: v1.54
+          working-directory: back
 
       - name: Install Dependencies
         run: go mod download
