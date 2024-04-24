@@ -10,14 +10,14 @@ import (
 )
 
 // GetUsers godoc
-// @Summary      get all users
-// @Description  get all users
-// @Tags         user
-// @Accept       json
-// @Produce      json
-// @Success      200  {object} []models.User
-// @Failure      500  {object} utils.HttpError
-// @Router       /users/ [get]
+//	@Summary		get all users
+//	@Description	get all users
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	[]models.User
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/users/ [get]
 func GetUsers(c *gin.Context) {
 	users, err := models.FindAllUsers()
 	if err != nil {
@@ -29,48 +29,48 @@ func GetUsers(c *gin.Context) {
 }
 
 // GetUser godoc
-// @Summary      get users by id
-// @Description  get users by id
-// @Tags         user
-// @Accept       json
-// @Produce      json
-// @Param        id path int true "Feature ID"
-// @Success      200  {object} models.User
-// @Failure      404  {object} utils.HttpError
-// @Failure      500  {object} utils.HttpError
-// @Router       /users/{id} [get]
+//	@Summary		get users by id
+//	@Description	get users by id
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Feature ID"
+//	@Success		200	{object}	models.User
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/users/{id} [get]
 func GetUser(c *gin.Context) {
 	user, _ := c.MustGet("findedUser").(models.User)
 	c.JSON(http.StatusOK, user)
 }
 
 // GetUserMe godoc
-// @Summary      get connected user
-// @Description  get connected user
-// @Tags         user
-// @Accept       json
-// @Produce      json
-// @Success      200  {object} models.User
-// @Router       /users/me [get]
+//	@Summary		get connected user
+//	@Description	get connected user
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.User
+//	@Router			/users/me [get]
 func GetUserMe(c *gin.Context) {
 	connectedUser, _ := c.MustGet("user").(models.User)
 	c.JSON(http.StatusOK, connectedUser)
 }
 
 // UpdateUser godoc
-// @Summary      update user
-// @Description  update user
-// @Tags         user
-// @Accept       json
-// @Produce      json
-// @Param        user body models.UpdateUserDto true "User"
-// @Param        id path int true "User ID"
-// @Success      200  {object} models.User
-// @Failure      400  {object} utils.HttpError
-// @Failure      401  {object} utils.HttpError
-// @Failure      404  {object} utils.HttpError
-// @Failure      500  {object} utils.HttpError
-// @Router       /users/{id} [patch]
+//	@Summary		update user
+//	@Description	update user
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		models.UpdateUserDto	true	"User"
+//	@Param			id		path		int						true	"User ID"
+//	@Success		200		{object}	models.User
+//	@Failure		400		{object}	utils.HttpError
+//	@Failure		401		{object}	utils.HttpError
+//	@Failure		404		{object}	utils.HttpError
+//	@Failure		500		{object}	utils.HttpError
+//	@Router			/users/{id} [patch]
 func UpdateUser(c *gin.Context) {
 	var body models.UpdateUserDto
 
@@ -119,18 +119,18 @@ func UpdateUser(c *gin.Context) {
 }
 
 // DeleteUser godoc
-// @Summary      delete user
-// @Description  delete user
-// @Tags         user
-// @Accept       json
-// @Produce      json
-// @Param        id path int true "User ID"
-// @Success      204
-// @Failure      400  {object} utils.HttpError
-// @Failure      401  {object} utils.HttpError
-// @Failure      404  {object} utils.HttpError
-// @Failure      500  {object} utils.HttpError
-// @Router       /users/{id} [delete]
+//	@Summary		delete user
+//	@Description	delete user
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path	int	true	"User ID"
+//	@Success		204
+//	@Failure		400	{object}	utils.HttpError
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/users/{id} [delete]
 func DeleteUser(c *gin.Context) {
 	user, _ := c.MustGet("findedUser").(models.User)
 
