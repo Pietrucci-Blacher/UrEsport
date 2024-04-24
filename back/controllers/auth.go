@@ -12,15 +12,15 @@ import (
 )
 
 // Login godoc
-// @Summary      Login user
-// @Description  Login user
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        login body models.LoginUserDto true "Login user"
-// @Success      200  {object} models.Token
-// @Failure      400  {object} utils.HttpError
-// @Router       /auth/login [post]
+//	@Summary		Login user
+//	@Description	Login user
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			login	body		models.LoginUserDto	true	"Login user"
+//	@Success		200		{object}	models.Token
+//	@Failure		400		{object}	utils.HttpError
+//	@Router			/auth/login [post]
 func Login(c *gin.Context) {
 	var loginRequest models.LoginUserDto
 
@@ -65,15 +65,15 @@ func Login(c *gin.Context) {
 }
 
 // Register godoc
-// @Summary      Register user
-// @Description  Register user
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Param        register body models.CreateUserDto true "Register user"
-// @Success      201
-// @Failure      400  {object} utils.HttpError
-// @Router       /auth/register [post]
+//	@Summary		Register user
+//	@Description	Register user
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			register	body	models.CreateUserDto	true	"Register user"
+//	@Success		201
+//	@Failure		400	{object}	utils.HttpError
+//	@Router			/auth/register [post]
 func Register(c *gin.Context) {
 	var user models.User
 	var data models.CreateUserDto
@@ -126,14 +126,14 @@ func Register(c *gin.Context) {
 }
 
 // Logout godoc
-// @Summary      Logout user
-// @Description  Logout user
-// @Tags         auth
-// @Accept       json
-// @Produce      json
-// @Success      201
-// @Failure      400  {object} utils.HttpError
-// @Router       /auth/logout [post]
+//	@Summary		Logout user
+//	@Description	Logout user
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Success		201
+//	@Failure		400	{object}	utils.HttpError
+//	@Router			/auth/logout [post]
 func Logout(c *gin.Context) {
 	var token models.Token
 
