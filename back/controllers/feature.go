@@ -11,6 +11,7 @@ import (
 )
 
 // GetUsers godoc
+//
 //	@Summary		get all features
 //	@Description	get all features
 //	@Tags			feature
@@ -30,6 +31,7 @@ func GetFeatures(c *gin.Context) {
 }
 
 // GetUsers godoc
+//
 //	@Summary		get features by id
 //	@Description	get features by id
 //	@Tags			feature
@@ -58,6 +60,7 @@ func GetFeature(c *gin.Context) {
 }
 
 // GetUsers godoc
+//
 //	@Summary		create features
 //	@Description	create features
 //	@Tags			feature
@@ -102,6 +105,7 @@ func CreateFeature(c *gin.Context) {
 }
 
 // GetUsers godoc
+//
 //	@Summary		update features
 //	@Description	update features
 //	@Tags			feature
@@ -156,6 +160,7 @@ func UpdateFeature(c *gin.Context) {
 }
 
 // GetUsers godoc
+//
 //	@Summary		delete features by id
 //	@Description	delete features by id
 //	@Tags			feature
@@ -190,6 +195,7 @@ func DeleteFeature(c *gin.Context) {
 }
 
 // GetUsers godoc
+//
 //	@Summary		toggle features by id
 //	@Description	toggle features by id
 //	@Tags			feature

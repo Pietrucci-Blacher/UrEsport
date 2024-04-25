@@ -9,6 +9,7 @@ import (
 )
 
 // GetTournaments godoc
+//
 //	@Summary		get all tournaments
 //	@Description	get all tournaments
 //	@Tags			tournament
@@ -37,6 +38,7 @@ func GetTournaments(c *gin.Context) {
 }
 
 // GetTournament godoc
+//
 //	@Summary		get tournament by id
 //	@Description	get tournament by id
 //	@Tags			tournament
@@ -56,6 +58,7 @@ func GetTournament(c *gin.Context) {
 }
 
 // CreateTournament godoc
+//
 //	@Summary		create tournament
 //	@Description	create tournament
 //	@Tags			tournament
@@ -101,6 +104,7 @@ func CreateTournament(c *gin.Context) {
 }
 
 // UpdateTournament godoc
+//
 //	@Summary		update tournament
 //	@Description	update tournament
 //	@Tags			tournament
@@ -158,6 +162,7 @@ func UpdateTournament(c *gin.Context) {
 }
 
 // DeleteTournament godoc
+//
 //	@Summary		delete tournament
 //	@Description	delete tournament
 //	@Tags			tournament
@@ -179,6 +184,7 @@ func DeleteTournament(c *gin.Context) {
 }
 
 // JoinTournament godoc
+//
 //	@Summary		join yourself to a tournament
 //	@Description	join yourself to a tournament
 //	@Tags			tournament
@@ -207,6 +213,7 @@ func JoinTournament(c *gin.Context) {
 }
 
 // LeaveTournament godoc
+//
 //	@Summary		leave yourself from a tournament
 //	@Description	leave yourself from a tournament
 //	@Tags			tournament
@@ -229,6 +236,7 @@ func LeaveTournament(c *gin.Context) {
 }
 
 // InviteUser godoc
+//
 //	@Summary		invite user to your tournament
 //	@Description	invite user to your tournament
 //	@Tags			tournament
@@ -270,6 +278,7 @@ func InviteUserToTournament(c *gin.Context) {
 }
 
 // KickUserFromTournament godoc
+//
 //	@Summary		kick user from your tournament
 //	@Description	kick user from your tournament
 //	@Tags			tournament
@@ -311,6 +320,7 @@ func KickUserFromTournament(c *gin.Context) {
 }
 
 // TogglePrivateTournament godoc
+//
 //	@Summary		toggle tournament privacy
 //	@Description	toggle tournament privacy
 //	@Tags			tournament
