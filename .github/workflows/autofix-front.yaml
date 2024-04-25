@@ -45,6 +45,9 @@ jobs:
           path: ${{ needs.setup.outputs.cache-path }}
           key: ${{ needs.setup.outputs.cache-key }}
 
+      - name: Configure Flutter PATH
+        run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
+
       - name: Install dependencies
         run: flutter pub get
 
