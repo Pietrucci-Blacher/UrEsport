@@ -1,5 +1,3 @@
-name: autofix.ci
-
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -16,45 +14,77 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
+      cache-key: ${{ steps.flutter-setup.outputs.cache-key }}
+      cache-path: ${{ steps.flutter-setup.outputs.cache-path }}
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Flutter
+      - name: Set up Flutter Environment
         id: flutter-setup
         uses: subosito/flutter-action@v2
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
           cache: true
-          cache-key: "flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}-${{ hashFiles('**/pubspec.yaml') }}"
-          cache-path: "${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}"
-          pub-cache-key: "flutter-pub-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}-${{ hashFiles('**/pubspec.lock') }}"
-          pub-cache-path: "${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}"
+          cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
+          cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
 
-  autofix:
+  test-and-build:
     needs: setup
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [web, apk, ios]
+        include:
+          - platform: ios
+            os: macos-latest
+          - platform: apk
+            os: ubuntu-latest
+          - platform: web
+            os: ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         working-directory: front
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
-        
-      - name: Use Flutter Setup from Setup Job
+
+      - name: Restore Flutter from Cache
         uses: actions/cache@v4
         with:
-          path: ${{ runner.tool_cache }}/flutter
-          key: ${{ needs.setup.outputs.flutter-version }}
+          path: ${{ needs.setup.outputs.cache-path }}
+          key: ${{ needs.setup.outputs.cache-key }}
 
-      - name: Install dependencies
+      - name: Configure Flutter PATH
+        run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
+
+      - name: Install Flutter Dependencies
         run: flutter pub get
 
-      - name: Format code
-        run: flutter format .
+      - name: Execute Flutter Tests and Coverage
+        run: flutter test --coverage
 
-      - name: Fix linting errors
-        run: flutter analyze --fix
+      - name: Upload Test Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/lcov.info
+          flags: unittests
+          slug: Pietrucci-Blacher/Challenge-Stack-2-5IW
+          fail_ci_if_error: true
+          verbose: true
 
-      - name: Autofix
-        uses: autofix-ci/action@ea32e3a12414e6d3183163c3424a7d7a8631ad84
+      - name: Perform Flutter Static Analysis
+        run: flutter analyze
+
+      - name: Prepare JDK for Android Builds
+        if: matrix.platform == 'apk'
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Build for Selected Platform
+        run: flutter build ${{ matrix.platform }}
