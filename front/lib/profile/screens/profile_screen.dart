@@ -17,32 +17,32 @@ class ProfileScreenState extends State<ProfileScreen> {
       body: isLoggedIn
           ? const Center(child: Text('Welcome to your profile!'))
           : Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You are not logged in'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Simulate a login
-                setState(() {
-                  isLoggedIn = true;
-                });
-              },
-              child: const Text('Log In'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text('You are not logged in'),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Simulate a login
+                      setState(() {
+                        isLoggedIn = true;
+                      });
+                    },
+                    child: const Text('Log In'),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isLoggedIn = true;
+                      });
+                    },
+                    child: const Text('Register'),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isLoggedIn = true;
-                });
-              },
-              child: const Text('Register'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
