@@ -17,10 +17,10 @@ jobs:
       cache-key: ${{ steps.flutter-setup.outputs.cache-key }}
       cache-path: ${{ steps.flutter-setup.outputs.cache-path }}
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Set up Flutter
+      - name: Set up Flutter Environment
         id: flutter-setup
         uses: subosito/flutter-action@v2
         with:
@@ -31,17 +31,24 @@ jobs:
 
   test-and-build:
     needs: setup
-    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         platform: [web, apk, ios]
+        include:
+          - platform: ios
+            os: macos-latest
+          - platform: apk
+            os: ubuntu-latest
+          - platform: web
+            os: ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         working-directory: front
-
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v4
 
       - name: Restore Flutter from Cache
@@ -50,16 +57,16 @@ jobs:
           path: ${{ needs.setup.outputs.cache-path }}
           key: ${{ needs.setup.outputs.cache-key }}
 
-      - name: Set Flutter PATH
+      - name: Configure Flutter PATH
         run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
 
-      - name: Install dependencies
+      - name: Install Flutter Dependencies
         run: flutter pub get
 
-      - name: Run tests and generate coverage report
+      - name: Execute Flutter Tests and Coverage
         run: flutter test --coverage
 
-      - name: Upload coverage report to Codecov
+      - name: Upload Test Coverage to Codecov
         uses: codecov/codecov-action@v4
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
@@ -69,16 +76,15 @@ jobs:
           fail_ci_if_error: true
           verbose: true
 
-      - name: Run static analysis
+      - name: Perform Flutter Static Analysis
         run: flutter analyze
 
-      - name: Set up JDK 17
+      - name: Prepare JDK for Android Builds
         if: matrix.platform == 'apk'
         uses: actions/setup-java@v2
         with:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Build for ${{ matrix.platform }}
-        run: |
-          flutter build ${{ matrix.platform }}
+      - name: Build for Selected Platform
+        run: flutter build ${{ matrix.platform }}
