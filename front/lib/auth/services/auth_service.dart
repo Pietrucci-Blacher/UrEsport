@@ -2,7 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 abstract class IAuthService {
-  Future<void> register(String firstName, String lastName, String userName, String email, String password);
+  Future<void> register(String firstName, String lastName, String userName,
+      String email, String password);
   Future<void> login(String email, String password);
   Future<bool> isLoggedIn();
   Future<void> logout();
@@ -14,7 +15,8 @@ class AuthService implements IAuthService {
   AuthService(this._dio);
 
   @override
-  Future<void> register(String firstName, String lastName, String userName, String email, String password) async {
+  Future<void> register(String firstName, String lastName, String userName,
+      String email, String password) async {
     try {
       await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/register', data: {
         'firstname': firstName,
