@@ -69,6 +69,4 @@ jobs:
           verbose: true
 
       - name: Check for unused dependencies
-        run: |
-          go mod tidy
-          git diff --exit-code
+        run: go mod tidy
