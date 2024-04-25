@@ -10,6 +10,7 @@ import (
 )
 
 // GetUsers godoc
+//
 //	@Summary		get all users
 //	@Description	get all users
 //	@Tags			user
@@ -29,6 +30,7 @@ func GetUsers(c *gin.Context) {
 }
 
 // GetUser godoc
+//
 //	@Summary		get users by id
 //	@Description	get users by id
 //	@Tags			user
@@ -45,6 +47,7 @@ func GetUser(c *gin.Context) {
 }
 
 // GetUserMe godoc
+//
 //	@Summary		get connected user
 //	@Description	get connected user
 //	@Tags			user
@@ -58,6 +61,7 @@ func GetUserMe(c *gin.Context) {
 }
 
 // UpdateUser godoc
+//
 //	@Summary		update user
 //	@Description	update user
 //	@Tags			user
@@ -119,6 +123,7 @@ func UpdateUser(c *gin.Context) {
 }
 
 // DeleteUser godoc
+//
 //	@Summary		delete user
 //	@Description	delete user
 //	@Tags			user

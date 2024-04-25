@@ -12,6 +12,7 @@ import (
 )
 
 // Login godoc
+//
 //	@Summary		Login user
 //	@Description	Login user
 //	@Tags			auth
@@ -65,6 +66,7 @@ func Login(c *gin.Context) {
 }
 
 // Register godoc
+//
 //	@Summary		Register user
 //	@Description	Register user
 //	@Tags			auth
@@ -126,6 +128,7 @@ func Register(c *gin.Context) {
 }
 
 // Logout godoc
+//
 //	@Summary		Logout user
 //	@Description	Logout user
 //	@Tags			auth
