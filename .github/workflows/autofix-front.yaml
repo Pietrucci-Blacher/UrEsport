@@ -54,8 +54,5 @@ jobs:
       - name: Format code
         run: dart format .
 
-      - name: Fix linting errors
-        run: flutter analyze --fix
-
       - name: Autofix
         uses: autofix-ci/action@ea32e3a12414e6d3183163c3424a7d7a8631ad84
