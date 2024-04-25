@@ -62,6 +62,12 @@ jobs:
         run: |
           brew install gnu-tar
 
+      - name: Verify gtar Path
+        if: matrix.os == 'macos-latest'
+        run: |
+          echo "gtar path: $(which gtar)"
+          gtar --version
+
       - name: Restore Flutter from Cache
         uses: actions/cache@v4
         with:
