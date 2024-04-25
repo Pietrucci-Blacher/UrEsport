@@ -81,7 +81,7 @@ jobs:
 
       - name: Prepare JDK for Android Builds
         if: matrix.platform == 'apk'
-        uses: actions/setup-java@v2
+        uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
