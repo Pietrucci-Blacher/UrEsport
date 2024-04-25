@@ -31,7 +31,7 @@ jobs:
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
 
-  autofix:
+  autofix-front:
     needs: setup
     runs-on: ubuntu-latest
     defaults:
