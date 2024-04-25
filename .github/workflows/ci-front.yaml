@@ -57,6 +57,11 @@ jobs:
           brew update
           brew upgrade
 
+      - name: Install gtar
+        if: matrix.platform == 'ios'
+        run: |
+          brew install gnu-tar
+
       - name: Restore Flutter from Cache
         uses: actions/cache@v4
         with:
