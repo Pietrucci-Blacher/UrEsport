@@ -31,13 +31,15 @@ jobs:
         run: go mod download
 
       - name: Install goImports
-        run: go get golang.org/x/tools/cmd/goimports
+        run: |
+          go install golang.org/x/tools/cmd/goimports@latest
+          echo "$GOPATH/bin" >> $GITHUB_PATH
+
+      - name: Format and Check Imports
+        run: goimports -w .
 
       - name: Clean
         run: go mod tidy
-
-      - name: Format and Check Imports
-        run: go run golang.org/x/tools/cmd/goimports -w .
 
       - name: format
         run: go fmt ./...
