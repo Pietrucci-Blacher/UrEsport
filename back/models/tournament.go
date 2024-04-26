@@ -55,10 +55,12 @@ type InviteUserDto struct {
 	Username string `json:"username" validate:"required"`
 }
 
-func FindAllTournaments() ([]Tournament, error) {
+func FindAllTournaments(skip, limit int) ([]Tournament, error) {
 	var tournaments []Tournament
 
 	err := DB.Model(&Tournament{}).
+		Offset(skip).
+		Limit(limit).
 		Preload("Participants").
 		Find(&tournaments).Error
 
@@ -126,4 +128,11 @@ func (t *Tournament) Delete() error {
 		return err
 	}
 	return DB.Delete(t).Error
+}
+
+func ClearTournaments() error {
+	if err := DB.Exec("DELETE FROM tournaments").Error; err != nil {
+		return err
+	}
+	return nil
 }
