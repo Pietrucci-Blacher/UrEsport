@@ -1,3 +1,5 @@
+name: CI for Frontend
+
 on:
   pull_request:
     types: [opened, synchronize, reopened]
@@ -51,32 +53,11 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v4
 
-      - name: Check and Update Homebrew
-        if: matrix.platform == 'ios'
-        run: |
-          brew update
-          brew upgrade
-
-      - name: Install gtar
-        if: matrix.platform == 'ios'
-        run: |
-          brew install gnu-tar
-
-      - name: Verify gtar Path
-        if: matrix.os == 'macos-latest'
-        run: |
-          echo "gtar path: $(which gtar)"
-          gtar --version
-
       - name: Restore Flutter from Cache
         uses: actions/cache@v4
         with:
           path: ${{ needs.setup.outputs.cache-path }}
           key: ${{ needs.setup.outputs.cache-key }}
-
-      - name: List Cache Directory
-        if: matrix.platform == 'ios'
-        run: ls -la ${{ needs.setup.outputs.cache-path }}
 
       - name: Configure Flutter PATH
         run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
@@ -112,6 +93,6 @@ jobs:
           platform="${{ matrix.platform }}"
           if [ "$platform" == "ios" ]; then
             flutter build ios --release --no-codesign
-          else
+          else:
             flutter build "$platform"
           fi
