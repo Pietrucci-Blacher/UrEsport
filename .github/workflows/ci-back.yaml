@@ -55,13 +55,8 @@
         - name: Build
           run: go build -v ./...
 
-        - name: Run tests on Windows
-          if: matrix.os == 'windows-latest'
-          run: go test -v -cover -gcflags=all=-l -coverprofile=coverage.out  .\...
-
-        - name: Run tests on other OS
-          if: matrix.os != 'windows-latest'
-          run: go test -v -cover -gcflags=all=-l -coverprofile=coverage.out ./...
+        - name: Run tests
+          run: go test ./... -cover -coverprofile c.out
 
         - name: Upload to Codecov
           uses: codecov/codecov-action@v4
