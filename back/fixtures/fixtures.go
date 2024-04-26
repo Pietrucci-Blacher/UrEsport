@@ -1,8 +1,41 @@
 package fixtures
 
+import (
+	"challenge/models"
+
+	"github.com/jaswdr/faker/v2"
+)
+
+var (
+	fake = faker.New()
+
+	FEATURES = map[string]string{
+		"login":      "Allow user to login",
+		"chat":       "Allow user to chat",
+		"tournament": "Allow user to create tournament",
+		"game":       "Allow user to play game",
+	}
+
+	USER_PASSWORD = "password"
+	USER_NB       = 20
+	USER_ROLES    = []string{models.ROLE_USER, models.ROLE_ADMIN}
+
+	TOURNAMENT_NB              = 10
+	TOURNAMENT_PARTICIPANTS_NB = 5
+)
+
 func ImportFixtures() error {
+	if err := LoadFeatures(); err != nil {
+		return err
+	}
+
 	if err := LoadUsers(); err != nil {
 		return err
 	}
+
+	if err := LoadTournaments(); err != nil {
+		return err
+	}
+
 	return nil
 }
