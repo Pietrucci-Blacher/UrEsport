@@ -56,7 +56,9 @@
           run: go build -v ./...
 
         - name: Run tests
-          run: go test -coverprofile c.out ./...
+          run: |
+            go test -coverprofile c.out ./...
+            ls -la
 
         - name: Upload to Codecov
           uses: codecov/codecov-action@v4
