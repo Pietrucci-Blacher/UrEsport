@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:uresport/home/screens/home_screen.dart';
 import 'package:uresport/notification/screens/notif_screen.dart';
 import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
 import 'package:uresport/tournament/screens/tournament_screen.dart';
-import 'package:uresport/shared/providers/auth_service.dart';
+import 'package:uresport/auth/services/auth_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});

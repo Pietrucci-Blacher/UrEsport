@@ -14,8 +14,10 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       initialRoute: '/',
-      onGenerateRoute: RouteGenerator.generateRoute,
-      home: const SplashScreen(),
+      home: Builder(
+        builder: (context) => const SplashScreen(),
+      ),
+      onGenerateRoute: (settings) => RouteGenerator.generateRoute(settings, context),
     );
   }
 }

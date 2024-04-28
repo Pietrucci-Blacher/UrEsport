@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
@@ -43,9 +41,9 @@ class AuthService implements IAuthService {
 
   @override
   Future<bool> isLoggedIn() async {
-    final response = await _dio.get(Uri.parse('http://localhost:8080/users/me') as String);
+    final response = await _dio.get(Uri.parse('${dotenv.env['API_ENDPOINT']}/users/me') as String);
     if (response.statusCode == 200) {
-      final Map<String, dynamic> userData = jsonDecode(response.body);
+      final Map<String, dynamic> userData = response.data;
       return userData.containsKey('user');
     } else {
       return false;

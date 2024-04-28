@@ -1,13 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:uresport/auth/screens/login_register_screen.dart';
+import 'package:uresport/auth/services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
-  const ProfileScreen({super.key});
+  final IAuthService authService;
+
+  const ProfileScreen({super.key, required this.authService});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   bool isLoggedIn = false;
 
   @override
@@ -24,22 +28,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {
-                // Simuler une connexion
-                setState(() {
-                  isLoggedIn = true;
-                });
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => LoginRegisterScreen(authService: widget.authService),
+                  ),
+                );
               },
               child: const Text('Log In'),
-            ),
-            const SizedBox(height: 10),  // Espacement entre les boutons
-            ElevatedButton(
-              onPressed: () {
-                // Simuler un enregistrement ou ouvrir un formulaire d'enregistrement
-                setState(() {
-                  isLoggedIn = true; // Modifier selon votre logique d'authentification réelle
-                });
-              },
-              child: const Text('Register'),
             ),
           ],
         ),
