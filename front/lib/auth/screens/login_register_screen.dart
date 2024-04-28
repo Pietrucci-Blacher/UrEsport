@@ -54,7 +54,6 @@ class LoginRegisterScreenState extends State<LoginRegisterScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text("Error"),
-        content: Text(message),
         actions: <Widget>[
           TextButton(
             onPressed: () {

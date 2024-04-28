@@ -1,11 +1,8 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 abstract class IAuthService {
-  Future<void> register(String firstName, String lastName, String userName,
-      String email, String password);
+  Future<void> register(String firstName, String lastName, String userName, String email, String password);
   Future<void> login(String email, String password);
   Future<bool> isLoggedIn();
   Future<void> logout();
