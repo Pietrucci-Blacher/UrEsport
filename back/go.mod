@@ -7,7 +7,7 @@ require (
 	github.com/go-playground/validator/v10 v10.19.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/gorilla/websocket v1.5.1
-	github.com/jaswdr/faker/v2 v2.1.0
+	github.com/jaswdr/faker/v2 v2.3.0
 	github.com/joho/godotenv v1.5.1
 	github.com/resend/resend-go/v2 v2.6.0
 	github.com/swaggo/files v1.0.1
