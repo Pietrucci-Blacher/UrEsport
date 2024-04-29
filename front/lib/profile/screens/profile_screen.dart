@@ -4,10 +4,10 @@ class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
   @override
-  _ProfileScreenState createState() => _ProfileScreenState();
+  ProfileScreenState createState() => ProfileScreenState();
 }
 
-class _ProfileScreenState extends State<ProfileScreen> {
+class ProfileScreenState extends State<ProfileScreen> {
   bool isLoggedIn = false;
 
   @override
@@ -17,33 +17,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
       body: isLoggedIn
           ? const Center(child: Text('Welcome to your profile!'))
           : Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You are not logged in'),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                // Simuler une connexion
-                setState(() {
-                  isLoggedIn = true;
-                });
-              },
-              child: const Text('Log In'),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text('You are not logged in'),
+                  const SizedBox(height: 20),
+                  ElevatedButton(
+                    onPressed: () {
+                      // Simulate a login
+                      setState(() {
+                        isLoggedIn = true;
+                      });
+                    },
+                    child: const Text('Log In'),
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () {
+                      setState(() {
+                        isLoggedIn = true;
+                      });
+                    },
+                    child: const Text('Register'),
+                  ),
+                ],
+              ),
             ),
-            const SizedBox(height: 10),  // Espacement entre les boutons
-            ElevatedButton(
-              onPressed: () {
-                // Simuler un enregistrement ou ouvrir un formulaire d'enregistrement
-                setState(() {
-                  isLoggedIn = true; // Modifier selon votre logique d'authentification réelle
-                });
-              },
-              child: const Text('Register'),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }
