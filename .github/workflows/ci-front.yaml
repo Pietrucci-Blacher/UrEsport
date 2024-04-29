@@ -64,7 +64,7 @@ jobs:
           distribution: 'temurin'
 
       - name: Build for Selected Platform
-        run: flutter build "$platform"
+        run: flutter build ${{ matrix.platform }}
 
   ios-ci:
     strategy:
