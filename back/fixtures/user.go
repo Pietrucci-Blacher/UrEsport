@@ -10,11 +10,11 @@ import (
 
 var fake = faker.New()
 
-func LoadUsers() ([]*models.User, error) {
+func LoadUsers() error {
 	var users []*models.User
 
 	if err := models.ClearUsers(); err != nil {
-		return nil, err
+		return err
 	}
 
 	for i := 0; i < 20; i++ {
@@ -36,15 +36,15 @@ func LoadUsers() ([]*models.User, error) {
 		}
 
 		if err := user.HashPassword(); err != nil {
-			return nil, err
+			return err
 		}
 
 		if err := user.Save(); err != nil {
-			return nil, err
+			return err
 		}
 
 		users = append(users, user)
 	}
 
-	return users, nil
+	return nil
 }
