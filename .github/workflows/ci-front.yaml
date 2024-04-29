@@ -34,6 +34,11 @@ jobs:
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
 
+      - name: Debug Cache Key and Path
+        run: |
+          echo "Cache Key: ${{ steps.flutter-setup.outputs.cache-key }}"
+          echo "Cache Path: ${{ steps.flutter-setup.outputs.cache-path }}"
+
   test-and-build:
     needs: setup
     strategy:
@@ -61,6 +66,9 @@ jobs:
         with:
           path: ${{ needs.setup.outputs.cache-path }}
           key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Debug Cache Contents
+        run: ls -al ${{ needs.setup.outputs.cache-path }}
 
       - name: Configure Flutter PATH
         run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
