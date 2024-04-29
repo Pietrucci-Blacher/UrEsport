@@ -15,8 +15,14 @@ jobs:
   setup:
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        platform: [web, apk, ios]
+        platform: [ web, apk, ios ]
+        include:
+          - platform: ios
+            os: macos-latest
+          - platform: apk
+            os: ubuntu-latest
+          - platform: web
+            os: ubuntu-latest
     runs-on: ${{ matrix.os }}
     outputs:
       flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
@@ -97,7 +103,7 @@ jobs:
         if: matrix.platform == 'apk'
         uses: actions/setup-java@v4
         with:
-          java-version: '17'
+          java-version: '21'
           distribution: 'temurin'
 
       - name: Build for Selected Platform
