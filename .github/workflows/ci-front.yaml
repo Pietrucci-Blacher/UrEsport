@@ -12,11 +12,19 @@ env:
   CACHE_VERSION: v1
 
 jobs:
-  web-apk-ci:
+  build:
     strategy:
-        matrix:
-            platform: [ web, apk ]
-    runs-on: ubuntu-latest
+      matrix:
+        platform: [web, apk, ios]
+        os: [ubuntu-latest, macos-latest]
+        include:
+          - platform: web
+            os: ubuntu-latest
+          - platform: apk
+            os: ubuntu-latest
+          - platform: ios
+            os: macos-latest
+    runs-on: ${{ matrix.os }}
     defaults:
       run:
         working-directory: front
@@ -36,7 +44,6 @@ jobs:
           cache: true
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
-
 
       - name: Install Flutter Dependencies
         run: flutter pub get
@@ -58,57 +65,22 @@ jobs:
         run: flutter analyze
 
       - name: Prepare JDK for Android Builds
+        if: matrix.platform == 'apk'
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
       - name: Build for Selected Platform
-        run: flutter build ${{ matrix.platform }}
-
-  ios-ci:
-    strategy:
-      matrix:
-        platform: [ ios ]
-    runs-on: macos-latest
-    defaults:
-        run:
-            working-directory: front
-    outputs:
-      flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
-      cache-key: ${{ steps.flutter-setup.outputs.cache-key }}
-      cache-path: ${{ steps.flutter-setup.outputs.cache-path }}
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Flutter Environment
-        id: flutter-setup
-        uses: subosito/flutter-action@v2
-        with:
-          channel: ${{ env.FLUTTER_CHANNEL }}
-          cache: true
-          cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
-          cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
-
-      - name: Install Flutter Dependencies
-        run: flutter pub get
-
-      - name: Execute Flutter Tests and Coverage
-        run: flutter test --coverage
-
-      - name: Upload Test Coverage to Codecov
-        uses: codecov/codecov-action@v4
-        with:
-          token: ${{ secrets.CODECOV_TOKEN }}
-          file: ./coverage/lcov.info
-          flags: unittests-front-apk
-          slug: Pietrucci-Blacher/Challenge-Stack-2-5IW
-          fail_ci_if_error: true
-          verbose: true
-
-      - name: Perform Flutter Static Analysis
-        run: flutter analyze
-
-      - name: Build for Selected Platform
-        run: flutter build ${{ matrix.platform }} --release --no-codesign
+        run: |
+          case "${{ matrix.platform }}" in
+            apk)
+              flutter build apk
+              ;;
+            web)
+              flutter build web
+              ;;
+            ios)
+              flutter build ios --release --no-codesign
+              ;;
+          esac
