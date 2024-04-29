@@ -111,4 +111,4 @@ jobs:
         run: flutter analyze
 
       - name: Build for Selected Platform
-        run: flutter build "$platform" --release --no-codesign
+        run: flutter build ${{ matrix.platform }} --release --no-codesign
