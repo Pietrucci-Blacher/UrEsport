@@ -96,6 +96,6 @@ jobs:
           platform="${{ matrix.platform }}"
           if [ "$platform" == "ios" ]; then
             flutter build ios --release --no-codesign
-          else:
+          else
             flutter build "$platform"
           fi
