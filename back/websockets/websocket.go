@@ -14,7 +14,10 @@ var upgrader = websocket.Upgrader{
 }
 
 func RegisterWebsocket(r *gin.Engine) {
-	r.GET("/ws", wsHandler)
+	ws := r.Group("/ws")
+	{
+		ws.GET("/", wsHandler)
+	}
 }
 
 func wsHandler(c *gin.Context) {
