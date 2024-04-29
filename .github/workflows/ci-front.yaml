@@ -17,6 +17,9 @@ jobs:
         matrix:
             platform: [ web, apk ]
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: front
     outputs:
       flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
       cache-key: ${{ steps.flutter-setup.outputs.cache-key }}
@@ -34,9 +37,6 @@ jobs:
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
 
-
-      - name: Configure Flutter PATH
-        run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
 
       - name: Install Flutter Dependencies
         run: flutter pub get
@@ -71,6 +71,9 @@ jobs:
       matrix:
         platform: [ ios ]
     runs-on: macos-latest
+    defaults:
+        run:
+            working-directory: front
     outputs:
       flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
       cache-key: ${{ steps.flutter-setup.outputs.cache-key }}
@@ -87,9 +90,6 @@ jobs:
           cache: true
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
-
-      - name: Configure Flutter PATH
-        run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
 
       - name: Install Flutter Dependencies
         run: flutter pub get
