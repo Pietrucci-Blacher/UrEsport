@@ -32,7 +32,7 @@ jobs:
           channel: ${{ env.FLUTTER_CHANNEL }}
           cache: true
           cache-key: 'flutter-${{ matrix.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
-          cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
+          cache-path: '${{ runner.tool_cache }}/flutter/${{ matrix.os }}/${{ env.FLUTTER_CHANNEL }}'
 
   test-and-build:
     needs: setup
