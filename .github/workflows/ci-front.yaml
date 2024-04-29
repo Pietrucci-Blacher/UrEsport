@@ -13,7 +13,10 @@ env:
 
 jobs:
   setup:
-    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     outputs:
       flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
       cache-key: ${{ steps.flutter-setup.outputs.cache-key }}
