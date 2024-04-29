@@ -34,11 +34,6 @@ jobs:
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
 
-      - name: Restore Flutter from Cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ needs.setup.outputs.cache-path }}
-          key: ${{ needs.setup.outputs.cache-key }}
 
       - name: Configure Flutter PATH
         run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
@@ -92,12 +87,6 @@ jobs:
           cache: true
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
-
-      - name: Restore Flutter from Cache
-        uses: actions/cache@v4
-        with:
-          path: ${{ needs.setup.outputs.cache-path }}
-          key: ${{ needs.setup.outputs.cache-key }}
 
       - name: Configure Flutter PATH
         run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
