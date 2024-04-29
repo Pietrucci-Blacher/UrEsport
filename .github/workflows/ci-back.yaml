@@ -56,13 +56,13 @@
           run: go build -v ./...
 
         - name: Run tests
-          run: go test -v -cover -gcflags=all=-l -coverprofile=c.out ./...
+          run: go test ./... -coverprofile=./cover.out -covermode=atomic -coverpkg=./...
 
         - name: Upload to Codecov
           uses: codecov/codecov-action@v4
           with:
             token: ${{ secrets.CODECOV_TOKEN }}
-            file: ./c.out
+            file: ./cover.out
             flags: unittests-back
             slug: Pietrucci-Blacher/Challenge-Stack-2-5IW
             fail_ci_if_error: true
