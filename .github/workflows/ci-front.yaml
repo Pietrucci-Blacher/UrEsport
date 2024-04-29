@@ -54,7 +54,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage/lcov.info
-          flags: unittests-front-apk
+          flags: unittests-front-${{ matrix.platform-os.platform }}
           slug: Pietrucci-Blacher/Challenge-Stack-2-5IW
           fail_ci_if_error: true
           verbose: true
