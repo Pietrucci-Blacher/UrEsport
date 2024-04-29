@@ -12,18 +12,11 @@ env:
   CACHE_VERSION: v1
 
 jobs:
-  setup:
+  web-apk-ci:
     strategy:
-      matrix:
-        platform: [ web, apk, ios ]
-        include:
-          - platform: ios
-            os: macos-latest
-          - platform: apk
-            os: ubuntu-latest
-          - platform: web
-            os: ubuntu-latest
-    runs-on: ${{ matrix.os }}
+        matrix:
+            platform: [ web, apk ]
+    runs-on: ubuntu-latest
     outputs:
       flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
       cache-key: ${{ steps.flutter-setup.outputs.cache-key }}
@@ -38,44 +31,14 @@ jobs:
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
           cache: true
-          cache-key: 'flutter-${{ matrix.os }}-${{ matrix.platform }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
-          cache-path: '${{ runner.tool_cache }}/flutter/${{ matrix.os }}/${{ matrix.platform }}/${{ env.FLUTTER_CHANNEL }}'
-
-      - name: Debug Cache Key and Path
-        run: |
-          echo "Cache Key: ${{ steps.flutter-setup.outputs.cache-key }}"
-          echo "Cache Path: ${{ steps.flutter-setup.outputs.cache-path }}"
-
-  test-and-build:
-    needs: setup
-    strategy:
-      fail-fast: false
-      matrix:
-        platform: [web, apk, ios]
-        include:
-          - platform: ios
-            os: macos-latest
-          - platform: apk
-            os: ubuntu-latest
-          - platform: web
-            os: ubuntu-latest
-
-    runs-on: ${{ matrix.os }}
-    defaults:
-      run:
-        working-directory: front
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+          cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
+          cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
 
       - name: Restore Flutter from Cache
         uses: actions/cache@v4
         with:
           path: ${{ needs.setup.outputs.cache-path }}
           key: ${{ needs.setup.outputs.cache-key }}
-
-      - name: Debug Cache Contents
-        run: ls -al ${{ needs.setup.outputs.cache-path }}
 
       - name: Configure Flutter PATH
         run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
@@ -91,7 +54,7 @@ jobs:
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./coverage/lcov.info
-          flags: unittests-front
+          flags: unittests-front-apk
           slug: Pietrucci-Blacher/Challenge-Stack-2-5IW
           fail_ci_if_error: true
           verbose: true
@@ -100,17 +63,63 @@ jobs:
         run: flutter analyze
 
       - name: Prepare JDK for Android Builds
-        if: matrix.platform == 'apk'
         uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
       - name: Build for Selected Platform
-        run: |
-          platform="${{ matrix.platform }}"
-          if [ "$platform" == "ios" ]; then
-            flutter build ios --release --no-codesign
-          else
-            flutter build "$platform"
-          fi
+        run: flutter build "$platform"
+
+  ios-ci:
+    strategy:
+      matrix:
+        platform: [ ios ]
+    runs-on: macos-latest
+    outputs:
+      flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
+      cache-key: ${{ steps.flutter-setup.outputs.cache-key }}
+      cache-path: ${{ steps.flutter-setup.outputs.cache-path }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter Environment
+        id: flutter-setup
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+          cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
+          cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
+
+      - name: Restore Flutter from Cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ needs.setup.outputs.cache-path }}
+          key: ${{ needs.setup.outputs.cache-key }}
+
+      - name: Configure Flutter PATH
+        run: echo "${{ needs.setup.outputs.cache-path }}/bin" >> $GITHUB_PATH
+
+      - name: Install Flutter Dependencies
+        run: flutter pub get
+
+      - name: Execute Flutter Tests and Coverage
+        run: flutter test --coverage
+
+      - name: Upload Test Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/lcov.info
+          flags: unittests-front-apk
+          slug: Pietrucci-Blacher/Challenge-Stack-2-5IW
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Perform Flutter Static Analysis
+        run: flutter analyze
+
+      - name: Build for Selected Platform
+        run: flutter build "$platform" --release --no-codesign
