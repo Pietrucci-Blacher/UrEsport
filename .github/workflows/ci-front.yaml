@@ -16,6 +16,7 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest, macos-latest]
+        platform: [web, apk, ios]
     runs-on: ${{ matrix.os }}
     outputs:
       flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
@@ -31,8 +32,8 @@ jobs:
         with:
           channel: ${{ env.FLUTTER_CHANNEL }}
           cache: true
-          cache-key: 'flutter-${{ matrix.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
-          cache-path: '${{ runner.tool_cache }}/flutter/${{ matrix.os }}/${{ env.FLUTTER_CHANNEL }}'
+          cache-key: 'flutter-${{ matrix.os }}-${{ matrix.platform }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
+          cache-path: '${{ runner.tool_cache }}/flutter/${{ matrix.os }}/${{ matrix.platform }}/${{ env.FLUTTER_CHANNEL }}'
 
       - name: Debug Cache Key and Path
         run: |
