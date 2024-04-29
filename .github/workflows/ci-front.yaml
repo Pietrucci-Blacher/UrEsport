@@ -1,0 +1,84 @@
+name: CI for Frontend
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    paths:
+      - "front/**"
+      - ".github/workflows/ci-front.yaml"
+
+env:
+  FLUTTER_CHANNEL: stable
+  CACHE_VERSION: v1
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        platform-os:
+          - platform: web
+            os: ubuntu-latest
+          - platform: apk
+            os: ubuntu-latest
+          - platform: ios
+            os: macos-latest
+    runs-on: ${{ matrix.platform-os.os }}
+    defaults:
+      run:
+        working-directory: front
+    outputs:
+      flutter-version: ${{ steps.flutter-setup.outputs.flutter-version }}
+      cache-key: ${{ steps.flutter-setup.outputs.cache-key }}
+      cache-path: ${{ steps.flutter-setup.outputs.cache-path }}
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter Environment
+        id: flutter-setup
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+          cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
+          cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
+
+      - name: Install Flutter Dependencies
+        run: flutter pub get
+
+      - name: Execute Flutter Tests and Coverage
+        run: flutter test --coverage
+
+      - name: Upload Test Coverage to Codecov
+        uses: codecov/codecov-action@v4
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          file: ./coverage/lcov.info
+          flags: unittests-front-${{ matrix.platform-os.platform }}
+          slug: Pietrucci-Blacher/Challenge-Stack-2-5IW
+          fail_ci_if_error: true
+          verbose: true
+
+      - name: Perform Flutter Static Analysis
+        run: flutter analyze
+
+      - name: Prepare JDK for Android Builds
+        if: matrix.platform-os.platform == 'apk'
+        uses: actions/setup-java@v4
+        with:
+          java-version: '21'
+          distribution: 'temurin'
+
+      - name: Build for Selected Platform
+        run: |
+          case "${{ matrix.platform-os.platform }}" in
+            apk)
+              flutter build apk
+              ;;
+            web)
+              flutter build web
+              ;;
+            ios)
+              flutter build ios --release --no-codesign
+              ;;
+          esac

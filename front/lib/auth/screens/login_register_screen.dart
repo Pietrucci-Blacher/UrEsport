@@ -29,7 +29,8 @@ class LoginRegisterScreenState extends State<LoginRegisterScreen> {
 
   void _handleLogin() async {
     try {
-      await widget.authService.login(_emailController.text, _passwordController.text);
+      await widget.authService
+          .login(_emailController.text, _passwordController.text);
     } catch (e) {
       _showError(e.toString());
     }
@@ -42,8 +43,7 @@ class LoginRegisterScreenState extends State<LoginRegisterScreen> {
           _passwordController.text,
           _firstnameController.text,
           _lastnameController.text,
-          _usernameController.text
-      );
+          _usernameController.text);
     } catch (e) {
       _showError(e.toString());
     }
@@ -98,7 +98,8 @@ class LoginRegisterScreenState extends State<LoginRegisterScreen> {
             ),
             const SizedBox(height: 20),
             ElevatedButton(onPressed: _handleLogin, child: const Text('Login')),
-            ElevatedButton(onPressed: _handleRegister, child: const Text('Register')),
+            ElevatedButton(
+                onPressed: _handleRegister, child: const Text('Register')),
           ],
         ),
       ),
