@@ -12,5 +12,4 @@ class AuthServiceProvider with ChangeNotifier {
     _authService = authService;
     notifyListeners();
   }
-
 }

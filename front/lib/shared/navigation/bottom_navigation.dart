@@ -16,54 +16,52 @@ class CustomBottomNavigation extends StatefulWidget {
  CustomBottomNavigationState createState() => CustomBottomNavigationState();
 }
 
-class CustomBottomNavigationState extends State<CustomBottomNavigation> with SingleTickerProviderStateMixin {
- late AnimationController _controller;
+class CustomBottomNavigationState extends State<CustomBottomNavigation> {
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 60, // Adjust the height as needed
+      decoration: BoxDecoration(
+        color: Colors.white, // Background color
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 1,
+            blurRadius: 7,
+            offset: const Offset(0, -3), // changes position of shadow
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
+        children: <Widget>[
+          _buildItem(Icons.home, 'Home', 0),
+          _buildItem(Icons.sports_esports, 'Tournaments', 1),
+          _buildItem(Icons.notifications, 'Notifications', 2),
+          _buildItem(Icons.person, 'Profile', 3),
+        ],
+      ),
+    );
+  }
 
- @override
- void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(seconds: 2),
-      vsync: this,
-    )..repeat(reverse: true);
- }
-
- @override
- void dispose() {
-    _controller.dispose();
-    super.dispose();
- }
-
- @override
- Widget build(BuildContext context) {
-   return BottomNavigationBar(
-     items: <BottomNavigationBarItem>[  // Removed 'const' here
-       const BottomNavigationBarItem(
-         icon: Icon(Icons.home),
-         label: 'Home',
-       ),
-       const BottomNavigationBarItem(
-         icon: Icon(Icons.sports_esports),
-         label: 'Tournaments',
-       ),
-       BottomNavigationBarItem(
-         icon: AnimatedIcon(
-           icon: AnimatedIcons.event_add,
-           progress: _controller,
-         ),
-         label: 'Notifications',
-       ),
-       const BottomNavigationBarItem(
-         icon: Icon(Icons.person),
-         label: 'Profile',
-       ),
-     ],
-     currentIndex: widget.selectedIndex,
-     selectedItemColor: Colors.blue[800],
-     unselectedItemColor: Colors.grey[600],
-     showSelectedLabels: true,
-     onTap: widget.onTap,
-   );
- }
-
+  Widget _buildItem(IconData icon, String label, int index) {
+    return GestureDetector(
+      onTap: () => widget.onTap(index),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: <Widget>[
+          Icon(
+            icon,
+            color: widget.selectedIndex == index ? Colors.blue[800] : Colors.grey[600],
+          ),
+          Text(
+            label,
+            style: TextStyle(
+              color: widget.selectedIndex == index ? Colors.blue[800] : Colors.grey[600],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }

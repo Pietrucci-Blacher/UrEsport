@@ -1,10 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 abstract class IAuthService {
   Future<void> register(String firstName, String lastName, String userName, String email, String password);
   Future<void> login(String email, String password);
   Future<bool> isLoggedIn();
+  Future<void> logout();
 }
 
 class AuthService implements IAuthService {
@@ -41,12 +43,21 @@ class AuthService implements IAuthService {
 
   @override
   Future<bool> isLoggedIn() async {
-    final response = await _dio.get(Uri.parse('${dotenv.env['API_ENDPOINT']}/users/me') as String);
+    final response = await _dio.get(Uri.parse('${dotenv.env['API_ENDPOINT']}/users/me').toString());
     if (response.statusCode == 200) {
       final Map<String, dynamic> userData = response.data;
       return userData.containsKey('user');
     } else {
       return false;
+    }
+  }
+
+  @override
+  Future<void> logout() async {
+    try {
+      await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/logout');
+    } catch (e) {
+      throw Exception('Failed to logout');
     }
   }
 }

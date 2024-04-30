@@ -5,7 +5,7 @@ import 'package:uresport/notification/screens/notif_screen.dart';
 import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
 import 'package:uresport/tournament/screens/tournament_screen.dart';
-import 'package:uresport/auth/services/auth_service.dart';
+import 'auth/services/auth_service.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -31,8 +31,6 @@ class MainScreenState extends State<MainScreen> {
       setState(() {
         _selectedIndex = index;
       });
-    } else {
-      debugPrint('Index $index is out of range for _widgetOptions');
     }
   }
 
@@ -43,14 +41,9 @@ class MainScreenState extends State<MainScreen> {
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator(); // Show a loading indicator while waiting
-        } else if (snapshot.hasError) {
-          return const Text('Error checking login status');
         } else {
           bool isLoggedIn = snapshot.data ?? false;
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('UrEsport'),
-            ),
             body: IndexedStack(
               index: _selectedIndex,
               children: _widgetOptions,
