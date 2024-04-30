@@ -1,6 +1,10 @@
 name: CD Pipeline
 
 on:
+  push:
+    branches:
+      - feature/cd
+
   pull_request:
     branches:
       - main
@@ -18,16 +22,25 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-
       - name: Build and push Golang Docker image
         uses: docker/build-push-action@v5
         with:
           context: ./back
           file: ./back/Dockerfile
           push: true
-          tags: sunshiotv/uresports-api:latest
-          cache-from: type=registry,ref=sunshiotv/uresports-api:latest
+          tags: ${{ secrets.DOCKER_USERNAME }}/uresports-api:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/uresports-api:latest
           cache-to: type=inline
+          build-args: |
+            DB_HOST=${{secrets.DATABASE_HOST}}
+            DB_PORT=${{secrets.DATABASE_PORT}}
+            DB_USER=${{secrets.DATABASE_USER}}
+            DB_PASSWORD=${{secrets.DATABASE_PASSWORD}}
+            DB_NAME=${{secrets.DATABASE_NAME}}
+            JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
+            COOKIE_SECURE=true
+            RESEND_API_KEY=${{secrets.RESEND_API_KEY}}
+            RESEND_SENDER=noreply@uresport.fr
 
   deploy_api_to_railway:
     needs: build_and_push_docker
