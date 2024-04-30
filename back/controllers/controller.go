@@ -84,7 +84,10 @@ func RegisterRoutes(r *gin.Engine) {
 
 		tournaments := api.Group("/tournaments")
 		{
-			tournaments.GET("/", GetTournaments)
+			tournaments.GET("/",
+				middlewares.QueryFilter(),
+				GetTournaments,
+			)
 			tournaments.POST("/",
 				middlewares.IsLoggedIn(),
 				CreateTournament,

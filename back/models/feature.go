@@ -52,3 +52,10 @@ func (f *Feature) Delete() error {
 func (f *Feature) Save() error {
 	return DB.Save(&f).Error
 }
+
+func ClearFeature() error {
+	if err := DB.Exec("DELETE FROM features").Error; err != nil {
+		return err
+	}
+	return nil
+}

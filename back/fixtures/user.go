@@ -2,36 +2,24 @@ package fixtures
 
 import (
 	"challenge/models"
+	"fmt"
 	"math/rand"
-	"strings"
-
-	faker "github.com/jaswdr/faker/v2"
 )
 
-var fake = faker.New()
-
 func LoadUsers() error {
-	var users []*models.User
-
 	if err := models.ClearUsers(); err != nil {
 		return err
 	}
 
-	for i := 0; i < 20; i++ {
-		firstname := fake.Person().FirstName()
-		lastname := fake.Person().LastName()
-		username := strings.ToLower(strings.ReplaceAll(firstname+"."+lastname, " ", ""))
-		email := fake.Internet().Email()
-		password := fake.Internet().Password()
-		roles := []string{"user", "admin"}
-		role := roles[rand.Intn(len(roles))]
+	for i := 0; i < USER_NB; i++ {
+		role := USER_ROLES[rand.Intn(len(USER_ROLES))]
 
-		user := &models.User{
-			Firstname: firstname,
-			Lastname:  lastname,
-			Username:  username,
-			Email:     email,
-			Password:  password,
+		user := models.User{
+			Firstname: fake.Person().FirstName(),
+			Lastname:  fake.Person().LastName(),
+			Username:  fake.Person().FirstName(),
+			Email:     fake.Internet().Email(),
+			Password:  USER_PASSWORD,
 			Roles:     []string{role},
 		}
 
@@ -43,7 +31,7 @@ func LoadUsers() error {
 			return err
 		}
 
-		users = append(users, user)
+		fmt.Printf("User %s created with password %s\n", user.Username, USER_PASSWORD)
 	}
 
 	return nil
