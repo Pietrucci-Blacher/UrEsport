@@ -12,9 +12,27 @@ on:
 jobs:
   build_and_push_docker:
     runs-on: ubuntu-latest
+    defaults:
+        run:
+            working-directory: ./back
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+
+      - name: Create .env file
+        uses: SpicyPizza/create-envfile@v2.0
+        with:
+          path: .env
+          env: |
+            DB_HOST=${{ secrets.DATABASE_HOST }}
+            DB_PORT=${{ secrets.DATABASE_PORT }}
+            DB_USER=${{ secrets.DATABASE_USER }}
+            DB_PASSWORD=${{ secrets.DATABASE_PASSWORD }}
+            DB_NAME=${{ secrets.DATABASE_NAME }}
+            JWT_SECRET_KEY=${{ secrets.JWT_SECRET_KEY }}
+            COOKIE_SECURE=true
+            RESEND_API_KEY=${{ secrets.RESEND_API_KEY }}
+            RESEND_SENDER=noreply@uresport.fr
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
@@ -25,22 +43,12 @@ jobs:
       - name: Build and push Golang Docker image
         uses: docker/build-push-action@v5
         with:
-          context: ./back
-          file: ./back/Dockerfile
+          context: .
+          file: ./Dockerfile-prod
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/uresports-api:latest
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/uresports-api:latest
           cache-to: type=inline
-          build-args: |
-            DB_HOST=${{secrets.DATABASE_HOST}}
-            DB_PORT=${{secrets.DATABASE_PORT}}
-            DB_USER=${{secrets.DATABASE_USER}}
-            DB_PASSWORD=${{secrets.DATABASE_PASSWORD}}
-            DB_NAME=${{secrets.DATABASE_NAME}}
-            JWT_SECRET_KEY=${{secrets.JWT_SECRET_KEY}}
-            COOKIE_SECURE=true
-            RESEND_API_KEY=${{secrets.RESEND_API_KEY}}
-            RESEND_SENDER=noreply@uresport.fr
 
   deploy_api_to_railway:
     needs: build_and_push_docker
