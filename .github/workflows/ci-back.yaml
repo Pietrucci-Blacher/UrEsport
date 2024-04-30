@@ -30,6 +30,14 @@
             cache: true
             cache-dependency-path: "**/go.sum"
 
+        - name: Install swaggo
+          run: |
+            go install github.com/swaggo/swag/cmd/swag@latest
+            echo "$GOPATH/bin" >> $GITHUB_PATH
+
+        - name : Generate Swagger
+          run: swag init
+
         - name: Lint
           uses: golangci/golangci-lint-action@v5
           with:
@@ -46,13 +54,6 @@
         - name: Install goImports
           run: |
               go install golang.org/x/tools/cmd/goimports@latest
-              echo "$GOPATH/bin" >> $GITHUB_PATH
-
-        - name: Install swaggo
-          run: go install github.com/swaggo/swag/cmd/swag@latest
-
-        - name : Generate Swagger
-          run: swag init
 
         - name: Format and Check Imports
           run: goimports -w .
