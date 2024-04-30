@@ -1,0 +1,6 @@
+# sample regex patterns
+ignore:
+  - "docs"
+  - "fixtures" 
+  - "controllers"
+  - "middlewares"
