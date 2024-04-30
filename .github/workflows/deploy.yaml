@@ -40,11 +40,14 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      - name: Debug files
+        run: ls -la
+
       - name: Build and push Golang Docker image
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./Dockerfile-prod
+          file: Dockerfile-prod
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/uresports-api:latest
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/uresports-api:latest
