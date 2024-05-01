@@ -2,44 +2,44 @@ package websockets
 
 import (
 	"fmt"
-	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
-	"github.com/gorilla/websocket"
+	socketio "github.com/googollee/go-socket.io"
 )
 
-var upgrader = websocket.Upgrader{
-	ReadBufferSize:  1024,
-	WriteBufferSize: 1024,
+func RegisterWebsocket(r *gin.Engine) *socketio.Server {
+	server := socketio.NewServer(nil)
+
+	server.OnConnect("/", connectHandler)
+	server.OnEvent("/", "test", func(s socketio.Conn, msg string) {
+		fmt.Println("test:", msg)
+		s.Emit("test", msg)
+	})
+	server.OnError("/", func(s socketio.Conn, e error) {
+		fmt.Fprintf(os.Stderr, "Soket.io error: %v\n", e)
+	})
+	server.OnDisconnect("/", disconnectHandler)
+
+	go listen(server)
+
+	r.GET("/socket.io/*any", gin.WrapH(server))
+
+	return server
 }
 
-func RegisterWebsocket(r *gin.Engine) {
-	ws := r.Group("/ws")
-	{
-		ws.GET("/", wsHandler)
+func listen(s *socketio.Server) {
+	if err := s.Serve(); err != nil {
+		fmt.Println("Error: ", err)
 	}
 }
 
-func wsHandler(c *gin.Context) {
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-	defer conn.Close()
+func connectHandler(s socketio.Conn) error {
+	s.SetContext("")
+	fmt.Println("connected:", s.ID())
+	return nil
+}
 
-	for {
-		_, msg, err := conn.ReadMessage()
-		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-
-		fmt.Printf("Received: %s\n", msg)
-
-		if err := conn.WriteMessage(websocket.TextMessage, msg); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			return
-		}
-	}
+func disconnectHandler(s socketio.Conn, reason string) {
+	fmt.Println("disconnected:", s.ID(), reason)
 }

@@ -18,7 +18,10 @@ func QueryFilter() gin.HandlerFunc {
 			limit = 10
 		}
 
+		where := c.DefaultQuery("where", "")
+
 		c.Set("limit", limit)
 		c.Set("skip", (page-1)*limit)
+		c.Set("where", where)
 	}
 }

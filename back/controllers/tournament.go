@@ -23,15 +23,16 @@ func GetTournaments(c *gin.Context) {
 
 	skip := c.GetInt("skip")
 	limit := c.GetInt("limit")
+	where := c.GetString("where")
 
-	tournaments, err := models.FindAllTournaments(skip, limit)
+	tournaments, err := models.FindAllTournaments(skip, limit, where)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	for i := range tournaments {
-		sanitized = append(sanitized, tournaments[i].Sanitize())
+	for _, tournament := range tournaments {
+		sanitized = append(sanitized, tournament.Sanitize())
 	}
 
 	c.JSON(http.StatusOK, sanitized)

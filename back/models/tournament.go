@@ -55,12 +55,13 @@ type InviteUserDto struct {
 	Username string `json:"username" validate:"required"`
 }
 
-func FindAllTournaments(skip, limit int) ([]Tournament, error) {
+func FindAllTournaments(skip, limit int, where string) ([]Tournament, error) {
 	var tournaments []Tournament
 
 	err := DB.Model(&Tournament{}).
 		Offset(skip).
 		Limit(limit).
+		Where(where).
 		Preload("Participants").
 		Find(&tournaments).Error
 
