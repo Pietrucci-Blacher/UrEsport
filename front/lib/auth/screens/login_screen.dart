@@ -32,13 +32,14 @@ class LoginScreenState extends State<LoginScreen> {
         ),
       );
 
-      // Inject token into cache upon successful login
       await CacheService.instance.setString('token', token);
 
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const HomeScreen()),
-      );
+      if(mounted) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomeScreen()),
+        );
+      }
     } catch (e) {
       _showError(e.toString());
     }
