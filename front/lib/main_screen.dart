@@ -6,9 +6,7 @@ import 'package:uresport/shared/navigation/bottom_navigation.dart';
 import 'package:uresport/tournament/screens/tournament_screen.dart';
 import 'package:uresport/widgets/invite_button.dart';
 import 'package:uresport/widgets/qrcode.dart';
-import 'package:uresport/widgets/scan_qrcode.dart';
-
-
+import 'package:uresport/widgets/scan_qrcode.dart'; // Ajoutez cette ligne
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -63,7 +61,7 @@ class MainScreenState extends State<MainScreen> {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => const QRViewExample()),
+                MaterialPageRoute(builder: (context) => QRScanner()),
               );
             },
             child: const Text('Scan QR Code'),
