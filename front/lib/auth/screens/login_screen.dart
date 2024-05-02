@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:uresport/auth/services/auth_service.dart';
+import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/models/login_request.dart';
+import 'package:uresport/core/services/cache_service.dart';
+import 'package:uresport/home/screens/home_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final IAuthService authService;
@@ -10,8 +13,8 @@ class LoginScreen extends StatefulWidget {
 }
 
 class LoginScreenState extends State<LoginScreen> {
-  final _emailController = TextEditingController();
-  final _passwordController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   @override
   void dispose() {
@@ -22,7 +25,20 @@ class LoginScreenState extends State<LoginScreen> {
 
   void _handleLogin() async {
     try {
-      await widget.authService.login(_emailController.text, _passwordController.text);
+      final token = await widget.authService.login(
+        LoginRequest(
+          email: _emailController.text,
+          password: _passwordController.text,
+        ),
+      );
+
+      // Inject token into cache upon successful login
+      await CacheService.instance.setString('token', token);
+
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeScreen()),
+      );
     } catch (e) {
       _showError(e.toString());
     }
@@ -36,10 +52,10 @@ class LoginScreenState extends State<LoginScreen> {
         content: Text(message),
         actions: <Widget>[
           TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text("OK")
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text("OK"),
           ),
         ],
       ),
@@ -59,11 +75,13 @@ class LoginScreenState extends State<LoginScreen> {
               controller: _emailController,
               decoration: const InputDecoration(labelText: 'Email'),
               keyboardType: TextInputType.emailAddress,
+              autofillHints: const [AutofillHints.email],
             ),
             TextField(
               controller: _passwordController,
               decoration: const InputDecoration(labelText: 'Password'),
               obscureText: true,
+              autofillHints: const [AutofillHints.password],
             ),
             const SizedBox(height: 20),
             ElevatedButton(onPressed: _handleLogin, child: const Text('Login')),

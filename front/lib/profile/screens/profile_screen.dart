@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uresport/auth/screens/login_screen.dart';
 import 'package:uresport/auth/screens/register_screen.dart';
-import 'package:uresport/auth/services/auth_service.dart';
+import 'package:uresport/core/services/auth_service.dart';
 
 class ProfileScreen extends StatefulWidget {
   final IAuthService authService;
@@ -19,6 +19,11 @@ class ProfileScreenState extends State<ProfileScreen> {
   void initState() {
     super.initState();
     _isAuthenticatedFuture = widget.authService.isLoggedIn();
+  }
+
+  void refreshAuthentication() async {
+    _isAuthenticatedFuture = widget.authService.isLoggedIn();
+    setState(() {});
   }
 
   @override
@@ -52,7 +57,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => LoginScreen(authService: widget.authService)),
-              );
+              ).then((_) => refreshAuthentication());
             },
             child: const Text('Log In'),
           ),
@@ -61,7 +66,7 @@ class ProfileScreenState extends State<ProfileScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => RegisterScreen(authService: widget.authService)),
-              );
+              ).then((_) => refreshAuthentication());
             },
             child: const Text('Register'),
           ),
@@ -80,9 +85,7 @@ class ProfileScreenState extends State<ProfileScreen> {
           ElevatedButton(
             onPressed: () async {
               await widget.authService.logout();
-              setState(() {
-                _isAuthenticatedFuture = widget.authService.isLoggedIn(); // Refresh authentication status
-              });
+              refreshAuthentication();
             },
             child: const Text("Logout"),
           ),

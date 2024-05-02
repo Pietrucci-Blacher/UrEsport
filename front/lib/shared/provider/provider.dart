@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uresport/auth/services/auth_service.dart';
+import 'package:uresport/core/services/auth_service.dart';
 
 class AuthServiceProvider with ChangeNotifier {
   IAuthService _authService;
