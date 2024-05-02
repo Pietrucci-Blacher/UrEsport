@@ -37,6 +37,10 @@ class CustomBottomNavigationState extends State<CustomBottomNavigation> {
           icon: Icon(Icons.person),
           label: 'Profile',
         ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'QRCode',
+        ),
       ],
       currentIndex: widget.selectedIndex,
       selectedItemColor: Colors.blue[800],

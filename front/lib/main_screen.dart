@@ -4,6 +4,11 @@ import 'package:uresport/notification/screens/notif_screen.dart';
 import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
 import 'package:uresport/tournament/screens/tournament_screen.dart';
+import 'package:uresport/widgets/invite_button.dart';
+import 'package:uresport/widgets/qrcode.dart';
+import 'package:uresport/widgets/scan_qrcode.dart';
+
+
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -22,6 +27,11 @@ class MainScreenState extends State<MainScreen> {
     const TournamentScreen(),
     const NotificationScreen(),
     const ProfileScreen(),
+    const QRCode(
+      width: 200,
+      height: 200,
+      data: 'https://flutterflow.io', // Remplacez par les données que vous voulez encoder
+    ),
   ];
 
   void _onItemTapped(int index) {
@@ -40,9 +50,25 @@ class MainScreenState extends State<MainScreen> {
       appBar: AppBar(
         title: const Text('UrEsport'),
       ),
-      body: IndexedStack(
-        index: _selectedIndex,
-        children: _widgetOptions,
+      body: Column(
+        children: [
+          Expanded(
+            child: IndexedStack(
+              index: _selectedIndex,
+              children: _widgetOptions,
+            ),
+          ),
+          const InviteButton(username: 'votre_username'), // Remplacez 'votre_username' par le nom d'utilisateur réel
+          ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const QRViewExample()),
+              );
+            },
+            child: const Text('Scan QR Code'),
+          ),
+        ],
       ),
       bottomNavigationBar: CustomBottomNavigation(
         isLoggedIn: isLoggedIn,
