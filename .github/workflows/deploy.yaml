@@ -12,9 +12,6 @@ on:
 jobs:
   build_and_push_docker:
     runs-on: ubuntu-latest
-    defaults:
-        run:
-            working-directory: ./back
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -45,7 +42,8 @@ jobs:
       - name: Build and push Golang Docker image
         uses: docker/build-push-action@v5
         with:
-          file: ./Dockerfile-prod
+          context: ./back
+          file: ./back/Dockerfile-prod
           push: true
           tags: ${{ secrets.DOCKER_USERNAME }}/uresports-api:latest
           cache-from: type=registry,ref=${{ secrets.DOCKER_USERNAME }}/uresports-api:latest
