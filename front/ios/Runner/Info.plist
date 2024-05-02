@@ -61,6 +61,5 @@
     <key>GIDClientID</key>
     <!-- Replace this value with your actual CLIENT_ID from Google Console -->
     <string>307019153799-78o70iqpndvp6njek8b2lh06mgnmuvin.apps.googleusercontent.com</string>
-
 </dict>
 </plist>
