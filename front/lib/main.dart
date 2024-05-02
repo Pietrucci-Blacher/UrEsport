@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:uresport/shared/provider/provider.dart';
 import 'package:uresport/auth/services/auth_service.dart';
 import 'app.dart';
 
