@@ -86,7 +86,6 @@ func GetUserMe(c *gin.Context) {
 //	@Failure		500		{object}	utils.HttpError
 //	@Router			/users/{id} [patch]
 func UpdateUser(c *gin.Context) {
-
 	user, _ := c.MustGet("findedUser").(models.User)
 	body, _ := c.MustGet("body").(models.UpdateUserDto)
 
