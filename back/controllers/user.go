@@ -6,7 +6,6 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	validator "github.com/go-playground/validator/v10"
 )
 
 // GetUsers godoc
@@ -87,14 +86,15 @@ func GetUserMe(c *gin.Context) {
 //	@Failure		500		{object}	utils.HttpError
 //	@Router			/users/{id} [patch]
 func UpdateUser(c *gin.Context) {
-	var body models.UpdateUserDto
+	// var body models.UpdateUserDto
 
 	user, _ := c.MustGet("findedUser").(models.User)
+	body, _ := c.MustGet("body").(models.UpdateUserDto)
 
-	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	// if err := c.BindJSON(&body); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
 	if count, err := models.CountUsersByEmail(body.Email); err != nil || count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
@@ -106,11 +106,11 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	// validate := validator.New()
+	// if err := validate.Struct(body); err != nil {
+	// 	c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	// 	return
+	// }
 
 	if body.Firstname != "" {
 		user.Firstname = body.Firstname

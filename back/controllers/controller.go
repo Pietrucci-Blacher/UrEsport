@@ -3,6 +3,7 @@ package controllers
 import (
 	"challenge/docs"
 	"challenge/middlewares"
+	"challenge/models"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -37,6 +38,7 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsLoggedIn(),
 				middlewares.GetUser(),
 				middlewares.IsMe(),
+				middlewares.Validate[models.UpdateUserDto](),
 				UpdateUser,
 			)
 			users.DELETE("/:id",
@@ -54,6 +56,7 @@ func RegisterRoutes(r *gin.Engine) {
 			features.POST("/",
 				middlewares.IsLoggedIn(),
 				middlewares.IsAdmin(),
+				middlewares.Validate[models.CreateFeatureDto](),
 				CreateFeature,
 			)
 			features.GET("/:id", GetFeature)
@@ -65,6 +68,7 @@ func RegisterRoutes(r *gin.Engine) {
 			features.PATCH("/:id",
 				middlewares.IsLoggedIn(),
 				middlewares.IsAdmin(),
+				middlewares.Validate[models.UpdateFeatureDto](),
 				UpdateFeature,
 			)
 			features.DELETE("/:id",
@@ -76,8 +80,14 @@ func RegisterRoutes(r *gin.Engine) {
 
 		auth := api.Group("/auth")
 		{
-			auth.POST("/login", Login)
-			auth.POST("/register", Register)
+			auth.POST("/login",
+				middlewares.Validate[models.LoginUserDto](),
+				Login,
+			)
+			auth.POST("/register",
+				middlewares.Validate[models.CreateUserDto](),
+				Register,
+			)
 			auth.POST("/logout", middlewares.IsLoggedIn(), Logout)
 		}
 
@@ -89,6 +99,7 @@ func RegisterRoutes(r *gin.Engine) {
 			)
 			tournaments.POST("/",
 				middlewares.IsLoggedIn(),
+				middlewares.Validate[models.CreateTournamentDto](),
 				CreateTournament,
 			)
 			tournaments.GET("/:id",
@@ -99,6 +110,7 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsLoggedIn(),
 				middlewares.GetTournament(),
 				middlewares.IsTournamentOwner(),
+				middlewares.Validate[models.UpdateTournamentDto](),
 				UpdateTournament,
 			)
 			tournaments.DELETE("/:id",
@@ -116,6 +128,7 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsLoggedIn(),
 				middlewares.GetTournament(),
 				middlewares.IsTournamentOwner(),
+				middlewares.Validate[models.InviteUserDto](),
 				InviteUserToTournament,
 			)
 			tournaments.DELETE("/:id/leave",
@@ -127,6 +140,7 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsLoggedIn(),
 				middlewares.GetTournament(),
 				middlewares.IsTournamentOwner(),
+				middlewares.Validate[models.InviteUserDto](),
 				KickUserFromTournament,
 			)
 			tournaments.PATCH("/:id/toggle-private",

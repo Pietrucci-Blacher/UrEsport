@@ -8,7 +8,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	validator "github.com/go-playground/validator/v10"
 )
 
 // Login godoc
@@ -23,26 +22,15 @@ import (
 //	@Failure		400		{object}	utils.HttpError
 //	@Router			/auth/login [post]
 func Login(c *gin.Context) {
-	var loginRequest models.LoginUserDto
-
-	if err := c.BindJSON(&loginRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
-		return
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(loginRequest); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
+	body, _ := c.MustGet("body").(models.LoginUserDto)
 
 	var user models.User
-	if err := user.FindOne("email", loginRequest.Email); err != nil {
+	if err := user.FindOne("email", body.Email); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
-	if !user.ComparePassword(loginRequest.Password) {
+	if !user.ComparePassword(body.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
@@ -78,34 +66,24 @@ func Login(c *gin.Context) {
 //	@Router			/auth/register [post]
 func Register(c *gin.Context) {
 	var user models.User
-	var data models.CreateUserDto
 
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
+	body, _ := c.MustGet("body").(models.CreateUserDto)
 
-	if count, err := models.CountUsersByEmail(data.Email); err != nil || count > 0 {
+	if count, err := models.CountUsersByEmail(body.Email); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Email already exists"})
 		return
 	}
 
-	if count, err := models.CountUsersByUsername(data.Username); err != nil || count > 0 {
+	if count, err := models.CountUsersByUsername(body.Username); err != nil || count > 0 {
 		c.JSON(400, gin.H{"error": "Username already exists"})
 		return
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(data); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	user.Firstname = data.Firstname
-	user.Lastname = data.Lastname
-	user.Username = data.Username
-	user.Email = data.Email
-	user.Password = data.Password
+	user.Firstname = body.Firstname
+	user.Lastname = body.Lastname
+	user.Username = body.Username
+	user.Email = body.Email
+	user.Password = body.Password
 	user.Roles = []string{models.ROLE_USER}
 
 	if err := user.HashPassword(); err != nil {

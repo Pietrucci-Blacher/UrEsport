@@ -7,7 +7,6 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	validator "github.com/go-playground/validator/v10"
 )
 
 // GetUsers godoc
@@ -74,26 +73,16 @@ func GetFeature(c *gin.Context) {
 //	@Router			/features/ [post]
 func CreateFeature(c *gin.Context) {
 	var feature models.Feature
-	var data models.CreateFeatureDto
 
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	body, _ := c.MustGet("body").(models.CreateFeatureDto)
 
-	if count, err := models.CountFeatureByName(data.Name); err != nil || count > 0 {
+	if count, err := models.CountFeatureByName(body.Name); err != nil || count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Feature already exists"})
 		return
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	feature.Name = data.Name
-	feature.Description = data.Description
+	feature.Name = body.Name
+	feature.Description = body.Description
 	feature.Active = false
 
 	if err := feature.Save(); err != nil {
@@ -121,7 +110,8 @@ func CreateFeature(c *gin.Context) {
 //	@Router			/features/{id} [patch]
 func UpdateFeature(c *gin.Context) {
 	var feature models.Feature
-	var data models.UpdateFeatureDto
+
+	body, _ := c.MustGet("body").(models.UpdateFeatureDto)
 
 	id, err := strconv.Atoi(c.Param("id"))
 	if err != nil {
@@ -134,21 +124,16 @@ func UpdateFeature(c *gin.Context) {
 		return
 	}
 
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if count, err := models.CountFeatureByName(data.Name); err != nil || count > 0 {
+	if count, err := models.CountFeatureByName(body.Name); err != nil || count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Feature already exists"})
 		return
 	}
 
-	if data.Name != "" {
-		feature.Name = data.Name
+	if body.Name != "" {
+		feature.Name = body.Name
 	}
-	if data.Description != "" {
-		feature.Description = data.Description
+	if body.Description != "" {
+		feature.Description = body.Description
 	}
 
 	if err := feature.Save(); err != nil {
