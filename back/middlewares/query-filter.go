@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"challenge/utils"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +19,9 @@ func QueryFilter() gin.HandlerFunc {
 			limit = 10
 		}
 
-		c.Set("limit", limit)
-		c.Set("skip", (page-1)*limit)
+		where := c.DefaultQuery("where", "")
+		query := utils.NewQueryFilter(page, limit, where)
+
+		c.Set("query", query)
 	}
 }

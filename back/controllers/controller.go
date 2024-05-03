@@ -25,13 +25,12 @@ func RegisterRoutes(r *gin.Engine) {
 		{
 			users.GET("/",
 				middlewares.IsLoggedIn(),
-				middlewares.IsAdmin(),
+				middlewares.QueryFilter(),
 				GetUsers,
 			)
 			users.GET("/:id",
 				middlewares.IsLoggedIn(),
 				middlewares.GetUser(),
-				middlewares.IsMe(),
 				GetUser,
 			)
 			users.PATCH("/:id",

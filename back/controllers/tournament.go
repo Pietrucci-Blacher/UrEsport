@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"challenge/models"
+	"challenge/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,17 +22,16 @@ import (
 func GetTournaments(c *gin.Context) {
 	var sanitized []models.SanitizedTournament
 
-	skip := c.GetInt("skip")
-	limit := c.GetInt("limit")
+	query, _ := c.MustGet("query").(utils.QueryFilter)
 
-	tournaments, err := models.FindAllTournaments(skip, limit)
+	tournaments, err := models.FindAllTournaments(query)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	for i := range tournaments {
-		sanitized = append(sanitized, tournaments[i].Sanitize())
+	for _, tournament := range tournaments {
+		sanitized = append(sanitized, tournament.Sanitize(true))
 	}
 
 	c.JSON(http.StatusOK, sanitized)
@@ -52,9 +52,9 @@ func GetTournaments(c *gin.Context) {
 func GetTournament(c *gin.Context) {
 	tournament, _ := c.MustGet("tournament").(models.Tournament)
 
-	sanitize := tournament.Sanitize()
+	sanitized := tournament.Sanitize(true)
 
-	c.JSON(http.StatusOK, sanitize)
+	c.JSON(http.StatusOK, sanitized)
 }
 
 // CreateTournament godoc
