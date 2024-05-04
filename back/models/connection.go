@@ -5,12 +5,15 @@ import (
 	"os"
 
 	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 var DB *gorm.DB
 
-func ConnectDB() error {
+func ConnectDB(test bool) error {
+	var dialect gorm.Dialector
+
 	dsn := fmt.Sprintf(
 		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
 		os.Getenv("DB_HOST"),
@@ -20,21 +23,53 @@ func ConnectDB() error {
 		os.Getenv("DB_PORT"),
 	)
 
-	database, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	if !test {
+		dialect = postgres.Open(dsn)
+	} else {
+		dialect = sqlite.Open("file::memory:?cache=shared")
+	}
+
+	database, err := gorm.Open(dialect, &gorm.Config{})
 	if err != nil {
 		return err
 	}
 
 	DB = database
 
+	if test {
+		if err := Migration(); err != nil {
+			return err
+		}
+	}
+
 	return nil
+}
+
+func CloseDB() error {
+	sqlDB, err := DB.DB()
+	if err != nil {
+		return err
+	}
+
+	return sqlDB.Close()
 }
 
 func Migration() error {
 	return DB.AutoMigrate(
 		&User{},
-    &Feature{},
+		&Feature{},
 		&Token{},
+		&Tournament{},
+	)
+}
+
+func DropTables() error {
+	return DB.Migrator().DropTable(
+		&User{},
+		&Feature{},
+		&Token{},
+		&Tournament{},
+		"tournament_participants",
 	)
 }
 

@@ -2,160 +2,100 @@ package controllers
 
 import (
 	"challenge/models"
-	_ "challenge/utils"
-	"strconv"
+	"challenge/utils"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
-	validator "github.com/go-playground/validator/v10"
 )
 
 // GetUsers godoc
-// @Summary      get all users
-// @Description  get all users
-// @Tags         user
-// @Accept       json
-// @Produce      json
-// @Success      200  {object} []models.User
-// @Failure      400  {object} utils.HttpError
-// @Router       /users/ [get]
+//
+//	@Summary		get all users
+//	@Description	get all users
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	[]models.User
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/users/ [get]
 func GetUsers(c *gin.Context) {
-	users, err := models.FindAllUsers()
+	var sanitized []models.SanitizedUser
+
+	query, _ := c.MustGet("query").(utils.QueryFilter)
+
+	users, err := models.FindAllUsers(query)
 	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, users)
+	for _, user := range users {
+		sanitized = append(sanitized, user.Sanitize(true))
+	}
+
+	c.JSON(http.StatusOK, sanitized)
 }
 
 // GetUser godoc
-// @Summary      get users by id
-// @Description  get users by id
-// @Tags         user
-// @Accept       json
-// @Produce      json
-// @Param        id path int true "Feature ID"
-// @Success      200  {object} models.User
-// @Failure      400  {object} utils.HttpError
-// @Failure      404  {object} utils.HttpError
-// @Router       /users/{id} [get]
+//
+//	@Summary		get users by id
+//	@Description	get users by id
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Feature ID"
+//	@Success		200	{object}	models.User
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/users/{id} [get]
 func GetUser(c *gin.Context) {
-	var user models.User
+	user, _ := c.MustGet("findedUser").(models.User)
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
+	sanitized := user.Sanitize(true)
 
-	if err := user.FindOneById(id); err != nil {
-		c.JSON(404, gin.H{"error": "User not found"})
-		return
-	}
-
-	c.JSON(200, user)
+	c.JSON(http.StatusOK, sanitized)
 }
 
-// CreateUser godoc
-// @Summary      create user
-// @Description  create user
-// @Tags         user
-// @Accept       json
-// @Produce      json
-// @Param        user body models.CreateUserDto true "User"
-// @Success      201  {object} models.User
-// @Failure      400  {object} utils.HttpError
-// @Router       /users/ [post]
-func CreateUser(c *gin.Context) {
-	var user models.User
-	var data models.CreateUserDto
-
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	if count, err := models.CountUsersByEmail(data.Email); err != nil || count > 0 {
-		c.JSON(400, gin.H{"error": "Email already exists"})
-		return
-	}
-
-	if count, err := models.CountUsersByUsername(data.Username); err != nil || count > 0 {
-		c.JSON(400, gin.H{"error": "Username already exists"})
-		return
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(data); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	user.Firstname = data.Firstname
-	user.Lastname = data.Lastname
-	user.Username = data.Username
-	user.Email = data.Email
-	user.Password = data.Password
-	user.Roles = []string{"user"}
-
-	if err := user.HashPassword(); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := user.Save(); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	c.JSON(201, user)
+// GetUserMe godoc
+//
+//	@Summary		get connected user
+//	@Description	get connected user
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	models.User
+//	@Router			/users/me [get]
+func GetUserMe(c *gin.Context) {
+	connectedUser, _ := c.MustGet("user").(models.User)
+	c.JSON(http.StatusOK, connectedUser)
 }
 
 // UpdateUser godoc
-// @Summary      update user
-// @Description  update user
-// @Tags         user
-// @Accept       json
-// @Produce      json
-// @Param        user body models.UpdateUserDto true "User"
-// @Param        id path int true "User ID"
-// @Success      200  {object} models.User
-// @Failure      400  {object} utils.HttpError
-// @Failure      404  {object} utils.HttpError
-// @Router       /users/{id} [patch]
+//
+//	@Summary		update user
+//	@Description	update user
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			user	body		models.UpdateUserDto	true	"User"
+//	@Param			id		path		int						true	"User ID"
+//	@Success		200		{object}	models.User
+//	@Failure		400		{object}	utils.HttpError
+//	@Failure		401		{object}	utils.HttpError
+//	@Failure		404		{object}	utils.HttpError
+//	@Failure		500		{object}	utils.HttpError
+//	@Router			/users/{id} [patch]
 func UpdateUser(c *gin.Context) {
-	var user models.User
-	var body models.UpdateUserDto
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := user.FindOneById(id); err != nil {
-		c.JSON(404, gin.H{"error": "User not found"})
-		return
-	}
-
-	if err := c.BindJSON(&body); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
+	user, _ := c.MustGet("findedUser").(models.User)
+	body, _ := c.MustGet("body").(models.UpdateUserDto)
 
 	if count, err := models.CountUsersByEmail(body.Email); err != nil || count > 0 {
-		c.JSON(400, gin.H{"error": "Email already exists"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
 		return
 	}
 
 	if count, err := models.CountUsersByUsername(body.Username); err != nil || count > 0 {
-		c.JSON(400, gin.H{"error": "Username already exists"})
-		return
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(body); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 		return
 	}
 
@@ -173,42 +113,34 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	if err := user.Save(); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(200, user)
+	c.JSON(http.StatusOK, user)
 }
 
 // DeleteUser godoc
-// @Summary      delete user
-// @Description  delete user
-// @Tags         user
-// @Accept       json
-// @Produce      json
-// @Param        id path int true "User ID"
-// @Success      204  {object} models.User
-// @Failure      400  {object} utils.HttpError
-// @Failure      400  {object} utils.HttpError
-// @Router       /users/{id} [delete]
+//
+//	@Summary		delete user
+//	@Description	delete user
+//	@Tags			user
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path	int	true	"User ID"
+//	@Success		204
+//	@Failure		400	{object}	utils.HttpError
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/users/{id} [delete]
 func DeleteUser(c *gin.Context) {
-	var user models.User
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := user.FindOneById(id); err != nil {
-		c.JSON(404, gin.H{"error": "User not found"})
-		return
-	}
+	user, _ := c.MustGet("findedUser").(models.User)
 
 	if err := user.Delete(); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(204, nil)
+	c.JSON(http.StatusNoContent, nil)
 }

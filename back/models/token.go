@@ -3,9 +3,10 @@ package models
 import (
 	"fmt"
 	"log"
-	"github.com/golang-jwt/jwt/v5"
 	"os"
 	"time"
+
+	jwt "github.com/golang-jwt/jwt/v5"
 )
 
 type Token struct {
@@ -26,12 +27,20 @@ type UserClaims struct {
 
 func NewToken(tokenString string, userID int) error {
 	token := Token{
-		UserID:    userID,
-		Token:     tokenString,
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		UserID: userID,
+		Token:  tokenString,
 	}
 	return token.Save()
+}
+
+func FindTokensByUserID(userID int) ([]Token, error) {
+	var tokens []Token
+	err := DB.Where("user_id = ?", userID).Find(&tokens).Error
+	return tokens, err
+}
+
+func DeleteTokensByUserID(userID int) error {
+	return DB.Where("user_id = ?", userID).Delete(&Token{}).Error
 }
 
 func GenerateJWTToken(userID int) (string, error) {
@@ -79,11 +88,11 @@ func ParseJWTToken(tokenString string) (*UserClaims, error) {
 }
 
 func (t *Token) FindOne(key string, value any) error {
-   return DB.Where(key + " = ?", value).First(&t).Error
+	return DB.Where(key+" = ?", value).First(&t).Error
 }
 
 func (t *Token) FindOneById(id int) error {
-    return DB.First(&t, id).Error
+	return DB.First(&t, id).Error
 }
 
 func (t *Token) Save() error {

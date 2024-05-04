@@ -1,0 +1,48 @@
+package fixtures
+
+import (
+	"challenge/models"
+	"fmt"
+	"math/rand"
+	"time"
+)
+
+func LoadTournaments() error {
+	if err := models.ClearTournaments(); err != nil {
+		return err
+	}
+
+	for i := 0; i < TOURNAMENT_NB; i++ {
+		organizer := rand.Intn(USER_NB-1) + 1
+
+		tournament := models.Tournament{
+			Name:        fake.Lorem().Word(),
+			Description: fake.Lorem().Sentence(20),
+			StartDate:   time.Now(),
+			EndDate:     time.Now().AddDate(0, 0, 7),
+			Location:    fake.Address().City(),
+			OrganizerID: organizer,
+			Image:       fake.Lorem().Word(),
+			Private:     fake.Bool(),
+		}
+
+		if err := tournament.Save(); err != nil {
+			return err
+		}
+
+		fmt.Printf("Tournament %s created\n", tournament.Name)
+
+		var participants models.User
+		if err := participants.FindOneById(rand.Intn(USER_NB-1) + 1); err != nil {
+			return err
+		}
+
+		if err := tournament.AddParticipant(participants); err != nil {
+			return err
+		}
+
+		fmt.Printf("Participant %s added to tournament %s\n", participants.Username, tournament.Name)
+	}
+
+	return nil
+}

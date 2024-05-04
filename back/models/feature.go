@@ -29,7 +29,11 @@ func FindAllFeature() ([]Feature, error) {
 
 func CountFeatureByName(name string) (int64, error) {
 	var count int64
-	err := DB.Model(&Feature{}).Where("name = ?", name).Count(&count).Error
+
+	err := DB.Model(&Feature{}).
+		Where("name = ?", name).
+		Count(&count).Error
+
 	return count, err
 }
 
@@ -51,4 +55,8 @@ func (f *Feature) Delete() error {
 
 func (f *Feature) Save() error {
 	return DB.Save(&f).Error
+}
+
+func ClearFeature() error {
+	return DB.Exec("DELETE FROM features").Error
 }
