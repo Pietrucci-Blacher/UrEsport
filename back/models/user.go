@@ -1,6 +1,7 @@
 package models
 
 import (
+	"challenge/utils"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -41,12 +42,13 @@ type UpdateUserDto struct {
 }
 
 type SanitizedUser struct {
-	ID        int       `json:"id"`
-	Username  string    `json:"username"`
-	Firstname string    `json:"firstname"`
-	Lastname  string    `json:"lastname"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID          int                   `json:"id"`
+	Username    string                `json:"username"`
+	Firstname   string                `json:"firstname"`
+	Lastname    string                `json:"lastname"`
+	Tournaments []SanitizedTournament `json:"tournaments"`
+	CreatedAt   time.Time             `json:"created_at"`
+	UpdatedAt   time.Time             `json:"updated_at"`
 }
 
 type LoginUserDto struct {
@@ -54,10 +56,13 @@ type LoginUserDto struct {
 	Password string `json:"password" validate:"required"`
 }
 
-func FindAllUsers() ([]User, error) {
+func FindAllUsers(query utils.QueryFilter) ([]User, error) {
 	var users []User
 
 	err := DB.Model(&User{}).
+		Offset(query.GetSkip()).
+		Limit(query.GetLimit()).
+		Where(query.GetWhere()).
 		Preload("Tournaments").
 		Find(&users).Error
 
@@ -66,7 +71,11 @@ func FindAllUsers() ([]User, error) {
 
 func CountUsersByEmail(email string) (int64, error) {
 	var count int64
-	err := DB.Model(&User{}).Where("email = ?", email).Count(&count).Error
+
+	err := DB.Model(&User{}).
+		Where("email = ?", email).
+		Count(&count).Error
+
 	return count, err
 }
 
@@ -80,8 +89,10 @@ func CountUsersByUsername(username string) (int64, error) {
 	return count, err
 }
 
-func (u *User) Sanitize() SanitizedUser {
-	return SanitizedUser{
+func (u *User) Sanitize(getTournament bool) SanitizedUser {
+	var tournaments []SanitizedTournament
+
+	user := SanitizedUser{
 		ID:        u.ID,
 		Username:  u.Username,
 		Firstname: u.Firstname,
@@ -89,6 +100,16 @@ func (u *User) Sanitize() SanitizedUser {
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: u.UpdatedAt,
 	}
+
+	if getTournament {
+		for _, tournament := range u.Tournaments {
+			tournaments = append(tournaments, tournament.Sanitize(false))
+		}
+
+		user.Tournaments = tournaments
+	}
+
+	return user
 }
 
 func (u *User) IsRole(role string) bool {
@@ -142,8 +163,5 @@ func (u *User) Save() error {
 }
 
 func ClearUsers() error {
-	if err := DB.Exec("DELETE FROM users").Error; err != nil {
-		return err
-	}
-	return nil
+	return DB.Exec("DELETE FROM users").Error
 }

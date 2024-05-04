@@ -2,10 +2,10 @@ package controllers
 
 import (
 	"challenge/models"
+	"challenge/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	validator "github.com/go-playground/validator/v10"
 )
 
 // GetTournaments godoc
@@ -21,17 +21,16 @@ import (
 func GetTournaments(c *gin.Context) {
 	var sanitized []models.SanitizedTournament
 
-	skip := c.GetInt("skip")
-	limit := c.GetInt("limit")
+	query, _ := c.MustGet("query").(utils.QueryFilter)
 
-	tournaments, err := models.FindAllTournaments(skip, limit)
+	tournaments, err := models.FindAllTournaments(query)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	for i := range tournaments {
-		sanitized = append(sanitized, tournaments[i].Sanitize())
+	for _, tournament := range tournaments {
+		sanitized = append(sanitized, tournament.Sanitize(true))
 	}
 
 	c.JSON(http.StatusOK, sanitized)
@@ -52,9 +51,9 @@ func GetTournaments(c *gin.Context) {
 func GetTournament(c *gin.Context) {
 	tournament, _ := c.MustGet("tournament").(models.Tournament)
 
-	sanitize := tournament.Sanitize()
+	sanitized := tournament.Sanitize(true)
 
-	c.JSON(http.StatusOK, sanitize)
+	c.JSON(http.StatusOK, sanitized)
 }
 
 // CreateTournament godoc
@@ -71,29 +70,18 @@ func GetTournament(c *gin.Context) {
 //	@Router			/tournaments/ [post]
 func CreateTournament(c *gin.Context) {
 	var tournament models.Tournament
-	var data models.CreateTournamentDto
 
 	connectedUser, _ := c.MustGet("user").(models.User)
+	body, _ := c.MustGet("body").(models.CreateTournamentDto)
 
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	tournament.Name = data.Name
-	tournament.Description = data.Description
-	tournament.Location = data.Location
-	tournament.Image = data.Image
-	tournament.StartDate = data.StartDate
-	tournament.EndDate = data.EndDate
+	tournament.Name = body.Name
+	tournament.Description = body.Description
+	tournament.Location = body.Location
+	tournament.Image = body.Image
+	tournament.StartDate = body.StartDate
+	tournament.EndDate = body.EndDate
 	tournament.OrganizerID = connectedUser.ID
-	tournament.Private = data.Private
+	tournament.Private = body.Private
 
 	if err := tournament.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -119,38 +107,26 @@ func CreateTournament(c *gin.Context) {
 //	@Failure		500			{object}	utils.HttpError
 //	@Router			/tournaments/{id} [patch]
 func UpdateTournament(c *gin.Context) {
-	var data models.UpdateTournamentDto
-
 	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	body, _ := c.MustGet("body").(models.UpdateTournamentDto)
 
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if body.Name != "" {
+		tournament.Name = body.Name
 	}
-
-	validate := validator.New()
-	if err := validate.Struct(data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
+	if body.Description != "" {
+		tournament.Description = body.Description
 	}
-
-	if data.Name != "" {
-		tournament.Name = data.Name
+	if body.Location != "" {
+		tournament.Location = body.Location
 	}
-	if data.Description != "" {
-		tournament.Description = data.Description
+	if body.Image != "" {
+		tournament.Image = body.Image
 	}
-	if data.Location != "" {
-		tournament.Location = data.Location
+	if !body.StartDate.IsZero() {
+		tournament.StartDate = body.StartDate
 	}
-	if data.Image != "" {
-		tournament.Image = data.Image
-	}
-	if !data.StartDate.IsZero() {
-		tournament.StartDate = data.StartDate
-	}
-	if !data.EndDate.IsZero() {
-		tournament.EndDate = data.EndDate
+	if !body.EndDate.IsZero() {
+		tournament.EndDate = body.EndDate
 	}
 
 	if err := tournament.Save(); err != nil {
@@ -248,23 +224,12 @@ func LeaveTournament(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/tournaments/{id}/invite [post]
 func InviteUserToTournament(c *gin.Context) {
-	var data models.InviteUserDto
 	var userToInvite models.User
 
 	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	body, _ := c.MustGet("body").(models.InviteUserDto)
 
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := userToInvite.FindOne("username", data.Username); err != nil {
+	if err := userToInvite.FindOne("username", body.Username); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
@@ -290,23 +255,12 @@ func InviteUserToTournament(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/tournaments/{id}/kick [delete]
 func KickUserFromTournament(c *gin.Context) {
-	var data models.InviteUserDto
 	var userToKick models.User
 
 	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	body, _ := c.MustGet("body").(models.InviteUserDto)
 
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := userToKick.FindOne("username", data.Username); err != nil {
+	if err := userToKick.FindOne("username", body.Username); err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}

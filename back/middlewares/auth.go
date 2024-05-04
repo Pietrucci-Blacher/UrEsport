@@ -12,7 +12,7 @@ func IsLoggedIn() gin.HandlerFunc {
 		var user models.User
 		token, err := c.Cookie("auth_token")
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}

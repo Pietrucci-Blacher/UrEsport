@@ -1,24 +1,29 @@
 package middlewares
 
 import (
-	"strconv"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
+	validator "github.com/go-playground/validator/v10"
 )
 
-func QueryFilter() gin.HandlerFunc {
+func Validate[T any]() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
-		if err != nil {
-			page = 1
+		var body T
+
+		if err := c.BindJSON(&body); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.Abort()
+			return
 		}
 
-		limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
-		if err != nil {
-			limit = 10
+		validate := validator.New()
+		if err := validate.Struct(body); err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			c.Abort()
+			return
 		}
 
-		c.Set("limit", limit)
-		c.Set("skip", (page-1)*limit)
+		c.Set("body", body)
 	}
 }
