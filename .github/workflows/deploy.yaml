@@ -73,7 +73,7 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: Install Railway CLI
-        run: pnpm install -g railway
+        run: pnpm install -g @railway/cli
 
       - name: Deploy to Railway
         run: |
