@@ -86,6 +86,10 @@ jobs:
     strategy:
       matrix:
         directory: [ 'front/ios', 'front/android' ]
+    defaults:
+      run:
+        working-directory: ${{ matrix.directory }}
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -97,9 +101,7 @@ jobs:
           bundler-cache: true
 
       - name: Install dependencies
-        run: |
-          cd ${{ matrix.directory }}
-          bundle install
+        run: bundle install
 
       - name: Deploy APK and iOS build with Fastlane
         run: bundle exec fastlane deploy
