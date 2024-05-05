@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - feature/cd
-
   pull_request:
     branches:
       - main
@@ -84,6 +83,9 @@ jobs:
   deploy_apk_and_ios_with_fastlane:
     needs: deploy_api_to_railway
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        directory: [ 'front/ios', 'front/android' ]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -95,7 +97,9 @@ jobs:
           bundler-cache: true
 
       - name: Install dependencies
-        run: bundle install
+        run: |
+          cd ${{ matrix.directory }}
+          bundle install
 
       - name: Deploy APK and iOS build with Fastlane
         run: bundle exec fastlane deploy
@@ -125,7 +129,6 @@ jobs:
           key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
-
 
       - name: Install Vercel CLI
         run: pnpm install -g vercel
