@@ -77,7 +77,7 @@ jobs:
 
       - name: Deploy to Railway
         run: |
-          railway deploy --project ${{ secrets.RAILWAY_PROJECTID }} --image sunshiotv/uresports-api:latest
+          railway up --service ${{ env.RAILWAY_SERVICE_API }}
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
