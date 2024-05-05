@@ -36,9 +36,6 @@ jobs:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
-      - name: Debug files
-        run: ls -la
-
       - name: Build and push Golang Docker image
         uses: docker/build-push-action@v5
         with:
@@ -79,9 +76,8 @@ jobs:
         run: pnpm install -g railway
 
       - name: Deploy to Railway
-        run: |         
-            railway login --token ${{ secrets.RAILWAY_TOKEN }}
-            railway deploy --project ${{ secrets.RAILWAY_PROJECTID }} --image sunshiotv/uresports-api:latest
+        run: |
+          railway deploy --project ${{ secrets.RAILWAY_PROJECTID }} --image sunshiotv/uresports-api:latest
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
