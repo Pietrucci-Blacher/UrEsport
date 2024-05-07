@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"challenge/utils"
+	"time"
+)
 
 type Tournament struct {
 	ID           int       `json:"id" gorm:"primaryKey"`
@@ -55,40 +58,45 @@ type InviteUserDto struct {
 	Username string `json:"username" validate:"required"`
 }
 
-func FindAllTournaments(skip, limit int, where string) ([]Tournament, error) {
+func FindAllTournaments(query utils.QueryFilter) ([]Tournament, error) {
 	var tournaments []Tournament
 
 	err := DB.Model(&Tournament{}).
-		Offset(skip).
-		Limit(limit).
-		Where(where).
+		Offset(query.GetSkip()).
+		Limit(query.GetLimit()).
+		Where(query.GetWhere()).
 		Preload("Participants").
 		Find(&tournaments).Error
 
 	return tournaments, err
 }
 
-func (t *Tournament) Sanitize() SanitizedTournament {
+func (t *Tournament) Sanitize(getParticipant bool) SanitizedTournament {
 	var participants []SanitizedUser
 
-	for _, p := range t.Participants {
-		participants = append(participants, p.Sanitize())
+	tournament := SanitizedTournament{
+		ID:          t.ID,
+		Name:        t.Name,
+		Description: t.Description,
+		StartDate:   t.StartDate,
+		EndDate:     t.EndDate,
+		Location:    t.Location,
+		Image:       t.Image,
+		Private:     t.Private,
+		OrganizerID: t.OrganizerID,
+		CreatedAt:   t.CreatedAt,
+		UpdatedAt:   t.UpdatedAt,
 	}
 
-	return SanitizedTournament{
-		ID:           t.ID,
-		Name:         t.Name,
-		Description:  t.Description,
-		StartDate:    t.StartDate,
-		EndDate:      t.EndDate,
-		Location:     t.Location,
-		Image:        t.Image,
-		Private:      t.Private,
-		OrganizerID:  t.OrganizerID,
-		Participants: participants,
-		CreatedAt:    t.CreatedAt,
-		UpdatedAt:    t.UpdatedAt,
+	if getParticipant {
+		for _, participant := range t.Participants {
+			participants = append(participants, participant.Sanitize(false))
+		}
+
+		tournament.Participants = participants
 	}
+
+	return tournament
 }
 
 func (t *Tournament) TogglePrivate() {
@@ -132,8 +140,5 @@ func (t *Tournament) Delete() error {
 }
 
 func ClearTournaments() error {
-	if err := DB.Exec("DELETE FROM tournaments").Error; err != nil {
-		return err
-	}
-	return nil
+	return DB.Exec("DELETE FROM tournaments").Error
 }
