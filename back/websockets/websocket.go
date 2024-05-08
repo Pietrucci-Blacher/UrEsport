@@ -1,45 +1,64 @@
 package websockets
 
 import (
+	"challenge/middlewares"
+	"challenge/models"
 	"fmt"
-	"os"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
-	socketio "github.com/googollee/go-socket.io"
 )
 
-func RegisterWebsocket(r *gin.Engine) *socketio.Server {
-	server := socketio.NewServer(nil)
-
-	server.OnConnect("/", connectHandler)
-	server.OnEvent("/", "test", func(s socketio.Conn, msg string) {
-		fmt.Println("test:", msg)
-		s.Emit("test", msg)
-	})
-	server.OnError("/", func(s socketio.Conn, e error) {
-		fmt.Fprintf(os.Stderr, "Soket.io error: %v\n", e)
-	})
-	server.OnDisconnect("/", disconnectHandler)
-
-	go listen(server)
-
-	r.GET("/socket.io/*any", gin.WrapH(server))
-
-	return server
+func RegisterWebsocket(r *gin.Engine) {
+	r.GET("/ws",
+		middlewares.IsLoggedIn(),
+		wsHandler,
+	)
 }
 
-func listen(s *socketio.Server) {
-	if err := s.Serve(); err != nil {
-		fmt.Println("Error: ", err)
+func wsHandler(c *gin.Context) {
+	ws := GetWebsocket()
+
+	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	user := c.MustGet("user").(models.User)
+	client := NewClient(conn, &user)
+	ws.AddClient(client)
+
+	defer func() {
+		if err := ws.RemoveClient(client.ID); err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		}
+	}()
+
+	ws.OnEvent("test", testWebsocket)
+
+	if err := ws.Listen(client); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 }
 
-func connectHandler(s socketio.Conn) error {
-	s.SetContext("")
-	fmt.Println("connected:", s.ID())
-	return nil
-}
+func testWebsocket(client *Client, msg Message) error {
+	fmt.Printf("nb client : %d, client id : %s, user : %s, msg : %v\n",
+		len(client.Ws.GetClients()),
+		client.ID,
+		client.User.Username,
+		msg,
+	)
 
-func disconnectHandler(s socketio.Conn, reason string) {
-	fmt.Println("disconnected:", s.ID(), reason)
+	message := fmt.Sprintf("test de %s", client.User.Username)
+
+	if err := client.Ws.BroadcastMessage("test", message); err != nil {
+		return err
+	}
+
+	if err := client.SendMessage("test", []string{"test1", "test2"}); err != nil {
+		return err
+	}
+
+	return nil
 }

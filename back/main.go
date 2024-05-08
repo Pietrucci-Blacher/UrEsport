@@ -59,8 +59,7 @@ func main() {
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
 	controllers.RegisterRoutes(r)
-	server := websockets.RegisterWebsocket(r)
-	defer server.Close()
+	websockets.RegisterWebsocket(r)
 
 	if err := r.Run(":8080"); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: %v\n", err)
