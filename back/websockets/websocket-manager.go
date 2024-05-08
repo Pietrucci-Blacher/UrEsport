@@ -2,6 +2,7 @@ package websockets
 
 import (
 	"fmt"
+	"net/http"
 
 	"github.com/gorilla/websocket"
 )
@@ -14,14 +15,22 @@ var upgrader = websocket.Upgrader{
 var WebsocketInstance *Websocket
 
 type Websocket struct {
-	clients map[string]*Client
-	events  map[string]func(*Client, Message) error
+	clients      map[string]*Client
+	events       map[string]func(*Client, Message) error
+	onConnect    func(*Client) error
+	onDisconnect func(*Client) error
 }
 
 func NewWebsocket() *Websocket {
 	return &Websocket{
 		clients: make(map[string]*Client),
 		events:  make(map[string]func(*Client, Message) error),
+		onConnect: func(client *Client) error {
+			return nil
+		},
+		onDisconnect: func(client *Client) error {
+			return nil
+		},
 	}
 }
 
@@ -30,6 +39,30 @@ func GetWebsocket() *Websocket {
 		WebsocketInstance = NewWebsocket()
 	}
 	return WebsocketInstance
+}
+
+func (w *Websocket) Connect(writer http.ResponseWriter, request *http.Request) (*Client, error) {
+	conn, err := upgrader.Upgrade(writer, request, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	client := NewClient(conn, nil)
+	w.AddClient(client)
+
+	if err := w.onConnect(client); err != nil {
+		return nil, err
+	}
+
+	return client, nil
+}
+
+func (w *Websocket) OnConnect(callback func(*Client) error) {
+	w.onConnect = callback
+}
+
+func (w *Websocket) OnDisconnect(callback func(*Client) error) {
+	w.onDisconnect = callback
 }
 
 func (w *Websocket) GetClients() map[string]*Client {
@@ -50,6 +83,18 @@ func (w *Websocket) RemoveClient(id string) error {
 	delete(w.clients, id)
 
 	return nil
+}
+
+func (w *Websocket) Close(id string) {
+	client := w.GetClient(id)
+
+	if err := w.RemoveClient(id); err != nil {
+		fmt.Printf("Error: %v\n", err)
+	}
+
+	if err := w.onDisconnect(client); err != nil {
+		fmt.Printf("Error: %v\n", err)
+	}
 }
 
 func (w *Websocket) GetClient(id string) *Client {
@@ -89,6 +134,8 @@ func (w *Websocket) OnEvent(command string, callback func(*Client, Message) erro
 }
 
 func (w *Websocket) Listen(client *Client) error {
+	defer w.Close(client.ID)
+
 	for {
 		var msg Message
 

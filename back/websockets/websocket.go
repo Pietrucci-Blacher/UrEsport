@@ -19,32 +19,36 @@ func RegisterWebsocket(r *gin.Engine) {
 func wsHandler(c *gin.Context) {
 	ws := GetWebsocket()
 
-	conn, err := upgrader.Upgrade(c.Writer, c.Request, nil)
+	ws.OnConnect(connect)
+	ws.OnDisconnect(disconnect)
+	ws.OnEvent("test", testWebsocket)
+
+	client, err := ws.Connect(c.Writer, c.Request)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	user := c.MustGet("user").(models.User)
-	client := NewClient(conn, &user)
-	ws.AddClient(client)
-
-	defer func() {
-		if err := ws.RemoveClient(client.ID); err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		}
-	}()
-
-	ws.OnEvent("test", testWebsocket)
+	client.User = &user
 
 	if err := ws.Listen(client); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 }
 
+func connect(client *Client) error {
+	fmt.Printf("Client %s connected, len %d\n", client.ID, len(client.Ws.GetClients()))
+	return nil
+}
+
+func disconnect(client *Client) error {
+	fmt.Printf("Client %s disconnected, len %d\n", client.ID, len(client.Ws.GetClients()))
+	return nil
+}
+
 func testWebsocket(client *Client, msg Message) error {
-	fmt.Printf("nb client : %d, client id : %s, user : %s, msg : %v\n",
-		len(client.Ws.GetClients()),
+	fmt.Printf("client id : %s, user : %s, msg : %v\n",
 		client.ID,
 		client.User.Username,
 		msg,

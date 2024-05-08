@@ -12,10 +12,6 @@ type Message struct {
 	Message interface{} `json:"message"`
 }
 
-type ErrorMessage struct {
-	Error string `json:"error"`
-}
-
 type Client struct {
 	ID   string
 	Conn *websocket.Conn
@@ -40,6 +36,7 @@ func (c *Client) SendMessage(command string, message interface{}) error {
 		Command: command,
 		Message: message,
 	}
+
 	return c.SendJson(msg)
 }
 
@@ -48,8 +45,12 @@ func (c *Client) SendJson(message Message) error {
 }
 
 func (c *Client) SendError(message string) error {
-	errorMsg := ErrorMessage{Error: message}
-	return c.Conn.WriteJSON(errorMsg)
+	errorMsg := Message{
+		Command: "error",
+		Message: message,
+	}
+
+	return c.SendJson(errorMsg)
 }
 
 func (c *Client) Close() {
