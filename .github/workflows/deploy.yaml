@@ -116,17 +116,18 @@ jobs:
 
       - name: Deploy APK and iOS build with Fastlane
         run: |
-            if [ "${{ matrix.directory }}" == "front/ios" ]; then
-              bundle exec fastlane deploy_to_app_store
-            elif [ "${{ matrix.directory }}" == "front/android" ]; then
-              bundle exec fastlane deploy_to_play_store
-            fi
-          env:
-            FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
-            FASTLANE_APPLE_ID: ${{ secrets.FASTLANE_APPLE_ID }}
-            FASTLANE_TEAM_ID: ${{ secrets.FASTLANE_TEAM_ID }}
-            FASTLANE_MATCH_PASSWORD: ${{ secrets.FASTLANE_MATCH_PASSWORD }}
-            GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          if [ "${{ matrix.directory }}" == "front/ios" ]; then
+            bundle exec fastlane deploy_to_app_store
+          elif [ "${{ matrix.directory }}" == "front/android" ]; then
+            bundle exec fastlane deploy_to_play_store
+          fi
+        env:
+          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
+          FASTLANE_APPLE_ID: ${{ secrets.FASTLANE_APPLE_ID }}
+          FASTLANE_TEAM_ID: ${{ secrets.FASTLANE_TEAM_ID }}
+          FASTLANE_MATCH_PASSWORD: ${{ secrets.FASTLANE_MATCH_PASSWORD }}
+          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
 
   deploy_web_to_vercel:
     needs: deploy_apk_and_ios_with_fastlane
