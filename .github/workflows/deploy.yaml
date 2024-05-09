@@ -102,6 +102,17 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
+      - name: Set up Flutter Environment
+        uses: subosito/flutter-action@v2
+        with:
+          channel: ${{ env.FLUTTER_CHANNEL }}
+          cache: true
+          cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
+          cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
+
+      - name: Install dependencies
+        run: flutter pub get
+
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
