@@ -17,10 +17,11 @@ platform :android do
   desc "Submit a new Beta Build to Crashlytics Beta"
   lane :beta do
     gradle(
-      task: "assembleRelease",
-      build_type: "release",
-      clean: true,
-      output_directory: "build/app/outputs/flutter-apk"
+      task: "clean",
+      build_type: "release"
+    )
+    gradle(
+      task: "assembleRelease"
     )
     crashlytics(
       api_key: "YOUR_CRASHLYTICS_API_KEY",
@@ -34,10 +35,11 @@ platform :android do
   desc "Deploy a new version to the Google Play Store"
   lane :deploy_to_play_store do
     gradle(
-      task: "assembleRelease",
-      build_type: "release",
-      clean: true,
-      output_directory: "build/app/outputs/flutter-apk"
+      task: "clean",
+      build_type: "release"
+    )
+    gradle(
+      task: "assembleRelease"
     )
     upload_to_play_store(
       track: "production",
@@ -49,4 +51,8 @@ platform :android do
       key_password: "your_key_password"
     )
   end
+end
+
+default_platform(:android) do
+  flutter_sdk_path "path/to/your/flutter/sdk"
 end
