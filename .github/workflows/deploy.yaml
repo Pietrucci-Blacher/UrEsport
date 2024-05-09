@@ -119,6 +119,7 @@ jobs:
           if [ "${{ matrix.directory }}" == "front/ios" ]; then
             bundle exec fastlane deploy_to_app_store
           elif [ "${{ matrix.directory }}" == "front/android" ]; then
+            flutter build apk --release
             bundle exec fastlane deploy_to_play_store
           fi
         env:
@@ -127,6 +128,7 @@ jobs:
           FASTLANE_TEAM_ID: ${{ secrets.FASTLANE_TEAM_ID }}
           FASTLANE_MATCH_PASSWORD: ${{ secrets.FASTLANE_MATCH_PASSWORD }}
           GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+
 
 
   deploy_web_to_vercel:
