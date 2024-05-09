@@ -1,4 +1,4 @@
-package websockets
+package services
 
 import (
 	"challenge/models"

@@ -1,4 +1,4 @@
-package websockets
+package services
 
 import (
 	"fmt"
@@ -15,20 +15,24 @@ var upgrader = websocket.Upgrader{
 
 var WebsocketInstance *Websocket
 
+type EventFunc func(*Client, interface{}) error
+type OnConnectFunc func(*Client, *gin.Context) error
+type OnDisconnectFunc func(*Client) error
+
 // Websocket is the main struct for managing websocket connections
 type Websocket struct {
 	clients      map[string]*Client
-	events       map[string]func(*Client, Message) error
+	events       map[string]EventFunc
 	rooms        map[string]*Room
-	onConnect    func(*Client, *gin.Context) error
-	onDisconnect func(*Client) error
+	onConnect    OnConnectFunc
+	onDisconnect OnDisconnectFunc
 }
 
 // NewWebsocket creates a new Websocket instance
 func NewWebsocket() *Websocket {
 	return &Websocket{
 		clients: make(map[string]*Client),
-		events:  make(map[string]func(*Client, Message) error),
+		events:  make(map[string]EventFunc),
 		rooms:   make(map[string]*Room),
 		onConnect: func(client *Client, c *gin.Context) error {
 			return nil
@@ -40,6 +44,7 @@ func NewWebsocket() *Websocket {
 }
 
 // GetWebsocket returns the singleton instance of Websocket
+//
 // ws := GetWebsocket()
 func GetWebsocket() *Websocket {
 	if WebsocketInstance == nil {
@@ -76,10 +81,20 @@ func (w *Websocket) listen(client *Client) error {
 			return err
 		}
 
-		if err := w.DispatchCommand(client, msg); err != nil {
+		if err := w.dispatchCommand(client, msg); err != nil {
 			return err
 		}
 	}
+}
+
+// dispatchCommand dispatches a command to the appropriate callback function
+func (w *Websocket) dispatchCommand(client *Client, msg Message) error {
+	callback, ok := w.events[msg.Command]
+	if !ok {
+		return client.EmitError("Invalid command")
+	}
+
+	return callback(client, msg.Message)
 }
 
 // GinWsHandler is the handler for the websocket connection
@@ -99,16 +114,23 @@ func (w *Websocket) GinWsHandler(c *gin.Context) {
 
 // OnConnect sets the callback function to be called when a client connects
 //
-// ws.OnConnect(something)
-func (w *Websocket) OnConnect(callback func(*Client, *gin.Context) error) {
+// ws.OnConnect(function)
+func (w *Websocket) OnConnect(callback OnConnectFunc) {
 	w.onConnect = callback
 }
 
 // OnDisconnect sets the callback function to be called when a client disconnects
 //
-// ws.OnDisconnect(something)
-func (w *Websocket) OnDisconnect(callback func(*Client) error) {
+// ws.OnDisconnect(function)
+func (w *Websocket) OnDisconnect(callback OnDisconnectFunc) {
 	w.onDisconnect = callback
+}
+
+// OnEvent sets a callback function to be called when a specific command is received
+//
+// ws.OnEvent("event", function)
+func (w *Websocket) OnEvent(command string, callback EventFunc) {
+	w.events[command] = callback
 }
 
 // GetClients returns the list of connected clients
@@ -192,6 +214,7 @@ func (w *Websocket) SendJson(message Message) error {
 }
 
 // Emit sends a message to all connected clients
+//
 // ws.Emit("event", "message to send")
 // client.Ws.Emit("event", []string{"message1", "message2"})
 func (w *Websocket) Emit(command string, message interface{}) error {
@@ -214,23 +237,6 @@ func (w *Websocket) EmitError(message string) error {
 	}
 
 	return w.SendJson(wsMessage)
-}
-
-// OnEvent sets a callback function to be called when a specific command is received
-//
-// ws.OnEvent("testWebsocket", testWebsocket)
-func (w *Websocket) OnEvent(command string, callback func(*Client, Message) error) {
-	w.events[command] = callback
-}
-
-// DispatchCommand dispatches a command to the appropriate callback function
-func (w *Websocket) DispatchCommand(client *Client, msg Message) error {
-	callback, ok := w.events[msg.Command]
-	if !ok {
-		return client.EmitError("Invalid command")
-	}
-
-	return callback(client, msg)
 }
 
 // Room return and creates a new room if it doesn't exist

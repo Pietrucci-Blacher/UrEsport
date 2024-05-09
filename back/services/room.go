@@ -1,4 +1,4 @@
-package websockets
+package services
 
 // Room is the struct for managing a room of clients
 type Room struct {

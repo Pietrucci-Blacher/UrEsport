@@ -3,18 +3,18 @@ package websockets
 import (
 	"challenge/middlewares"
 	"challenge/models"
+	s "challenge/services"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterWebsocket(r *gin.Engine) {
-	ws := GetWebsocket()
+	ws := s.GetWebsocket()
 
 	ws.OnConnect(connect)
 	ws.OnDisconnect(disconnect)
-	ws.OnEvent("testWebsocket", testWebsocket)
-	ws.OnEvent("testRoom", testRoom)
+	ws.OnEvent("ping", PingTest)
 
 	r.GET("/ws",
 		middlewares.IsLoggedIn(),
@@ -22,46 +22,33 @@ func RegisterWebsocket(r *gin.Engine) {
 	)
 }
 
-func connect(client *Client, c *gin.Context) error {
-	fmt.Printf("Client %s connected, len %d\n", client.ID, len(client.Ws.GetClients()))
-
+func connect(client *s.Client, c *gin.Context) error {
 	user := c.MustGet("user").(models.User)
 	client.User = &user
 
-	return nil
-}
-
-func disconnect(client *Client) error {
-	fmt.Printf("Client %s disconnected, len %d\n", client.ID, len(client.Ws.GetClients()))
-	return nil
-}
-
-func testWebsocket(client *Client, msg Message) error {
-	fmt.Printf("client id : %s, user : %s, msg : %v\n",
+	fmt.Printf("Client %s connected, len %d, user %s\n",
 		client.ID,
+		len(client.Ws.GetClients()),
 		client.User.Username,
-		msg,
 	)
 
-	message := fmt.Sprintf("test room de %s", client.User.Username)
+	return nil
+}
 
-	if err := client.Ws.Emit("test-event", "autre test en broadcast"); err != nil {
-		return err
-	}
-
-	if err := client.Ws.Room("test-room").Emit("test-event", message); err != nil {
-		return err
-	}
-
-	if err := client.Emit("test-event", []string{"test1", "test2"}); err != nil {
-		return err
-	}
+func disconnect(client *s.Client) error {
+	fmt.Printf("Client %s disconnected, len %d, user %s\n",
+		client.ID,
+		len(client.Ws.GetClients()),
+		client.User.Username,
+	)
 
 	return nil
 }
 
-func testRoom(client *Client, msg Message) error {
-	client.Ws.Room("test-room").AddClient(client)
+func PingTest(client *s.Client, msg interface{}) error {
+	if err := client.Emit("pong", msg); err != nil {
+		return err
+	}
 
 	return nil
 }
