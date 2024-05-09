@@ -17,6 +17,7 @@ var WebsocketInstance *Websocket
 type Websocket struct {
 	clients      map[string]*Client
 	events       map[string]func(*Client, Message) error
+	rooms        map[string]*Room
 	onConnect    func(*Client) error
 	onDisconnect func(*Client) error
 }
@@ -25,6 +26,7 @@ func NewWebsocket() *Websocket {
 	return &Websocket{
 		clients: make(map[string]*Client),
 		events:  make(map[string]func(*Client, Message) error),
+		rooms:   make(map[string]*Room),
 		onConnect: func(client *Client) error {
 			return nil
 		},
@@ -77,6 +79,10 @@ func (w *Websocket) RemoveClient(id string) error {
 	client := w.GetClient(id)
 	if client == nil {
 		return fmt.Errorf("Client not found\n")
+	}
+
+	for _, room := range w.rooms {
+		room.RemoveClient(client)
 	}
 
 	client.Close()
@@ -156,4 +162,20 @@ func (w *Websocket) DispatchCommand(client *Client, msg Message) error {
 	}
 
 	return callback(client, msg)
+}
+
+func (w *Websocket) Room(name string) *Room {
+	if _, ok := w.rooms[name]; !ok {
+		w.rooms[name] = NewRoom(name)
+	}
+
+	return w.rooms[name]
+}
+
+func (w *Websocket) RemoveRoom(name string) {
+	delete(w.rooms, name)
+}
+
+func (w *Websocket) GetRooms() map[string]*Room {
+	return w.rooms
 }

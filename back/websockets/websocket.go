@@ -21,7 +21,8 @@ func wsHandler(c *gin.Context) {
 
 	ws.OnConnect(connect)
 	ws.OnDisconnect(disconnect)
-	ws.OnEvent("test", testWebsocket)
+	ws.OnEvent("testWebsocket", testWebsocket)
+	ws.OnEvent("testRoom", testRoom)
 
 	client, err := ws.Connect(c.Writer, c.Request)
 	if err != nil {
@@ -56,13 +57,23 @@ func testWebsocket(client *Client, msg Message) error {
 
 	message := fmt.Sprintf("test de %s", client.User.Username)
 
-	if err := client.Ws.BroadcastMessage("test", message); err != nil {
+	// if err := client.Ws.BroadcastMessage("test", message); err != nil {
+	// 	return err
+	// }
+
+	if err := client.Ws.Room("test").BroadcastMessage("test", message); err != nil {
 		return err
 	}
 
 	if err := client.SendMessage("test", []string{"test1", "test2"}); err != nil {
 		return err
 	}
+
+	return nil
+}
+
+func testRoom(client *Client, msg Message) error {
+	client.Ws.Room("test").AddClient(client)
 
 	return nil
 }
