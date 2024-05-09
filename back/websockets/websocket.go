@@ -10,6 +10,13 @@ import (
 )
 
 func RegisterWebsocket(r *gin.Engine) {
+	ws := GetWebsocket()
+
+	ws.OnConnect(connect)
+	ws.OnDisconnect(disconnect)
+	ws.OnEvent("testWebsocket", testWebsocket)
+	ws.OnEvent("testRoom", testRoom)
+
 	r.GET("/ws",
 		middlewares.IsLoggedIn(),
 		wsHandler,
@@ -18,11 +25,6 @@ func RegisterWebsocket(r *gin.Engine) {
 
 func wsHandler(c *gin.Context) {
 	ws := GetWebsocket()
-
-	ws.OnConnect(connect)
-	ws.OnDisconnect(disconnect)
-	ws.OnEvent("testWebsocket", testWebsocket)
-	ws.OnEvent("testRoom", testRoom)
 
 	client, err := ws.Connect(c.Writer, c.Request)
 	if err != nil {
