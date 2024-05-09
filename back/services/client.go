@@ -9,11 +9,11 @@ import (
 
 // Message is the struct for sending messages through websocket
 type Message struct {
-	Command string      `json:"command"`
-	Message interface{} `json:"message"`
+	Command string `json:"command"`
+	Message any    `json:"message"`
 }
 
-// Client is the struct for managing a websocket connection
+// Client is the struct for managing a client connection
 type Client struct {
 	ID   string
 	Conn *websocket.Conn
@@ -43,7 +43,7 @@ func (c *Client) SendJson(message Message) error {
 //
 // client.Emit("event", "message to send")
 // client.Emit("event", []string{"message1", "message2"})
-func (c *Client) Emit(command string, message interface{}) error {
+func (c *Client) Emit(command string, message any) error {
 	msg := Message{
 		Command: command,
 		Message: message,

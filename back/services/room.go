@@ -53,7 +53,7 @@ func (r *Room) SendJson(message Message) error {
 //
 // room.Emit("event", "message to send")
 // client.Ws.Room("room-name").Emit("event", []string{"message1", "message2"})
-func (r *Room) Emit(command string, message interface{}) error {
+func (r *Room) Emit(command string, message any) error {
 	msg := Message{
 		Command: command,
 		Message: message,

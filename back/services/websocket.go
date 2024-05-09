@@ -15,11 +15,11 @@ var upgrader = websocket.Upgrader{
 
 var WebsocketInstance *Websocket
 
-type EventFunc func(*Client, interface{}) error
+type EventFunc func(*Client, any) error
 type OnConnectFunc func(*Client, *gin.Context) error
 type OnDisconnectFunc func(*Client) error
 
-// Websocket is the main struct for managing websocket connections
+// Websocket is the main struct for managing websocket
 type Websocket struct {
 	clients      map[string]*Client
 	events       map[string]EventFunc
@@ -126,10 +126,10 @@ func (w *Websocket) OnDisconnect(callback OnDisconnectFunc) {
 	w.onDisconnect = callback
 }
 
-// OnEvent sets a callback function to be called when a specific command is received
+// On sets a callback function to be called when a specific command is received
 //
-// ws.OnEvent("event", function)
-func (w *Websocket) OnEvent(command string, callback EventFunc) {
+// ws.On("event", function)
+func (w *Websocket) On(command string, callback EventFunc) {
 	w.events[command] = callback
 }
 
@@ -217,7 +217,7 @@ func (w *Websocket) SendJson(message Message) error {
 //
 // ws.Emit("event", "message to send")
 // client.Ws.Emit("event", []string{"message1", "message2"})
-func (w *Websocket) Emit(command string, message interface{}) error {
+func (w *Websocket) Emit(command string, message any) error {
 	wsMessage := Message{
 		Command: command,
 		Message: message,

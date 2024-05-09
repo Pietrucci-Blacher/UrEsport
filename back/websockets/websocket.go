@@ -3,18 +3,18 @@ package websockets
 import (
 	"challenge/middlewares"
 	"challenge/models"
-	s "challenge/services"
+	"challenge/services"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
 
 func RegisterWebsocket(r *gin.Engine) {
-	ws := s.GetWebsocket()
+	ws := services.GetWebsocket()
 
 	ws.OnConnect(connect)
 	ws.OnDisconnect(disconnect)
-	ws.OnEvent("ping", PingTest)
+	ws.On("ping", PingTest)
 
 	r.GET("/ws",
 		middlewares.IsLoggedIn(),
@@ -22,7 +22,7 @@ func RegisterWebsocket(r *gin.Engine) {
 	)
 }
 
-func connect(client *s.Client, c *gin.Context) error {
+func connect(client *services.Client, c *gin.Context) error {
 	user := c.MustGet("user").(models.User)
 	client.User = &user
 
@@ -35,7 +35,7 @@ func connect(client *s.Client, c *gin.Context) error {
 	return nil
 }
 
-func disconnect(client *s.Client) error {
+func disconnect(client *services.Client) error {
 	fmt.Printf("Client %s disconnected, len %d, user %s\n",
 		client.ID,
 		len(client.Ws.GetClients()),
@@ -45,10 +45,10 @@ func disconnect(client *s.Client) error {
 	return nil
 }
 
-func PingTest(client *s.Client, msg interface{}) error {
-	if err := client.Emit("pong", msg); err != nil {
+func PingTest(client *services.Client, msg any) error {
+	if err := client.Ws.Emit("pong", "test broadcast"); err != nil {
 		return err
 	}
 
-	return nil
+	return client.Emit("pong", msg)
 }
