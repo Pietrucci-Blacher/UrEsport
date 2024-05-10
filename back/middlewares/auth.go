@@ -10,14 +10,19 @@ import (
 func IsLoggedIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user models.User
+		var t models.Token
+
 		token, err := c.Cookie("auth_token")
 		if err != nil {
+			token = c.GetHeader("Authorization")
+		}
+
+		if token == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
 
-		var t models.Token
 		if err := t.FindOne("token", token); err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
