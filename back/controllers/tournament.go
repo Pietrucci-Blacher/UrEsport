@@ -69,19 +69,19 @@ func GetTournament(c *gin.Context) {
 //	@Failure		500			{object}	utils.HttpError
 //	@Router			/tournaments/ [post]
 func CreateTournament(c *gin.Context) {
-	var tournament models.Tournament
-
 	connectedUser, _ := c.MustGet("user").(models.User)
 	body, _ := c.MustGet("body").(models.CreateTournamentDto)
 
-	tournament.Name = body.Name
-	tournament.Description = body.Description
-	tournament.Location = body.Location
-	tournament.Image = body.Image
-	tournament.StartDate = body.StartDate
-	tournament.EndDate = body.EndDate
-	tournament.OrganizerID = connectedUser.ID
-	tournament.Private = body.Private
+	tournament := models.Tournament{
+		Name:        body.Name,
+		Description: body.Description,
+		Location:    body.Location,
+		Image:       body.Image,
+		StartDate:   body.StartDate,
+		EndDate:     body.EndDate,
+		OrganizerID: connectedUser.ID,
+		Private:     body.Private,
+	}
 
 	if err := tournament.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

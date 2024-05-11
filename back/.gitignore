@@ -3,3 +3,4 @@ vendor
 challenge
 .env
 docs
+__debug_bin*
