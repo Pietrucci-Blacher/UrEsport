@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
+/*import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
 
 class QRScanner extends StatelessWidget {
+  const QRScanner({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -19,3 +21,4 @@ class QRScanner extends StatelessWidget {
     );
   }
 }
+*/
