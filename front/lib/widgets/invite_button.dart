@@ -1,120 +1,47 @@
+// invite_button.dart
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 
 class InviteButton extends StatelessWidget {
   final String username;
-  final int tournamentId;
+  final String tournamentId;
 
-  const InviteButton({
-    super.key,
-    this.username = 'ilies.slim2', // Valeur par défaut pour username
-    this.tournamentId = 1, // Valeur par défaut pour tournamentId
-  });
+  const InviteButton({Key? key, required this.username, required this.tournamentId}) : super(key: key);
 
-  //const InviteButton({Key? key, required this.username, required this.tournamentId}) : super(key: key);
+  Future<void> joinTournament() async {
+    // Ici, vous pouvez ajouter la logique pour rejoindre le tournoi.
+    // Par exemple, vous pouvez envoyer une requête HTTP à votre serveur.
+    // Pour l'instant, nous affichons simplement un message.
+    print('Rejoindre le tournoi');
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Center(
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () async {
-                var response = await inviteUserToTournament(tournamentId, username);
-                if (response.statusCode == 200) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Invitation Status'),
-                        content: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text('User: $username'),
-                            Text('URL: http://localhost:8080/tournaments/$tournamentId/invite'),
-                          ],
-                        ),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('OK'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Error'),
-                        content: const Text('Failed to invite user.'),
-                        actions: <Widget>[
-                          TextButton(
-                            child: const Text('OK'),
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                }
-              },
-              child: const Text('Invite User to Tournament'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                bool isPresent = await checkUserPresence(username);
-                showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text('Check User Presence'),
-                      content: Text(isPresent ? 'Checkin success' : 'Checkin error'),
-                      actions: <Widget>[
-                        TextButton(
-                          child: const Text('OK'),
-                          onPressed: () {
-                            Navigator.of(context).pop();
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-              child: const Text('Check User Presence'),
-            ),
-          ],
+    return AlertDialog(
+      title: const Text('Alerte'),
+      content: Text('Bonjour, $username'),
+      actions: <Widget>[
+        TextButton(
+          child: const Text('OK'),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
         ),
-      ),
+        TextButton(
+          child: const Text('Rejoindre'),
+          onPressed: () {
+            joinTournament();
+            Navigator.of(context).pop();
+          },
+        ),
+        ElevatedButton( // Ajout du deuxième bouton
+          onPressed: () {
+            // Ajoutez ici la logique pour le deuxième bouton
+            // Par exemple, pour envoyer une invitation à un tournoi
+            print('Inviter $username au tournoi $tournamentId');
+          },
+          child: const Text('Inviter'),
+        ),
+      ],
     );
-  }
-
-  Future<http.Response> inviteUserToTournament(int tournamentId, String username) {
-    return http.post(
-      Uri.parse('http://localhost:8080/tournaments/$tournamentId/invite'),
-      headers: <String, String>{
-        'Content-Type': 'application/json; charset=UTF-8',
-      },
-      body: jsonEncode(<String, String>{
-        'username': username,
-      }),
-    );
-  }
-
-  Future<bool> checkUserPresence(String username) async {
-    // Ici, vous devez implémenter la logique pour vérifier la présence de l'utilisateur.
-    // Pour l'exemple, nous retournons simplement true.
-    return true;
   }
 }
