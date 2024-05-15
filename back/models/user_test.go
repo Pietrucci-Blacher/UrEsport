@@ -1,6 +1,7 @@
 package models
 
 import (
+	"challenge/utils"
 	"testing"
 
 	faker "github.com/jaswdr/faker/v2"
@@ -120,7 +121,9 @@ func TestFindAllUsers(t *testing.T) {
 		}
 	}
 
-	result, err := FindAllUsers()
+	query := utils.NewQueryFilter(1, nbUsers, "")
+
+	result, err := FindAllUsers(query)
 	if err != nil {
 		t.Error(err)
 		return

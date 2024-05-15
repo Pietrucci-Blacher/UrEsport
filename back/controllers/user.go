@@ -2,11 +2,10 @@ package controllers
 
 import (
 	"challenge/models"
-	_ "challenge/utils"
+	"challenge/utils"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	validator "github.com/go-playground/validator/v10"
 )
 
 // GetUsers godoc
@@ -20,13 +19,21 @@ import (
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/users/ [get]
 func GetUsers(c *gin.Context) {
-	users, err := models.FindAllUsers()
+	var sanitized []models.SanitizedUser
+
+	query, _ := c.MustGet("query").(utils.QueryFilter)
+
+	users, err := models.FindAllUsers(query)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, users)
+	for _, user := range users {
+		sanitized = append(sanitized, user.Sanitize(true))
+	}
+
+	c.JSON(http.StatusOK, sanitized)
 }
 
 // GetUser godoc
@@ -43,7 +50,10 @@ func GetUsers(c *gin.Context) {
 //	@Router			/users/{id} [get]
 func GetUser(c *gin.Context) {
 	user, _ := c.MustGet("findedUser").(models.User)
-	c.JSON(http.StatusOK, user)
+
+	sanitized := user.Sanitize(true)
+
+	c.JSON(http.StatusOK, sanitized)
 }
 
 // GetUserMe godoc
@@ -76,14 +86,8 @@ func GetUserMe(c *gin.Context) {
 //	@Failure		500		{object}	utils.HttpError
 //	@Router			/users/{id} [patch]
 func UpdateUser(c *gin.Context) {
-	var body models.UpdateUserDto
-
 	user, _ := c.MustGet("findedUser").(models.User)
-
-	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	body, _ := c.MustGet("body").(models.UpdateUserDto)
 
 	if count, err := models.CountUsersByEmail(body.Email); err != nil || count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
@@ -92,12 +96,6 @@ func UpdateUser(c *gin.Context) {
 
 	if count, err := models.CountUsersByUsername(body.Username); err != nil || count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
-		return
-	}
-
-	validate := validator.New()
-	if err := validate.Struct(body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
