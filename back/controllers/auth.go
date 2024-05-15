@@ -40,17 +40,20 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token, err := models.GenerateJWTToken(user.ID)
+	accessToken, refreshToken, err := models.GenerateJWTToken(user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
 
 	cookieSecure, _ := strconv.ParseBool(os.Getenv("COOKIE_SECURE"))
+	c.SetCookie("access_token", accessToken, 3600, "/", "", cookieSecure, true)
+	c.SetCookie("refresh_token", accessToken, 3600, "/", "", cookieSecure, true)
 
-	c.SetCookie("auth_token", token, 3600, "/", "", cookieSecure, true)
-
-	c.JSON(http.StatusOK, gin.H{"token": token})
+	c.JSON(http.StatusOK, gin.H{
+		"access_token":  accessToken,
+		"refresh_token": refreshToken,
+	})
 }
 
 // Register godoc
@@ -65,44 +68,44 @@ func Login(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/register [post]
 func Register(c *gin.Context) {
-	var user models.User
-
 	body, _ := c.MustGet("body").(models.CreateUserDto)
 
 	if count, err := models.CountUsersByEmail(body.Email); err != nil || count > 0 {
-		c.JSON(400, gin.H{"error": "Email already exists"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
 		return
 	}
 
 	if count, err := models.CountUsersByUsername(body.Username); err != nil || count > 0 {
-		c.JSON(400, gin.H{"error": "Username already exists"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 		return
 	}
 
-	user.Firstname = body.Firstname
-	user.Lastname = body.Lastname
-	user.Username = body.Username
-	user.Email = body.Email
-	user.Password = body.Password
-	user.Roles = []string{models.ROLE_USER}
+	user := models.User{
+		Firstname: body.Firstname,
+		Lastname:  body.Lastname,
+		Username:  body.Username,
+		Email:     body.Email,
+		Password:  body.Password,
+		Roles:     []string{models.ROLE_USER},
+	}
 
 	if err := user.HashPassword(); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := user.Save(); err != nil {
-		c.JSON(400, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	err := services.SendEmail(user.Email, services.WelcomeEmail)
 	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	c.JSON(201, nil)
+	c.JSON(http.StatusCreated, gin.H{"message": "User created successfully"})
 }
 
 // Logout godoc
@@ -118,13 +121,13 @@ func Register(c *gin.Context) {
 func Logout(c *gin.Context) {
 	var token models.Token
 
-	tokenString, err := c.Cookie("auth_token")
+	tokenString, err := c.Cookie("access_token")
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No session found"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "No session found"})
 		return
 	}
 
-	if err := token.FindOne("token", tokenString); err != nil {
+	if err := token.FindOne("access_token", tokenString); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Session not found"})
 		return
 	}
@@ -134,6 +137,7 @@ func Logout(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("auth_token", "", -1, "/", "", false, true)
+	c.SetCookie("access_token", "", -1, "/", "", false, true)
+	c.SetCookie("refresh_token", "", -1, "/", "", false, true)
 	c.JSON(http.StatusOK, gin.H{"message": "Logged out successfully"})
 }

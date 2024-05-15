@@ -10,11 +10,12 @@ import (
 )
 
 type Token struct {
-	ID        int       `json:"id" gorm:"primaryKey"`
-	UserID    int       `json:"user_id" gorm:"primaryKey;references:ID"`
-	Token     string    `json:"token" gorm:"type:varchar(255)"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID           int       `json:"id" gorm:"primaryKey"`
+	UserID       int       `json:"user_id" gorm:"primaryKey;references:ID"`
+	AccessToken  string    `json:"access_token" gorm:"type:varchar(255)"`
+	RefreshToken string    `json:"refresh_token" gorm:"type:varchar(255)"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
 }
 
 var jwtKey = []byte(os.Getenv("JWT_SECRET_KEY"))
@@ -25,10 +26,11 @@ type UserClaims struct {
 	UserID int `json:"user_id"`
 }
 
-func NewToken(tokenString string, userID int) error {
+func NewToken(accessToken, refreshToken string, userID int) error {
 	token := Token{
-		UserID: userID,
-		Token:  tokenString,
+		UserID:       userID,
+		AccessToken:  accessToken,
+		RefreshToken: refreshToken,
 	}
 	return token.Save()
 }
@@ -43,7 +45,7 @@ func DeleteTokensByUserID(userID int) error {
 	return DB.Where("user_id = ?", userID).Delete(&Token{}).Error
 }
 
-func GenerateJWTToken(userID int) (string, error) {
+func GenerateJWTToken(userID int) (string, string, error) {
 	now := time.Now()
 
 	claims := &UserClaims{
@@ -54,19 +56,29 @@ func GenerateJWTToken(userID int) (string, error) {
 		},
 	}
 
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	tokenString, err := token.SignedString(jwtKey)
-	if err != nil {
-		return "", fmt.Errorf("failed to sign the token: %w", err)
+	accessToken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	refreshToken := jwt.New(jwt.SigningMethodHS256)
+	refreshToken.Claims = jwt.MapClaims{
+		"exp": now.Add(30 * 24 * time.Hour).Unix(),
+		"sub": 1,
 	}
 
-	err = NewToken(tokenString, userID)
+	accessTokenString, err := accessToken.SignedString(jwtKey)
 	if err != nil {
-		return "", fmt.Errorf("failed to save the token: %w", err)
+		return "", "", fmt.Errorf("failed to sign the token: %w", err)
 	}
 
-	return tokenString, nil
+	refreshTokenString, err := refreshToken.SignedString(jwtKey)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to sign the token: %w", err)
+	}
+
+	err = NewToken(accessTokenString, refreshTokenString, userID)
+	if err != nil {
+		return "", "", fmt.Errorf("failed to save the token: %w", err)
+	}
+
+	return accessTokenString, refreshTokenString, nil
 }
 
 func ParseJWTToken(tokenString string) (*UserClaims, error) {
