@@ -89,6 +89,7 @@ func RegisterRoutes(r *gin.Engine) {
 				Register,
 			)
 			auth.POST("/logout", middlewares.IsLoggedIn(), Logout)
+			auth.POST("/refresh", Refresh)
 		}
 
 		tournaments := api.Group("/tournaments")

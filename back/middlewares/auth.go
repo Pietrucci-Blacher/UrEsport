@@ -10,26 +10,26 @@ import (
 func IsLoggedIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user models.User
-		var t models.Token
+		var token models.Token
 
-		token, err := c.Cookie("access_token")
+		accessToken, err := c.Cookie("access_token")
 		if err != nil {
-			token = c.GetHeader("Authorization")
+			accessToken = c.GetHeader("Authorization")
 		}
 
-		if token == "" {
+		if accessToken == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
 
-		if err := t.FindOne("access_token", token); err != nil {
+		if err := token.FindOne("access_token", accessToken); err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
 
-		userClaim, err := models.ParseJWTToken(token)
+		userClaim, err := models.ParseJWTToken(accessToken)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()

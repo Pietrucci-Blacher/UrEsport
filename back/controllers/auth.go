@@ -18,13 +18,13 @@ import (
 //	@Accept			json
 //	@Produce		json
 //	@Param			login	body		models.LoginUserDto	true	"Login user"
-//	@Success		200		{object}	models.Token
+//	@Success		200		{object}	models.LoginSuccessResponse
 //	@Failure		400		{object}	utils.HttpError
 //	@Router			/auth/login [post]
 func Login(c *gin.Context) {
+	var user models.User
 	body, _ := c.MustGet("body").(models.LoginUserDto)
 
-	var user models.User
 	if err := user.FindOne("email", body.Email); err != nil {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
@@ -40,20 +40,66 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	accessToken, refreshToken, err := models.GenerateJWTToken(user.ID)
-	if err != nil {
+	token := models.NewToken(user.ID)
+
+	if err := token.GenerateTokens(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
 		return
 	}
 
+	if err := token.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save token"})
+		return
+	}
+
 	cookieSecure, _ := strconv.ParseBool(os.Getenv("COOKIE_SECURE"))
-	c.SetCookie("access_token", accessToken, 3600, "/", "", cookieSecure, true)
-	c.SetCookie("refresh_token", accessToken, 3600, "/", "", cookieSecure, true)
+	c.SetCookie("access_token", token.AccessToken, 3600, "/", "", cookieSecure, true)
+	c.SetCookie("refresh_token", token.RefreshToken, 3600*24*30, "/", "", cookieSecure, true)
 
 	c.JSON(http.StatusOK, gin.H{
-		"access_token":  accessToken,
-		"refresh_token": refreshToken,
+		"access_token":  token.AccessToken,
+		"refresh_token": token.RefreshToken,
 	})
+}
+
+// Refresh godoc
+//
+//	@Summary		Refresh token
+//	@Description	Refresh token
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Success		200		{object}	models.RefreshSuccessResponse
+//	@Failure		400		{object}	utils.HttpError
+//	@Router			/auth/refresh [post]
+func Refresh(c *gin.Context) {
+	var token models.Token
+
+	refreshTokenString, err := c.Cookie("refresh_token")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "No refresh token found"})
+		return
+	}
+
+	if err := token.FindOne("refresh_token", refreshTokenString); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Refresh token not found"})
+		return
+	}
+
+	if err = token.GenerateAccessToken(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate token"})
+		return
+	}
+
+	if err := token.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save token"})
+		return
+	}
+
+	cookieSecure, _ := strconv.ParseBool(os.Getenv("COOKIE_SECURE"))
+	c.SetCookie("access_token", token.AccessToken, 3600, "/", "", cookieSecure, true)
+
+	c.JSON(http.StatusOK, gin.H{"access_token": token.AccessToken})
 }
 
 // Register godoc
