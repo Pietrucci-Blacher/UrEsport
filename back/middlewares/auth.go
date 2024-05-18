@@ -10,26 +10,26 @@ import (
 func IsLoggedIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user models.User
-		var t models.Token
+		var token models.Token
 
-		token, err := c.Cookie("auth_token")
+		accessToken, err := c.Cookie("access_token")
 		if err != nil {
-			token = c.GetHeader("Authorization")
+			accessToken = c.GetHeader("Authorization")
 		}
 
-		if token == "" {
+		if accessToken == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
 
-		if err := t.FindOne("token", token); err != nil {
+		if err := token.FindOne("access_token", accessToken); err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
 
-		userClaim, err := models.ParseJWTToken(token)
+		userClaim, err := models.ParseJWTToken(accessToken)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
@@ -49,7 +49,7 @@ func IsLoggedIn() gin.HandlerFunc {
 
 func IsNotLoggedIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if _, err := c.Cookie("auth_token"); err == nil {
+		if _, err := c.Cookie("access_token"); err == nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Already Logged In"})
 			c.Abort()
 			return
