@@ -19,9 +19,12 @@ void main() {
               expect(localizations.tournamentScreenTitle, 'Tournaments');
               expect(localizations.notificationScreenTitle, 'Notifications');
               expect(localizations.profileScreenTitle, 'Profile');
-              expect(localizations.homeScreenWelcome, 'Welcome to the Home Screen!');
-              expect(localizations.tournamentScreenWelcome, 'Welcome to the Tournament Screen!');
-              expect(localizations.notificationScreenWelcome, 'Welcome to the Notification screen!');
+              expect(localizations.homeScreenWelcome,
+                  'Welcome to the Home Screen!');
+              expect(localizations.tournamentScreenWelcome,
+                  'Welcome to the Tournament Screen!');
+              expect(localizations.notificationScreenWelcome,
+                  'Welcome to the Notification screen!');
               return Container();
             },
           ),

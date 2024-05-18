@@ -5,7 +5,8 @@ import 'package:uresport/global_scaffold.dart';
 class SplashScreenHandler extends StatefulWidget {
   const SplashScreenHandler({super.key});
 
-  @override SplashScreenHandlerState createState() => SplashScreenHandlerState();
+  @override
+  SplashScreenHandlerState createState() => SplashScreenHandlerState();
 }
 
 class SplashScreenHandlerState extends State<SplashScreenHandler> {
