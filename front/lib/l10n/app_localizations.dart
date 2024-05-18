@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
-import 'package:uresport/generated/intl/messages_all.dart';
+import 'package:uresport/generated/l10n/intl/messages_all.dart';
 
 class AppLocalizations {
   static Future<AppLocalizations> load(Locale locale) {
@@ -18,7 +19,12 @@ class AppLocalizations {
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate = AppLocalizationsDelegate();
-  static const List<LocalizationsDelegate> localizationsDelegates = [delegate];
+  static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = [
+    delegate,
+    GlobalMaterialLocalizations.delegate,
+    GlobalWidgetsLocalizations.delegate,
+    GlobalCupertinoLocalizations.delegate,
+  ];
   static const List<Locale> supportedLocales = [Locale('en'), Locale('es'), Locale('fr')];
 
   String get title {
