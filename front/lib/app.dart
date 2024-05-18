@@ -2,10 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/shared/routing/routing.dart';
-import 'package:uresport/shared/splash_screen.dart';
 import 'package:uresport/cubit/locale_cubit.dart';
-import 'package:uresport/global_scaffold.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/shared/splash_screen/splash_screen_handler.dart';
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -45,11 +44,11 @@ class MyApp extends StatelessWidget {
               }
               return const Locale('en', '');
             },
-            home: const SplashScreen(),
+            home: const SplashScreenHandler(),
             initialRoute: '/',
             onGenerateRoute: RouteGenerator.generateRoute,
             builder: (context, child) {
-              return child is SplashScreen ? child : const GlobalScaffold();
+              return child!;
             },
           );
         },
