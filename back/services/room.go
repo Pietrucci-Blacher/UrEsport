@@ -24,10 +24,10 @@ func (r *Room) AddClient(client *Client) {
 
 // RemoveClient removes a client from the room
 //
-// room.RemoveClient(client)
-// client.Ws.Room("room-name").RemoveClient(client)
-func (r *Room) RemoveClient(client *Client) {
-	delete(r.clients, client.ID)
+// room.RemoveClient(client.ID)
+// client.Ws.Room("room-name").RemoveClient(client.ID)
+func (r *Room) RemoveClient(id string) {
+	delete(r.clients, id)
 }
 
 // GetClients returns the list of clients in the room

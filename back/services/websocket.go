@@ -60,7 +60,7 @@ func (w *Websocket) connectGin(c *gin.Context) (*Client, error) {
 		return nil, err
 	}
 
-	client := NewClient(conn, nil)
+	client := NewClient(conn)
 	w.AddClient(client)
 
 	if err := w.onConnect(client, c); err != nil {
@@ -157,7 +157,7 @@ func (w *Websocket) RemoveClient(id string) error {
 	}
 
 	for _, room := range w.rooms {
-		room.RemoveClient(client)
+		room.RemoveClient(id)
 	}
 
 	client.Close()
@@ -186,18 +186,6 @@ func (w *Websocket) Close(id string) {
 // ws.GetClient(client.ID)
 func (w *Websocket) GetClient(id string) *Client {
 	return w.clients[id]
-}
-
-// GetClientByUserId returns a client by its user ID
-//
-// ws.GetClientByUserId(user.ID)
-func (w *Websocket) GetClientByUserId(id int) *Client {
-	for _, client := range w.clients {
-		if client.User.ID == id {
-			return client
-		}
-	}
-	return nil
 }
 
 // SendJson sends a message to all connected clients
