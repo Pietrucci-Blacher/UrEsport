@@ -24,22 +24,25 @@ func RegisterWebsocket(r *gin.Engine) {
 
 func connect(client *services.Client, c *gin.Context) error {
 	user := c.MustGet("user").(models.User)
-	client.User = &user
+
+	client.SetData("user", user)
 
 	fmt.Printf("Client %s connected, len %d, user %s\n",
 		client.ID,
 		len(client.Ws.GetClients()),
-		client.User.Username,
+		user.Username,
 	)
 
 	return nil
 }
 
 func disconnect(client *services.Client) error {
+	user := client.GetData("user").(models.User)
+
 	fmt.Printf("Client %s disconnected, len %d, user %s\n",
 		client.ID,
 		len(client.Ws.GetClients()),
-		client.User.Username,
+		user.Username,
 	)
 
 	return nil
