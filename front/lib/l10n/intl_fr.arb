@@ -1,0 +1,11 @@
+{
+  "@@locale": "fr",
+  "appTitle": "UrEsport",
+  "homeScreenTitle": "Accueil",
+  "tournamentScreenTitle": "Tournois",
+  "notificationScreenTitle": "Notifications",
+  "profileScreenTitle": "Profil",
+  "homeScreenWelcome": "Bienvenue à l'écran d'accueil !",
+  "tournamentScreenWelcome": "Bienvenue à l'écran des tournois !",
+  "notificationScreenWelcome": "Bienvenue à l'écran des notifications !"
+}

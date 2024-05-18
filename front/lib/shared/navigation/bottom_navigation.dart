@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
-class CustomBottomNavigation extends StatefulWidget {
+class CustomBottomNavigation extends StatelessWidget {
   final bool isLoggedIn;
   final int selectedIndex;
   final void Function(int index) onTap;
@@ -13,35 +14,30 @@ class CustomBottomNavigation extends StatefulWidget {
   });
 
   @override
-  CustomBottomNavigationState createState() => CustomBottomNavigationState();
-}
-
-class CustomBottomNavigationState extends State<CustomBottomNavigation> {
-  @override
   Widget build(BuildContext context) {
     return BottomNavigationBar(
-      items: const <BottomNavigationBarItem>[
+      items: <BottomNavigationBarItem>[
         BottomNavigationBarItem(
-          icon: Icon(Icons.home),
-          label: 'Home',
+          icon: const Icon(Icons.home),
+          label: AppLocalizations.of(context).homeScreenTitle,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.sports_esports),
-          label: 'Tournaments',
+          icon: const Icon(Icons.sports_esports),
+          label: AppLocalizations.of(context).tournamentScreenTitle,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.notifications),
-          label: 'Notifications',
+          icon: const Icon(Icons.notifications),
+          label: AppLocalizations.of(context).notificationScreenTitle,
         ),
         BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'Profile',
+          icon: const Icon(Icons.person),
+          label: AppLocalizations.of(context).profileScreenTitle,
         ),
       ],
-      currentIndex: widget.selectedIndex,
+      currentIndex: selectedIndex,
       selectedItemColor: Colors.blue[800],
       unselectedItemColor: Colors.grey[600],
-      onTap: widget.onTap,
+      onTap: onTap,
     );
   }
 }
