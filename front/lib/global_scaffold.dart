@@ -16,15 +16,13 @@ class GlobalScaffold extends StatelessWidget {
             builder: (context) => Stack(
               children: [
                 const MainScreen(),
-                Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: LocaleSwitcher(
-                      onLocaleChanged: (locale) {
-                        context.read<LocaleCubit>().setLocale(locale);
-                      },
-                    ),
+                Positioned(
+                  top: 60.0,
+                  right: 30.0,
+                  child: LocaleSwitcher(
+                    onLocaleChanged: (locale) {
+                      context.read<LocaleCubit>().setLocale(locale);
+                    },
                   ),
                 ),
               ],
