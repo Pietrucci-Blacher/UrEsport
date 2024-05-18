@@ -35,9 +35,10 @@ type UserClaims struct {
 	UserID int `json:"user_id"`
 }
 
-func NewToken(userID int) Token {
-	return Token{
+func NewToken(tokenString string, userID int) error {
+	token := Token{
 		UserID: userID,
+		Token:  tokenString,
 	}
 }
 
@@ -49,6 +50,32 @@ func FindTokensByUserID(userID int) ([]Token, error) {
 
 func DeleteTokensByUserID(userID int) error {
 	return DB.Where("user_id = ?", userID).Delete(&Token{}).Error
+}
+
+func GenerateJWTToken(userID int) (string, error) {
+	now := time.Now()
+
+	claims := &UserClaims{
+		UserID: userID,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: jwt.NewNumericDate(now.Add(24 * time.Hour)),
+			IssuedAt:  jwt.NewNumericDate(now),
+		},
+	}
+
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	tokenString, err := token.SignedString(jwtKey)
+	if err != nil {
+		return "", fmt.Errorf("failed to sign the token: %w", err)
+	}
+
+	err = NewToken(tokenString, userID)
+	if err != nil {
+		return "", fmt.Errorf("failed to save the token: %w", err)
+	}
+
+	return tokenString, nil
 }
 
 func ParseJWTToken(tokenString string) (*UserClaims, error) {
