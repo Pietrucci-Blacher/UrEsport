@@ -2,6 +2,9 @@ name: uresport
 description: "Beautify your Esport experience with Uresport"
 publish_to: 'none'
 
+assets:
+  - .env
+
 version: 1.0.0+1
 
 environment:
@@ -19,6 +22,7 @@ dependencies:
   flutter_bloc: ^8.1.5
   bloc: ^8.1.4
   equatable: ^2.0.5
+  web_socket_channel: ^3.0.0
 
 dev_dependencies:
   flutter_test:

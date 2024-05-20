@@ -34,15 +34,15 @@ func NewClient(conn *websocket.Conn) *Client {
 
 // SetData sets a data to the client
 //
-// client.SetData("key", "value")
-func (c *Client) SetData(key string, value any) {
+// client.Set("key", "value")
+func (c *Client) Set(key string, value any) {
 	c.data[key] = value
 }
 
 // GetData gets a data from the client
 //
-// data := client.GetData("key")
-func (c *Client) GetData(key string) any {
+// data := client.Get("key")
+func (c *Client) Get(key string) any {
 	return c.data[key]
 }
 

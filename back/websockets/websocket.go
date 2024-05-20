@@ -1,7 +1,6 @@
 package websockets
 
 import (
-	"challenge/middlewares"
 	"challenge/models"
 	"challenge/services"
 	"fmt"
@@ -17,32 +16,31 @@ func RegisterWebsocket(r *gin.Engine) {
 	ws.On("ping", PingTest)
 
 	r.GET("/ws",
-		middlewares.IsLoggedIn(),
+		// middlewares.IsLoggedIn(),
 		ws.GinWsHandler,
 	)
 }
 
 func connect(client *services.Client, c *gin.Context) error {
-	user := c.MustGet("user").(models.User)
+	user, ok := c.Get("user")
+	if ok {
+		client.Set("user", user.(models.User))
+	}
 
-	client.SetData("user", user)
+	client.Set("logged", ok)
 
-	fmt.Printf("Client %s connected, len %d, user %s\n",
+	fmt.Printf("Client %s connected, len %d\n",
 		client.ID,
 		len(client.Ws.GetClients()),
-		user.Username,
 	)
 
 	return nil
 }
 
 func disconnect(client *services.Client) error {
-	user := client.GetData("user").(models.User)
-
-	fmt.Printf("Client %s disconnected, len %d, user %s\n",
+	fmt.Printf("Client %s disconnected, len %d\n",
 		client.ID,
 		len(client.Ws.GetClients()),
-		user.Username,
 	)
 
 	return nil
