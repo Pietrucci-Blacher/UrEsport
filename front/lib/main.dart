@@ -12,9 +12,11 @@ void main() async {
   final authService = AuthService(dio);
 
   runApp(
-    Provider<IAuthService>(
-      create: (_) => authService,
-      child: const MyApp(),
+    MultiProvider(
+      providers: [
+        Provider<IAuthService>.value(value: authService),
+      ],
+      child: MyApp(authService: authService),
     ),
   );
 }

@@ -1,10 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mockito/mockito.dart';
+import 'package:provider/provider.dart';
 import 'package:uresport/app.dart';
+import 'package:uresport/core/services/auth_service.dart';
+import 'auth/mocks/auth_service_mock.dart';
 
 void main() {
   testWidgets('LocaleSwitcher changes locale', (WidgetTester tester) async {
-    await tester.pumpWidget(const MyApp());
+    final mockAuthService = MockAuthService();
+
+    // Configurez les comportements de votre mock si nécessaire
+    when(mockAuthService.isLoggedIn()).thenAnswer((_) async => false);
+
+    await tester.pumpWidget(
+      MultiProvider(
+        providers: [
+          Provider<IAuthService>.value(value: mockAuthService),
+        ],
+        child: MyApp(authService: mockAuthService), // Remove const
+      ),
+    );
 
     // Verify the initial state
     expect(find.byIcon(Icons.language), findsOneWidget);

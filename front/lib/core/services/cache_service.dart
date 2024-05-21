@@ -1,15 +1,12 @@
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class CacheService {
-  static final CacheService _instance = CacheService._internal();
-
-  factory CacheService() => _instance;
-
   CacheService._internal();
 
-  final _storage = const FlutterSecureStorage();
-
+  static final CacheService _instance = CacheService._internal();
   static CacheService get instance => _instance;
+
+  final FlutterSecureStorage _storage = const FlutterSecureStorage();
 
   Future<void> setString(String key, String value) async {
     await _storage.write(key: key, value: value);
