@@ -8,6 +8,7 @@ abstract class IAuthService {
   Future<String> login(LoginRequest loginRequest);
   Future<bool> isLoggedIn();
   Future<void> logout();
+  Future<void> loginWithOAuth(String provider);
 }
 
 class AuthService implements IAuthService {
@@ -70,8 +71,30 @@ class AuthService implements IAuthService {
   Future<void> logout() async {
     try {
       await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/logout');
+      return;
     } catch (e) {
       throw Exception('Failed to logout: $e');
+    }
+  }
+
+  @override
+  Future<void> loginWithOAuth(String provider) async {
+    // Implémentez la logique pour gérer la connexion OAuth
+    switch (provider) {
+      case 'Google':
+      // Logique pour Google
+        break;
+      case 'Apple':
+      // Logique pour Apple
+        break;
+      case 'Discord':
+      // Logique pour Discord
+        break;
+      case 'Twitch':
+      // Logique pour Twitch
+        break;
+      default:
+        throw UnimplementedError('Provider $provider not implemented');
     }
   }
 }
