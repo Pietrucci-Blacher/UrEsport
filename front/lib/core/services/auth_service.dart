@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:uresport/core/models/login_request.dart';
 import 'package:uresport/core/models/register_request.dart';
 
@@ -79,22 +81,80 @@ class AuthService implements IAuthService {
 
   @override
   Future<void> loginWithOAuth(String provider) async {
-    // Implémentez la logique pour gérer la connexion OAuth
     switch (provider) {
       case 'Google':
-      // Logique pour Google
+        await _loginWithGoogle();
         break;
       case 'Apple':
-      // Logique pour Apple
+        await _loginWithApple();
         break;
       case 'Discord':
-      // Logique pour Discord
+        await _loginWithDiscord();
         break;
       case 'Twitch':
-      // Logique pour Twitch
+        await _loginWithTwitch();
         break;
       default:
         throw UnimplementedError('Provider $provider not implemented');
     }
+  }
+
+  Future<void> _loginWithGoogle() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn(scopes: ['email']);
+    try {
+      final GoogleSignInAccount? account = await googleSignIn.signIn();
+      if (account != null) {
+        final GoogleSignInAuthentication auth = await account.authentication;
+        final String? token = auth.accessToken;
+        // Use the token to authenticate with your backend
+      }
+    } catch (e) {
+      throw Exception('Failed to sign in with Google: $e');
+    }
+  }
+
+  Future<void> _loginWithApple() async {
+    final String clientId = dotenv.env['IOS_CLIENT_ID']!;
+    final String redirectUri = dotenv.env['IOS_REDIRECT_URI']!;
+    final String url =
+        'https://appleid.apple.com/auth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=email%20name';
+
+    final result = await FlutterWebAuth2.authenticate(
+      url: url,
+      callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
+    );
+
+    final token = Uri.parse(result).queryParameters['code'];
+    // Use the token to authenticate with your backend
+  }
+
+  Future<void> _loginWithDiscord() async {
+    final String clientId = dotenv.env['DISCORD_CLIENT_ID']!;
+    final String redirectUri = dotenv.env['DISCORD_REDIRECT_URI']!;
+    final String url =
+        'https://discord.com/api/oauth2/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=identify%20email';
+
+    final result = await FlutterWebAuth2.authenticate(
+      url: url,
+      callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
+    );
+
+    final token = Uri.parse(result).queryParameters['code'];
+    // Use the token to authenticate with your backend
+  }
+
+  Future<void> _loginWithTwitch() async {
+    final String clientId = dotenv.env['TWITCH_CLIENT_ID']!;
+    final String redirectUri = dotenv.env['TWITCH_REDIRECT_URI']!;
+    final String url =
+        'https://id.twitch.tv/oauth2/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=user:read:email';
+
+    final result = await FlutterWebAuth2.authenticate(
+      url: url,
+      callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
+    );
+
+    final token = Uri.parse(result).queryParameters['code'];
+    // Use the token to authenticate with your backend
   }
 }

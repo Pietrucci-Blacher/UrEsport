@@ -18,17 +18,6 @@ class ProfileScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => AuthBloc(authService)..add(AuthCheckRequested()),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Profile'),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.language),
-              onPressed: () {
-                // Language switcher logic
-              },
-            ),
-          ],
-        ),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
