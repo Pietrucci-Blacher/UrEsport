@@ -60,6 +60,7 @@ func Migration() error {
 		&Feature{},
 		&Token{},
 		&Tournament{},
+		&Game{},
 	)
 }
 
@@ -70,6 +71,7 @@ func DropTables() error {
 		&Token{},
 		&Tournament{},
 		"tournament_participants",
+		&Game{},
 	)
 }
 

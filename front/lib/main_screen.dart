@@ -1,4 +1,3 @@
-// main_screen.dart
 import 'package:flutter/material.dart';
 import 'package:uresport/home/screens/home_screen.dart';
 import 'package:uresport/notification/screens/notif_screen.dart';
@@ -6,6 +5,7 @@ import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/services/network_services.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
 import 'package:uresport/tournament/screens/tournament_screen.dart';
+import 'package:uresport/widgets/games_screen.dart';
 import 'package:uresport/widgets/invite_button.dart';
 import 'package:uresport/widgets/qrcode.dart';
 
@@ -101,13 +101,19 @@ class MainScreenState extends State<MainScreen> {
               },
               child: const Text('Rejoindre'),
             ),
-
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => GamesScreen()),
+                );
+              },
+              child: Text('Voir les jeux'),
+            )
           ],
         ),
       ],
     )).toList();
-
-
 
     return Scaffold(
       appBar: AppBar(
@@ -135,5 +141,4 @@ class MainScreenState extends State<MainScreen> {
       ),
     );
   }
-
 }
