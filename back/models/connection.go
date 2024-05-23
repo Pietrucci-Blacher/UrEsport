@@ -63,6 +63,7 @@ func Migration() error {
 		&VerificationCode{},
 		&Team{},
 		&Invit{},
+		&Game{},
 	)
 }
 
@@ -75,6 +76,7 @@ func DropTables() error {
 		&VerificationCode{},
 		&Team{},
 		&Invit{},
+		&Game{},
 		"tournament_teams",
 		"team_members",
 	)
