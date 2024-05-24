@@ -34,13 +34,9 @@ class MainScreenState extends State<MainScreen> {
   ];
 
   void _onItemTapped(int index) {
-    if (index < _widgetOptions.length) {
-      setState(() {
-        _selectedIndex = index;
-      });
-    } else {
-      debugPrint('Index $index est hors de la plage de _widgetOptions');
-    }
+    setState(() {
+      _selectedIndex = index;
+    });
   }
 
   @override

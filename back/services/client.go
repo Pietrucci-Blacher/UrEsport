@@ -1,8 +1,6 @@
 package services
 
 import (
-	"challenge/models"
-
 	"github.com/google/uuid"
 	"github.com/gorilla/websocket"
 )
@@ -17,21 +15,35 @@ type Message struct {
 type Client struct {
 	ID   string
 	Conn *websocket.Conn
-	User *models.User
+	data map[string]any
 	Ws   *Websocket
 }
 
 // NewClient creates a new websocket client
-func NewClient(conn *websocket.Conn, user *models.User) *Client {
+func NewClient(conn *websocket.Conn) *Client {
 	ws := GetWebsocket()
 	id := uuid.New().String()
 
 	return &Client{
 		ID:   id,
 		Conn: conn,
-		User: user,
+		data: make(map[string]any),
 		Ws:   ws,
 	}
+}
+
+// SetData sets a data to the client
+//
+// client.SetData("key", "value")
+func (c *Client) SetData(key string, value any) {
+	c.data[key] = value
+}
+
+// GetData gets a data from the client
+//
+// data := client.GetData("key")
+func (c *Client) GetData(key string) any {
+	return c.data[key]
 }
 
 // SendJson sends a message to the client
