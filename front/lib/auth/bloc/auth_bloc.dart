@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
+import 'package:uresport/core/models/register_request.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final IAuthService authService;
@@ -10,13 +11,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     on<AuthCheckRequested>((event, emit) async {
       final isLoggedIn = await authService.isLoggedIn();
       if (isLoggedIn) {
-        emit(AuthAuthenticated());
+        final user = await authService.getUser();
+        emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
       }
     });
 
-    on<AuthLoggedIn>((event, emit) => emit(AuthAuthenticated()));
+    on<AuthLoggedIn>((event, emit) async {
+      final user = await authService.getUser();
+      emit(AuthAuthenticated(user));
+    });
 
     on<AuthLoggedOut>((event, emit) async {
       await authService.logout();
@@ -27,7 +32,27 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoading());
       try {
         await authService.loginWithOAuth(event.provider);
-        emit(AuthAuthenticated());
+        final user = await authService.getUser();
+        emit(AuthAuthenticated(user));
+      } catch (e) {
+        emit(AuthFailure(e.toString()));
+      }
+    });
+
+    on<RegisterSubmitted>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await authService.register(
+          RegisterRequest(
+            firstName: event.firstName,
+            lastName: event.lastName,
+            userName: event.username,
+            email: event.email,
+            password: event.password,
+          ),
+        );
+        final user = await authService.getUser();
+        emit(AuthAuthenticated(user));
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }

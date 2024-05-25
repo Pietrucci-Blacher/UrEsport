@@ -4,6 +4,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:uresport/core/models/login_request.dart';
 import 'package:uresport/core/models/register_request.dart';
+import 'package:uresport/auth/bloc/auth_state.dart'; // Importation de la classe User
 
 abstract class IAuthService {
   Future<void> register(RegisterRequest registerRequest);
@@ -11,6 +12,8 @@ abstract class IAuthService {
   Future<bool> isLoggedIn();
   Future<void> logout();
   Future<void> loginWithOAuth(String provider);
+  Future<User> getUser();
+  Future<void> verifyCode(String email, String code);
 }
 
 class AuthService implements IAuthService {
@@ -59,8 +62,7 @@ class AuthService implements IAuthService {
     try {
       final response = await _dio.get(Uri.parse('${dotenv.env['API_ENDPOINT']}/users/me').toString());
       if (response.statusCode == 200) {
-        final Map<String, dynamic> userData = response.data;
-        return userData.containsKey('user');
+        return true;
       } else {
         return false;
       }
@@ -119,12 +121,11 @@ class AuthService implements IAuthService {
     final String url =
         'https://appleid.apple.com/auth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=email%20name';
 
-    final result = await FlutterWebAuth2.authenticate(
+    await FlutterWebAuth2.authenticate(
       url: url,
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    final token = Uri.parse(result).queryParameters['code'];
     // Use the token to authenticate with your backend
   }
 
@@ -134,12 +135,11 @@ class AuthService implements IAuthService {
     final String url =
         'https://discord.com/api/oauth2/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=identify%20email';
 
-    final result = await FlutterWebAuth2.authenticate(
+    await FlutterWebAuth2.authenticate(
       url: url,
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    final token = Uri.parse(result).queryParameters['code'];
     // Use the token to authenticate with your backend
   }
 
@@ -149,12 +149,44 @@ class AuthService implements IAuthService {
     final String url =
         'https://id.twitch.tv/oauth2/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=user:read:email';
 
-    final result = await FlutterWebAuth2.authenticate(
+    await FlutterWebAuth2.authenticate(
       url: url,
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    final token = Uri.parse(result).queryParameters['code'];
     // Use the token to authenticate with your backend
+  }
+
+  @override
+  Future<User> getUser() async {
+    try {
+      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users/me');
+      if (response.statusCode == 200) {
+        final data = response.data;
+        return User(
+          firstName: data['firstName'],
+          lastName: data['lastName'],
+          username: data['username'],
+          email: data['email'],
+          avatarUrl: data['avatarUrl'],
+        );
+      } else {
+        throw Exception('Failed to load user data');
+      }
+    } catch (e) {
+      throw Exception('Failed to load user data: $e');
+    }
+  }
+
+  @override
+  Future<void> verifyCode(String email, String code) async {
+    try {
+      await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/verify', data: {
+        'email': email,
+        'code': code,
+      });
+    } catch (e) {
+      throw Exception('Failed to verify code: $e');
+    }
   }
 }

@@ -1,14 +1,18 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uresport/auth/bloc/auth_bloc.dart';
+import 'package:uresport/auth/bloc/auth_event.dart';
+import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
-import 'package:uresport/core/models/register_request.dart';
+import 'package:uresport/auth/screens//verification_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   final IAuthService authService;
 
   const RegisterScreen({super.key, required this.authService});
 
-  @override RegisterScreenState createState() => RegisterScreenState();
+  @override
+  RegisterScreenState createState() => RegisterScreenState();
 }
 
 class RegisterScreenState extends State<RegisterScreen> {
@@ -17,6 +21,7 @@ class RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true;
 
   @override
   void dispose() {
@@ -28,83 +33,151 @@ class RegisterScreenState extends State<RegisterScreen> {
     super.dispose();
   }
 
-  void _handleRegister() async {
-    try {
-      await widget.authService.register(
-        RegisterRequest(
-          firstName: _firstnameController.text,
-          lastName: _lastnameController.text,
-          userName: _usernameController.text,
-          email: _emailController.text,
-          password: _passwordController.text,
-        ),
-      );
-    } catch (e) {
-      if (kDebugMode) {
-        print("Registration failed with error: $e");
-      }
-      _showError(e.toString());
-    }
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
   }
 
-  void _showError(String message) {
+  void _showSuccessDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Error"),
-        content: Text(message),
-        actions: <Widget>[
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(),
-            child: const Text("OK"),
+      builder: (BuildContext context) {
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.of(context).pop(true);
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => VerificationScreen(email: _emailController.text, authService: widget.authService), // Passer authService ici
+            ),
+          );
+        });
+        return const AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(Icons.check_circle, color: Colors.green, size: 60),
+              SizedBox(height: 16),
+              Text('Registration Successful! Please verify your account.'),
+            ],
           ),
-        ],
-      ),
+        );
+      },
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Register")),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-              controller: _firstnameController,
-              decoration: const InputDecoration(labelText: 'First Name'),
-              keyboardType: TextInputType.name,
-              autofillHints: const [AutofillHints.givenName],
+    return BlocProvider(
+      create: (context) => AuthBloc(widget.authService),
+      child: Scaffold(
+        appBar: AppBar(title: const Text("Register")),
+        body: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthFailure) {
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+            } else if (state is AuthUnauthenticated) {
+              _showSuccessDialog();
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTextField(
+                    controller: _firstnameController,
+                    label: 'First Name',
+                    hint: AutofillHints.givenName,
+                    keyboardType: TextInputType.name,
+                  ),
+                  _buildTextField(
+                    controller: _lastnameController,
+                    label: 'Last Name',
+                    hint: AutofillHints.familyName,
+                    keyboardType: TextInputType.name,
+                  ),
+                  _buildTextField(
+                    controller: _usernameController,
+                    label: 'Username',
+                    hint: AutofillHints.username,
+                  ),
+                  _buildTextField(
+                    controller: _emailController,
+                    label: 'Email',
+                    hint: AutofillHints.email,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  _buildPasswordField(),
+                  const SizedBox(height: 20),
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      if (state is AuthLoading) {
+                        return const CircularProgressIndicator();
+                      }
+                      return ElevatedButton(
+                        onPressed: () {
+                          context.read<AuthBloc>().add(
+                            RegisterSubmitted(
+                              firstName: _firstnameController.text,
+                              lastName: _lastnameController.text,
+                              username: _usernameController.text,
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                            ),
+                          );
+                        },
+                        child: const Text("Register"),
+                      );
+                    },
+                  ),
+                ],
+              ),
             ),
-            TextField(
-              controller: _lastnameController,
-              decoration: const InputDecoration(labelText: 'Last Name'),
-              keyboardType: TextInputType.name,
-              autofillHints: const [AutofillHints.familyName],
-            ),
-            TextField(
-              controller: _usernameController,
-              decoration: const InputDecoration(labelText: 'Username'),
-              autofillHints: const [AutofillHints.username],
-            ),
-            TextField(
-              controller: _emailController,
-              decoration: const InputDecoration(labelText: 'Email'),
-              keyboardType: TextInputType.emailAddress,
-              autofillHints: const [AutofillHints.email],
-            ),
-            TextField(
-              controller: _passwordController,
-              decoration: const InputDecoration(labelText: 'Password'),
-              obscureText: true,
-              autofillHints: const [AutofillHints.newPassword],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(onPressed: _handleRegister, child: const Text("Register"))
-          ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    String? hint,
+    TextInputType? keyboardType,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        keyboardType: keyboardType,
+        autofillHints: hint != null ? [hint] : null,
+      ),
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: _passwordController,
+        decoration: InputDecoration(
+          labelText: 'Password',
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          suffixIcon: IconButton(
+            icon: Icon(
+              _obscureText ? Icons.visibility : Icons.visibility_off,
+            ),
+            onPressed: _togglePasswordVisibility,
+          ),
+        ),
+        obscureText: _obscureText,
+        autofillHints: const [AutofillHints.newPassword],
       ),
     );
   }

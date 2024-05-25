@@ -10,3 +10,29 @@ class OAuthLoginRequested extends AuthEvent {
   final String provider;
   OAuthLoginRequested(this.provider);
 }
+
+class RegisterSubmitted extends AuthEvent {
+  final String firstName;
+  final String lastName;
+  final String username;
+  final String email;
+  final String password;
+
+  RegisterSubmitted({
+    required this.firstName,
+    required this.lastName,
+    required this.username,
+    required this.email,
+    required this.password,
+  });
+}
+
+class VerifyCodeSubmitted extends AuthEvent {
+  final String email;
+  final String code;
+
+  VerifyCodeSubmitted({
+    required this.email,
+    required this.code,
+  });
+}
