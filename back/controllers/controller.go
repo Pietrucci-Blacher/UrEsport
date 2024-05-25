@@ -90,6 +90,9 @@ func RegisterRoutes(r *gin.Engine) {
 			)
 			auth.POST("/logout", middlewares.IsLoggedIn(), Logout)
 			auth.POST("/refresh", Refresh)
+			auth.POST("/verify", middlewares.Validate[models.VerifyUserDto](), Verify)
+			auth.POST("/request-password-reset", middlewares.Validate[models.RequestPasswordResetDto](), RequestPasswordReset)
+			auth.POST("/reset-password", middlewares.Validate[models.ResetPasswordDto](), ResetPassword)
 		}
 
 		tournaments := api.Group("/tournaments")
