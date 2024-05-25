@@ -15,6 +15,21 @@ type VerificationCode struct {
 	UpdatedAt time.Time
 }
 
+type VerifyUserDto struct {
+	Email string `json:"email" binding:"required,email"`
+	Code  string `json:"code" binding:"required"`
+}
+
+type RequestPasswordResetDto struct {
+	Email string `json:"email" binding:"required,email"`
+}
+
+type ResetPasswordDto struct {
+	Email       string `json:"email" binding:"required,email"`
+	Code        string `json:"code" binding:"required"`
+	NewPassword string `json:"new_password" binding:"required"`
+}
+
 func (vc *VerificationCode) Save(db *gorm.DB) error {
 	return db.Save(vc).Error
 }

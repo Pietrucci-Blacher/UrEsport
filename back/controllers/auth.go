@@ -24,7 +24,12 @@ import (
 //	@Router			/auth/login [post]
 func Login(c *gin.Context) {
 	var user models.User
-	body, _ := c.MustGet("body").(models.LoginUserDto)
+	var body models.LoginUserDto
+
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
 
 	if err := user.FindOne("email", body.Email); err != nil || !user.ComparePassword(body.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
@@ -36,7 +41,11 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	token := models.NewToken(user.ID)
+	token, err := models.NewToken("access_token", user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create token"})
+		return
+	}
 	if err := token.GenerateTokens(); err != nil || token.Save() != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate or save token"})
 		return
@@ -70,7 +79,7 @@ func Refresh(c *gin.Context) {
 		return
 	}
 
-	setAuthCookies(c, token)
+	setAuthCookies(c, &token)
 	c.JSON(http.StatusOK, gin.H{"access_token": token.AccessToken})
 }
 
@@ -86,7 +95,12 @@ func Refresh(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/register [post]
 func Register(c *gin.Context) {
-	body, _ := c.MustGet("body").(models.CreateUserDto)
+	var body models.CreateUserDto
+
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
 
 	if isUserExists(body) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email or Username already exists"})
@@ -122,7 +136,13 @@ func Register(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/verify [post]
 func Verify(c *gin.Context) {
-	body, _ := c.MustGet("body").(models.VerifyUserDto)
+	var body models.VerifyUserDto
+
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
 	var verificationCode models.VerificationCode
 
 	if err := models.DB.Where("code = ? AND email = ?", body.Code, body.Email).First(&verificationCode).Error; err != nil || verificationCode.IsExpired() {
@@ -145,7 +165,13 @@ func Verify(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/request-password-reset [post]
 func RequestPasswordReset(c *gin.Context) {
-	body, _ := c.MustGet("body").(models.RequestPasswordResetDto)
+	var body models.RequestPasswordResetDto
+
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
 	var user models.User
 
 	if err := models.DB.Where("email = ?", body.Email).First(&user).Error; err != nil {
@@ -154,7 +180,7 @@ func RequestPasswordReset(c *gin.Context) {
 	}
 
 	resetCode := models.VerificationCode{
-		UserID:    user.ID,
+		UserID:    uint(user.ID),
 		Code:      strconv.Itoa(services.GenerateVerificationCode()),
 		ExpiresAt: time.Now().Add(15 * time.Minute),
 	}
@@ -179,7 +205,13 @@ func RequestPasswordReset(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/reset-password [post]
 func ResetPassword(c *gin.Context) {
-	body, _ := c.MustGet("body").(models.ResetPasswordDto)
+	var body models.ResetPasswordDto
+
+	if err := c.BindJSON(&body); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		return
+	}
+
 	var verificationCode models.VerificationCode
 
 	if err := models.DB.Where("code = ? AND email = ?", body.Code, body.Email).First(&verificationCode).Error; err != nil || verificationCode.IsExpired() {
@@ -228,7 +260,7 @@ func Logout(c *gin.Context) {
 // Helper functions
 
 // setAuthCookies sets authentication cookies for the user.
-func setAuthCookies(c *gin.Context, token models.Token) {
+func setAuthCookies(c *gin.Context, token *models.Token) {
 	cookieSecure, _ := strconv.ParseBool(os.Getenv("COOKIE_SECURE"))
 	c.SetCookie("access_token", token.AccessToken, 3600, "/", "", cookieSecure, true)
 	c.SetCookie("refresh_token", token.RefreshToken, 3600*24*30, "/", "", cookieSecure, true)
@@ -256,7 +288,7 @@ func sendWelcomeAndVerificationEmails(user models.User, c *gin.Context) {
 	}
 
 	verificationCode := models.VerificationCode{
-		UserID:    user.ID,
+		UserID:    uint(user.ID),
 		Code:      strconv.Itoa(services.GenerateVerificationCode()),
 		ExpiresAt: time.Now().Add(15 * time.Minute),
 	}

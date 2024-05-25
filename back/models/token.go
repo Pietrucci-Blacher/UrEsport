@@ -11,7 +11,7 @@ import (
 
 type Token struct {
 	ID           int       `json:"id" gorm:"primaryKey"`
-	UserID       int       `json:"user_id" gorm:"primaryKey;references:ID"`
+	UserID       int       `json:"user_id" gorm:"index"`
 	AccessToken  string    `json:"access_token" gorm:"type:varchar(255)"`
 	RefreshToken string    `json:"refresh_token" gorm:"type:varchar(255)"`
 	CreatedAt    time.Time `json:"created_at"`
@@ -35,11 +35,14 @@ type UserClaims struct {
 	UserID int `json:"user_id"`
 }
 
-func NewToken(tokenString string, userID int) error {
-	token := Token{
-		UserID: userID,
-		Token:  tokenString,
+func NewToken(tokenType string, userID int) (*Token, error) {
+	if tokenType == "" || userID == 0 {
+		return nil, fmt.Errorf("invalid token type or user ID")
 	}
+	token := &Token{
+		UserID: userID,
+	}
+	return token, nil
 }
 
 func FindTokensByUserID(userID int) ([]Token, error) {
@@ -70,7 +73,7 @@ func GenerateJWTToken(userID int) (string, error) {
 		return "", fmt.Errorf("failed to sign the token: %w", err)
 	}
 
-	err = NewToken(tokenString, userID)
+	_, err = NewToken(tokenString, userID)
 	if err != nil {
 		return "", fmt.Errorf("failed to save the token: %w", err)
 	}
