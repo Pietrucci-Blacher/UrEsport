@@ -48,3 +48,13 @@ class PasswordResetConfirmRequested extends AuthEvent {
 
   PasswordResetConfirmRequested(this.code, this.newPassword);
 }
+
+class LoginButtonPressed extends AuthEvent {
+  final String email;
+  final String password;
+
+  LoginButtonPressed({
+    required this.email,
+    required this.password,
+  });
+}

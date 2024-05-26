@@ -7,5 +7,13 @@
   "profileScreenTitle": "Profil",
   "homeScreenWelcome": "Bienvenue à l'écran d'accueil !",
   "tournamentScreenWelcome": "Bienvenue à l'écran des tournois !",
-  "notificationScreenWelcome": "Bienvenue à l'écran des notifications !"
+  "notificationScreenWelcome": "Bienvenue à l'écran des notifications !",
+  "login": "Connexion",
+  "email": "Email",
+  "password": "Mot de passe",
+  "firstName": "Prénom",
+  "lastName": "Nom de famille",
+  "username": "Nom d'utilisateur",
+  "verificationCode": "Code de vérification",
+  "resetPassword": "Réinitialiser le mot de passe"
 }

@@ -4,7 +4,8 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:uresport/core/models/login_request.dart';
 import 'package:uresport/core/models/register_request.dart';
-import 'package:uresport/auth/bloc/auth_state.dart'; // Importation de la classe User
+import 'package:uresport/auth/bloc/auth_state.dart';
+import 'package:uresport/core/services/cache_service.dart';
 
 abstract class IAuthService {
   Future<void> register(RegisterRequest registerRequest);
@@ -16,10 +17,12 @@ abstract class IAuthService {
   Future<void> verifyCode(String email, String code);
   Future<void> requestPasswordReset(String email);
   Future<void> resetPassword(String code, String newPassword);
+  Future<void> setToken(String token);
 }
 
 class AuthService implements IAuthService {
   final Dio _dio;
+  final CacheService _cacheService = CacheService.instance;
 
   AuthService(this._dio);
 
@@ -52,8 +55,19 @@ class AuthService implements IAuthService {
     }
 
     try {
-      final response = await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/login', data: loginRequest.toJson());
-      return response.data['token'];
+      final response = await _dio.post(
+        '${dotenv.env['API_ENDPOINT']}/auth/login',
+        data: {
+          'email': loginRequest.email,
+          'password': loginRequest.password,
+        },
+        options: Options(headers: {
+          'Content-Type': 'application/json',
+        }),
+      );
+      final token = response.data['access_token'];
+      await setToken(token);
+      return token;
     } catch (e) {
       throw Exception('Failed to login: $e');
     }
@@ -61,22 +75,15 @@ class AuthService implements IAuthService {
 
   @override
   Future<bool> isLoggedIn() async {
-    try {
-      final response = await _dio.get(Uri.parse('${dotenv.env['API_ENDPOINT']}/users/me').toString());
-      if (response.statusCode == 200) {
-        return true;
-      } else {
-        return false;
-      }
-    } catch (e) {
-      return false;
-    }
+    final token = await _cacheService.getString('token');
+    return token != null;
   }
 
   @override
   Future<void> logout() async {
     try {
       await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/logout');
+      await _cacheService.deleteString('token');
       return;
     } catch (e) {
       throw Exception('Failed to logout: $e');
@@ -110,7 +117,7 @@ class AuthService implements IAuthService {
       if (account != null) {
         final GoogleSignInAuthentication auth = await account.authentication;
         final String? token = auth.accessToken;
-        // Use the token to authenticate with your backend
+        // Utiliser le token pour s'authentifier avec votre backend
       }
     } catch (e) {
       throw Exception('Failed to sign in with Google: $e');
@@ -128,7 +135,7 @@ class AuthService implements IAuthService {
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    // Use the token to authenticate with your backend
+    // Utiliser le token pour s'authentifier avec votre backend
   }
 
   Future<void> _loginWithDiscord() async {
@@ -142,7 +149,7 @@ class AuthService implements IAuthService {
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    // Use the token to authenticate with your backend
+    // Utiliser le token pour s'authentifier avec votre backend
   }
 
   Future<void> _loginWithTwitch() async {
@@ -156,13 +163,22 @@ class AuthService implements IAuthService {
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    // Use the token to authenticate with your backend
+    // Utiliser le token pour s'authentifier avec votre backend
   }
 
   @override
   Future<User> getUser() async {
     try {
-      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users/me');
+      final token = await _cacheService.getString('token');
+      if (token == null) throw Exception('No token found');
+
+      final response = await _dio.get(
+        '${dotenv.env['API_ENDPOINT']}/users/me',
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
       if (response.statusCode == 200) {
         final data = response.data;
         return User(
@@ -213,5 +229,10 @@ class AuthService implements IAuthService {
     } catch (e) {
       throw Exception('Failed to reset password: $e');
     }
+  }
+
+  @override
+  Future<void> setToken(String token) async {
+    await CacheService.instance.setString('token', token);
   }
 }

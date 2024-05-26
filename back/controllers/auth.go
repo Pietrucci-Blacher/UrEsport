@@ -27,7 +27,7 @@ func Login(c *gin.Context) {
 	var body models.LoginUserDto
 
 	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
 		return
 	}
 
@@ -37,17 +37,17 @@ func Login(c *gin.Context) {
 	}
 
 	if err := models.DeleteTokensByUserID(user.ID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete tokens"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete tokens", "details": err.Error()})
 		return
 	}
 
 	token, err := models.NewToken("access_token", user.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create token", "details": err.Error()})
 		return
 	}
 	if err := token.GenerateTokens(); err != nil || token.Save() != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate or save token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate or save token", "details": err.Error()})
 		return
 	}
 
@@ -70,12 +70,12 @@ func Refresh(c *gin.Context) {
 
 	refreshTokenString, err := c.Cookie("refresh_token")
 	if err != nil || token.FindOne("refresh_token", refreshTokenString) != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Refresh token not found"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Refresh token not found", "details": err.Error()})
 		return
 	}
 
 	if err := token.GenerateAccessToken(); err != nil || token.Save() != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate or save token"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate or save token", "details": err.Error()})
 		return
 	}
 
@@ -98,7 +98,7 @@ func Register(c *gin.Context) {
 	var body models.CreateUserDto
 
 	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
 		return
 	}
 
@@ -116,8 +116,13 @@ func Register(c *gin.Context) {
 		Roles:     []string{models.ROLE_USER},
 	}
 
-	if err := user.HashPassword(); err != nil || user.Save() != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
+	if err := user.HashPassword(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password", "details": err.Error()})
+		return
+	}
+
+	if err := user.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user", "details": err.Error()})
 		return
 	}
 
@@ -139,7 +144,7 @@ func Verify(c *gin.Context) {
 	var body models.VerifyUserDto
 
 	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
 		return
 	}
 
@@ -168,7 +173,7 @@ func RequestPasswordReset(c *gin.Context) {
 	var body models.RequestPasswordResetDto
 
 	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
 		return
 	}
 
@@ -186,7 +191,7 @@ func RequestPasswordReset(c *gin.Context) {
 	}
 
 	if err := resetCode.Save(models.DB); err != nil || services.SendEmailWithCode(user.Email, services.PasswordResetEmail, resetCode.Code) != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send password reset code"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send password reset code", "details": err.Error()})
 		return
 	}
 
@@ -208,7 +213,7 @@ func ResetPassword(c *gin.Context) {
 	var body models.ResetPasswordDto
 
 	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request"})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
 		return
 	}
 
@@ -227,7 +232,7 @@ func ResetPassword(c *gin.Context) {
 
 	user.Password = body.NewPassword
 	if err := user.HashPassword(); err != nil || user.Save() != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password", "details": err.Error()})
 		return
 	}
 
@@ -249,7 +254,7 @@ func Logout(c *gin.Context) {
 
 	tokenString, err := c.Cookie("access_token")
 	if err != nil || token.FindOne("access_token", tokenString) != nil || token.Delete() != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to end session"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to end session", "details": err.Error()})
 		return
 	}
 
@@ -283,7 +288,7 @@ func isUserExists(body models.CreateUserDto) bool {
 func sendWelcomeAndVerificationEmails(user models.User, c *gin.Context) {
 	err := services.SendEmail(user.Email, services.WelcomeEmail)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send welcome email"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send welcome email", "details": err.Error()})
 		return
 	}
 
@@ -294,7 +299,7 @@ func sendWelcomeAndVerificationEmails(user models.User, c *gin.Context) {
 	}
 
 	if err := verificationCode.Save(models.DB); err != nil || services.SendVerificationEmail(user.Email, verificationCode.Code) != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email", "details": err.Error()})
 		return
 	}
 
