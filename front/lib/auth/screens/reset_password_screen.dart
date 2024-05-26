@@ -4,6 +4,7 @@ import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class ResetPasswordScreen extends StatelessWidget {
   final IAuthService authService;
@@ -15,15 +16,18 @@ class ResetPasswordScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => AuthBloc(authService),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Reset Password')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context).resetPassword)),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error)));
             } else if (state is PasswordResetEmailSent) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset email sent')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Password reset email sent')));
             } else if (state is PasswordResetConfirmed) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset successful')));
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text('Password reset successful')));
             }
           },
           child: Padding(
@@ -31,9 +35,10 @@ class ResetPasswordScreen extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                const Text(
-                  'Enter your email to reset password',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                Text(
+                  AppLocalizations.of(context).enterEmailToResetPassword,
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 20),
                 _ResetPasswordForm(),
@@ -60,14 +65,16 @@ class __ResetPasswordFormState extends State<_ResetPasswordForm> {
       children: [
         TextField(
           controller: _emailController,
-          decoration: const InputDecoration(labelText: 'Email'),
+          decoration: InputDecoration(
+            labelText: AppLocalizations.of(context).email,
+          ),
         ),
         const SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
             context.read<AuthBloc>().add(PasswordResetRequested(_emailController.text));
           },
-          child: const Text('Send Reset Email'),
+          child: Text(AppLocalizations.of(context).sendResetEmail),
         ),
       ],
     );

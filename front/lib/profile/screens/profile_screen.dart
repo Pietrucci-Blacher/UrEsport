@@ -9,6 +9,7 @@ import 'package:uresport/auth/screens/login_screen.dart';
 import 'package:uresport/auth/screens/register_screen.dart';
 import 'package:uresport/auth/screens/reset_password_screen.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
   final IAuthService authService;
@@ -20,15 +21,15 @@ class ProfileScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => AuthBloc(authService)..add(AuthCheckRequested()),
       child: Scaffold(
-        appBar: AppBar(title: const Text('Profile')),
+        appBar: AppBar(title: Text(AppLocalizations.of(context).profileScreenTitle)),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
             } else if (state is PasswordResetEmailSent) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset email sent')));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).passwordResetEmailSent)));
             } else if (state is PasswordResetConfirmed) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset successful')));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).passwordResetSuccessful)));
             }
           },
           child: BlocBuilder<AuthBloc, AuthState>(
@@ -53,9 +54,9 @@ class ProfileScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: <Widget>[
-          const Text(
-            'You are not logged in',
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+          Text(
+            AppLocalizations.of(context).youAreNotLoggedIn,
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 20),
           ElevatedButton(
@@ -72,7 +73,7 @@ class ProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: const Text('Log In'),
+            child: Text(AppLocalizations.of(context).logIn),
           ),
           const SizedBox(height: 10),
           ElevatedButton(
@@ -89,10 +90,10 @@ class ProfileScreen extends StatelessWidget {
                 borderRadius: BorderRadius.circular(20),
               ),
             ),
-            child: const Text('Register'),
+            child: Text(AppLocalizations.of(context).register),
           ),
           const SizedBox(height: 20),
-          const Text('Or login with', style: TextStyle(fontSize: 16)),
+          Text(AppLocalizations.of(context).orLoginWith, style: const TextStyle(fontSize: 16)),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
@@ -114,7 +115,7 @@ class ProfileScreen extends StatelessWidget {
                 MaterialPageRoute(builder: (context) => ResetPasswordScreen(authService: authService)),
               );
             },
-            child: const Text('Forgot Password?'),
+            child: Text(AppLocalizations.of(context).forgotPassword),
           ),
         ],
       ),
@@ -144,7 +145,7 @@ class ProfileScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Welcome to your profile, ${state.user.username}!', style: const TextStyle(fontSize: 24)),
+          Text(AppLocalizations.of(context).profileScreenWelcome(state.user.username), style: const TextStyle(fontSize: 24)),
           const SizedBox(height: 20),
           _buildProfileAvatar(context, state.user.avatarUrl),
           const SizedBox(height: 20),

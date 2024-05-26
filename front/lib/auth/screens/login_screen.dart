@@ -4,7 +4,7 @@ import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
-import 'package:uresport/auth/screens/register_screen.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class LoginScreen extends StatefulWidget {
   final IAuthService authService;
@@ -38,14 +38,15 @@ class LoginScreenState extends State<LoginScreen> {
     return BlocProvider(
       create: (context) => AuthBloc(widget.authService),
       child: Scaffold(
-        appBar: AppBar(title: const Text("Login")),
+        appBar: AppBar(title: Text(AppLocalizations.of(context).login)),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
-              ScaffoldMessenger.of(context)
-                  .showSnackBar(SnackBar(content: Text(state.error)));
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(content: Text(state.error)),
+              );
             } else if (state is AuthAuthenticated) {
-              // Navigate to the home screen or another screen
+              Navigator.pushReplacementNamed(context, '/home');
             }
           },
           child: Padding(
@@ -56,7 +57,7 @@ class LoginScreenState extends State<LoginScreen> {
                 children: [
                   _buildTextField(
                     controller: _emailController,
-                    label: 'Email',
+                    label: AppLocalizations.of(context).email,
                     hint: AutofillHints.email,
                     keyboardType: TextInputType.emailAddress,
                   ),
@@ -76,22 +77,9 @@ class LoginScreenState extends State<LoginScreen> {
                             ),
                           );
                         },
-                        child: const Text("Login"),
+                        child: Text(AppLocalizations.of(context).login),
                       );
                     },
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RegisterScreen(
-                            authService: widget.authService,
-                          ),
-                        ),
-                      );
-                    },
-                    child: const Text("Don't have an account? Register"),
                   ),
                 ],
               ),
@@ -128,7 +116,7 @@ class LoginScreenState extends State<LoginScreen> {
       child: TextField(
         controller: _passwordController,
         decoration: InputDecoration(
-          labelText: 'Password',
+          labelText: AppLocalizations.of(context).password,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           suffixIcon: IconButton(
             icon: Icon(

@@ -4,7 +4,7 @@ import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
-import 'package:uresport/auth/screens//verification_screen.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
   final IAuthService authService;
@@ -45,20 +45,15 @@ class RegisterScreenState extends State<RegisterScreen> {
       builder: (BuildContext context) {
         Future.delayed(const Duration(seconds: 2), () {
           Navigator.of(context).pop(true);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VerificationScreen(email: _emailController.text, authService: widget.authService), // Passer authService ici
-            ),
-          );
+          Navigator.pushReplacementNamed(context, '/verify');
         });
-        return const AlertDialog(
+        return AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(Icons.check_circle, color: Colors.green, size: 60),
-              SizedBox(height: 16),
-              Text('Registration Successful! Please verify your account.'),
+              const Icon(Icons.check_circle, color: Colors.green, size: 60),
+              const SizedBox(height: 16),
+              Text(AppLocalizations.of(context).welcome),
             ],
           ),
         );
@@ -71,11 +66,12 @@ class RegisterScreenState extends State<RegisterScreen> {
     return BlocProvider(
       create: (context) => AuthBloc(widget.authService),
       child: Scaffold(
-        appBar: AppBar(title: const Text("Register")),
+        appBar: AppBar(title: Text(AppLocalizations.of(context).register)),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error)));
             } else if (state is AuthUnauthenticated) {
               _showSuccessDialog();
             }
@@ -88,24 +84,24 @@ class RegisterScreenState extends State<RegisterScreen> {
                 children: [
                   _buildTextField(
                     controller: _firstnameController,
-                    label: 'First Name',
+                    label: AppLocalizations.of(context).firstName,
                     hint: AutofillHints.givenName,
                     keyboardType: TextInputType.name,
                   ),
                   _buildTextField(
                     controller: _lastnameController,
-                    label: 'Last Name',
+                    label: AppLocalizations.of(context).lastName,
                     hint: AutofillHints.familyName,
                     keyboardType: TextInputType.name,
                   ),
                   _buildTextField(
                     controller: _usernameController,
-                    label: 'Username',
+                    label: AppLocalizations.of(context).username,
                     hint: AutofillHints.username,
                   ),
                   _buildTextField(
                     controller: _emailController,
-                    label: 'Email',
+                    label: AppLocalizations.of(context).email,
                     hint: AutofillHints.email,
                     keyboardType: TextInputType.emailAddress,
                   ),
@@ -128,7 +124,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                             ),
                           );
                         },
-                        child: const Text("Register"),
+                        child: Text(AppLocalizations.of(context).register),
                       );
                     },
                   ),
@@ -167,7 +163,7 @@ class RegisterScreenState extends State<RegisterScreen> {
       child: TextField(
         controller: _passwordController,
         decoration: InputDecoration(
-          labelText: 'Password',
+          labelText: AppLocalizations.of(context).password,
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
           suffixIcon: IconButton(
             icon: Icon(

@@ -4,6 +4,7 @@ import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class VerificationScreen extends StatefulWidget {
   final String email;
@@ -38,7 +39,7 @@ class VerificationScreenState extends State<VerificationScreen> {
     return BlocProvider(
       create: (context) => AuthBloc(widget.authService),
       child: Scaffold(
-        appBar: AppBar(title: const Text("Account Verification")),
+        appBar: AppBar(title: Text(AppLocalizations.of(context).verify)),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
@@ -54,7 +55,7 @@ class VerificationScreenState extends State<VerificationScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('A verification code has been sent to ${widget.email}.'),
+                  Text(AppLocalizations.of(context).verificationCodeSent(widget.email)),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -70,7 +71,7 @@ class VerificationScreenState extends State<VerificationScreen> {
                       }
                       return ElevatedButton(
                         onPressed: () => _submitCode(context),
-                        child: const Text("Verify"),
+                        child: Text(AppLocalizations.of(context).verify),
                       );
                     },
                   ),
