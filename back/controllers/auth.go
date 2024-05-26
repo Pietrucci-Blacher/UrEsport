@@ -131,11 +131,10 @@ func Register(c *gin.Context) {
 		Lastname:  body.Lastname,
 		Username:  body.Username,
 		Email:     body.Email,
-		Password:  body.Password,
 		Roles:     []string{models.ROLE_USER},
 	}
 
-	if err := user.HashPassword(); err != nil {
+	if err := user.HashPassword(body.Password); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

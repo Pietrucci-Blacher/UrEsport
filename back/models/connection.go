@@ -74,6 +74,7 @@ func DropTables() error {
 }
 
 type Model interface {
+	Feature | User | Tournament | Token
 	FindOne(key string, value any)
 	FindOneById(id int) error
 	Save() error

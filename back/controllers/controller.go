@@ -47,7 +47,10 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsMe(),
 				DeleteUser,
 			)
-			users.GET("/me", middlewares.IsLoggedIn(), GetUserMe)
+			users.GET("/me",
+				middlewares.IsLoggedIn(),
+				GetUserMe,
+			)
 		}
 
 		features := api.Group("/features")
@@ -59,21 +62,27 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Validate[models.CreateFeatureDto](),
 				CreateFeature,
 			)
-			features.GET("/:id", GetFeature)
+			features.GET("/:id",
+				middlewares.GetFeature(),
+				GetFeature,
+			)
 			features.GET("/:id/toggle",
 				middlewares.IsLoggedIn(),
 				middlewares.IsAdmin(),
+				middlewares.GetFeature(),
 				ToggleFeature,
 			)
 			features.PATCH("/:id",
 				middlewares.IsLoggedIn(),
 				middlewares.IsAdmin(),
+				middlewares.GetFeature(),
 				middlewares.Validate[models.UpdateFeatureDto](),
 				UpdateFeature,
 			)
 			features.DELETE("/:id",
 				middlewares.IsLoggedIn(),
 				middlewares.IsAdmin(),
+				middlewares.GetFeature(),
 				DeleteFeature,
 			)
 		}
@@ -88,7 +97,10 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Validate[models.CreateUserDto](),
 				Register,
 			)
-			auth.POST("/logout", middlewares.IsLoggedIn(), Logout)
+			auth.POST("/logout",
+				middlewares.IsLoggedIn(),
+				Logout,
+			)
 			auth.POST("/refresh", Refresh)
 		}
 
