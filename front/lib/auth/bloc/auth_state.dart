@@ -31,3 +31,7 @@ class AuthFailure extends AuthState {
   final String error;
   AuthFailure(this.error);
 }
+
+class PasswordResetEmailSent extends AuthState {}
+
+class PasswordResetConfirmed extends AuthState {}

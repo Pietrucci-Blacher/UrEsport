@@ -36,3 +36,15 @@ class VerifyCodeSubmitted extends AuthEvent {
     required this.code,
   });
 }
+
+class PasswordResetRequested extends AuthEvent {
+  final String email;
+  PasswordResetRequested(this.email);
+}
+
+class PasswordResetConfirmRequested extends AuthEvent {
+  final String code;
+  final String newPassword;
+
+  PasswordResetConfirmRequested(this.code, this.newPassword);
+}

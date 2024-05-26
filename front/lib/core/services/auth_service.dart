@@ -14,6 +14,8 @@ abstract class IAuthService {
   Future<void> loginWithOAuth(String provider);
   Future<User> getUser();
   Future<void> verifyCode(String email, String code);
+  Future<void> requestPasswordReset(String email);
+  Future<void> resetPassword(String code, String newPassword);
 }
 
 class AuthService implements IAuthService {
@@ -187,6 +189,29 @@ class AuthService implements IAuthService {
       });
     } catch (e) {
       throw Exception('Failed to verify code: $e');
+    }
+  }
+
+  @override
+  Future<void> requestPasswordReset(String email) async {
+    try {
+      await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/request-password-reset', data: {
+        'email': email,
+      });
+    } catch (e) {
+      throw Exception('Failed to request password reset: $e');
+    }
+  }
+
+  @override
+  Future<void> resetPassword(String code, String newPassword) async {
+    try {
+      await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/reset-password', data: {
+        'code': code,
+        'new_password': newPassword,
+      });
+    } catch (e) {
+      throw Exception('Failed to reset password: $e');
     }
   }
 }

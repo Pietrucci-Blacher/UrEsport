@@ -7,6 +7,7 @@ import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/auth/screens/login_screen.dart';
 import 'package:uresport/auth/screens/register_screen.dart';
+import 'package:uresport/auth/screens/reset_password_screen.dart';
 import 'package:uresport/core/services/auth_service.dart';
 
 class ProfileScreen extends StatelessWidget {
@@ -24,6 +25,10 @@ class ProfileScreen extends StatelessWidget {
           listener: (context, state) {
             if (state is AuthFailure) {
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+            } else if (state is PasswordResetEmailSent) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset email sent')));
+            } else if (state is PasswordResetConfirmed) {
+              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Password reset successful')));
             }
           },
           child: BlocBuilder<AuthBloc, AuthState>(
@@ -100,6 +105,16 @@ class ProfileScreen extends StatelessWidget {
               const SizedBox(width: 10),
               _buildOAuthButton(context, FontAwesomeIcons.twitch, const Color(0xFF9146FF), 'Twitch'),
             ],
+          ),
+          const SizedBox(height: 20),
+          TextButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => ResetPasswordScreen(authService: authService)),
+              );
+            },
+            child: const Text('Forgot Password?'),
           ),
         ],
       ),
