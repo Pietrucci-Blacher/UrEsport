@@ -1,7 +1,9 @@
 package middlewares
 
 import (
+	"challenge/models"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	validator "github.com/go-playground/validator/v10"
@@ -25,5 +27,27 @@ func Validate[T any]() gin.HandlerFunc {
 		}
 
 		c.Set("body", body)
+	}
+}
+
+func Get[T models.Model](name string) gin.HandlerFunc {
+	return func(c *gin.Context) {
+		var model T
+
+		id, err := strconv.Atoi(c.Param("id"))
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
+			c.Abort()
+			return
+		}
+
+		if err := model.FindOneById(id); err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Not Found"})
+			c.Abort()
+			return
+		}
+
+		c.Set(name, model)
+		c.Next()
 	}
 }

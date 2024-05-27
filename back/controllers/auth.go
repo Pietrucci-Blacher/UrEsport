@@ -107,11 +107,10 @@ func Register(c *gin.Context) {
 		Lastname:  body.Lastname,
 		Username:  body.Username,
 		Email:     body.Email,
-		Password:  body.Password,
 		Roles:     []string{models.ROLE_USER},
 	}
 
-	if err := user.HashPassword(); err != nil {
+	if err := user.HashPassword(body.Password); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password", "details": err.Error()})
 		return
 	}
@@ -230,8 +229,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	user.Password = body.NewPassword
-	if err := user.HashPassword(); err != nil || user.Save() != nil {
+	if err := user.HashPassword(body.NewPassword); err != nil || user.Save() != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password", "details": err.Error()})
 		return
 	}

@@ -25,55 +25,64 @@ func RegisterRoutes(r *gin.Engine) {
 		users := api.Group("/users")
 		{
 			users.GET("/",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(false),
 				middlewares.QueryFilter(),
 				GetUsers,
 			)
 			users.GET("/:id",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.GetUser(),
 				GetUser,
 			)
 			users.PATCH("/:id",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.GetUser(),
 				middlewares.IsMe(),
 				middlewares.Validate[models.UpdateUserDto](),
 				UpdateUser,
 			)
 			users.DELETE("/:id",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.GetUser(),
 				middlewares.IsMe(),
 				DeleteUser,
 			)
-			users.GET("/me", middlewares.IsLoggedIn(), GetUserMe)
+			users.GET("/me",
+				middlewares.IsLoggedIn(true),
+				GetUserMe,
+			)
 		}
 
 		features := api.Group("/features")
 		{
 			features.GET("/", GetFeatures)
 			features.POST("/",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
 				middlewares.Validate[models.CreateFeatureDto](),
 				CreateFeature,
 			)
-			features.GET("/:id", GetFeature)
+			features.GET("/:id",
+				middlewares.GetFeature(),
+				GetFeature,
+			)
 			features.GET("/:id/toggle",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
+				middlewares.GetFeature(),
 				ToggleFeature,
 			)
 			features.PATCH("/:id",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
+				middlewares.GetFeature(),
 				middlewares.Validate[models.UpdateFeatureDto](),
 				UpdateFeature,
 			)
 			features.DELETE("/:id",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
+				middlewares.GetFeature(),
 				DeleteFeature,
 			)
 		}
@@ -88,7 +97,10 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Validate[models.CreateUserDto](),
 				Register,
 			)
-			auth.POST("/logout", middlewares.IsLoggedIn(), Logout)
+			auth.POST("/logout",
+				middlewares.IsLoggedIn(true),
+				Logout,
+			)
 			auth.POST("/refresh", Refresh)
 			auth.POST("/verify", middlewares.Validate[models.VerifyUserDto](), Verify)
 			auth.POST("/request-password-reset", middlewares.Validate[models.RequestPasswordResetDto](), RequestPasswordReset)
@@ -103,7 +115,7 @@ func RegisterRoutes(r *gin.Engine) {
 				GetTournaments,
 			)
 			tournaments.POST("/",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.Validate[models.CreateTournamentDto](),
 				CreateTournament,
 			)
@@ -112,44 +124,44 @@ func RegisterRoutes(r *gin.Engine) {
 				GetTournament,
 			)
 			tournaments.PATCH("/:id",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.GetTournament(),
 				middlewares.IsTournamentOwner(),
 				middlewares.Validate[models.UpdateTournamentDto](),
 				UpdateTournament,
 			)
 			tournaments.DELETE("/:id",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.GetTournament(),
 				middlewares.IsTournamentOwner(),
 				DeleteTournament,
 			)
 			tournaments.POST("/:id/join",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.GetTournament(),
 				JoinTournament,
 			)
 			tournaments.POST("/:id/invite",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.GetTournament(),
 				middlewares.IsTournamentOwner(),
 				middlewares.Validate[models.InviteUserDto](),
 				InviteUserToTournament,
 			)
 			tournaments.DELETE("/:id/leave",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.GetTournament(),
 				LeaveTournament,
 			)
 			tournaments.DELETE("/:id/kick",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.GetTournament(),
 				middlewares.IsTournamentOwner(),
 				middlewares.Validate[models.InviteUserDto](),
 				KickUserFromTournament,
 			)
 			tournaments.PATCH("/:id/toggle-private",
-				middlewares.IsLoggedIn(),
+				middlewares.IsLoggedIn(true),
 				middlewares.GetTournament(),
 				middlewares.IsTournamentOwner(),
 				TogglePrivateTournament,

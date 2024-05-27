@@ -19,11 +19,10 @@ func LoadUsers() error {
 			Lastname:  fake.Person().LastName(),
 			Username:  fake.Person().FirstName(),
 			Email:     fake.Internet().Email(),
-			Password:  USER_PASSWORD,
 			Roles:     []string{role},
 		}
 
-		if err := user.HashPassword(); err != nil {
+		if err := user.HashPassword(USER_PASSWORD); err != nil {
 			return err
 		}
 

@@ -128,8 +128,8 @@ func (u *User) IsRole(role string) bool {
 	return false
 }
 
-func (u *User) HashPassword() error {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
+func (u *User) HashPassword(password string) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		return err
 	}
