@@ -17,8 +17,6 @@ func TestVerificationCode_Save(t *testing.T) {
 		}
 	}()
 
-	db.AutoMigrate(&models.VerificationCode{})
-
 	verificationCode := models.VerificationCode{
 		UserID:    1,
 		Code:      "12345",
@@ -30,7 +28,7 @@ func TestVerificationCode_Save(t *testing.T) {
 	}
 
 	var vc models.VerificationCode
-	if err := db.First(&vc, "code = ?", "12345").Error; err != nil {
+	if err := DB.First(&vc, "code = ?", "12345").Error; err != nil {
 		t.Fatalf("failed to find verification code: %v", err)
 	}
 }
