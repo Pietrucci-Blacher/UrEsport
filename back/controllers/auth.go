@@ -180,7 +180,7 @@ func RequestPasswordReset(c *gin.Context) {
 		ExpiresAt: time.Now().Add(15 * time.Minute),
 	}
 
-	if err := resetCode.Save(models.DB); err != nil || services.SendEmailWithCode(user.Email, services.PasswordResetEmail, resetCode.Code) != nil {
+	if err := resetCode.Save(); err != nil || services.SendEmailWithCode(user.Email, services.PasswordResetEmail, resetCode.Code) != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send password reset code", "details": err.Error()})
 		return
 	}
@@ -288,7 +288,7 @@ func sendWelcomeAndVerificationEmails(user models.User, c *gin.Context) {
 		ExpiresAt: time.Now().Add(15 * time.Minute),
 	}
 
-	if err := verificationCode.Save(models.DB); err != nil || services.SendVerificationEmail(user.Email, verificationCode.Code) != nil {
+	if err := verificationCode.Save(); err != nil || services.SendVerificationEmail(user.Email, verificationCode.Code) != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email", "details": err.Error()})
 		return
 	}
