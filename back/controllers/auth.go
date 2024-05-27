@@ -24,12 +24,7 @@ import (
 //	@Router			/auth/login [post]
 func Login(c *gin.Context) {
 	var user models.User
-	var body models.LoginUserDto
-
-	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
+	body, _ := c.MustGet("body").(models.LoginUserDto)
 
 	if err := user.FindOne("email", body.Email); err != nil || !user.ComparePassword(body.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
@@ -37,7 +32,7 @@ func Login(c *gin.Context) {
 	}
 
 	if err := models.DeleteTokensByUserID(user.ID); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete tokens", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete tokens"})
 		return
 	}
 
@@ -95,12 +90,7 @@ func Refresh(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/register [post]
 func Register(c *gin.Context) {
-	var body models.CreateUserDto
-
-	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
+	body, _ := c.MustGet("body").(models.CreateUserDto)
 
 	if isUserExists(body) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email or Username already exists"})

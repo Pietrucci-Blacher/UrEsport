@@ -30,14 +30,14 @@ type ResetPasswordDto struct {
 	NewPassword string `json:"new_password" binding:"required"`
 }
 
-func (vc *VerificationCode) Save(db *gorm.DB) error {
-	return db.Save(vc).Error
+func (vc *VerificationCode) Save() error {
+	return DB.Save(vc).Error
 }
 
 func (vc *VerificationCode) IsExpired() bool {
 	return time.Now().After(vc.ExpiresAt)
 }
 
-func DeleteExpiredCodes(db *gorm.DB) error {
-	return db.Where("expires_at < ?", time.Now()).Delete(&VerificationCode{}).Error
+func DeleteExpiredCodes() error {
+	return DB.Where("expires_at < ?", time.Now()).Delete(&VerificationCode{}).Error
 }

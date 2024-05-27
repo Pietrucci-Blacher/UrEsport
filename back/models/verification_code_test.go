@@ -10,10 +10,15 @@ import (
 )
 
 func TestVerificationCode_Save(t *testing.T) {
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("failed to connect database: %v", err)
-	}
+    if err := ConnectDB(true); err != nil {
+            t.Error(err)
+            return
+    }
+    defer func() {
+        if err := CloseDB(); err != nil {
+                t.Error("Failed to close database:", err)
+        }
+    }()
 
 	db.AutoMigrate(&models.VerificationCode{})
 
@@ -23,7 +28,7 @@ func TestVerificationCode_Save(t *testing.T) {
 		ExpiresAt: time.Now().Add(15 * time.Minute),
 	}
 
-	if err := verificationCode.Save(db); err != nil {
+	if err := verificationCode.Save(); err != nil {
 		t.Fatalf("failed to save verification code: %v", err)
 	}
 
@@ -44,12 +49,16 @@ func TestVerificationCode_IsExpired(t *testing.T) {
 }
 
 func TestDeleteExpiredCodes(t *testing.T) {
-	db, err := gorm.Open(sqlite.Open(":memory:"), &gorm.Config{})
-	if err != nil {
-		t.Fatalf("failed to connect database: %v", err)
-	}
+	if err := ConnectDB(true); err != nil {
+    		t.Error(err)
+    		return
+    }
 
-	db.AutoMigrate(&models.VerificationCode{})
+    defer func() {
+        if err := CloseDB(); err != nil {
+                t.Error("Failed to close database:", err)
+        }
+    }()
 
 	vc := models.VerificationCode{
 		UserID:    1,
@@ -57,16 +66,16 @@ func TestDeleteExpiredCodes(t *testing.T) {
 		ExpiresAt: time.Now().Add(-1 * time.Minute),
 	}
 
-	if err := vc.Save(db); err != nil {
+	if err := vc.Save(); err != nil {
 		t.Fatalf("failed to save verification code: %v", err)
 	}
 
-	if err := models.DeleteExpiredCodes(db); err != nil {
+	if err := models.DeleteExpiredCodes(); err != nil {
 		t.Fatalf("failed to delete expired codes: %v", err)
 	}
 
 	var count int64
-	db.Model(&models.VerificationCode{}).Where("code = ?", "12345").Count(&count)
+	DB.Model(&models.VerificationCode{}).Where("code = ?", "12345").Count(&count)
 	if count != 0 {
 		t.Fatalf("expected expired verification code to be deleted")
 	}
