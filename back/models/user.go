@@ -14,17 +14,18 @@ const (
 
 // User implements Model
 type User struct {
-	ID        int       `json:"id" gorm:"primaryKey"`
-	Token     Token     `json:"token" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
-	Firstname string    `json:"firstname" gorm:"type:varchar(100)"`
-	Lastname  string    `json:"lastname" gorm:"type:varchar(100)"`
-	Username  string    `json:"username" gorm:"type:varchar(100)"`
-	Email     string    `json:"email" gorm:"type:varchar(100)"`
-	Password  string    `json:"password"`
-	Roles     []string  `json:"roles" gorm:"json"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Invited   bool
+	ID          int          `json:"id" gorm:"primaryKey"`
+	Token       Token        `json:"token" gorm:"foreignKey:UserID;constraint:OnDelete:CASCADE"`
+	Firstname   string       `json:"firstname" gorm:"type:varchar(100)"`
+	Lastname    string       `json:"lastname" gorm:"type:varchar(100)"`
+	Username    string       `json:"username" gorm:"type:varchar(100)"`
+	Email       string       `json:"email" gorm:"type:varchar(100)"`
+	Password    string       `json:"password"`
+	Roles       []string     `json:"roles" gorm:"json"`
+	Tournaments []Tournament `json:"tournaments" gorm:"many2many:tournament_participants;"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
+	Invited     bool
 }
 
 type CreateUserDto struct {

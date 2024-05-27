@@ -22,6 +22,8 @@ var (
 
 	TOURNAMENT_NB              = 10
 	TOURNAMENT_PARTICIPANTS_NB = 5
+
+	GAME_NB = 10
 )
 
 func ImportFixtures() error {

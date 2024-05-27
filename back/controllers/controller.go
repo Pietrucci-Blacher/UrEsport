@@ -151,5 +151,17 @@ func RegisterRoutes(r *gin.Engine) {
 				TogglePrivateTournament,
 			)
 		}
+
+		games := api.Group("/games")
+		{
+			games.GET("/", GetGames)
+			games.POST("/", CreateGame)
+			games.GET("/:id", GetGame)
+			games.PATCH("/:id", UpdateGame)
+			games.DELETE("/:id", DeleteGame)
+			games.GET("/:id/tournaments", GetGameTournaments)
+			games.POST("/:id/tournaments/:tournament_id", AddGameTournament)
+			games.DELETE("/:id/tournaments/:tournament_id", RemoveGameTournament)
+		}
 	}
 }
