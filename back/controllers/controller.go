@@ -216,7 +216,10 @@ func RegisterRoutes(r *gin.Engine) {
 			games.GET("/", GetGames)
 			games.POST("/", CreateGame)
 			games.GET("/:id", GetGame)
-			games.PATCH("/:id", UpdateGame)
+			games.PATCH("/:id",
+				middlewares.GetGame(),
+				UpdateGame,
+			)
 			games.DELETE("/:id", DeleteGame)
 			games.GET("/:id/tournaments", GetGameTournaments)
 			games.POST("/:id/tournaments/:tournament_id", AddGameTournament)
