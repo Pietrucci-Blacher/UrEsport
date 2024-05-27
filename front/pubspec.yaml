@@ -2,9 +2,6 @@ name: uresport
 description: "Beautify your Esport experience with Uresport"
 publish_to: 'none'
 
-assets:
-  - .env
-
 version: 1.0.0+1
 
 environment:
