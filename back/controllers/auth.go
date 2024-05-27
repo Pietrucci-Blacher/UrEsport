@@ -229,8 +229,7 @@ func ResetPassword(c *gin.Context) {
 		return
 	}
 
-	user.Password = body.NewPassword
-	if err := user.HashPassword(); err != nil || user.Save() != nil {
+	if err := user.HashPassword(body.NewPassword); err != nil || user.Save() != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password", "details": err.Error()})
 		return
 	}
