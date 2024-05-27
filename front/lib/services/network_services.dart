@@ -22,6 +22,6 @@ Future<void> inviteUserToTournament(String tournamentId, String username, BuildC
       ),
     );
   } else {
-    throw Exception('Failed to invite user to tournament');
+    throw Exception('Failed to invite user_list.dart to tournament');
   }
 }
