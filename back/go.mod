@@ -1,6 +1,6 @@
 module challenge
 
-go 1.22.2
+go 1.22.3
 
 require (
 	github.com/coreos/go-oidc v2.2.1+incompatible
