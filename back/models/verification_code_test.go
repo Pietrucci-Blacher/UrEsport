@@ -4,21 +4,18 @@ import (
 	"challenge/models"
 	"testing"
 	"time"
-
-	"gorm.io/driver/sqlite"
-	"gorm.io/gorm"
 )
 
 func TestVerificationCode_Save(t *testing.T) {
-    if err := ConnectDB(true); err != nil {
-            t.Error(err)
-            return
-    }
-    defer func() {
-        if err := CloseDB(); err != nil {
-                t.Error("Failed to close database:", err)
-        }
-    }()
+	if err := ConnectDB(true); err != nil {
+		t.Error(err)
+		return
+	}
+	defer func() {
+		if err := CloseDB(); err != nil {
+			t.Error("Failed to close database:", err)
+		}
+	}()
 
 	db.AutoMigrate(&models.VerificationCode{})
 
@@ -50,15 +47,15 @@ func TestVerificationCode_IsExpired(t *testing.T) {
 
 func TestDeleteExpiredCodes(t *testing.T) {
 	if err := ConnectDB(true); err != nil {
-    		t.Error(err)
-    		return
-    }
+		t.Error(err)
+		return
+	}
 
-    defer func() {
-        if err := CloseDB(); err != nil {
-                t.Error("Failed to close database:", err)
-        }
-    }()
+	defer func() {
+		if err := CloseDB(); err != nil {
+			t.Error("Failed to close database:", err)
+		}
+	}()
 
 	vc := models.VerificationCode{
 		UserID:    1,
