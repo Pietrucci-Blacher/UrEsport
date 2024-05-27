@@ -129,6 +129,196 @@ class S {
       args: [],
     );
   }
+
+  /// `Welcome to UrEsport`
+  String get welcome {
+    return Intl.message(
+      'Welcome to UrEsport',
+      name: 'welcome',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Login`
+  String get login {
+    return Intl.message(
+      'Login',
+      name: 'login',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Register`
+  String get register {
+    return Intl.message(
+      'Register',
+      name: 'register',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email`
+  String get email {
+    return Intl.message(
+      'Email',
+      name: 'email',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password`
+  String get password {
+    return Intl.message(
+      'Password',
+      name: 'password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `First Name`
+  String get firstName {
+    return Intl.message(
+      'First Name',
+      name: 'firstName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Last Name`
+  String get lastName {
+    return Intl.message(
+      'Last Name',
+      name: 'lastName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Username`
+  String get username {
+    return Intl.message(
+      'Username',
+      name: 'username',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset Password`
+  String get resetPassword {
+    return Intl.message(
+      'Reset Password',
+      name: 'resetPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Send Reset Email`
+  String get sendResetEmail {
+    return Intl.message(
+      'Send Reset Email',
+      name: 'sendResetEmail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verify`
+  String get verify {
+    return Intl.message(
+      'Verify',
+      name: 'verify',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome to your profile, {username}!`
+  String profileScreenWelcome(Object username) {
+    return Intl.message(
+      'Welcome to your profile, $username!',
+      name: 'profileScreenWelcome',
+      desc: '',
+      args: [username],
+    );
+  }
+
+  /// `You are not logged in`
+  String get youAreNotLoggedIn {
+    return Intl.message(
+      'You are not logged in',
+      name: 'youAreNotLoggedIn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Log In`
+  String get logIn {
+    return Intl.message(
+      'Log In',
+      name: 'logIn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Or login with`
+  String get orLoginWith {
+    return Intl.message(
+      'Or login with',
+      name: 'orLoginWith',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Forgot Password?`
+  String get forgotPassword {
+    return Intl.message(
+      'Forgot Password?',
+      name: 'forgotPassword',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password reset email sent`
+  String get passwordResetEmailSent {
+    return Intl.message(
+      'Password reset email sent',
+      name: 'passwordResetEmailSent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password reset successful`
+  String get passwordResetSuccessful {
+    return Intl.message(
+      'Password reset successful',
+      name: 'passwordResetSuccessful',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `A verification code has been sent to {email}.`
+  String verificationCodeSent(Object email) {
+    return Intl.message(
+      'A verification code has been sent to $email.',
+      name: 'verificationCodeSent',
+      desc: '',
+      args: [email],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

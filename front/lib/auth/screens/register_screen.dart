@@ -1,0 +1,180 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uresport/auth/bloc/auth_bloc.dart';
+import 'package:uresport/auth/bloc/auth_event.dart';
+import 'package:uresport/auth/bloc/auth_state.dart';
+import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+
+class RegisterScreen extends StatefulWidget {
+  final IAuthService authService;
+
+  const RegisterScreen({super.key, required this.authService});
+
+  @override
+  RegisterScreenState createState() => RegisterScreenState();
+}
+
+class RegisterScreenState extends State<RegisterScreen> {
+  final TextEditingController _firstnameController = TextEditingController();
+  final TextEditingController _lastnameController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
+  bool _obscureText = true;
+
+  @override
+  void dispose() {
+    _firstnameController.dispose();
+    _lastnameController.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
+  }
+
+  void _togglePasswordVisibility() {
+    setState(() {
+      _obscureText = !_obscureText;
+    });
+  }
+
+  void _showSuccessDialog() {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        Future.delayed(const Duration(seconds: 2), () {
+          Navigator.of(context).pop(true);
+          Navigator.pushReplacementNamed(context, '/verify');
+        });
+        return AlertDialog(
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.check_circle, color: Colors.green, size: 60),
+              const SizedBox(height: 16),
+              Text(AppLocalizations.of(context).welcome),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => AuthBloc(widget.authService),
+      child: Scaffold(
+        appBar: AppBar(title: Text(AppLocalizations.of(context).register)),
+        body: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthFailure) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error)));
+            } else if (state is AuthUnauthenticated) {
+              _showSuccessDialog();
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTextField(
+                    controller: _firstnameController,
+                    label: AppLocalizations.of(context).firstName,
+                    hint: AutofillHints.givenName,
+                    keyboardType: TextInputType.name,
+                  ),
+                  _buildTextField(
+                    controller: _lastnameController,
+                    label: AppLocalizations.of(context).lastName,
+                    hint: AutofillHints.familyName,
+                    keyboardType: TextInputType.name,
+                  ),
+                  _buildTextField(
+                    controller: _usernameController,
+                    label: AppLocalizations.of(context).username,
+                    hint: AutofillHints.username,
+                  ),
+                  _buildTextField(
+                    controller: _emailController,
+                    label: AppLocalizations.of(context).email,
+                    hint: AutofillHints.email,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  _buildPasswordField(),
+                  const SizedBox(height: 20),
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      if (state is AuthLoading) {
+                        return const CircularProgressIndicator();
+                      }
+                      return ElevatedButton(
+                        onPressed: () {
+                          context.read<AuthBloc>().add(
+                                RegisterSubmitted(
+                                  firstName: _firstnameController.text,
+                                  lastName: _lastnameController.text,
+                                  username: _usernameController.text,
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                ),
+                              );
+                        },
+                        child: Text(AppLocalizations.of(context).register),
+                      );
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String label,
+    String? hint,
+    TextInputType? keyboardType,
+  }) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: controller,
+        decoration: InputDecoration(
+          labelText: label,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+        keyboardType: keyboardType,
+        autofillHints: hint != null ? [hint] : null,
+      ),
+    );
+  }
+
+  Widget _buildPasswordField() {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: TextField(
+        controller: _passwordController,
+        decoration: InputDecoration(
+          labelText: AppLocalizations.of(context).password,
+          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          suffixIcon: IconButton(
+            icon: Icon(
+              _obscureText ? Icons.visibility : Icons.visibility_off,
+            ),
+            onPressed: _togglePasswordVisibility,
+          ),
+        ),
+        obscureText: _obscureText,
+        autofillHints: const [AutofillHints.newPassword],
+      ),
+    );
+  }
+}

@@ -15,7 +15,7 @@ import (
 //	@Tags			user
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	[]models.User
+//	@Success		200	{object}	[]models.SanitizedUser
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/users/ [get]
 func GetUsers(c *gin.Context) {
@@ -43,8 +43,8 @@ func GetUsers(c *gin.Context) {
 //	@Tags			user
 //	@Accept			json
 //	@Produce		json
-//	@Param			id	path		int	true	"Feature ID"
-//	@Success		200	{object}	models.User
+//	@Param			id	path		int	true	"User ID"
+//	@Success		200	{object}	models.SanitizedUser
 //	@Failure		404	{object}	utils.HttpError
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/users/{id} [get]
@@ -63,11 +63,12 @@ func GetUser(c *gin.Context) {
 //	@Tags			user
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	models.User
+//	@Success		200	{object}	models.SanitizedUser
 //	@Router			/users/me [get]
 func GetUserMe(c *gin.Context) {
 	connectedUser, _ := c.MustGet("user").(models.User)
-	c.JSON(http.StatusOK, connectedUser)
+	sanitized := connectedUser.Sanitize(true)
+	c.JSON(http.StatusOK, sanitized)
 }
 
 // UpdateUser godoc
@@ -79,11 +80,11 @@ func GetUserMe(c *gin.Context) {
 //	@Produce		json
 //	@Param			user	body		models.UpdateUserDto	true	"User"
 //	@Param			id		path		int						true	"User ID"
-//	@Success		200		{object}	models.User
+//	@Success		200		{object}	models.SanitizedUser
 //	@Failure		400		{object}	utils.HttpError
 //	@Failure		401		{object}	utils.HttpError
 //	@Failure		404		{object}	utils.HttpError
-//	@Failure		500		{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
 //	@Router			/users/{id} [patch]
 func UpdateUser(c *gin.Context) {
 	user, _ := c.MustGet("findedUser").(models.User)
@@ -117,7 +118,8 @@ func UpdateUser(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, user)
+	sanitized := user.Sanitize(true)
+	c.JSON(http.StatusOK, sanitized)
 }
 
 // DeleteUser godoc
