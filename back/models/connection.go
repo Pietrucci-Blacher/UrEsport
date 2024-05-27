@@ -60,6 +60,7 @@ func Migration() error {
 		&Feature{},
 		&Token{},
 		&Tournament{},
+		&VerificationCode{},
 	)
 }
 
@@ -69,6 +70,7 @@ func DropTables() error {
 		&Feature{},
 		&Token{},
 		&Tournament{},
+		&VerificationCode{},
 		"tournament_participants",
 	)
 }

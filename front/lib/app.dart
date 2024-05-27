@@ -5,14 +5,25 @@ import 'package:uresport/shared/routing/routing.dart';
 import 'package:uresport/cubit/locale_cubit.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/splash_screen/splash_screen_handler.dart';
+import 'package:uresport/auth/bloc/auth_bloc.dart';
+import 'package:uresport/core/services/auth_service.dart';
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+  final IAuthService authService;
+
+  const MyApp({required this.authService, super.key});
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => LocaleCubit(),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) => LocaleCubit(),
+        ),
+        BlocProvider(
+          create: (context) => AuthBloc(authService),
+        ),
+      ],
       child: BlocBuilder<LocaleCubit, LocaleState>(
         builder: (context, state) {
           return MaterialApp(

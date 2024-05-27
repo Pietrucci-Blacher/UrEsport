@@ -56,6 +56,13 @@ type LoginUserDto struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type UserInfo struct {
+	Email     string `json:"email"`
+	Username  string `json:"username"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+}
+
 func FindAllUsers(query utils.QueryFilter) ([]User, error) {
 	var users []User
 

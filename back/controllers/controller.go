@@ -14,7 +14,7 @@ func RegisterRoutes(r *gin.Engine) {
 	docs.SwaggerInfo.Title = "UrEsport API"
 	docs.SwaggerInfo.Description = "This is a sample server for UrEsport API."
 	docs.SwaggerInfo.Version = "1.0"
-	docs.SwaggerInfo.Host = "petstore.swagger.io"
+	docs.SwaggerInfo.Host = "fr.uresport.api"
 	docs.SwaggerInfo.BasePath = "/v2"
 	docs.SwaggerInfo.Schemes = []string{"http", "https"}
 
@@ -102,6 +102,10 @@ func RegisterRoutes(r *gin.Engine) {
 				Logout,
 			)
 			auth.POST("/refresh", Refresh)
+			auth.POST("/verify", middlewares.Validate[models.VerifyUserDto](), Verify)
+			auth.POST("/request-password-reset", middlewares.Validate[models.RequestPasswordResetDto](), RequestPasswordReset)
+			auth.POST("/reset-password", middlewares.Validate[models.ResetPasswordDto](), ResetPassword)
+			auth.GET("/:provider/callback", OAuth2Callback)
 		}
 
 		tournaments := api.Group("/tournaments")
