@@ -1,56 +1,65 @@
 import 'package:flutter/material.dart';
 import 'game_detail.dart';
 import 'package:uresport/models/game.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class GamesScreen extends StatelessWidget {
-  final List<Game> games = generateGames();
+  const GamesScreen({super.key});
+
+  Future<List<Game>> generateGames() async {
+    final response = await http.get(Uri.parse('http://10.0.2.2:8080/games'));
+
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((game) => Game.fromJson(game)).toList();
+    } else {
+      throw Exception('Failed to load games from API');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Games'),
+        title: const Text('Games'),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Display two games per row
-            crossAxisSpacing: 8.0,
-            mainAxisSpacing: 8.0,
-            childAspectRatio: 0.7, // Adjust aspect ratio for better aesthetics
-          ),
-          itemCount: games.length,
-          itemBuilder: (context, index) {
-            Game game = games[index];
-            return GameCard(game: game);
-          },
-        ),
+      body: FutureBuilder<List<Game>>(
+        future: generateGames(),
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return const Center(child: Text('An error occurred!'));
+          } else if (snapshot.hasData) {
+            List<Game> games = snapshot.data!;
+            return Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // Display two games per row
+                  crossAxisSpacing: 8.0,
+                  mainAxisSpacing: 8.0,
+                  childAspectRatio: 0.7, // Adjust aspect ratio for better aesthetics
+                ),
+                itemCount: games.length,
+                itemBuilder: (context, index) {
+                  Game game = games[index];
+                  return GameCard(game: game);
+                },
+              ),
+            );
+          } else {
+            return const Center(child: CircularProgressIndicator());
+          }
+        },
       ),
     );
   }
 }
 
-List<Game> generateGames() {
-  return [
-    Game(
-      name: 'Game 1',
-      description: 'Description of Game 1',
-      imageUrl: 'https://urlz.fr/qJyi',
-    ),
-    Game(
-      name: 'Game 2',
-      description: 'Description of Game 2',
-      imageUrl: 'https://urlz.fr/qJyg',
-    ),
-    // Add more games here
-  ];
-}
-
 class GameCard extends StatelessWidget {
   final Game game;
 
-  const GameCard({Key? key, required this.game}) : super(key: key);
+  const GameCard({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
@@ -71,7 +80,7 @@ class GameCard extends StatelessWidget {
           children: [
             Expanded(
               child: ClipRRect(
-                borderRadius: BorderRadius.vertical(
+                borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(8.0),
                 ),
                 child: Image.network(
@@ -87,11 +96,11 @@ class GameCard extends StatelessWidget {
                 children: [
                   Text(
                     game.name,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  SizedBox(height: 4.0),
+                  const SizedBox(height: 4.0),
                   Text(
                     game.description,
                     maxLines: 2,

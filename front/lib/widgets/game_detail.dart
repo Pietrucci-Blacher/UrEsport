@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:uresport/models/game.dart';
 
+import 'game_delete.dart';
+import 'game_modify.dart';
+
 class GameDetailPage extends StatelessWidget {
   final Game game;
 
   const GameDetailPage({Key? key, required this.game}) : super(key: key);
+  void _redirectToGamesPage(BuildContext context) {
+    Navigator.pushReplacementNamed(context, '/games');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,19 +33,32 @@ class GameDetailPage extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text(
               game.name,
-              style: TextStyle(
+              style: const TextStyle(
                 fontSize: 24.0,
                 fontWeight: FontWeight.bold,
               ),
             ),
-            SizedBox(height: 16.0),
+            const SizedBox(height: 16.0),
             Text(
               game.description,
-              style: TextStyle(fontSize: 16.0),
+              style: const TextStyle(fontSize: 16.0),
             ),
+            Text('ID du jeu: ${game.id}'),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => GameModify(game: game, isEdit: true),
+                  ),
+                );
+              },
+              child: const Text('Modifier le jeu'),
+            ),
+            GameDeleteButton(game: game, onDeleteSuccess: () => _redirectToGamesPage(context),),
           ],
         ),
       ),
