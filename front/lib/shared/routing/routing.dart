@@ -18,7 +18,8 @@ class RouteGenerator {
       case '/profile':
         return MaterialPageRoute(
           builder: (context) {
-            final authService = Provider.of<IAuthService>(context, listen: false);
+            final authService =
+                Provider.of<IAuthService>(context, listen: false);
             return ProfileScreen(authService: authService);
           },
         );

@@ -23,11 +23,11 @@ class ResetPasswordScreen extends StatelessWidget {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(state.error)));
             } else if (state is PasswordResetEmailSent) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Password reset email sent')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Password reset email sent')));
             } else if (state is PasswordResetConfirmed) {
-              ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                  content: Text('Password reset successful')));
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Password reset successful')));
             }
           },
           child: Padding(
@@ -72,7 +72,9 @@ class __ResetPasswordFormState extends State<_ResetPasswordForm> {
         const SizedBox(height: 20),
         ElevatedButton(
           onPressed: () {
-            context.read<AuthBloc>().add(PasswordResetRequested(_emailController.text));
+            context
+                .read<AuthBloc>()
+                .add(PasswordResetRequested(_emailController.text));
           },
           child: Text(AppLocalizations.of(context).sendResetEmail),
         ),

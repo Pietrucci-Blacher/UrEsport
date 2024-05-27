@@ -27,7 +27,8 @@ void main() {
       expect(find.text('Request Password Reset'), findsOneWidget);
     });
 
-    testWidgets('triggers password reset request on button press', (tester) async {
+    testWidgets('triggers password reset request on button press',
+        (tester) async {
       await tester.pumpWidget(
         MaterialApp(
           home: BlocProvider<AuthBloc>(
@@ -41,7 +42,8 @@ void main() {
       await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
 
-      verify(mockAuthService.requestPasswordReset('test@example.com')).called(1);
+      verify(mockAuthService.requestPasswordReset('test@example.com'))
+          .called(1);
     });
   });
 }

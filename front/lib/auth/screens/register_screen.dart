@@ -115,14 +115,14 @@ class RegisterScreenState extends State<RegisterScreen> {
                       return ElevatedButton(
                         onPressed: () {
                           context.read<AuthBloc>().add(
-                            RegisterSubmitted(
-                              firstName: _firstnameController.text,
-                              lastName: _lastnameController.text,
-                              username: _usernameController.text,
-                              email: _emailController.text,
-                              password: _passwordController.text,
-                            ),
-                          );
+                                RegisterSubmitted(
+                                  firstName: _firstnameController.text,
+                                  lastName: _lastnameController.text,
+                                  username: _usernameController.text,
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                ),
+                              );
                         },
                         child: Text(AppLocalizations.of(context).register),
                       );

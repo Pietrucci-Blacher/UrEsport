@@ -21,15 +21,21 @@ class ProfileScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => AuthBloc(authService)..add(AuthCheckRequested()),
       child: Scaffold(
-        appBar: AppBar(title: Text(AppLocalizations.of(context).profileScreenTitle)),
+        appBar: AppBar(
+            title: Text(AppLocalizations.of(context).profileScreenTitle)),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error)));
             } else if (state is PasswordResetEmailSent) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).passwordResetEmailSent)));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      AppLocalizations.of(context).passwordResetEmailSent)));
             } else if (state is PasswordResetConfirmed) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(AppLocalizations.of(context).passwordResetSuccessful)));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      AppLocalizations.of(context).passwordResetSuccessful)));
             }
           },
           child: BlocBuilder<AuthBloc, AuthState>(
@@ -63,7 +69,9 @@ class ProfileScreen extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => LoginScreen(authService: authService)),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        LoginScreen(authService: authService)),
               ).then((_) => context.read<AuthBloc>().add(AuthCheckRequested()));
             },
             style: ElevatedButton.styleFrom(
@@ -80,7 +88,9 @@ class ProfileScreen extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => RegisterScreen(authService: authService)),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        RegisterScreen(authService: authService)),
               ).then((_) => context.read<AuthBloc>().add(AuthCheckRequested()));
             },
             style: ElevatedButton.styleFrom(
@@ -93,18 +103,23 @@ class ProfileScreen extends StatelessWidget {
             child: Text(AppLocalizations.of(context).register),
           ),
           const SizedBox(height: 20),
-          Text(AppLocalizations.of(context).orLoginWith, style: const TextStyle(fontSize: 16)),
+          Text(AppLocalizations.of(context).orLoginWith,
+              style: const TextStyle(fontSize: 16)),
           const SizedBox(height: 20),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              _buildOAuthButton(context, FontAwesomeIcons.google, const Color(0xFFDB4437), 'Google'),
+              _buildOAuthButton(context, FontAwesomeIcons.google,
+                  const Color(0xFFDB4437), 'Google'),
               const SizedBox(width: 10),
-              _buildOAuthButton(context, FontAwesomeIcons.apple, const Color(0xFF000000), 'Apple'),
+              _buildOAuthButton(context, FontAwesomeIcons.apple,
+                  const Color(0xFF000000), 'Apple'),
               const SizedBox(width: 10),
-              _buildOAuthButton(context, FontAwesomeIcons.discord, const Color(0xFF5865F2), 'Discord'),
+              _buildOAuthButton(context, FontAwesomeIcons.discord,
+                  const Color(0xFF5865F2), 'Discord'),
               const SizedBox(width: 10),
-              _buildOAuthButton(context, FontAwesomeIcons.twitch, const Color(0xFF9146FF), 'Twitch'),
+              _buildOAuthButton(context, FontAwesomeIcons.twitch,
+                  const Color(0xFF9146FF), 'Twitch'),
             ],
           ),
           const SizedBox(height: 20),
@@ -112,7 +127,9 @@ class ProfileScreen extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => ResetPasswordScreen(authService: authService)),
+                MaterialPageRoute(
+                    builder: (context) =>
+                        ResetPasswordScreen(authService: authService)),
               );
             },
             child: Text(AppLocalizations.of(context).forgotPassword),
@@ -122,7 +139,8 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOAuthButton(BuildContext context, IconData icon, Color color, String provider) {
+  Widget _buildOAuthButton(
+      BuildContext context, IconData icon, Color color, String provider) {
     return GestureDetector(
       onTap: () => context.read<AuthBloc>().add(OAuthLoginRequested(provider)),
       child: Container(
@@ -145,7 +163,10 @@ class ProfileScreen extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(AppLocalizations.of(context).profileScreenWelcome(state.user.username), style: const TextStyle(fontSize: 24)),
+          Text(
+              AppLocalizations.of(context)
+                  .profileScreenWelcome(state.user.username),
+              style: const TextStyle(fontSize: 24)),
           const SizedBox(height: 20),
           _buildProfileAvatar(context, state.user.avatarUrl),
           const SizedBox(height: 20),

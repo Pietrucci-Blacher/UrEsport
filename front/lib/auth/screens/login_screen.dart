@@ -71,11 +71,11 @@ class LoginScreenState extends State<LoginScreen> {
                       return ElevatedButton(
                         onPressed: () {
                           context.read<AuthBloc>().add(
-                            LoginButtonPressed(
-                              email: _emailController.text,
-                              password: _passwordController.text,
-                            ),
-                          );
+                                LoginButtonPressed(
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                ),
+                              );
                         },
                         child: Text(AppLocalizations.of(context).login),
                       );

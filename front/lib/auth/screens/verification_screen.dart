@@ -10,14 +10,16 @@ class VerificationScreen extends StatefulWidget {
   final String email;
   final IAuthService authService;
 
-  const VerificationScreen({super.key, required this.email, required this.authService});
+  const VerificationScreen(
+      {super.key, required this.email, required this.authService});
 
   @override
   VerificationScreenState createState() => VerificationScreenState();
 }
 
 class VerificationScreenState extends State<VerificationScreen> {
-  final List<TextEditingController> _codeControllers = List.generate(5, (index) => TextEditingController());
+  final List<TextEditingController> _codeControllers =
+      List.generate(5, (index) => TextEditingController());
   final FocusNode _focusNode = FocusNode();
 
   @override
@@ -31,7 +33,9 @@ class VerificationScreenState extends State<VerificationScreen> {
 
   void _submitCode(BuildContext context) {
     final code = _codeControllers.map((controller) => controller.text).join();
-    context.read<AuthBloc>().add(VerifyCodeSubmitted(email: widget.email, code: code));
+    context
+        .read<AuthBloc>()
+        .add(VerifyCodeSubmitted(email: widget.email, code: code));
   }
 
   @override
@@ -43,7 +47,8 @@ class VerificationScreenState extends State<VerificationScreen> {
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(state.error)));
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error)));
             } else if (state is AuthAuthenticated) {
               Navigator.pop(context);
               // Redirection ou autre action après vérification réussie
@@ -55,7 +60,8 @@ class VerificationScreenState extends State<VerificationScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(AppLocalizations.of(context).verificationCodeSent(widget.email)),
+                  Text(AppLocalizations.of(context)
+                      .verificationCodeSent(widget.email)),
                   const SizedBox(height: 20),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
