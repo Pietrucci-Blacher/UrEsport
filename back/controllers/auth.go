@@ -26,7 +26,12 @@ func Login(c *gin.Context) {
 	var user models.User
 	body, _ := c.MustGet("body").(models.LoginUserDto)
 
-	if err := user.FindOne("email", body.Email); err != nil || !user.ComparePassword(body.Password) {
+	if err := user.FindOne("email", body.Email); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
+		return
+	}
+
+	if !user.ComparePassword(body.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
@@ -140,7 +145,12 @@ func Verify(c *gin.Context) {
 
 	var verificationCode models.VerificationCode
 
-	if err := models.DB.Where("code = ? AND email = ?", body.Code, body.Email).First(&verificationCode).Error; err != nil || verificationCode.IsExpired() {
+	if err := models.DB.Where("code = ? AND email = ?", body.Code, body.Email).First(&verificationCode).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Verification code not found"})
+		return
+	}
+
+	if verificationCode.IsExpired() {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or expired verification code"})
 		return
 	}

@@ -1,7 +1,6 @@
-package models_test
+package models
 
 import (
-	"challenge/models"
 	"testing"
 	"time"
 )
@@ -17,7 +16,7 @@ func TestVerificationCode_Save(t *testing.T) {
 		}
 	}()
 
-	verificationCode := models.VerificationCode{
+	verificationCode := VerificationCode{
 		UserID:    1,
 		Code:      "12345",
 		ExpiresAt: time.Now().Add(15 * time.Minute),
@@ -27,14 +26,14 @@ func TestVerificationCode_Save(t *testing.T) {
 		t.Fatalf("failed to save verification code: %v", err)
 	}
 
-	var vc models.VerificationCode
+	var vc VerificationCode
 	if err := DB.First(&vc, "code = ?", "12345").Error; err != nil {
 		t.Fatalf("failed to find verification code: %v", err)
 	}
 }
 
 func TestVerificationCode_IsExpired(t *testing.T) {
-	vc := models.VerificationCode{
+	vc := VerificationCode{
 		ExpiresAt: time.Now().Add(-1 * time.Minute),
 	}
 
@@ -55,7 +54,7 @@ func TestDeleteExpiredCodes(t *testing.T) {
 		}
 	}()
 
-	vc := models.VerificationCode{
+	vc := VerificationCode{
 		UserID:    1,
 		Code:      "12345",
 		ExpiresAt: time.Now().Add(-1 * time.Minute),
@@ -65,12 +64,12 @@ func TestDeleteExpiredCodes(t *testing.T) {
 		t.Fatalf("failed to save verification code: %v", err)
 	}
 
-	if err := models.DeleteExpiredCodes(); err != nil {
+	if err := DeleteExpiredCodes(); err != nil {
 		t.Fatalf("failed to delete expired codes: %v", err)
 	}
 
 	var count int64
-	DB.Model(&models.VerificationCode{}).Where("code = ?", "12345").Count(&count)
+	DB.Model(&VerificationCode{}).Where("code = ?", "12345").Count(&count)
 	if count != 0 {
 		t.Fatalf("expected expired verification code to be deleted")
 	}
