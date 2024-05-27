@@ -134,6 +134,7 @@ func getEmailContent(template EmailTemplate, code string) (subject, htmlContent 
 }
 
 func GenerateVerificationCode() int {
-	rand.Seed(time.Now().UnixNano())
-	return 10000 + rand.Intn(90000)
+	source := rand.NewSource(time.Now().UnixNano())
+	randomGenerator := rand.New(source)
+	return 10000 + randomGenerator.Intn(90000)
 }
