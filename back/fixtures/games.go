@@ -3,15 +3,6 @@ package fixtures
 import (
 	"challenge/models"
 	"fmt"
-	"time"
-
-	"github.com/jaswdr/faker/v2"
-)
-
-var (
-	fake_games = faker.New()
-
-	GAME_NB = 10
 )
 
 func LoadGames() error {
@@ -21,11 +12,9 @@ func LoadGames() error {
 
 	for i := 0; i < GAME_NB; i++ {
 		game := models.Game{
-			Name:        fake_games.Word(),
-			Description: fake_games.Sentence(20),
-			Image:       fake_games.URL(),
-			CreatedAt:   time.Now(),
-			UpdatedAt:   time.Now(),
+			Name:        fake.Lorem().Word(),
+			Description: fake.Lorem().Sentence(20),
+			Image:       fake.Internet().URL(),
 		}
 
 		if err := game.Save(); err != nil {
