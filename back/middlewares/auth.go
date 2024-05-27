@@ -3,11 +3,12 @@ package middlewares
 import (
 	"challenge/models"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func IsLoggedIn() gin.HandlerFunc {
+func IsLoggedIn(mandatory bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user models.User
 		var token models.Token
@@ -17,10 +18,19 @@ func IsLoggedIn() gin.HandlerFunc {
 			accessToken = c.GetHeader("Authorization")
 		}
 
+		if !mandatory && accessToken == "" {
+			c.Next()
+			return
+		}
+
 		if accessToken == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
+		}
+
+		if strings.Split(accessToken, " ")[0] == "Bearer" {
+			accessToken = strings.Split(accessToken, " ")[1]
 		}
 
 		if err := token.FindOne("access_token", accessToken); err != nil {

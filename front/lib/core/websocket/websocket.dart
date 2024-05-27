@@ -7,10 +7,6 @@ class Websocket {
 
     Websocket(String url) {
         channel = WebSocketChannel.connect(Uri.parse(url));
-        listen();
-    }
-
-    void listen() {
         channel.stream.listen((message) {
             var data = jsonDecode(message);
             if (listeners.containsKey(data['command'])) {

@@ -1,6 +1,7 @@
 package websockets
 
 import (
+	"challenge/middlewares"
 	"challenge/models"
 	"challenge/services"
 	"fmt"
@@ -16,7 +17,7 @@ func RegisterWebsocket(r *gin.Engine) {
 	ws.On("ping", PingTest)
 
 	r.GET("/ws",
-		// middlewares.IsLoggedIn(),
+		middlewares.IsLoggedIn(false),
 		ws.GinWsHandler,
 	)
 }
@@ -29,19 +30,42 @@ func connect(client *services.Client, c *gin.Context) error {
 
 	client.Set("logged", ok)
 
-	fmt.Printf("Client %s connected, len %d\n",
-		client.ID,
-		len(client.Ws.GetClients()),
-	)
+	if ok {
+		fmt.Printf("Client %s connected, name %s, len %d\n",
+			client.ID,
+			user.(models.User).Username,
+			len(client.Ws.GetClients()),
+		)
+	} else {
+		fmt.Printf("Client %s connected, len %d\n",
+			client.ID,
+			len(client.Ws.GetClients()),
+		)
+	}
 
 	return nil
 }
 
 func disconnect(client *services.Client) error {
-	fmt.Printf("Client %s disconnected, len %d\n",
-		client.ID,
-		len(client.Ws.GetClients()),
-	)
+	var user models.User
+
+	logged := client.Get("logged").(bool)
+	if logged {
+		user = client.Get("user").(models.User)
+	}
+
+	if logged {
+		fmt.Printf("Client %s disconnected, name %s, len %d\n",
+			client.ID,
+			user.Username,
+			len(client.Ws.GetClients()),
+		)
+	} else {
+		fmt.Printf("Client %s disconnected, len %d\n",
+			client.ID,
+			len(client.Ws.GetClients()),
+		)
+	}
 
 	return nil
 }
