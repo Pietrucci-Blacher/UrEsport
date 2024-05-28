@@ -250,9 +250,23 @@ func ResetPassword(c *gin.Context) {
 func Logout(c *gin.Context) {
 	var token models.Token
 
-	tokenString, err := c.Cookie("access_token")
-	if err != nil || token.FindOne("access_token", tokenString) != nil || token.Delete() != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to end session", "details": err.Error()})
+	accessToken, err := c.Cookie("access_token")
+	if err != nil {
+		accessToken = c.GetHeader("Authorization")
+	}
+
+	if accessToken == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No access token provided"})
+		return
+	}
+
+	if token.FindOne("access_token", accessToken) != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Token not found"})
+		return
+	}
+
+	if token.Delete() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete token"})
 		return
 	}
 
