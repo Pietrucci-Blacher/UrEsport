@@ -178,7 +178,6 @@ class AuthService implements IAuthService {
   Future<User> getUser() async {
     try {
       final token = await _cacheService.getString('token');
-      print('token: $token');
       if (token == null) throw Exception('No token found');
 
       final response = await _dio.get(
@@ -200,7 +199,6 @@ class AuthService implements IAuthService {
         throw Exception('Failed to load user data');
       }
     } catch (e) {
-      print('error: $e');
       await logout();
       throw Exception('Failed to load user data: $e');
     }

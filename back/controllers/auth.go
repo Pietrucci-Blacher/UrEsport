@@ -43,11 +43,12 @@ func Login(c *gin.Context) {
 
 	token, err := models.NewToken("access_token", user.ID)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create token", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create token"})
 		return
 	}
+
 	if err := token.GenerateTokens(); err != nil || token.Save() != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate or save token", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate or save token"})
 		return
 	}
 
@@ -69,13 +70,23 @@ func Refresh(c *gin.Context) {
 	var token models.Token
 
 	refreshTokenString, err := c.Cookie("refresh_token")
-	if err != nil || token.FindOne("refresh_token", refreshTokenString) != nil {
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Refresh token not found"})
+		return
+	}
+
+	if token.FindOne("refresh_token", refreshTokenString) != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Refresh token not found", "details": err.Error()})
 		return
 	}
 
-	if err := token.GenerateAccessToken(); err != nil || token.Save() != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate or save token", "details": err.Error()})
+	if token.GenerateAccessToken() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate access token"})
+		return
+	}
+
+	if token.Save() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate or save token"})
 		return
 	}
 
@@ -135,17 +146,35 @@ func Register(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/verify [post]
 func Verify(c *gin.Context) {
-	body, _ := c.MustGet("body").(models.VerifyUserDto)
-
+	var user models.User
 	var verificationCode models.VerificationCode
 
-	if err := models.DB.Where("code = ? AND email = ?", body.Code, body.Email).First(&verificationCode).Error; err != nil {
+	body, _ := c.MustGet("body").(models.VerifyUserDto)
+
+	if verificationCode.FindOneByCodeAndEmail(body.Code, body.Email) != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Verification code not found"})
 		return
 	}
 
 	if verificationCode.IsExpired() {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or expired verification code"})
+		return
+	}
+
+	if user.FindOne("email", verificationCode.Email) != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	user.Verified = true
+
+	if user.Save() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify account"})
+		return
+	}
+
+	if verificationCode.Delete() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete verification code"})
 		return
 	}
 
@@ -168,20 +197,25 @@ func RequestPasswordReset(c *gin.Context) {
 
 	var user models.User
 
-	if err := models.DB.Where("email = ?", body.Email).First(&user).Error; err != nil {
+	if user.FindOne("email", body.Email) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email not found"})
 		return
 	}
 
 	resetCode := models.VerificationCode{
-		UserID:    uint(user.ID),
+		UserID:    user.ID,
 		Email:     user.Email,
 		Code:      strconv.Itoa(services.GenerateVerificationCode()),
 		ExpiresAt: time.Now().Add(15 * time.Minute),
 	}
 
-	if err := resetCode.Save(); err != nil || services.SendEmailWithCode(user.Email, services.PasswordResetEmail, resetCode.Code) != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send password reset code", "details": err.Error()})
+	if resetCode.Save() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save password reset code"})
+		return
+	}
+
+	if services.SendEmailWithCode(user.Email, services.PasswordResetEmail, resetCode.Code) != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send password reset code"})
 		return
 	}
 
@@ -200,23 +234,38 @@ func RequestPasswordReset(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/reset-password [post]
 func ResetPassword(c *gin.Context) {
+	var verificationCode models.VerificationCode
+	var user models.User
+
 	body, _ := c.MustGet("body").(models.ResetPasswordDto)
 
-	var verificationCode models.VerificationCode
+	if verificationCode.FindOneByCodeAndEmail(body.Code, body.Email) != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Verification code not found"})
+		return
+	}
 
-	if err := models.DB.Where("code = ? AND email = ?", body.Code, body.Email).First(&verificationCode).Error; err != nil || verificationCode.IsExpired() {
+	if verificationCode.IsExpired() {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or expired verification code"})
 		return
 	}
 
-	var user models.User
-	if err := models.DB.Where("id = ?", verificationCode.UserID).First(&user).Error; err != nil {
+	if user.FindOneById(verificationCode.UserID) != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "User not found"})
 		return
 	}
 
-	if err := user.HashPassword(body.NewPassword); err != nil || user.Save() != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password", "details": err.Error()})
+	if user.HashPassword(body.NewPassword) != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+		return
+	}
+
+	if user.Save() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset password"})
+		return
+	}
+
+	if verificationCode.Delete() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete verification code"})
 		return
 	}
 
@@ -269,21 +318,25 @@ func isUserExists(body models.CreateUserDto) bool {
 
 // sendWelcomeAndVerificationEmails sends welcome and verification emails to the user.
 func sendWelcomeAndVerificationEmails(user models.User, c *gin.Context) {
-	err := services.SendEmail(user.Email, services.WelcomeEmail)
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send welcome email", "details": err.Error()})
+	if services.SendEmail(user.Email, services.WelcomeEmail) != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send welcome email"})
 		return
 	}
 
 	verificationCode := models.VerificationCode{
-		UserID:    uint(user.ID),
+		UserID:    user.ID,
 		Email:     user.Email,
 		Code:      strconv.Itoa(services.GenerateVerificationCode()),
 		ExpiresAt: time.Now().Add(15 * time.Minute),
 	}
 
-	if err := verificationCode.Save(); err != nil || services.SendVerificationEmail(user.Email, verificationCode.Code) != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email", "details": err.Error()})
+	if verificationCode.Save() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save verification code"})
+		return
+	}
+
+	if services.SendVerificationEmail(user.Email, verificationCode.Code) != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email"})
 		return
 	}
 

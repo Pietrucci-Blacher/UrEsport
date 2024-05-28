@@ -22,6 +22,7 @@ type User struct {
 	Password    string       `json:"password"`
 	Roles       []string     `json:"roles" gorm:"json"`
 	Tournaments []Tournament `json:"tournaments" gorm:"many2many:tournament_participants;"`
+	Verified    bool         `json:"verified" gorm:"default:false"`
 	CreatedAt   time.Time    `json:"created_at"`
 	UpdatedAt   time.Time    `json:"updated_at"`
 }
