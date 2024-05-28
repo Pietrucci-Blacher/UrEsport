@@ -46,7 +46,7 @@ func SendEmail(userEmail string, template EmailTemplate) error {
 		HtmlContent: htmlContent,
 		Subject:     subject,
 		Sender: &sib_api_v3_sdk.SendSmtpEmailSender{
-			Name:  "UREsport",
+			Name:  os.Getenv("BREVO_SENDER"),
 			Email: senderEmail,
 		},
 		To: to,
@@ -96,7 +96,7 @@ func SendEmailWithCode(userEmail string, template EmailTemplate, code string) er
 		HtmlContent: htmlContent,
 		Subject:     subject,
 		Sender: &sib_api_v3_sdk.SendSmtpEmailSender{
-			Name:  "UREsport",
+			Name:  os.Getenv("BREVO_SENDER"),
 			Email: senderEmail,
 		},
 		To: to,

@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
@@ -82,8 +83,16 @@ class AuthService implements IAuthService {
   @override
   Future<void> logout() async {
     try {
-      await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/logout');
+      final token = await _cacheService.getString('token');
+      if (token == null) throw Exception('No token found');
       await _cacheService.deleteString('token');
+
+      await _dio.post(
+        '${dotenv.env['API_ENDPOINT']}/auth/logout',
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
       return;
     } catch (e) {
       throw Exception('Failed to logout: $e');
@@ -175,23 +184,23 @@ class AuthService implements IAuthService {
       final response = await _dio.get(
         '${dotenv.env['API_ENDPOINT']}/users/me',
         options: Options(headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': token,
         }),
       );
 
       if (response.statusCode == 200) {
         final data = response.data;
         return User(
-          firstName: data['firstName'],
-          lastName: data['lastName'],
+          firstName: data['firstname'],
+          lastName: data['lastname'],
           username: data['username'],
           email: data['email'],
-          avatarUrl: data['avatarUrl'],
         );
       } else {
         throw Exception('Failed to load user data');
       }
     } catch (e) {
+      await logout();
       throw Exception('Failed to load user data: $e');
     }
   }

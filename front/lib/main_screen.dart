@@ -32,7 +32,6 @@ class MainScreenState extends State<MainScreen> {
     super.initState();
     BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
 
-    // Obtenez authService depuis Provider
     final authService = Provider.of<IAuthService>(context, listen: false);
 
     _widgetOptions = [
@@ -56,61 +55,6 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    List<String> usernames = ['user1', 'user2', 'user3', 'user4'];
-    String tournamentId = '1'; // Replace this with the actual tournamentId
-
-    List<Widget> inviteButtons = usernames.map((username) => Row(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Text(username),
-        Row(
-          children: [
-            InviteButton(
-              username: username,
-              tournamentId: tournamentId,
-            ),
-            JoinButton(
-              username: username,
-              tournamentId: tournamentId,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => GamesScreen()),
-                );
-              },
-              child: Text('Voir les jeux'),
-            )
-          ],
-        ),
-      ],
-    )).toList();
-
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('UrEsport'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: IndexedStack(
-              index: _selectedIndex,
-              children: _widgetOptions,
-            ),
-          ),
-          Expanded(
-            child: ListView(
-              children: inviteButtons,
-            ),
-          ),
-        ],
-      ),
-      bottomNavigationBar: CustomBottomNavigation(
-        isLoggedIn: isLoggedIn,
-        selectedIndex: _selectedIndex,
-        onTap: _onItemTapped,
-      ),
     return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
         if (state is AuthInitial) {
