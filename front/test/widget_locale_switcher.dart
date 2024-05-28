@@ -4,21 +4,25 @@ import 'package:mockito/mockito.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/app.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/tournament_service.dart';
 import 'auth/mocks/auth_service_mock.dart';
 
 void main() {
   testWidgets('LocaleSwitcher changes locale', (WidgetTester tester) async {
     final mockAuthService = MockAuthService();
+    final mockTournamentService = MockTournamentService();
 
-    // Configurez les comportements de votre mock si nécessaire
     when(mockAuthService.isLoggedIn()).thenAnswer((_) async => false);
 
     await tester.pumpWidget(
       MultiProvider(
         providers: [
           Provider<IAuthService>.value(value: mockAuthService),
+          Provider<ITournament>.value(value: mockTournamentService),
         ],
-        child: MyApp(authService: mockAuthService), // Remove const
+        child: MyApp(
+            authService: mockAuthService,
+            tournamentService: mockTournamentService),
       ),
     );
 
