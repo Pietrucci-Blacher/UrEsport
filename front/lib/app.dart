@@ -8,11 +8,14 @@ import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/splash_screen/splash_screen_handler.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/tournament/bloc/tournament_bloc.dart';
+import 'package:uresport/core/services/tournament_service.dart';
 
 class MyApp extends StatelessWidget {
   final IAuthService authService;
+  final ITournament tournamentService;
 
-  const MyApp({required this.authService, super.key});
+  const MyApp({required this.authService, required this.tournamentService, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -27,6 +30,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => AuthBloc(authService),
+        ),
+        BlocProvider(
+          create: (context) => TournamentBloc(tournamentService),
         ),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(
