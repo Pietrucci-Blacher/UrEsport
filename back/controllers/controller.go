@@ -102,9 +102,18 @@ func RegisterRoutes(r *gin.Engine) {
 				Logout,
 			)
 			auth.POST("/refresh", Refresh)
-			auth.POST("/verify", middlewares.Validate[models.VerifyUserDto](), Verify)
-			auth.POST("/request-password-reset", middlewares.Validate[models.RequestPasswordResetDto](), RequestPasswordReset)
-			auth.POST("/reset-password", middlewares.Validate[models.ResetPasswordDto](), ResetPassword)
+			auth.POST("/verify",
+				middlewares.Validate[models.VerifyUserDto](),
+				Verify,
+			)
+			auth.POST("/request-password-reset",
+				middlewares.Validate[models.RequestPasswordResetDto](),
+				RequestPasswordReset,
+			)
+			auth.POST("/reset-password",
+				middlewares.Validate[models.ResetPasswordDto](),
+				ResetPassword,
+			)
 			auth.GET("/:provider/callback", OAuth2Callback)
 		}
 

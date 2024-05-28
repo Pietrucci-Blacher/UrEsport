@@ -76,7 +76,7 @@ func Refresh(c *gin.Context) {
 	}
 
 	if token.FindOne("refresh_token", refreshTokenString) != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Refresh token not found", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Refresh token not found"})
 		return
 	}
 
@@ -122,12 +122,12 @@ func Register(c *gin.Context) {
 	}
 
 	if err := user.HashPassword(body.Password); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
 		return
 	}
 
 	if err := user.Save(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
 
