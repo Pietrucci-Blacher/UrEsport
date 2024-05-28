@@ -135,12 +135,7 @@ func Register(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/verify [post]
 func Verify(c *gin.Context) {
-	var body models.VerifyUserDto
-
-	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
+	body, _ := c.MustGet("body").(models.VerifyUserDto)
 
 	var verificationCode models.VerificationCode
 
@@ -169,12 +164,7 @@ func Verify(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/request-password-reset [post]
 func RequestPasswordReset(c *gin.Context) {
-	var body models.RequestPasswordResetDto
-
-	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
+	body, _ := c.MustGet("body").(models.RequestPasswordResetDto)
 
 	var user models.User
 
@@ -185,6 +175,7 @@ func RequestPasswordReset(c *gin.Context) {
 
 	resetCode := models.VerificationCode{
 		UserID:    uint(user.ID),
+		Email:     user.Email,
 		Code:      strconv.Itoa(services.GenerateVerificationCode()),
 		ExpiresAt: time.Now().Add(15 * time.Minute),
 	}
@@ -209,12 +200,7 @@ func RequestPasswordReset(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/reset-password [post]
 func ResetPassword(c *gin.Context) {
-	var body models.ResetPasswordDto
-
-	if err := c.BindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request", "details": err.Error()})
-		return
-	}
+	body, _ := c.MustGet("body").(models.ResetPasswordDto)
 
 	var verificationCode models.VerificationCode
 
@@ -291,6 +277,7 @@ func sendWelcomeAndVerificationEmails(user models.User, c *gin.Context) {
 
 	verificationCode := models.VerificationCode{
 		UserID:    uint(user.ID),
+		Email:     user.Email,
 		Code:      strconv.Itoa(services.GenerateVerificationCode()),
 		ExpiresAt: time.Now().Add(15 * time.Minute),
 	}

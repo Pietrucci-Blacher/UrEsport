@@ -7,6 +7,7 @@ import (
 type VerificationCode struct {
 	ID        uint      `gorm:"primaryKey"`
 	UserID    uint      `gorm:"not null"`
+	Email     string    `gorm:"not null"`
 	Code      string    `gorm:"not null"`
 	ExpiresAt time.Time `gorm:"not null"`
 	CreatedAt time.Time

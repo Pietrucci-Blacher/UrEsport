@@ -184,7 +184,7 @@ class AuthService implements IAuthService {
       final response = await _dio.get(
         '${dotenv.env['API_ENDPOINT']}/users/me',
         options: Options(headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': token,
         }),
       );
 

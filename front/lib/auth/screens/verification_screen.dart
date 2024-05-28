@@ -18,24 +18,40 @@ class VerificationScreen extends StatefulWidget {
 }
 
 class VerificationScreenState extends State<VerificationScreen> {
-  final List<TextEditingController> _codeControllers =
-      List.generate(5, (index) => TextEditingController());
+  final TextEditingController _codeController = TextEditingController();
   final FocusNode _focusNode = FocusNode();
 
   @override
   void dispose() {
-    for (var controller in _codeControllers) {
-      controller.dispose();
-    }
+    _codeController.dispose();
     _focusNode.dispose();
     super.dispose();
   }
 
   void _submitCode(BuildContext context) {
-    final code = _codeControllers.map((controller) => controller.text).join();
+    final code = _codeController.text;
     context
         .read<AuthBloc>()
         .add(VerifyCodeSubmitted(email: widget.email, code: code));
+  }
+
+  void _resendCode(BuildContext context) {
+    context.read<AuthBloc>().add(PasswordResetRequested(widget.email));
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(AppLocalizations.of(context).resetPassword),
+        content: Text(AppLocalizations.of(context).sendResetEmail),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: const Text('OK'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
@@ -63,12 +79,7 @@ class VerificationScreenState extends State<VerificationScreen> {
                   Text(AppLocalizations.of(context)
                       .verificationCodeSent(widget.email)),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: List.generate(5, (index) {
-                      return _buildCodeField(context, index);
-                    }),
-                  ),
+                  _buildCodeField(context),
                   const SizedBox(height: 20),
                   BlocBuilder<AuthBloc, AuthState>(
                     builder: (context, state) {
@@ -81,6 +92,11 @@ class VerificationScreenState extends State<VerificationScreen> {
                       );
                     },
                   ),
+                  const SizedBox(height: 20),
+                  TextButton(
+                    onPressed: () => _resendCode(context),
+                    child: const Text('Resend Code'),
+                  ),
                 ],
               ),
             ),
@@ -90,28 +106,25 @@ class VerificationScreenState extends State<VerificationScreen> {
     );
   }
 
-  Widget _buildCodeField(BuildContext context, int index) {
-    return SizedBox(
-      width: 50,
-      child: TextField(
-        controller: _codeControllers[index],
-        focusNode: index == 0 ? _focusNode : null,
-        autofocus: index == 0,
-        textAlign: TextAlign.center,
-        maxLength: 1,
-        keyboardType: TextInputType.number,
-        decoration: InputDecoration(
-          counterText: '',
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
-        ),
-        onChanged: (value) {
-          if (value.isNotEmpty && index < 4) {
-            FocusScope.of(context).nextFocus();
-          } else if (value.isEmpty && index > 0) {
-            FocusScope.of(context).previousFocus();
-          }
-        },
+  Widget _buildCodeField(BuildContext context) {
+    return TextField(
+      controller: _codeController,
+      focusNode: _focusNode,
+      autofocus: true,
+      textAlign: TextAlign.center,
+      maxLength: 5,
+      keyboardType: TextInputType.number,
+      decoration: InputDecoration(
+        counterText: '',
+        border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       ),
+      onChanged: (value) {
+        if (value.length == 5) {
+          _submitCode(context);
+        }
+      },
+      style:
+          const TextStyle(letterSpacing: 30.0), // Crée l'effet visuel de carrés
     );
   }
 }

@@ -28,14 +28,13 @@ class MainScreenState extends State<MainScreen> {
     super.initState();
     BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
 
-    // Obtenez authService depuis Provider
     final authService = Provider.of<IAuthService>(context, listen: false);
 
     _widgetOptions = [
       const HomeScreen(),
       const TournamentScreen(),
       const NotificationScreen(),
-      ProfileScreen(authService: authService), // Pass authService here
+      ProfileScreen(authService: authService),
     ];
   }
 
