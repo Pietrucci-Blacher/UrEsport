@@ -52,7 +52,10 @@ class GameDetailPage extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => GameModify(game: game, isEdit: true),
+                    builder: (context) => GameModify(
+                        game: game,
+                        isEdit: true,
+                    ),
                   ),
                 );
               },
