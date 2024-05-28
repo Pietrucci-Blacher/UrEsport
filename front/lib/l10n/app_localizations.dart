@@ -105,6 +105,86 @@ class AppLocalizations {
       desc: 'Title for the Profile screen',
     );
   }
+
+  String get inviteButtonTitle {
+    return Intl.message(
+      'Invite',
+      name: 'inviteButtonTitle',
+      desc: 'Title for the Invite button',
+    );
+  }
+
+  String get inviteSuccessTitle {
+    return Intl.message(
+      'Invite Success',
+      name: 'inviteSuccessTitle',
+      desc: 'Title for the invite success dialog',
+    );
+  }
+
+  String get inviteErrorTitle {
+    return Intl.message(
+      'Invite Error',
+      name: 'inviteErrorTitle',
+      desc: 'Title for the invite error dialog',
+    );
+  }
+
+  String get closeButtonTitle {
+    return Intl.message(
+      'Close',
+      name: 'closeButtonTitle',
+      desc: 'Title for the close button',
+    );
+  }
+
+  String get joinButtonTitle {
+    return Intl.message(
+      'Join',
+      name: 'JoinButtonTitle',
+      desc: 'Title for the Join button',
+    );
+  }
+
+  String get gameButtonTitle {
+    return Intl.message(
+      'Games',
+      name: 'gameButtonTitle',
+      desc: 'Title for the Games button',
+    );
+  }
+
+  String get gameScreenWelcome {
+    return Intl.message(
+      'Welcome to the Games screen!',
+      name: 'gameScreenWelcome',
+      desc: 'Welcome message for the Games screen',
+    );
+  }
+
+  String get gameScreenTitle {
+    return Intl.message(
+      'Games',
+      name: 'gameScreenTitle',
+      desc: 'Title for the Games screen',
+    );
+  }
+
+  String get modifyGameButtonTitle {
+    return Intl.message(
+      'Modify',
+      name: 'modifyGameButtonTitle',
+      desc: 'Title for the Modify button',
+    );
+  }
+
+  String get deleteGameButtonTitle {
+    return Intl.message(
+      'Delete',
+      name: 'deleteGameButtonTitle',
+      desc: 'Title for the Delete button',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

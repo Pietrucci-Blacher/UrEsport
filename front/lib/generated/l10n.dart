@@ -129,6 +129,106 @@ class S {
       args: [],
     );
   }
+
+  /// `Invite`
+  String get inviteButtonTitle {
+    return Intl.message(
+      'Invite',
+      name: 'inviteButtonTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have been invited successfully`
+  String get inviteSuccessTitle {
+    return Intl.message(
+      'You have been invited successfully',
+      name: 'inviteSuccessTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An error occurred while sending the invitation`
+  String get inviteErrorTitle {
+    return Intl.message(
+      'An error occurred while sending the invitation',
+      name: 'inviteErrorTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close`
+  String get closeButtonTitle {
+    return Intl.message(
+      'Close',
+      name: 'closeButtonTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join`
+  String get joinButtonTitle {
+    return Intl.message(
+      'Join',
+      name: 'joinButtonTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Games`
+  String get gameButtonTitle {
+    return Intl.message(
+      'All Games',
+      name: 'gameButtonTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome to the Game Screen!`
+  String get gameScreenWelcome {
+    return Intl.message(
+      'Welcome to the Game Screen!',
+      name: 'gameScreenWelcome',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Games`
+  String get gameScreenTitle {
+    return Intl.message(
+      'Games',
+      name: 'gameScreenTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Modify Game`
+  String get modifyGameButtonTitle {
+    return Intl.message(
+      'Modify Game',
+      name: 'modifyGameButtonTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Game`
+  String get deleteGameButtonTitle {
+    return Intl.message(
+      'Delete Game',
+      name: 'deleteGameButtonTitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

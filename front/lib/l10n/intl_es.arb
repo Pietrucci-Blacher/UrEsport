@@ -7,5 +7,15 @@
   "profileScreenTitle": "Perfil",
   "homeScreenWelcome": "¡Bienvenido a la pantalla de inicio!",
   "tournamentScreenWelcome": "¡Bienvenido a la pantalla de torneos!",
-  "notificationScreenWelcome": "¡Bienvenido a la pantalla de notificaciones!"
+  "notificationScreenWelcome": "¡Bienvenido a la pantalla de notificaciones!",
+  "inviteButton": "Invitar",
+  "inviteSuccess": "Ha sido invitado",
+  "inviteError": "Error de invitación",
+  "closeButton": "Cerrar",
+  "joinButton": "Unirse",
+  "gameButton": "Ver todos los juegos",
+  "gameScreenWelcome": "¡Bienvenido a la pantalla de juegos!",
+  "gameScreenTitle": "Juegos",
+  "modifyGameButton": "Modificar el juego",
+  "deleteGameButton": "Eliminar el juego"
 }

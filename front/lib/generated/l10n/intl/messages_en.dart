@@ -23,9 +23,24 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
+        "closeButtonTitle": MessageLookupByLibrary.simpleMessage("Close"),
+        "deleteGameButtonTitle":
+            MessageLookupByLibrary.simpleMessage("Delete Game"),
+        "gameButtonTitle": MessageLookupByLibrary.simpleMessage("All Games"),
+        "gameScreenTitle": MessageLookupByLibrary.simpleMessage("Games"),
+        "gameScreenWelcome":
+            MessageLookupByLibrary.simpleMessage("Welcome to the Game Screen!"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home"),
         "homeScreenWelcome":
             MessageLookupByLibrary.simpleMessage("Welcome to the Home Screen!"),
+        "inviteButtonTitle": MessageLookupByLibrary.simpleMessage("Invite"),
+        "inviteErrorTitle": MessageLookupByLibrary.simpleMessage(
+            "An error occurred while sending the invitation"),
+        "inviteSuccessTitle": MessageLookupByLibrary.simpleMessage(
+            "You have been invited successfully"),
+        "joinButtonTitle": MessageLookupByLibrary.simpleMessage("Join"),
+        "modifyGameButtonTitle":
+            MessageLookupByLibrary.simpleMessage("Modify Game"),
         "notificationScreenTitle":
             MessageLookupByLibrary.simpleMessage("Notifications"),
         "notificationScreenWelcome": MessageLookupByLibrary.simpleMessage(

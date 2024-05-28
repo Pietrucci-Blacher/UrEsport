@@ -1,6 +1,7 @@
 // invite_button.dart
 import 'package:flutter/material.dart';
 import 'package:uresport/services/network_services.dart'; // Assurez-vous d'importer les services nécessaires
+import 'package:uresport/l10n/app_localizations.dart';
 
 class InviteButton extends StatelessWidget {
   final String username;
@@ -18,8 +19,7 @@ class InviteButton extends StatelessWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text('Inviter $username'),
-              content: Text('Bonjour $username, vous avez été invité au tournoi !'),
-              actions: [
+              content: Text('Bonjour $username, ' + AppLocalizations.of(context).inviteSuccessTitle),              actions: [
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop();
@@ -31,7 +31,7 @@ class InviteButton extends StatelessWidget {
           },
         );
       },
-      child: const Text('Inviter'),
+      child: Text(AppLocalizations.of(context).inviteButtonTitle),
     );
   }
 }

@@ -23,6 +23,9 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
+        "gameScreenTitle": MessageLookupByLibrary.simpleMessage("Jeux"),
+        "gameScreenWelcome": MessageLookupByLibrary.simpleMessage(
+            "Bienvenue à l\'écran des jeux !"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Accueil"),
         "homeScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Bienvenue à l\'écran d\'accueil !"),
