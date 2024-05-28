@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
@@ -179,6 +178,7 @@ class AuthService implements IAuthService {
   Future<User> getUser() async {
     try {
       final token = await _cacheService.getString('token');
+      print('token: $token');
       if (token == null) throw Exception('No token found');
 
       final response = await _dio.get(
@@ -200,6 +200,7 @@ class AuthService implements IAuthService {
         throw Exception('Failed to load user data');
       }
     } catch (e) {
+      print('error: $e');
       await logout();
       throw Exception('Failed to load user data: $e');
     }
