@@ -200,7 +200,7 @@ func RequestPasswordReset(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/reset-password [post]
 func ResetPassword(c *gin.Context) {
-    body, _ := c.MustGet("body").(models.ResetPasswordDto)
+	body, _ := c.MustGet("body").(models.ResetPasswordDto)
 
 	var verificationCode models.VerificationCode
 
