@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
@@ -190,11 +191,10 @@ class AuthService implements IAuthService {
       if (response.statusCode == 200) {
         final data = response.data;
         return User(
-          firstName: data['firstName'],
-          lastName: data['lastName'],
+          firstName: data['firstname'],
+          lastName: data['lastname'],
           username: data['username'],
           email: data['email'],
-          avatarUrl: data['avatarUrl'],
         );
       } else {
         throw Exception('Failed to load user data');
