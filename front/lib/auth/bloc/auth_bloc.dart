@@ -53,8 +53,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             password: event.password,
           ),
         );
-        final user = await authService.getUser();
-        emit(AuthAuthenticated(user));
+        emit(AuthUnauthenticated());
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }
