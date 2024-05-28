@@ -18,7 +18,9 @@ class TournamentService implements ITournament {
       queryParameters: {'limit': limit, 'page': page},
     );
     if (response.statusCode == 200) {
-      return (response.data as List).map((json) => Tournament.fromJson(json)).toList();
+      return (response.data as List)
+          .map((json) => Tournament.fromJson(json))
+          .toList();
     } else {
       throw Exception('Failed to load tournaments');
     }

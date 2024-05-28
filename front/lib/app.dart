@@ -15,7 +15,8 @@ class MyApp extends StatelessWidget {
   final IAuthService authService;
   final ITournament tournamentService;
 
-  const MyApp({required this.authService, required this.tournamentService, super.key});
+  const MyApp(
+      {required this.authService, required this.tournamentService, super.key});
 
   @override
   Widget build(BuildContext context) {

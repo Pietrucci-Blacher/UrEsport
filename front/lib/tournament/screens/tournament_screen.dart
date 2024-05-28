@@ -20,7 +20,8 @@ class TournamentScreen extends StatelessWidget {
       body: BlocBuilder<TournamentBloc, TournamentState>(
         builder: (context, state) {
           if (state is TournamentInitial) {
-            BlocProvider.of<TournamentBloc>(context).add(const LoadTournaments(limit: 10, page: 1));
+            BlocProvider.of<TournamentBloc>(context)
+                .add(const LoadTournaments(limit: 10, page: 1));
             return const Center(child: CircularProgressIndicator());
           } else if (state is TournamentLoadInProgress) {
             return const Center(child: CircularProgressIndicator());
@@ -42,7 +43,8 @@ class TournamentScreen extends StatelessWidget {
   }
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
-    final DateFormat dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    final DateFormat dateFormat =
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),

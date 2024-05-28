@@ -22,7 +22,8 @@ void main() async {
         Provider<IAuthService>.value(value: authService),
         Provider<ITournament>.value(value: tournamentService),
       ],
-      child: MyApp(authService: authService, tournamentService: tournamentService),
+      child:
+          MyApp(authService: authService, tournamentService: tournamentService),
     ),
   );
 }
