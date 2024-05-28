@@ -82,8 +82,16 @@ class AuthService implements IAuthService {
   @override
   Future<void> logout() async {
     try {
-      await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/logout');
+      final token = await _cacheService.getString('token');
+      if (token == null) throw Exception('No token found');
       await _cacheService.deleteString('token');
+
+      await _dio.post(
+        '${dotenv.env['API_ENDPOINT']}/auth/logout',
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
       return;
     } catch (e) {
       throw Exception('Failed to logout: $e');
@@ -192,6 +200,7 @@ class AuthService implements IAuthService {
         throw Exception('Failed to load user data');
       }
     } catch (e) {
+      await logout();
       throw Exception('Failed to load user data: $e');
     }
   }
