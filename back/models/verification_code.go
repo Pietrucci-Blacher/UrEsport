@@ -38,7 +38,7 @@ func (vc *VerificationCode) IsExpired() bool {
 }
 
 func (vc *VerificationCode) FindOneByCodeAndEmail(code, email string) error {
-	return DB.Where("code = ? AND email = ?", code, email).First(&vc).Error
+	return DB.Where("code = ? AND email = ?", code, email).First(vc).Error
 }
 
 func (vc *VerificationCode) Delete() error {
