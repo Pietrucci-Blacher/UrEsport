@@ -100,8 +100,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthLoading());
       try {
         await authService.verifyCode(event.email, event.code);
-        final user = await authService.getUser();
-        emit(AuthAuthenticated(user));
+        emit(AuthUnauthenticated());
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }
