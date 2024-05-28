@@ -123,7 +123,8 @@ class VerificationScreenState extends State<VerificationScreen> {
           _submitCode(context);
         }
       },
-      style: const TextStyle(letterSpacing: 30.0), // Crée l'effet visuel de carrés
+      style:
+          const TextStyle(letterSpacing: 30.0), // Crée l'effet visuel de carrés
     );
   }
 }
