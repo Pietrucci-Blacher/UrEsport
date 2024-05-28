@@ -95,5 +95,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthFailure(e.toString()));
       }
     });
+
+    on<VerifyCodeSubmitted>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await authService.verifyCode(event.email, event.code);
+        final user = await authService.getUser();
+        emit(AuthAuthenticated(user));
+      } catch (e) {
+        emit(AuthFailure(e.toString()));
+      }
+    });
   }
 }
