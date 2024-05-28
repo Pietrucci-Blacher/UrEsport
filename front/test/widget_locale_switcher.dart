@@ -20,7 +20,9 @@ void main() {
           Provider<IAuthService>.value(value: mockAuthService),
           Provider<ITournament>.value(value: mockTournamentService),
         ],
-        child: MyApp(authService: mockAuthService, tournamentService: mockTournamentService),
+        child: MyApp(
+            authService: mockAuthService,
+            tournamentService: mockTournamentService),
       ),
     );
 
