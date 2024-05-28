@@ -201,7 +201,9 @@ class AuthService implements IAuthService {
         throw Exception('Failed to load user data');
       }
     } catch (e) {
-      print('error: $e');
+      if(kDebugMode) {
+        print('error: $e');
+      }
       await logout();
       throw Exception('Failed to load user data: $e');
     }
