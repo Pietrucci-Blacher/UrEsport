@@ -3,10 +3,13 @@
         <mj-section>
             <mj-column>
                 <mj-text>
-                    Bienvenue sur notre plateforme !
+                    Vérifiez votre compte
                 </mj-text>
                 <mj-text>
-                    Nous sommes ravis de vous accueillir. Commencez dès maintenant à explorer nos fonctionnalités.
+                    Votre code de vérification est : {{.Code}}
+                </mj-text>
+                <mj-text>
+                    Ce code expirera dans 15 minutes.
                 </mj-text>
             </mj-column>
         </mj-section>

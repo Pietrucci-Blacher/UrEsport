@@ -53,8 +53,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             password: event.password,
           ),
         );
-        final user = await authService.getUser();
-        emit(AuthAuthenticated(user));
+        emit(AuthRegistrationSuccess());
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }
@@ -92,6 +91,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         await authService.resetPassword(event.code, event.newPassword);
         emit(PasswordResetConfirmed());
+      } catch (e) {
+        emit(AuthFailure(e.toString()));
+      }
+    });
+
+    on<VerifyCodeSubmitted>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await authService.verifyCode(event.email, event.code);
+        emit(AuthUnauthenticated());
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }
