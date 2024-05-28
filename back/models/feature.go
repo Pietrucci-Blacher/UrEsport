@@ -46,7 +46,7 @@ func (f *Feature) FindOneById(id int) error {
 }
 
 func (f *Feature) FindOne(key string, value any) error {
-	return DB.Where(key+" = ?", value).First(&f).Error
+	return DB.Where(key, value).First(&f).Error
 }
 
 func (f *Feature) Delete() error {

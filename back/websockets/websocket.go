@@ -17,33 +17,55 @@ func RegisterWebsocket(r *gin.Engine) {
 	ws.On("ping", PingTest)
 
 	r.GET("/ws",
-		middlewares.IsLoggedIn(),
+		middlewares.IsLoggedIn(false),
 		ws.GinWsHandler,
 	)
 }
 
 func connect(client *services.Client, c *gin.Context) error {
-	user := c.MustGet("user").(models.User)
+	user, ok := c.Get("user")
+	if ok {
+		client.Set("user", user.(models.User))
+	}
 
-	client.SetData("user", user)
+	client.Set("logged", ok)
 
-	fmt.Printf("Client %s connected, len %d, user %s\n",
-		client.ID,
-		len(client.Ws.GetClients()),
-		user.Username,
-	)
+	if ok {
+		fmt.Printf("Client %s connected, name %s, len %d\n",
+			client.ID,
+			user.(models.User).Username,
+			len(client.Ws.GetClients()),
+		)
+	} else {
+		fmt.Printf("Client %s connected, len %d\n",
+			client.ID,
+			len(client.Ws.GetClients()),
+		)
+	}
 
 	return nil
 }
 
 func disconnect(client *services.Client) error {
-	user := client.GetData("user").(models.User)
+	var user models.User
 
-	fmt.Printf("Client %s disconnected, len %d, user %s\n",
-		client.ID,
-		len(client.Ws.GetClients()),
-		user.Username,
-	)
+	logged := client.Get("logged").(bool)
+	if logged {
+		user = client.Get("user").(models.User)
+	}
+
+	if logged {
+		fmt.Printf("Client %s disconnected, name %s, len %d\n",
+			client.ID,
+			user.Username,
+			len(client.Ws.GetClients()),
+		)
+	} else {
+		fmt.Printf("Client %s disconnected, len %d\n",
+			client.ID,
+			len(client.Ws.GetClients()),
+		)
+	}
 
 	return nil
 }

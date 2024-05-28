@@ -20,9 +20,17 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static String m0(username) => "Welcome to your profile, ${username}!";
+
+  static String m1(email) => "A verification code has been sent to ${email}.";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
+        "email": MessageLookupByLibrary.simpleMessage("Email"),
+        "firstName": MessageLookupByLibrary.simpleMessage("First Name"),
+        "forgotPassword":
+            MessageLookupByLibrary.simpleMessage("Forgot Password?"),
         "closeButtonTitle": MessageLookupByLibrary.simpleMessage("Close"),
         "deleteGameButtonTitle":
             MessageLookupByLibrary.simpleMessage("Delete Game"),
@@ -33,6 +41,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home"),
         "homeScreenWelcome":
             MessageLookupByLibrary.simpleMessage("Welcome to the Home Screen!"),
+        "lastName": MessageLookupByLibrary.simpleMessage("Last Name"),
+        "logIn": MessageLookupByLibrary.simpleMessage("Log In"),
+        "login": MessageLookupByLibrary.simpleMessage("Login"),
         "inviteButtonTitle": MessageLookupByLibrary.simpleMessage("Invite"),
         "inviteErrorTitle": MessageLookupByLibrary.simpleMessage(
             "An error occurred while sending the invitation"),
@@ -45,10 +56,27 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Notifications"),
         "notificationScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Welcome to the Notification screen!"),
+        "orLoginWith": MessageLookupByLibrary.simpleMessage("Or login with"),
+        "password": MessageLookupByLibrary.simpleMessage("Password"),
+        "passwordResetEmailSent":
+            MessageLookupByLibrary.simpleMessage("Password reset email sent"),
+        "passwordResetSuccessful":
+            MessageLookupByLibrary.simpleMessage("Password reset successful"),
         "profileScreenTitle": MessageLookupByLibrary.simpleMessage("Profile"),
+        "profileScreenWelcome": m0,
+        "register": MessageLookupByLibrary.simpleMessage("Register"),
+        "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
+        "sendResetEmail":
+            MessageLookupByLibrary.simpleMessage("Send Reset Email"),
         "tournamentScreenTitle":
             MessageLookupByLibrary.simpleMessage("Tournaments"),
         "tournamentScreenWelcome": MessageLookupByLibrary.simpleMessage(
-            "Welcome to the Tournament Screen!")
+            "Welcome to the Tournament Screen!"),
+        "username": MessageLookupByLibrary.simpleMessage("Username"),
+        "verificationCodeSent": m1,
+        "verify": MessageLookupByLibrary.simpleMessage("Verify"),
+        "welcome": MessageLookupByLibrary.simpleMessage("Welcome to UrEsport"),
+        "youAreNotLoggedIn":
+            MessageLookupByLibrary.simpleMessage("You are not logged in")
       };
 }
