@@ -11,11 +11,10 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc(this.authService) : super(AuthInitial()) {
     on<AuthCheckRequested>((event, emit) async {
-      //final isLoggedIn = await authService.isLoggedIn();
-      const isLoggedIn = false;
+      final isLoggedIn = await authService.isLoggedIn();
       if (isLoggedIn) {
-        //final user = await authService.getUser();
-        //emit(AuthAuthenticated(user));
+        final user = await authService.getUser();
+        emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
       }
