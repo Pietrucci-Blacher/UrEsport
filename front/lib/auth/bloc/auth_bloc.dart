@@ -11,10 +11,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc(this.authService) : super(AuthInitial()) {
     on<AuthCheckRequested>((event, emit) async {
-      final isLoggedIn = await authService.isLoggedIn();
+      //final isLoggedIn = await authService.isLoggedIn();
+      const isLoggedIn = false;
       if (isLoggedIn) {
-        final user = await authService.getUser();
-        emit(AuthAuthenticated(user));
+        //final user = await authService.getUser();
+        //emit(AuthAuthenticated(user));
       } else {
         emit(AuthUnauthenticated());
       }
@@ -53,8 +54,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             password: event.password,
           ),
         );
-        final user = await authService.getUser();
-        emit(AuthAuthenticated(user));
+        emit(AuthRegistrationSuccess());
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }
@@ -92,6 +92,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       try {
         await authService.resetPassword(event.code, event.newPassword);
         emit(PasswordResetConfirmed());
+      } catch (e) {
+        emit(AuthFailure(e.toString()));
+      }
+    });
+
+    on<VerifyCodeSubmitted>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await authService.verifyCode(event.email, event.code);
+        final user = await authService.getUser();
+        emit(AuthAuthenticated(user));
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }
