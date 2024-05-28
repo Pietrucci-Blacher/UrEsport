@@ -234,22 +234,7 @@ func ResetPassword(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/logout [post]
 func Logout(c *gin.Context) {
-	var token models.Token
-
-	accessToken, err := c.Cookie("access_token")
-	if err != nil {
-		accessToken = c.GetHeader("Authorization")
-	}
-
-	if accessToken == "" {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "No access token provided"})
-		return
-	}
-
-	if token.FindOne("access_token", accessToken) != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Token not found"})
-		return
-	}
+	token, _ := c.MustGet("token").(models.Token)
 
 	if token.Delete() != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete token"})

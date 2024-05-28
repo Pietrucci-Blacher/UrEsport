@@ -67,8 +67,7 @@ func GetUser(c *gin.Context) {
 //	@Router			/users/me [get]
 func GetUserMe(c *gin.Context) {
 	connectedUser, _ := c.MustGet("user").(models.User)
-	sanitized := connectedUser.Sanitize(true)
-	c.JSON(http.StatusOK, sanitized)
+	c.JSON(http.StatusOK, connectedUser)
 }
 
 // UpdateUser godoc
