@@ -31,19 +31,19 @@ func RegisterRoutes(r *gin.Engine) {
 			)
 			users.GET("/:id",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetUser(),
+				middlewares.Get[*models.User]("findedUser"),
 				GetUser,
 			)
 			users.PATCH("/:id",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetUser(),
+				middlewares.Get[*models.User]("findedUser"),
 				middlewares.IsMe(),
 				middlewares.Validate[models.UpdateUserDto](),
 				UpdateUser,
 			)
 			users.DELETE("/:id",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetUser(),
+				middlewares.Get[*models.User]("findedUser"),
 				middlewares.IsMe(),
 				DeleteUser,
 			)
@@ -63,26 +63,26 @@ func RegisterRoutes(r *gin.Engine) {
 				CreateFeature,
 			)
 			features.GET("/:id",
-				middlewares.GetFeature(),
+				middlewares.Get[*models.Feature]("feature"),
 				GetFeature,
 			)
 			features.GET("/:id/toggle",
 				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
-				middlewares.GetFeature(),
+				middlewares.Get[*models.Feature]("feature"),
 				ToggleFeature,
 			)
 			features.PATCH("/:id",
 				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
-				middlewares.GetFeature(),
+				middlewares.Get[*models.Feature]("feature"),
 				middlewares.Validate[models.UpdateFeatureDto](),
 				UpdateFeature,
 			)
 			features.DELETE("/:id",
 				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
-				middlewares.GetFeature(),
+				middlewares.Get[*models.Feature]("feature"),
 				DeleteFeature,
 			)
 		}
@@ -120,49 +120,49 @@ func RegisterRoutes(r *gin.Engine) {
 				CreateTournament,
 			)
 			tournaments.GET("/:id",
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				GetTournament,
 			)
 			tournaments.PATCH("/:id",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.IsTournamentOwner(),
 				middlewares.Validate[models.UpdateTournamentDto](),
 				UpdateTournament,
 			)
 			tournaments.DELETE("/:id",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.IsTournamentOwner(),
 				DeleteTournament,
 			)
 			tournaments.POST("/:id/join",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				JoinTournament,
 			)
 			tournaments.POST("/:id/invite",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.IsTournamentOwner(),
 				middlewares.Validate[models.InviteUserDto](),
 				InviteUserToTournament,
 			)
 			tournaments.DELETE("/:id/leave",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				LeaveTournament,
 			)
 			tournaments.DELETE("/:id/kick",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.IsTournamentOwner(),
 				middlewares.Validate[models.InviteUserDto](),
 				KickUserFromTournament,
 			)
 			tournaments.PATCH("/:id/toggle-private",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.IsTournamentOwner(),
 				TogglePrivateTournament,
 			)
