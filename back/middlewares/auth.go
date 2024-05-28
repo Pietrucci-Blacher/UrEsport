@@ -53,6 +53,7 @@ func IsLoggedIn(mandatory bool) gin.HandlerFunc {
 		}
 
 		c.Set("user", user)
+		c.Set("token", token)
 		c.Next()
 	}
 }
