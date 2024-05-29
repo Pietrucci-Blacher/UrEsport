@@ -181,6 +181,47 @@ func Verify(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Account verified successfully"})
 }
 
+// RequestVerification godoc
+//
+//	@Summary		Request verification code
+//	@Description	Request verification code
+//	@Tags			auth
+//	@Accept			json
+//	@Produce		json
+//	@Param			email	body	models.RequestCodeDto	true	"Request verification code"
+//	@Success		200
+//	@Failure		400	{object}	utils.HttpError
+//	@Router			/auth/request-verification [post]
+func RequestVerification(c *gin.Context) {
+	body, _ := c.MustGet("body").(models.RequestCodeDto)
+
+	var user models.User
+
+	if user.FindOne("email", body.Email) != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Email not found"})
+		return
+	}
+
+	verificationCode := models.VerificationCode{
+		UserID:    user.ID,
+		Email:     user.Email,
+		Code:      strconv.Itoa(services.GenerateVerificationCode()),
+		ExpiresAt: time.Now().Add(15 * time.Minute),
+	}
+
+	if verificationCode.Save() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save verification code"})
+		return
+	}
+
+	if services.SendVerificationEmail(user.Email, verificationCode.Code) != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to send verification email"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Verification code sent successfully"})
+}
+
 // RequestPasswordReset godoc
 //
 //	@Summary		Request password reset
@@ -188,12 +229,12 @@ func Verify(c *gin.Context) {
 //	@Tags			auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			email	body	models.RequestPasswordResetDto	true	"Request password reset"
+//	@Param			email	body	models.RequestCodeDto	true	"Request password reset"
 //	@Success		200
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/request-password-reset [post]
 func RequestPasswordReset(c *gin.Context) {
-	body, _ := c.MustGet("body").(models.RequestPasswordResetDto)
+	body, _ := c.MustGet("body").(models.RequestCodeDto)
 
 	var user models.User
 

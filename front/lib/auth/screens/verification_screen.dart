@@ -33,6 +33,7 @@ class VerificationScreenState extends State<VerificationScreen> {
     context
         .read<AuthBloc>()
         .add(VerifyCodeSubmitted(email: widget.email, code: code));
+    Navigator.pop(context);
   }
 
   void _resendCode(BuildContext context) {
