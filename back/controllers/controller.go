@@ -106,8 +106,12 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Validate[models.VerifyUserDto](),
 				Verify,
 			)
+			auth.POST("/request-verify",
+				middlewares.Validate[models.RequestCodeDto](),
+				RequestVerification,
+			)
 			auth.POST("/request-password-reset",
-				middlewares.Validate[models.RequestPasswordResetDto](),
+				middlewares.Validate[models.RequestCodeDto](),
 				RequestPasswordReset,
 			)
 			auth.POST("/reset-password",

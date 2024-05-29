@@ -19,7 +19,7 @@ type VerifyUserDto struct {
 	Code  string `json:"code" binding:"required"`
 }
 
-type RequestPasswordResetDto struct {
+type RequestCodeDto struct {
 	Email string `json:"email" binding:"required,email"`
 }
 
