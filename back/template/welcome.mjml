@@ -1,0 +1,14 @@
+<mjml>
+    <mj-body>
+        <mj-section>
+            <mj-column>
+                <mj-text>
+                    Bienvenue sur notre plateforme !
+                </mj-text>
+                <mj-text>
+                    Nous sommes ravis de vous accueillir. Commencez dès maintenant à explorer nos fonctionnalités.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

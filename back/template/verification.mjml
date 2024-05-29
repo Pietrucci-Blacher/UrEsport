@@ -1,0 +1,17 @@
+<mjml>
+    <mj-body>
+        <mj-section>
+            <mj-column>
+                <mj-text>
+                    Vérifiez votre compte
+                </mj-text>
+                <mj-text>
+                    Votre code de vérification est : {{.Code}}
+                </mj-text>
+                <mj-text>
+                    Ce code expirera dans 15 minutes.
+                </mj-text>
+            </mj-column>
+        </mj-section>
+    </mj-body>
+</mjml>

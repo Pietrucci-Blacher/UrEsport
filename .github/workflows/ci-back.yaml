@@ -26,7 +26,7 @@
         - name: Setup Go
           uses: actions/setup-go@v5
           with:
-            go-version: 1.22.2
+            go-version: 1.22.3
             cache: true
             cache-dependency-path: "**/go.sum"
 
@@ -39,10 +39,10 @@
           run: swag init
 
         - name: Lint
-          uses: golangci/golangci-lint-action@v5
+          uses: golangci/golangci-lint-action@v6
           with:
             args: --timeout=5m
-            version: v1.57
+            version: v1.58
             working-directory: back
 
         - name: Install Dependencies

@@ -56,6 +56,13 @@ type LoginUserDto struct {
 	Password string `json:"password" validate:"required"`
 }
 
+type UserInfo struct {
+	Email     string `json:"email"`
+	Username  string `json:"username"`
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+}
+
 func FindAllUsers(query utils.QueryFilter) ([]User, error) {
 	var users []User
 
@@ -121,8 +128,8 @@ func (u *User) IsRole(role string) bool {
 	return false
 }
 
-func (u *User) HashPassword() error {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(u.Password), 10)
+func (u *User) HashPassword(password string) error {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
 		return err
 	}
