@@ -86,6 +86,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
+    on<VerificationRequested>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await authService.requestVerification(event.email);
+        emit(VerificationEmailSent());
+      } catch (e) {
+        emit(AuthFailure(e.toString()));
+      }
+    });
+
     on<PasswordResetConfirmRequested>((event, emit) async {
       emit(AuthLoading());
       try {
