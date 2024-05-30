@@ -188,10 +188,10 @@ func Verify(c *gin.Context) {
 //	@Tags			auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			email	body	models.RequestCodeDto	true	"Request verification code"
+//	@Param			request	body	models.RequestCodeDto	true	"Request verification code"
 //	@Success		200
 //	@Failure		400	{object}	utils.HttpError
-//	@Router			/auth/request-verification [post]
+//	@Router			/auth/request-verify [post]
 func RequestVerification(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.RequestCodeDto)
 
@@ -229,7 +229,7 @@ func RequestVerification(c *gin.Context) {
 //	@Tags			auth
 //	@Accept			json
 //	@Produce		json
-//	@Param			email	body	models.RequestCodeDto	true	"Request password reset"
+//	@Param			request	body	models.RequestCodeDto	true	"Request password reset"
 //	@Success		200
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/request-password-reset [post]

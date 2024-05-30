@@ -37,7 +37,7 @@ class VerificationScreenState extends State<VerificationScreen> {
   }
 
   void _resendCode(BuildContext context) {
-    context.read<AuthBloc>().add(PasswordResetRequested(widget.email));
+    context.read<AuthBloc>().add(VerificationRequested(widget.email));
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
