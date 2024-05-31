@@ -1,3 +1,4 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:uresport/models/game.dart';
 
@@ -26,10 +27,22 @@ class GameDetailPage extends StatelessWidget {
             Center(
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16.0),
-                child: Image.network(
+                child: ExtendedImage.network(
                   game.imageUrl,
                   height: 200,
                   fit: BoxFit.cover,
+                  cache: true, // Enable caching
+                  borderRadius: BorderRadius.circular(16.0), // Ensure borderRadius is defined
+                  loadStateChanged: (state) {
+                    switch (state.extendedImageLoadState) {
+                      case LoadState.loading:
+                        return CircularProgressIndicator();
+                      case LoadState.completed:
+                        return null;
+                      case LoadState.failed:
+                        return Text('Failed to load image.');
+                    }
+                  },
                 ),
               ),
             ),

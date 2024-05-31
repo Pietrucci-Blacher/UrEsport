@@ -1,4 +1,6 @@
+import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'game_detail.dart';
 import 'package:uresport/models/game.dart';
 import 'package:http/http.dart' as http;
@@ -8,7 +10,7 @@ class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});
 
   Future<List<Game>> generateGames() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:8080/games'));
+    final response = await http.get(Uri.parse('${dotenv.env['API_ENDPOINT']}/games'));
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
@@ -83,9 +85,10 @@ class GameCard extends StatelessWidget {
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(8.0),
                 ),
-                child: Image.network(
+                child: ExtendedImage.network(
                   game.imageUrl,
                   fit: BoxFit.cover,
+                  borderRadius: BorderRadius.circular(8.0),
                 ),
               ),
             ),
