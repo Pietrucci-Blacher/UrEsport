@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 abstract class AuthEvent {}
 
 class AuthCheckRequested extends AuthEvent {}
