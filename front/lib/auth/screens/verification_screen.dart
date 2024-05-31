@@ -5,6 +5,7 @@ import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/main_screen.dart';
 
 class VerificationScreen extends StatefulWidget {
   final String email;
@@ -32,8 +33,13 @@ class VerificationScreenState extends State<VerificationScreen> {
     final code = _codeController.text;
     context
         .read<AuthBloc>()
-        .add(VerifyCodeSubmitted(email: widget.email, code: code));
-    Navigator.pop(context);
+        .add(VerifyCodeSubmitted(email: widget.email, code: code, context: context));
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const MainScreen(),
+      ),
+    );
   }
 
   void _resendCode(BuildContext context) {
