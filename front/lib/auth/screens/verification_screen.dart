@@ -33,7 +33,7 @@ class VerificationScreenState extends State<VerificationScreen> {
     final code = _codeController.text;
     context
         .read<AuthBloc>()
-        .add(VerifyCodeSubmitted(email: widget.email, code: code, context: context));
+        .add(VerifyCodeSubmitted(email: widget.email, code: code));
     Navigator.push(
       context,
       MaterialPageRoute(
