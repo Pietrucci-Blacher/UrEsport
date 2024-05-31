@@ -7,7 +7,11 @@ import 'game_modify.dart';
 class GameDetailPage extends StatelessWidget {
   final Game game;
 
-  const GameDetailPage({Key? key, required this.game}) : super(key: key);
+  const GameDetailPage({
+    super.key,
+    required this.game,
+  });
+
   void _redirectToGamesPage(BuildContext context) {
     Navigator.pushReplacementNamed(context, '/games');
   }
@@ -47,22 +51,28 @@ class GameDetailPage extends StatelessWidget {
               style: const TextStyle(fontSize: 16.0),
             ),
             Text('ID du jeu: ${game.id}'),
+            const SizedBox(height: 16.0),
             ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => GameModify(
-                        game: game,
-                        isEdit: true,
-                    ),
-                  ),
-                );
-              },
+              onPressed: () => _navigateToModifyPage(context),
               child: const Text('Modifier le jeu'),
             ),
-            GameDeleteButton(game: game, onDeleteSuccess: () => _redirectToGamesPage(context),),
+            GameDeleteButton(
+              game: game,
+              onDeleteSuccess: () => _redirectToGamesPage(context),
+            ),
           ],
+        ),
+      ),
+    );
+  }
+
+  void _navigateToModifyPage(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => GameModify(
+          game: game,
+          isEdit: true,
         ),
       ),
     );

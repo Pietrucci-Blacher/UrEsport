@@ -7,13 +7,17 @@ class GameModify extends StatefulWidget {
   final Game game;
   final bool isEdit;
 
-  const GameModify({super.key, required this.game, required this.isEdit});
+  const GameModify({
+    super.key,
+    required this.game,
+    required this.isEdit,
+  });
 
   @override
-  _GameModifyState createState() => _GameModifyState();
+  GameModifyState createState() => GameModifyState();
 }
 
-class _GameModifyState extends State<GameModify> {
+class GameModifyState extends State<GameModify> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
@@ -44,26 +48,35 @@ class _GameModifyState extends State<GameModify> {
         _updateUrl = url;
       });
 
-      final response = await http.patch(
-        Uri.parse(url),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(<String, String>{
-          'name': _nameController.text,
-          'description': _descriptionController.text,
-          'imageUrl': _urlController.text,
-        }),
-      );
+      final messenger = ScaffoldMessenger.of(context);
+      final navigator = Navigator.of(context);
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Game updated successfully')),
+      try {
+        final response = await http.patch(
+          Uri.parse(url),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          body: jsonEncode(<String, String>{
+            'name': _nameController.text,
+            'description': _descriptionController.text,
+            'imageUrl': _urlController.text,
+          }),
         );
-        Navigator.pushReplacementNamed(context, '/games'); // Replace with your route for games list
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update game: ${response.body} (status: ${response.statusCode})')),
+
+        if (response.statusCode == 200) {
+          messenger.showSnackBar(
+            const SnackBar(content: Text('Game updated successfully')),
+          );
+          navigator.pushReplacementNamed('/games');
+        } else {
+          messenger.showSnackBar(
+            SnackBar(content: Text('Failed to update game: ${response.body} (status: ${response.statusCode})')),
+          );
+        }
+      } catch (e) {
+        messenger.showSnackBar(
+          SnackBar(content: Text('Erreur lors de la mise à jour du jeu: $e')),
         );
       }
     }
@@ -122,9 +135,7 @@ class _GameModifyState extends State<GameModify> {
                 Text('URL de mise à jour: $_updateUrl'),
               Text('ID du jeu: ${widget.game.id}'),
               Text('Route: ${widget.isEdit ? 'PUT' : 'POST'} /games/${widget.game.id}'),
-              //add text with verif to response code
               Text('Response code: ${widget.isEdit ? '200' : '201'}'),
-
             ],
           ),
         ),
