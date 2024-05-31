@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import '../models/game.dart';
+import 'package:uresport/core/models/game.dart';
 
 class GameModify extends StatefulWidget {
   final Game game;

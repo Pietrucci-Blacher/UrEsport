@@ -48,7 +48,7 @@ class UserList extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => GamesScreen()),
+                                builder: (context) => const GamesScreen()),
                           );
                         },
                         child: const Text('Voir les jeux'),
