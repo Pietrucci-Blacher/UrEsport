@@ -7,18 +7,19 @@ class GameDeleteButton extends StatelessWidget {
   final VoidCallback onDeleteSuccess;
 
   const GameDeleteButton({
-    Key? key,
+    super.key,
     required this.game,
     required this.onDeleteSuccess,
-  }) : super(key: key);
+  });
 
   Future<void> _deleteGame(BuildContext context) async {
     final url = Uri.parse('http://10.0.2.2:8080/games/${game.id}');
+    final messenger = ScaffoldMessenger.of(context);
     try {
       final response = await http.delete(url);
 
       if (response.statusCode == 200 || response.statusCode == 204) {
-        ScaffoldMessenger.of(context).showSnackBar(
+        messenger.showSnackBar(
           const SnackBar(content: Text('Le jeu a été supprimé avec succès')),
         );
         onDeleteSuccess();
@@ -26,7 +27,7 @@ class GameDeleteButton extends StatelessWidget {
         throw Exception('Erreur serveur: ${response.statusCode}');
       }
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
+      messenger.showSnackBar(
         SnackBar(content: Text('Erreur lors de la suppression du jeu: $e')),
       );
     }
