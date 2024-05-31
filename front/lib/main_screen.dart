@@ -11,12 +11,11 @@ import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/widgets/games_screen.dart';
-import 'package:uresport/widgets/invite_button.dart';
-import 'package:uresport/widgets/join_button.dart';
 import 'package:uresport/widgets/qrcode.dart';
+import 'package:uresport/widgets/user_list.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  const MainScreen({Key? key}) : super(key: key);
 
   @override
   MainScreenState createState() => MainScreenState();
@@ -32,6 +31,7 @@ class MainScreenState extends State<MainScreen> {
     super.initState();
     BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
 
+    // Obtain authService from Provider
     final authService = Provider.of<IAuthService>(context, listen: false);
 
     _widgetOptions = [
@@ -40,10 +40,10 @@ class MainScreenState extends State<MainScreen> {
       const NotificationScreen(),
       ProfileScreen(authService: authService),
       const QRCode(
-             width: 200,
-             height: 200,
-             data: 'https://flutterflow.io', // Remplacez par les données que vous voulez encoder
-           ),// Pass authService here
+        width: 200,
+        height: 200,
+        data: 'https://flutterflow.io', // Replace with the data you want to encode
+      ), // Pass authService here
     ];
   }
 
@@ -64,9 +64,36 @@ class MainScreenState extends State<MainScreen> {
         } else {
           bool isLoggedIn = state is AuthAuthenticated;
           return Scaffold(
-            body: IndexedStack(
-              index: _selectedIndex,
-              children: _widgetOptions,
+            appBar: AppBar(
+              title: const Text('UrEsport'),
+            ),
+            body: Column(
+              children: [
+                Expanded(
+                  child: IndexedStack(
+                    index: _selectedIndex,
+                    children: _widgetOptions,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => GamesScreen()),
+                    );
+                  },
+                  child: Text('Voir les jeux'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => UserList()),
+                    );
+                  },
+                  child: Text('Voir les utilisateurs'),
+                ),
+              ],
             ),
             bottomNavigationBar: CustomBottomNavigation(
               isLoggedIn: isLoggedIn,

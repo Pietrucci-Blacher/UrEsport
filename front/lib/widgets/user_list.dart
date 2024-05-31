@@ -1,66 +1,82 @@
-// lib/widgets/user_list.dart
-
 import 'package:flutter/material.dart';
 import '../services/user_service.dart';
 import '../models/user.dart';
 import 'invite_button.dart';
 import 'join_button.dart';
-import 'games_screen.dart';
+import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
-class UserList extends StatelessWidget {
-  final String tournamentId;
+class UserList extends StatefulWidget {
+  const UserList({Key? key}) : super(key: key);
 
-  const UserList({super.key, required this.tournamentId});
+  @override
+  _UserListState createState() => _UserListState();
+}
+
+class _UserListState extends State<UserList> {
+  final PagingController<int, User> _pagingController = PagingController(firstPageKey: 0);
+
+  @override
+  void initState() {
+    super.initState();
+    _pagingController.addPageRequestListener((pageKey) {
+      _fetchPage(pageKey);
+    });
+  }
+
+  @override
+  void dispose() {
+    _pagingController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _fetchPage(int pageKey) async {
+    try {
+      final int pageSize = 10; // Nombre d'utilisateurs par page
+      final List<User> newItems = await UserService.fetchUsers(page: pageKey + 1, limit: pageSize);
+
+      if (newItems.isEmpty) {
+        _pagingController.appendLastPage([]);
+      } else {
+        final nextPageKey = pageKey + 1;
+        _pagingController.appendPage(newItems, nextPageKey);
+      }
+    } catch (error) {
+      _pagingController.error = error;
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<User>>(
-      future: UserService.fetchUsers(),
-      builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting) {
-          return const Center(child: CircularProgressIndicator());
-        } else if (snapshot.hasError) {
-          return const Center(child: Text('Failed to load users'));
-        } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No users found'));
-        } else {
-          List<User> users = snapshot.data!;
-          return ListView.builder(
-            itemCount: users.length,
-            itemBuilder: (context, index) {
-              String username = users[index].username;
-              return Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('User List'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: PagedListView<int, User>(
+        pagingController: _pagingController,
+        builderDelegate: PagedChildBuilderDelegate<User>(
+          itemBuilder: (context, user, index) {
+            return ListTile(
+              title: Text(user.username),
+              subtitle: Row(
                 children: [
-                  Text(username),
-                  Row(
-                    children: [
-                      InviteButton(
-                        username: username,
-                        tournamentId: tournamentId,
-                      ),
-                      JoinButton(
-                        username: username,
-                        tournamentId: tournamentId,
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => GamesScreen()),
-                          );
-                        },
-                        child: const Text('Voir les jeux'),
-                      ),
-                    ],
+                  InviteButton(
+                    username: user.username,
+                  ),
+                  JoinButton(
+                    username: user.username,
                   ),
                 ],
-              );
-            },
-          );
-        }
-      },
+              ),
+            );
+          },
+        ),
+      ),
     );
   }
 }
