@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:uresport/models/game.dart';
+import 'package:uresport/core/models/game.dart';
 
 import 'game_delete.dart';
 import 'game_modify.dart';

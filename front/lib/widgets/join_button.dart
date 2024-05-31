@@ -11,7 +11,6 @@ class JoinButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        // Ajoutez ici la logique pour rejoindre le tournoi
         bool joinSuccess = true; // Remplacez cela par votre logique réelle
         showDialog(
           context: context,
@@ -24,7 +23,7 @@ class JoinButton extends StatelessWidget {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Fermer'),
+                  child: const Text('Fermer'),
                 ),
               ],
             );
