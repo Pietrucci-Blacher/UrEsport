@@ -33,6 +33,10 @@ class CustomBottomNavigation extends StatelessWidget {
           icon: const Icon(Icons.person),
           label: AppLocalizations.of(context).profileScreenTitle,
         ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.person),
+          label: 'QRCode',
+        ),
       ],
       currentIndex: selectedIndex,
       selectedItemColor: Colors.blue[800],

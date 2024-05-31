@@ -31,12 +31,27 @@ class MessageLookup extends MessageLookupByLibrary {
         "firstName": MessageLookupByLibrary.simpleMessage("First Name"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("Forgot Password?"),
+        "closeButtonTitle": MessageLookupByLibrary.simpleMessage("Close"),
+        "deleteGameButtonTitle":
+            MessageLookupByLibrary.simpleMessage("Delete Game"),
+        "gameButtonTitle": MessageLookupByLibrary.simpleMessage("All Games"),
+        "gameScreenTitle": MessageLookupByLibrary.simpleMessage("Games"),
+        "gameScreenWelcome":
+            MessageLookupByLibrary.simpleMessage("Welcome to the Game Screen!"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home"),
         "homeScreenWelcome":
             MessageLookupByLibrary.simpleMessage("Welcome to the Home Screen!"),
         "lastName": MessageLookupByLibrary.simpleMessage("Last Name"),
         "logIn": MessageLookupByLibrary.simpleMessage("Log In"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
+        "inviteButtonTitle": MessageLookupByLibrary.simpleMessage("Invite"),
+        "inviteErrorTitle": MessageLookupByLibrary.simpleMessage(
+            "An error occurred while sending the invitation"),
+        "inviteSuccessTitle": MessageLookupByLibrary.simpleMessage(
+            "You have been invited successfully"),
+        "joinButtonTitle": MessageLookupByLibrary.simpleMessage("Join"),
+        "modifyGameButtonTitle":
+            MessageLookupByLibrary.simpleMessage("Modify Game"),
         "notificationScreenTitle":
             MessageLookupByLibrary.simpleMessage("Notifications"),
         "notificationScreenWelcome": MessageLookupByLibrary.simpleMessage(
