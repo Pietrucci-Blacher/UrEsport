@@ -27,4 +27,5 @@
   "passwordResetEmailSent": "E-mail de réinitialisation du mot de passe envoyé",
   "passwordResetSuccessful": "Réinitialisation du mot de passe réussie",
   "verificationCodeSent": "Un code de vérification a été envoyé à {email}."
+  "resendCode": "Ré-envoyer le code"
 }
