@@ -27,4 +27,5 @@
   "passwordResetEmailSent": "Password reset email sent",
   "passwordResetSuccessful": "Password reset successful",
   "verificationCodeSent": "A verification code has been sent to {email}."
+  "resendCode": "Resend code"
 }

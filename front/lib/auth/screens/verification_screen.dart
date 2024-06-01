@@ -47,8 +47,8 @@ class VerificationScreenState extends State<VerificationScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context).resetPassword),
-        content: Text(AppLocalizations.of(context).sendResetEmail),
+        title: Text(AppLocalizations.of(context).resendCode),
+        content: Text(AppLocalizations.of(context).verificationCodeSent(widget.email)),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -102,7 +102,7 @@ class VerificationScreenState extends State<VerificationScreen> {
                   const SizedBox(height: 20),
                   TextButton(
                     onPressed: () => _resendCode(context),
-                    child: const Text('Resend Code'),
+                    child: Text(AppLocalizations.of(context).resendCode),
                   ),
                 ],
               ),
