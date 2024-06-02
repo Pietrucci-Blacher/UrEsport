@@ -126,7 +126,11 @@ class AuthService implements IAuthService {
       if (account != null) {
         final GoogleSignInAuthentication auth = await account.authentication;
         final String? token = auth.accessToken;
-        // Utiliser le token pour s'authentifier avec votre backend
+        if (token != null) {
+          await setToken(token);
+        } else {
+          throw Exception('Failed to retrieve Google access token');
+        }
       }
     } catch (e) {
       throw Exception('Failed to sign in with Google: $e');
@@ -139,12 +143,17 @@ class AuthService implements IAuthService {
     final String url =
         'https://appleid.apple.com/auth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=email%20name';
 
-    await FlutterWebAuth2.authenticate(
+    final result = await FlutterWebAuth2.authenticate(
       url: url,
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    // Utiliser le token pour s'authentifier avec votre backend
+    final token = parseTokenFromResult(result);
+    if (token != null) {
+      await setToken(token);
+    } else {
+      throw Exception('Failed to retrieve Apple access token');
+    }
   }
 
   Future<void> _loginWithDiscord() async {
@@ -153,12 +162,17 @@ class AuthService implements IAuthService {
     final String url =
         'https://discord.com/api/oauth2/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=identify%20email';
 
-    await FlutterWebAuth2.authenticate(
+    final result = await FlutterWebAuth2.authenticate(
       url: url,
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    // Utiliser le token pour s'authentifier avec votre backend
+    final token = parseTokenFromResult(result);
+    if (token != null) {
+      await setToken(token);
+    } else {
+      throw Exception('Failed to retrieve Discord access token');
+    }
   }
 
   Future<void> _loginWithTwitch() async {
@@ -167,12 +181,17 @@ class AuthService implements IAuthService {
     final String url =
         'https://id.twitch.tv/oauth2/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=user:read:email';
 
-    await FlutterWebAuth2.authenticate(
+    final result = await FlutterWebAuth2.authenticate(
       url: url,
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    // Utiliser le token pour s'authentifier avec votre backend
+    final token = parseTokenFromResult(result); // Implémentez parseTokenFromResult pour extraire le token
+    if (token != null) {
+      await setToken(token); // Utilisation du token
+    } else {
+      throw Exception('Failed to retrieve Twitch access token');
+    }
   }
 
   @override
@@ -258,5 +277,9 @@ class AuthService implements IAuthService {
   @override
   Future<void> setToken(String token) async {
     await CacheService.instance.setString('token', token);
+  }
+
+  String? parseTokenFromResult(String result) {
+    return null;
   }
 }
