@@ -53,7 +53,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             password: event.password,
           ),
         );
-        emit(AuthUnauthenticated());
+        emit(AuthRegistrationSuccess());
       } catch (e) {
         emit(AuthFailure(e.toString()));
       }
