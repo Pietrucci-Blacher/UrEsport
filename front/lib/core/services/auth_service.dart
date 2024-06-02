@@ -186,7 +186,8 @@ class AuthService implements IAuthService {
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    final token = parseTokenFromResult(result); // Implémentez parseTokenFromResult pour extraire le token
+    final token = parseTokenFromResult(
+        result); // Implémentez parseTokenFromResult pour extraire le token
     if (token != null) {
       await setToken(token); // Utilisation du token
     } else {
