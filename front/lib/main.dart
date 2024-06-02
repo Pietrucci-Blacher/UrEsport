@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/shared/websocket/websocket.dart';
+import 'package:uresport/services/notification_service.dart';
 import 'app.dart';
 
 void main() async {
@@ -21,9 +22,10 @@ void main() async {
       providers: [
         Provider<IAuthService>.value(value: authService),
         Provider<ITournament>.value(value: tournamentService),
+        ChangeNotifierProvider<NotificationService>(create: (_) => NotificationService()),
       ],
       child:
-          MyApp(authService: authService, tournamentService: tournamentService),
+      MyApp(authService: authService, tournamentService: tournamentService),
     ),
   );
 }

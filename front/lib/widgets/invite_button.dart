@@ -1,6 +1,7 @@
-// invite_button.dart
 import 'package:flutter/material.dart';
-import 'package:uresport/services/network_services.dart'; // Assurez-vous d'importer les services nécessaires
+import 'package:uresport/services/network_services.dart';
+import 'package:uresport/services/notification_service.dart';
+import 'package:provider/provider.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 
 class InviteButton extends StatefulWidget {
@@ -35,9 +36,7 @@ class _InviteButtonState extends State<InviteButton> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              //title: Text('Inviter ${widget.username}'),
               title: Text('Username ${widget.username}'),
-
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -68,6 +67,13 @@ class _InviteButtonState extends State<InviteButton> {
                               backgroundColor: isError ? Colors.red : Colors.green,
                             ),
                           );
+
+                          if (!isError) {
+                            Provider.of<NotificationService>(context, listen: false).addNotification(
+                              'Invitation envoyée à ${widget.username} pour le tournoi $tournamentId',
+                              'https://via.placeholder.com/150',
+                            );
+                          }
                         }
                       });
                     } else {
