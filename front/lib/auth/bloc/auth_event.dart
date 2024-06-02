@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 abstract class AuthEvent {}
 
 class AuthCheckRequested extends AuthEvent {}
@@ -40,6 +42,11 @@ class VerifyCodeSubmitted extends AuthEvent {
 class PasswordResetRequested extends AuthEvent {
   final String email;
   PasswordResetRequested(this.email);
+}
+
+class VerificationRequested extends AuthEvent {
+  final String email;
+  VerificationRequested(this.email);
 }
 
 class PasswordResetConfirmRequested extends AuthEvent {

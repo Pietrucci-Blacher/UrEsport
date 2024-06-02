@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
@@ -17,6 +16,7 @@ abstract class IAuthService {
   Future<User> getUser();
   Future<void> verifyCode(String email, String code);
   Future<void> requestPasswordReset(String email);
+  Future<void> requestVerification(String email);
   Future<void> resetPassword(String code, String newPassword);
   Future<void> setToken(String token);
 }
@@ -227,6 +227,18 @@ class AuthService implements IAuthService {
           });
     } catch (e) {
       throw Exception('Failed to request password reset: $e');
+    }
+  }
+
+  @override
+  Future<void> requestVerification(String email) async {
+    try {
+      await _dio
+          .post('${dotenv.env['API_ENDPOINT']}/auth/request-verify', data: {
+        'email': email,
+      });
+    } catch (e) {
+      throw Exception('Failed to request verification: $e');
     }
   }
 

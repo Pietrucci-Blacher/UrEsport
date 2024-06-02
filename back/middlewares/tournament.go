@@ -3,32 +3,9 @@ package middlewares
 import (
 	"challenge/models"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
-
-func GetTournament() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var tournament models.Tournament
-
-		id, err := strconv.Atoi(c.Param("id"))
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
-			c.Abort()
-			return
-		}
-
-		if err := tournament.FindOneById(id); err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not Found"})
-			c.Abort()
-			return
-		}
-
-		c.Set("tournament", tournament)
-		c.Next()
-	}
-}
 
 func IsTournamentOwner() gin.HandlerFunc {
 	return func(c *gin.Context) {

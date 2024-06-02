@@ -5,6 +5,7 @@ import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/main_screen.dart';
 
 class VerificationScreen extends StatefulWidget {
   final String email;
@@ -36,12 +37,13 @@ class VerificationScreenState extends State<VerificationScreen> {
   }
 
   void _resendCode(BuildContext context) {
-    context.read<AuthBloc>().add(PasswordResetRequested(widget.email));
+    context.read<AuthBloc>().add(VerificationRequested(widget.email));
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context).resetPassword),
-        content: Text(AppLocalizations.of(context).sendResetEmail),
+        title: Text(AppLocalizations.of(context).resendCode),
+        content: Text(
+            AppLocalizations.of(context).verificationCodeSent(widget.email)),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -62,11 +64,19 @@ class VerificationScreenState extends State<VerificationScreen> {
         appBar: AppBar(title: Text(AppLocalizations.of(context).verify)),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
+            print('state: $state');
             if (state is AuthFailure) {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(state.error)));
-            } else if (state is AuthAuthenticated) {
-              Navigator.pop(context);
+            } else if (state is AuthUnauthenticated) {
+              print('AuthUnauthenticated');
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MainScreen(),
+                ),
+              );
+              // Navigator.pop(context);
               // Redirection ou autre action après vérification réussie
             }
           },
@@ -95,7 +105,7 @@ class VerificationScreenState extends State<VerificationScreen> {
                   const SizedBox(height: 20),
                   TextButton(
                     onPressed: () => _resendCode(context),
-                    child: const Text('Resend Code'),
+                    child: Text(AppLocalizations.of(context).resendCode),
                   ),
                 ],
               ),

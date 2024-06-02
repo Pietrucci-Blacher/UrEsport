@@ -20,6 +20,7 @@ func LoadUsers() error {
 			Username:  fake.Person().FirstName(),
 			Email:     fake.Internet().Email(),
 			Roles:     []string{role},
+			Verified:  true,
 		}
 
 		if err := user.HashPassword(USER_PASSWORD); err != nil {
