@@ -42,7 +42,8 @@ class VerificationScreenState extends State<VerificationScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context).resendCode),
-        content: Text(AppLocalizations.of(context).verificationCodeSent(widget.email)),
+        content: Text(
+            AppLocalizations.of(context).verificationCodeSent(widget.email)),
         actions: <Widget>[
           TextButton(
             onPressed: () {
