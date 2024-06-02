@@ -46,6 +46,14 @@ jobs:
       - name: Install Flutter Dependencies
         run: flutter pub get
 
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+        with:
+          doppler-token: ${{ secrets.DOPPLER_TOKEN }}
+
+      - name: Retrieve secrets from Doppler
+        run: doppler secrets download --no-file --format env > .env
+
       - name: Execute Flutter Tests and Coverage
         run: flutter test --coverage
 
