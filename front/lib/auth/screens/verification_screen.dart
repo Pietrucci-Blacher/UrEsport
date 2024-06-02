@@ -11,7 +11,8 @@ class VerificationScreen extends StatefulWidget {
   final String email;
   final IAuthService authService;
 
-  const VerificationScreen({super.key, required this.email, required this.authService});
+  const VerificationScreen(
+      {super.key, required this.email, required this.authService});
 
   @override
   VerificationScreenState createState() => VerificationScreenState();
@@ -124,8 +125,7 @@ class VerificationScreenState extends State<VerificationScreen> {
         counterText: '',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      style:
-      const TextStyle(letterSpacing: 30.0),
+      style: const TextStyle(letterSpacing: 30.0),
     );
   }
 }
