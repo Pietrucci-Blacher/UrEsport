@@ -34,12 +34,6 @@ class VerificationScreenState extends State<VerificationScreen> {
     context
         .read<AuthBloc>()
         .add(VerifyCodeSubmitted(email: widget.email, code: code));
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => const MainScreen(),
-      ),
-    );
   }
 
   void _resendCode(BuildContext context) {
@@ -69,11 +63,19 @@ class VerificationScreenState extends State<VerificationScreen> {
         appBar: AppBar(title: Text(AppLocalizations.of(context).verify)),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
+            print('state: $state');
             if (state is AuthFailure) {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(state.error)));
-            } else if (state is AuthAuthenticated) {
-              Navigator.pop(context);
+            } else if (state is AuthUnauthenticated) {
+              print('AuthUnauthenticated');
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const MainScreen(),
+                ),
+              );
+              // Navigator.pop(context);
               // Redirection ou autre action après vérification réussie
             }
           },
