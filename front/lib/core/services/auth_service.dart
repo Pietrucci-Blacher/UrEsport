@@ -221,11 +221,10 @@ class AuthService implements IAuthService {
   Future<void> requestPasswordReset(String email) async {
     try {
       await _dio.post(
-        '${dotenv.env['API_ENDPOINT']}/auth/request-password-reset',
-        data: {
-          'email': email,
-        }
-      );
+          '${dotenv.env['API_ENDPOINT']}/auth/request-password-reset',
+          data: {
+            'email': email,
+          });
     } catch (e) {
       throw Exception('Failed to request password reset: $e');
     }
@@ -234,12 +233,10 @@ class AuthService implements IAuthService {
   @override
   Future<void> requestVerification(String email) async {
     try {
-      await _dio.post(
-        '${dotenv.env['API_ENDPOINT']}/auth/request-verify',
-        data: {
-          'email': email,
-        }
-      );
+      await _dio
+          .post('${dotenv.env['API_ENDPOINT']}/auth/request-verify', data: {
+        'email': email,
+      });
     } catch (e) {
       throw Exception('Failed to request verification: $e');
     }

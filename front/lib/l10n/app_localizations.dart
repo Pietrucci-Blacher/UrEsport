@@ -260,7 +260,6 @@ class AppLocalizations {
     );
   }
 
-
   String get resendCode {
     return Intl.message(
       'Resend Code',
