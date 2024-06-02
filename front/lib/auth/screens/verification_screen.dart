@@ -41,9 +41,9 @@ class VerificationScreenState extends State<VerificationScreen> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Text(AppLocalizations.of(context).resendCode),
+        title: Text(AppLocalizations.of(context)!.resendCode),
         content: Text(
-            AppLocalizations.of(context).verificationCodeSent(widget.email)),
+            AppLocalizations.of(context)!.verificationCodeSent(widget.email)),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -76,7 +76,6 @@ class VerificationScreenState extends State<VerificationScreen> {
                   builder: (context) => const MainScreen(),
                 ),
               );
-              // Navigator.pop(context);
               // Redirection ou autre action après vérification réussie
             }
           },
@@ -86,7 +85,7 @@ class VerificationScreenState extends State<VerificationScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(AppLocalizations.of(context)
+                  Text(AppLocalizations.of(context)!
                       .verificationCodeSent(widget.email)),
                   const SizedBox(height: 20),
                   _buildCodeField(context),
@@ -98,14 +97,14 @@ class VerificationScreenState extends State<VerificationScreen> {
                       }
                       return ElevatedButton(
                         onPressed: () => _submitCode(context),
-                        child: Text(AppLocalizations.of(context).verify),
+                        child: Text(AppLocalizations.of(context)!.verify),
                       );
                     },
                   ),
                   const SizedBox(height: 20),
                   TextButton(
                     onPressed: () => _resendCode(context),
-                    child: Text(AppLocalizations.of(context).resendCode),
+                    child: Text(AppLocalizations.of(context)!.resendCode),
                   ),
                 ],
               ),
@@ -134,7 +133,7 @@ class VerificationScreenState extends State<VerificationScreen> {
         }
       },
       style:
-          const TextStyle(letterSpacing: 30.0), // Crée l'effet visuel de carrés
+      const TextStyle(letterSpacing: 30.0), // Crée l'effet visuel de carrés
     );
   }
 }

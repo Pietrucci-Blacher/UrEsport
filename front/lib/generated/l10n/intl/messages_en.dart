@@ -50,6 +50,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "profileScreenTitle": MessageLookupByLibrary.simpleMessage("Profile"),
         "profileScreenWelcome": m0,
         "register": MessageLookupByLibrary.simpleMessage("Register"),
+        "resendCode": MessageLookupByLibrary.simpleMessage("Resend code"),
         "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
         "sendResetEmail":
             MessageLookupByLibrary.simpleMessage("Send Reset Email"),
