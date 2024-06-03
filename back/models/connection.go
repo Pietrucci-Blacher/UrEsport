@@ -60,6 +60,7 @@ func Migration() error {
 		&Feature{},
 		&Token{},
 		&Tournament{},
+		&VerificationCode{},
 	)
 }
 
@@ -69,12 +70,13 @@ func DropTables() error {
 		&Feature{},
 		&Token{},
 		&Tournament{},
+		&VerificationCode{},
 		"tournament_participants",
 	)
 }
 
 type Model interface {
-	FindOne(key string, value any)
+	FindOne(key string, value any) error
 	FindOneById(id int) error
 	Save() error
 	Delete() error

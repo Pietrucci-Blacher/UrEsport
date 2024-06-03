@@ -4,10 +4,8 @@ import (
 	"challenge/models"
 	_ "challenge/utils"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
-	validator "github.com/go-playground/validator/v10"
 )
 
 // GetUsers godoc
@@ -43,19 +41,7 @@ func GetFeatures(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/features/{id} [get]
 func GetFeature(c *gin.Context) {
-	var feature models.Feature
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := feature.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
-		return
-	}
-
+	feature, _ := c.MustGet("feature").(models.Feature)
 	c.JSON(http.StatusOK, feature)
 }
 
@@ -74,26 +60,16 @@ func GetFeature(c *gin.Context) {
 //	@Router			/features/ [post]
 func CreateFeature(c *gin.Context) {
 	var feature models.Feature
-	var data models.CreateFeatureDto
 
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+	body, _ := c.MustGet("body").(models.CreateFeatureDto)
 
-	if count, err := models.CountFeatureByName(data.Name); err != nil || count > 0 {
+	if count, err := models.CountFeatureByName(body.Name); err != nil || count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Feature already exists"})
 		return
 	}
 
-	validate := validator.New()
-	if err := validate.Struct(data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	feature.Name = data.Name
-	feature.Description = data.Description
+	feature.Name = body.Name
+	feature.Description = body.Description
 	feature.Active = false
 
 	if err := feature.Save(); err != nil {
@@ -120,35 +96,19 @@ func CreateFeature(c *gin.Context) {
 //	@Failure		500		{object}	utils.HttpError
 //	@Router			/features/{id} [patch]
 func UpdateFeature(c *gin.Context) {
-	var feature models.Feature
-	var data models.UpdateFeatureDto
+	body, _ := c.MustGet("body").(models.UpdateFeatureDto)
+	feature, _ := c.MustGet("feature").(models.Feature)
 
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := feature.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
-		return
-	}
-
-	if err := c.BindJSON(&data); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if count, err := models.CountFeatureByName(data.Name); err != nil || count > 0 {
+	if count, err := models.CountFeatureByName(body.Name); err != nil || count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Feature already exists"})
 		return
 	}
 
-	if data.Name != "" {
-		feature.Name = data.Name
+	if body.Name != "" {
+		feature.Name = body.Name
 	}
-	if data.Description != "" {
-		feature.Description = data.Description
+	if body.Description != "" {
+		feature.Description = body.Description
 	}
 
 	if err := feature.Save(); err != nil {
@@ -173,18 +133,7 @@ func UpdateFeature(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/features/{id} [delete]
 func DeleteFeature(c *gin.Context) {
-	var feature models.Feature
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := feature.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
-		return
-	}
+	feature, _ := c.MustGet("feature").(models.Feature)
 
 	if err := feature.Delete(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -208,18 +157,7 @@ func DeleteFeature(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/features/{id}/toggle [get]
 func ToggleFeature(c *gin.Context) {
-	var feature models.Feature
-
-	id, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := feature.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Feature not found"})
-		return
-	}
+	feature, _ := c.MustGet("feature").(models.Feature)
 
 	feature.Toggle()
 

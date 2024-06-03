@@ -1,0 +1,8 @@
+# sample regex patterns
+ignore:
+  - "docs"
+  - "fixtures" 
+  - "controllers"
+  - "models/token.go"
+  - "middlewares"
+  - "websockets"

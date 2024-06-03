@@ -1,6 +1,29 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/shared/websocket/websocket.dart';
 import 'app.dart';
 
-void main() {
-  runApp(const MyApp());
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load();
+  final dio = Dio();
+  final authService = AuthService(dio);
+  final tournamentService = TournamentService(dio);
+
+  connectWebsocket();
+
+  runApp(
+    MultiProvider(
+      providers: [
+        Provider<IAuthService>.value(value: authService),
+        Provider<ITournament>.value(value: tournamentService),
+      ],
+      child:
+          MyApp(authService: authService, tournamentService: tournamentService),
+    ),
+  );
 }

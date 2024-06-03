@@ -3,28 +3,43 @@ package middlewares
 import (
 	"challenge/models"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 )
 
-func IsLoggedIn() gin.HandlerFunc {
+func IsLoggedIn(mandatory bool) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var user models.User
-		token, err := c.Cookie("auth_token")
+		var token models.Token
+
+		accessToken, err := c.Cookie("access_token")
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Internal Server Error"})
-			c.Abort()
+			accessToken = c.GetHeader("Authorization")
+		}
+
+		if !mandatory && accessToken == "" {
+			c.Next()
 			return
 		}
 
-		var t models.Token
-		if err := t.FindOne("token", token); err != nil {
+		if accessToken == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
 
-		userClaim, err := models.ParseJWTToken(token)
+		if strings.Split(accessToken, " ")[0] == "Bearer" {
+			accessToken = strings.Split(accessToken, " ")[1]
+		}
+
+		if err := token.FindOne("access_token", accessToken); err != nil {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.Abort()
+			return
+		}
+
+		userClaim, err := models.ParseJWTToken(accessToken)
 		if err != nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
@@ -37,14 +52,21 @@ func IsLoggedIn() gin.HandlerFunc {
 			return
 		}
 
+		if !user.Verified {
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not Verified"})
+			c.Abort()
+			return
+		}
+
 		c.Set("user", user)
+		c.Set("token", token)
 		c.Next()
 	}
 }
 
 func IsNotLoggedIn() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		if _, err := c.Cookie("auth_token"); err == nil {
+		if _, err := c.Cookie("access_token"); err == nil {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Already Logged In"})
 			c.Abort()
 			return

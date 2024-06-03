@@ -1,6 +1,7 @@
 package models
 
 import (
+	"challenge/utils"
 	"testing"
 
 	faker "github.com/jaswdr/faker/v2"
@@ -120,7 +121,9 @@ func TestFindAllUsers(t *testing.T) {
 		}
 	}
 
-	result, err := FindAllUsers()
+	query := utils.NewQueryFilter(1, nbUsers, "")
+
+	result, err := FindAllUsers(query)
 	if err != nil {
 		t.Error(err)
 		return
@@ -327,19 +330,17 @@ func TestCountUsersByUsername(t *testing.T) {
 }
 
 func TestHashPassword(t *testing.T) {
-	var user User
 	var password = "password"
 
-	user = User{
+	user := User{
 		Firstname: fake.Person().FirstName(),
 		Lastname:  fake.Person().LastName(),
 		Username:  fake.Person().Name(),
 		Email:     fake.Internet().Email(),
-		Password:  password,
 		Roles:     []string{"user"},
 	}
 
-	if err := user.HashPassword(); err != nil {
+	if err := user.HashPassword(password); err != nil {
 		t.Error(err)
 		return
 	}
@@ -356,10 +357,9 @@ func TestHashPassword(t *testing.T) {
 }
 
 func TestComparePassword(t *testing.T) {
-	var user User
 	var password = "password"
 
-	user = User{
+	user := User{
 		Firstname: fake.Person().FirstName(),
 		Lastname:  fake.Person().LastName(),
 		Username:  fake.Person().Name(),

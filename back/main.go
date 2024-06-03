@@ -13,6 +13,11 @@ import (
 )
 
 func main() {
+	if len(os.Args) == 2 && os.Args[1] == "help" {
+		fmt.Printf("Usage: %s [migrate|droptable|fixtures]\n", os.Args[0])
+		os.Exit(0)
+	}
+
 	if err := godotenv.Load(); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: Failed to load .env file\n")
 		os.Exit(1)
@@ -21,11 +26,6 @@ func main() {
 	if err := models.ConnectDB(false); err != nil {
 		fmt.Fprintf(os.Stderr, "Error: Failed to connect to database\n")
 		os.Exit(1)
-	}
-
-	if len(os.Args) == 2 && os.Args[1] == "help" {
-		fmt.Printf("Usage: %s [migrate|droptable|fixtures]\n", os.Args[0])
-		os.Exit(0)
 	}
 
 	if len(os.Args) == 2 && os.Args[1] == "migrate" {
