@@ -122,7 +122,7 @@ func (t *Tournament) Save() error {
 func (t *Tournament) FindOneById(id int) error {
 	return DB.Model(&Tournament{}).
 		Preload("Participants").
-		First(t, id).Error
+		First(&t, id).Error
 }
 
 func (t *Tournament) FindOne(key string, value any) error {

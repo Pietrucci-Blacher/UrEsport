@@ -180,5 +180,35 @@ func RegisterRoutes(r *gin.Engine) {
 				TogglePrivateTournament,
 			)
 		}
+
+		teams := api.Group("/teams")
+		{
+			teams.GET("/",
+				middlewares.QueryFilter(),
+				GetTeams,
+			)
+			teams.POST("/",
+				middlewares.IsLoggedIn(true),
+				middlewares.Validate[models.CreateTeamDto](),
+				CreateTeam,
+			)
+			teams.GET("/:id",
+				middlewares.Get[*models.Team]("team"),
+				GetTeam,
+			)
+			teams.PATCH("/:id",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				middlewares.Validate[models.UpdateTeamDto](),
+				UpdateTeam,
+			)
+			teams.DELETE("/:id",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				DeleteTeam,
+			)
+		}
 	}
 }

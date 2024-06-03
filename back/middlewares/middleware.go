@@ -2,6 +2,7 @@ package middlewares
 
 import (
 	"challenge/models"
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -35,6 +36,7 @@ func Get[T models.Model](name string) gin.HandlerFunc {
 		var model T
 
 		id, err := strconv.Atoi(c.Param("id"))
+		fmt.Printf("name: %s, id: %d\n", name, id)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
 			c.Abort()
@@ -46,6 +48,8 @@ func Get[T models.Model](name string) gin.HandlerFunc {
 			c.Abort()
 			return
 		}
+
+		fmt.Printf("model: %v\n", model)
 
 		c.Set(name, model)
 		c.Next()
