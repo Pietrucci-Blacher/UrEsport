@@ -31,6 +31,9 @@ jobs:
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
 
+      - name: Opt out of Dart/Flutter analytics
+        run: flutter config --no-analytics
+
   autofix-front:
     needs: setup
     runs-on: ubuntu-latest
@@ -57,4 +60,4 @@ jobs:
         run: dart format .
 
       - name: Autofix
-        uses: autofix-ci/action@ea32e3a12414e6d3183163c3424a7d7a8631ad84
+        uses: autofix-ci/action@d3e591514b99d0fca6779455ff8338516663f7cc
