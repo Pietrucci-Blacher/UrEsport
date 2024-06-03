@@ -49,7 +49,7 @@ func GetTeams(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/teams/{id} [get]
 func GetTeam(c *gin.Context) {
-	team, _ := c.MustGet("team").(models.Team)
+	team, _ := c.MustGet("team").(*models.Team)
 	sanitized := team.Sanitize()
 	c.JSON(http.StatusOK, sanitized)
 }
@@ -99,7 +99,7 @@ func CreateTeam(c *gin.Context) {
 //	@Failure		500		{object}	utils.HttpError
 //	@Router			/teams/{id} [patch]
 func UpdateTeam(c *gin.Context) {
-	team, _ := c.MustGet("team").(models.Team)
+	team, _ := c.MustGet("team").(*models.Team)
 	body, _ := c.MustGet("body").(models.UpdateTeamDto)
 
 	if body.Name == "" {
@@ -127,7 +127,7 @@ func UpdateTeam(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/teams/{id} [delete]
 func DeleteTeam(c *gin.Context) {
-	team, _ := c.MustGet("team").(models.Team)
+	team, _ := c.MustGet("team").(*models.Team)
 
 	if err := team.Delete(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

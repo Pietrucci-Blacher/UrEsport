@@ -31,6 +31,11 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	if !user.Verified {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Account not verified"})
+		return
+	}
+
 	if !user.ComparePassword(body.Password) {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
@@ -47,8 +52,13 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	if err := token.GenerateTokens(); err != nil || token.Save() != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate or save token"})
+	if token.GenerateTokens() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate tokens"})
+		return
+	}
+
+	if token.Save() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save token"})
 		return
 	}
 

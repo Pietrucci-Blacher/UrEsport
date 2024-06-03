@@ -49,7 +49,7 @@ func GetTournaments(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/tournaments/{id} [get]
 func GetTournament(c *gin.Context) {
-	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
 	sanitized := tournament.Sanitize(true)
 
@@ -107,7 +107,7 @@ func CreateTournament(c *gin.Context) {
 //	@Failure		500			{object}	utils.HttpError
 //	@Router			/tournaments/{id} [patch]
 func UpdateTournament(c *gin.Context) {
-	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 	body, _ := c.MustGet("body").(models.UpdateTournamentDto)
 
 	if body.Name != "" {
@@ -149,7 +149,7 @@ func UpdateTournament(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/tournaments/{id} [delete]
 func DeleteTournament(c *gin.Context) {
-	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
 	if err := tournament.Delete(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -171,7 +171,7 @@ func DeleteTournament(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/tournaments/{id}/join [post]
 func JoinTournament(c *gin.Context) {
-	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
 	if tournament.Private {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "This tournament is private"})
@@ -200,7 +200,7 @@ func JoinTournament(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/tournaments/{id}/leave [delete]
 func LeaveTournament(c *gin.Context) {
-	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 	connectedUser, _ := c.MustGet("user").(models.User)
 
 	if err := tournament.RemoveParticipant(connectedUser); err != nil {
@@ -226,7 +226,7 @@ func LeaveTournament(c *gin.Context) {
 func InviteUserToTournament(c *gin.Context) {
 	var userToInvite models.User
 
-	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 	body, _ := c.MustGet("body").(models.InviteUserDto)
 
 	if err := userToInvite.FindOne("username", body.Username); err != nil {
@@ -257,7 +257,7 @@ func InviteUserToTournament(c *gin.Context) {
 func KickUserFromTournament(c *gin.Context) {
 	var userToKick models.User
 
-	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 	body, _ := c.MustGet("body").(models.InviteUserDto)
 
 	if err := userToKick.FindOne("username", body.Username); err != nil {
@@ -285,7 +285,7 @@ func KickUserFromTournament(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/tournaments/{id}/toggle-private [patch]
 func TogglePrivateTournament(c *gin.Context) {
-	tournament, _ := c.MustGet("tournament").(models.Tournament)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
 	tournament.TogglePrivate()
 
