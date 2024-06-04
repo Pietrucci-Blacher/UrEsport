@@ -7,7 +7,7 @@ RUN go mod download
 
 COPY . .
 
-RUN go get github.com/swaggo/swag/cmd/swag
+RUN go install github.com/swaggo/swag/cmd/swag@latest
 
 RUN swag init
 
