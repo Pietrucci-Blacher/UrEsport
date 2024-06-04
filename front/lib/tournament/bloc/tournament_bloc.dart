@@ -4,7 +4,7 @@ import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
 
 class TournamentBloc extends Bloc<TournamentEvent, TournamentState> {
-  final ITournament tournamentService;
+  final ITournamentService tournamentService;
 
   TournamentBloc(this.tournamentService) : super(TournamentInitial()) {
     on<LoadTournaments>((event, emit) async {

@@ -13,7 +13,7 @@ import 'package:uresport/core/services/tournament_service.dart';
 
 class MyApp extends StatelessWidget {
   final IAuthService authService;
-  final ITournament tournamentService;
+  final ITournamentService tournamentService;
 
   const MyApp(
       {required this.authService, required this.tournamentService, super.key});

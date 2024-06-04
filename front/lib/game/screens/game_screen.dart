@@ -1,56 +1,51 @@
 import 'package:flutter/material.dart';
-import 'game_detail.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/core/models/game.dart';
-import 'package:http/http.dart' as http;
-import 'dart:convert';
+import 'package:uresport/screens/game_detail.dart';
+import 'package:uresport/services/game_service.dart';
+import 'package:uresport/blocs/games_bloc.dart';
+import 'package:uresport/blocs/game_event.dart';
+import 'package:uresport/blocs/games_state.dart';
 
 class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});
 
-  Future<List<Game>> generateGames() async {
-    final response = await http.get(Uri.parse('http://10.0.2.2:8080/games'));
-
-    if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.body);
-      return jsonResponse.map((game) => Game.fromJson(game)).toList();
-    } else {
-      throw Exception('Failed to load games from API');
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Games'),
-      ),
-      body: FutureBuilder<List<Game>>(
-        future: generateGames(),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return const Center(child: Text('An error occurred!'));
-          } else if (snapshot.hasData) {
-            List<Game> games = snapshot.data!;
-            return Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Display two games per row
-                  crossAxisSpacing: 8.0,
-                  mainAxisSpacing: 8.0,
-                  childAspectRatio: 0.7, // Adjust aspect ratio for better aesthetics
+    return BlocProvider(
+      create: (context) => GamesBloc(GameService(Dio()))..add(LoadGames()),
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Games'),
+        ),
+        body: BlocBuilder<GamesBloc, GamesState>(
+          builder: (context, state) {
+            if (state is GamesLoading) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is GamesLoaded) {
+              return Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: GridView.builder(
+                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                    crossAxisCount: 2,
+                    crossAxisSpacing: 8.0,
+                    mainAxisSpacing: 8.0,
+                    childAspectRatio: 0.7,
+                  ),
+                  itemCount: state.games.length,
+                  itemBuilder: (context, index) {
+                    Game game = state.games[index];
+                    return GameCard(game: game);
+                  },
                 ),
-                itemCount: games.length,
-                itemBuilder: (context, index) {
-                  Game game = games[index];
-                  return GameCard(game: game);
-                },
-              ),
-            );
-          } else {
-            return const Center(child: CircularProgressIndicator());
-          }
-        },
+              );
+            } else if (state is GamesError) {
+              return const Center(child: Text('An error occurred!'));
+            } else {
+              return const Center(child: Text('No games available.'));
+            }
+          },
+        ),
       ),
     );
   }
@@ -64,9 +59,9 @@ class GameCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      elevation: 4, // Add shadow
+      elevation: 4,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0), // Add rounded corners
+        borderRadius: BorderRadius.circular(8.0),
       ),
       child: InkWell(
         onTap: () {

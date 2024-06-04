@@ -5,7 +5,7 @@ import '../services/user_service.dart';
 import '../models/user.dart';
 import 'invite_button.dart';
 import 'join_button.dart';
-import 'games_screen.dart';
+import 'game_screen.dart';
 
 class UserList extends StatelessWidget {
   final String tournamentId;

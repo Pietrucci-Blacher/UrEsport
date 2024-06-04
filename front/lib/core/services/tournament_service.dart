@@ -2,11 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-abstract class ITournament {
+abstract class ITournamentService {
   Future<List<Tournament>> fetchTournaments(int limit, int page);
 }
 
-class TournamentService implements ITournament {
+class TournamentService implements ITournamentService {
   final Dio _dio;
 
   TournamentService(this._dio);

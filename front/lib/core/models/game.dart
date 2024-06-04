@@ -1,26 +1,22 @@
 class Game {
   final int id;
   final String name;
-  final String imageUrl;
   final String description;
+  final String imageUrl;
 
-  const Game({
+  Game({
     required this.id,
     required this.name,
-    required this.imageUrl,
     required this.description,
+    required this.imageUrl,
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
-    if (json['id'] == null || json['name'] == null || json['imageUrl'] == null || json['description'] == null) {
-      throw ArgumentError('Invalid JSON: missing required keys');
-    }
-
     return Game(
-      id: json['id'] as int,
-      name: json['name'] as String,
-      imageUrl: json['imageUrl'] as String,
-      description: json['description'] as String,
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      imageUrl: json['imageUrl'],
     );
   }
 
@@ -28,8 +24,8 @@ class Game {
     return {
       'id': id,
       'name': name,
-      'imageUrl': imageUrl,
       'description': description,
+      'imageUrl': imageUrl,
     };
   }
 }

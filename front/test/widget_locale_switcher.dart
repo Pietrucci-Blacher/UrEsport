@@ -19,7 +19,7 @@ void main() {
       MultiProvider(
         providers: [
           Provider<IAuthService>.value(value: mockAuthService),
-          Provider<ITournament>.value(value: mockTournamentService),
+          Provider<ITournamentService>.value(value: mockTournamentService),
         ],
         child: MyApp(
             authService: mockAuthService,

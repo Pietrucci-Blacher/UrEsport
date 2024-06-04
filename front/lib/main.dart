@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/shared/websocket/websocket.dart';
 import 'app.dart';
 
@@ -20,7 +21,8 @@ void main() async {
     MultiProvider(
       providers: [
         Provider<IAuthService>.value(value: authService),
-        Provider<ITournament>.value(value: tournamentService),
+        Provider<ITournamentService>.value(value: tournamentService),
+        Provider<IGamesService>.value(value: gamesService),
       ],
       child:
           MyApp(authService: authService, tournamentService: tournamentService),
