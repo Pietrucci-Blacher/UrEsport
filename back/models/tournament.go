@@ -6,18 +6,18 @@ import (
 )
 
 type Tournament struct {
-	ID           int       `json:"id" gorm:"primaryKey"`
-	Name         string    `json:"name" gorm:"type:varchar(100)"`
-	Description  string    `json:"description" gorm:"type:varchar(255)"`
-	StartDate    time.Time `json:"start_date"`
-	EndDate      time.Time `json:"end_date"`
-	Location     string    `json:"location" gorm:"type:varchar(100)"`
-	OrganizerID  int       `json:"organizer" gorm:"foreignKey:ID"`
-	Participants []User    `json:"participants" gorm:"many2many:tournament_participants;"`
-	Image        string    `json:"image" gorm:"type:varchar(255)"`
-	Private      bool      `json:"private"`
-	CreatedAt    time.Time `json:"created_at"`
-	UpdatedAt    time.Time `json:"updated_at"`
+	ID          int       `json:"id" gorm:"primaryKey"`
+	Name        string    `json:"name" gorm:"type:varchar(100)"`
+	Description string    `json:"description" gorm:"type:varchar(255)"`
+	StartDate   time.Time `json:"start_date"`
+	EndDate     time.Time `json:"end_date"`
+	Location    string    `json:"location" gorm:"type:varchar(100)"`
+	OrganizerID int       `json:"organizer" gorm:"foreignKey:ID"`
+	Teams       []Team    `json:"teams" gorm:"many2many:tournament_teams;"`
+	Image       string    `json:"image" gorm:"type:varchar(255)"`
+	Private     bool      `json:"private" gorm:"default:false"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type CreateTournamentDto struct {
@@ -40,22 +40,18 @@ type UpdateTournamentDto struct {
 }
 
 type SanitizedTournament struct {
-	ID           int             `json:"id"`
-	Name         string          `json:"name"`
-	Description  string          `json:"description"`
-	StartDate    time.Time       `json:"start_date"`
-	EndDate      time.Time       `json:"end_date"`
-	Location     string          `json:"location"`
-	Image        string          `json:"image"`
-	Private      bool            `json:"private"`
-	OrganizerID  int             `json:"organizer"`
-	Participants []SanitizedUser `json:"participants"`
-	CreatedAt    time.Time       `json:"created_at"`
-	UpdatedAt    time.Time       `json:"updated_at"`
-}
-
-type InviteUserDto struct {
-	Username string `json:"username" validate:"required"`
+	ID          int             `json:"id"`
+	Name        string          `json:"name"`
+	Description string          `json:"description"`
+	StartDate   time.Time       `json:"start_date"`
+	EndDate     time.Time       `json:"end_date"`
+	Location    string          `json:"location"`
+	Image       string          `json:"image"`
+	Private     bool            `json:"private"`
+	OrganizerID int             `json:"organizer"`
+	Teams       []SanitizedTeam `json:"teams"`
+	CreatedAt   time.Time       `json:"created_at"`
+	UpdatedAt   time.Time       `json:"updated_at"`
 }
 
 func FindAllTournaments(query utils.QueryFilter) ([]Tournament, error) {
@@ -65,14 +61,15 @@ func FindAllTournaments(query utils.QueryFilter) ([]Tournament, error) {
 		Offset(query.GetSkip()).
 		Limit(query.GetLimit()).
 		Where(query.GetWhere()).
-		Preload("Participants").
+		Order(query.GetSort()).
+		Preload("Teams").
 		Find(&tournaments).Error
 
 	return tournaments, err
 }
 
-func (t *Tournament) Sanitize(getParticipant bool) SanitizedTournament {
-	var participants []SanitizedUser
+func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {
+	var teams []SanitizedTeam
 
 	tournament := SanitizedTournament{
 		ID:          t.ID,
@@ -88,12 +85,12 @@ func (t *Tournament) Sanitize(getParticipant bool) SanitizedTournament {
 		UpdatedAt:   t.UpdatedAt,
 	}
 
-	if getParticipant {
-		for _, participant := range t.Participants {
-			participants = append(participants, participant.Sanitize(false))
+	if getTeam {
+		for _, team := range t.Teams {
+			teams = append(teams, team.Sanitize())
 		}
 
-		tournament.Participants = participants
+		tournament.Teams = teams
 	}
 
 	return tournament
@@ -103,16 +100,16 @@ func (t *Tournament) TogglePrivate() {
 	t.Private = !t.Private
 }
 
-func (t *Tournament) AddParticipant(user User) error {
-	return DB.Model(t).Association("Participants").Append(&user)
+func (t *Tournament) AddTeam(team Team) error {
+	return DB.Model(t).Association("Teams").Append(&team)
 }
 
-func (t *Tournament) RemoveParticipant(user User) error {
-	return DB.Model(t).Association("Participants").Delete(&user)
+func (t *Tournament) RemoveTeam(team Team) error {
+	return DB.Model(t).Association("Teams").Delete(&team)
 }
 
-func (t *Tournament) RemoveAllParticipants() error {
-	return DB.Model(t).Association("Participants").Clear()
+func (t *Tournament) RemoveAllTeams() error {
+	return DB.Model(t).Association("Teams").Clear()
 }
 
 func (t *Tournament) Save() error {
@@ -121,19 +118,19 @@ func (t *Tournament) Save() error {
 
 func (t *Tournament) FindOneById(id int) error {
 	return DB.Model(&Tournament{}).
-		Preload("Participants").
+		Preload("Teams").
 		First(&t, id).Error
 }
 
 func (t *Tournament) FindOne(key string, value any) error {
 	return DB.Model(&Tournament{}).
-		Preload("Participants").
+		Preload("Teams").
 		Where(key, value).
 		First(t).Error
 }
 
 func (t *Tournament) Delete() error {
-	if err := t.RemoveAllParticipants(); err != nil {
+	if err := t.RemoveAllTeams(); err != nil {
 		return err
 	}
 	return DB.Delete(t).Error
