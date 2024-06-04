@@ -162,13 +162,12 @@ func DeleteTeam(c *gin.Context) {
 //	@Router			/teams/{id}/join [post]
 func JoinTeam(c *gin.Context) {
 	team, _ := c.MustGet("team").(*models.Team)
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
 	if team.Private {
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "This team is private"})
 		return
 	}
-
-	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
 	if team.IsMember(connectedUser) {
 		c.JSON(http.StatusConflict, gin.H{"error": "You are already a member of this team"})

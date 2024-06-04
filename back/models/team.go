@@ -41,6 +41,10 @@ type InviteUserDto struct {
 	Username string `json:"username" validate:"required"`
 }
 
+type InviteTeamDto struct {
+	Name string `json:"name" validate:"required"`
+}
+
 func FindAllTeams(query utils.QueryFilter) ([]Team, error) {
 	var teams []Team
 
@@ -115,6 +119,7 @@ func (t *Team) Sanitize() SanitizedTeam {
 		Tournaments: sanitizedTournaments,
 		Owner:       t.Owner.Sanitize(false),
 		OwnerID:     t.OwnerID,
+		Private:     t.Private,
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
 	}

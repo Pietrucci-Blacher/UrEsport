@@ -112,6 +112,15 @@ func (t *Tournament) RemoveAllTeams() error {
 	return DB.Model(t).Association("Teams").Clear()
 }
 
+func (r *Tournament) IsInTeam(team Team) bool {
+	for _, t := range r.Teams {
+		if t.ID == team.ID {
+			return true
+		}
+	}
+	return false
+}
+
 func (t *Tournament) Save() error {
 	return DB.Save(t).Error
 }

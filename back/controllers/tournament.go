@@ -159,119 +159,140 @@ func DeleteTournament(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
-//// JoinTournament godoc
-////
-////	@Summary		join yourself to a tournament
-////	@Description	join yourself to a tournament
-////	@Tags			tournament
-////	@Param			id	path	int	true	"Tournament ID"
-////	@Success		204
-////	@Failure		401	{object}	utils.HttpError
-////	@Failure		404	{object}	utils.HttpError
-////	@Failure		500	{object}	utils.HttpError
-////	@Router			/tournaments/{id}/join [post]
-//func JoinTournament(c *gin.Context) {
-//	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+// JoinTournament godoc
+//
+//	@Summary		join team you own to a tournament
+//	@Description	join team you own to a tournament
+//	@Tags			tournament
+//	@Param			tournament	path	int	true	"Tournament ID"
+//	@Param			team	path	int	true	"Team ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{tournament}/team/{team}/join [post]
+func JoinTournament(c *gin.Context) {
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+	team, _ := c.MustGet("team").(*models.Team)
 
-//	if tournament.Private {
-//		c.JSON(http.StatusUnauthorized, gin.H{"error": "This tournament is private"})
-//		return
-//	}
+	if tournament.Private {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "This tournament is private"})
+		return
+	}
 
-//	connectedUser, _ := c.MustGet("connectedUser").(models.User)
+	if tournament.IsInTeam(*team) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Team already in this tournament"})
+		return
+	}
 
-//	if err := tournament.AddParticipant(connectedUser); err != nil {
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-//		return
-//	}
+	if err := tournament.AddTeam(*team); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-//	c.JSON(http.StatusNoContent, nil)
-//}
+	c.JSON(http.StatusNoContent, nil)
+}
 
-//// LeaveTournament godoc
-////
-////	@Summary		leave yourself from a tournament
-////	@Description	leave yourself from a tournament
-////	@Tags			tournament
-////	@Param			id	path	int	true	"Tournament ID"
-////	@Success		204
-////	@Failure		401	{object}	utils.HttpError
-////	@Failure		404	{object}	utils.HttpError
-////	@Failure		500	{object}	utils.HttpError
-////	@Router			/tournaments/{id}/leave [delete]
-//func LeaveTournament(c *gin.Context) {
-//	tournament, _ := c.MustGet("tournament").(*models.Tournament)
-//	connectedUser, _ := c.MustGet("connectedUser").(models.User)
+// LeaveTournament godoc
+//
+//	@Summary		leave team you own from a tournament
+//	@Description	leave team you own from a tournament
+//	@Tags			tournament
+//	@Param			tournament	path	int	true	"Tournament ID"
+//	@Param			team	path	int	true	"Team ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{tournament}/team/{team}/leave [delete]
+func LeaveTournament(c *gin.Context) {
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+	team, _ := c.MustGet("team").(*models.Team)
 
-//	if err := tournament.RemoveParticipant(connectedUser); err != nil {
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-//		return
-//	}
+	if !tournament.IsInTeam(*team) {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Team not found in this tournament"})
+		return
+	}
 
-//	c.JSON(http.StatusNoContent, nil)
-//}
+	if err := tournament.RemoveTeam(*team); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-//// InviteUser godoc
-////
-////	@Summary		invite user to your tournament
-////	@Description	invite user to your tournament
-////	@Tags			tournament
-////	@Param			id		path	int						true	"Tournament ID"
-////	@Param			invite	body	models.InviteUserDto	true	"Invite"
-////	@Success		204
-////	@Failure		401	{object}	utils.HttpError
-////	@Failure		404	{object}	utils.HttpError
-////	@Failure		500	{object}	utils.HttpError
-////	@Router			/tournaments/{id}/invite [post]
-//func InviteUserToTournament(c *gin.Context) {
-//	var userToInvite models.User
+	c.JSON(http.StatusNoContent, nil)
+}
 
-//	tournament, _ := c.MustGet("tournament").(*models.Tournament)
-//	body, _ := c.MustGet("body").(models.InviteUserDto)
+// InviteTeamToTournament godoc
+//
+//	@Summary		invite team to your tournament
+//	@Description	invite team to your tournament
+//	@Tags			tournament
+//	@Param			id		path	int						true	"Tournament ID"
+//	@Param			team	body	models.InviteTeamDto	true	"Invite"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/invite [post]
+func InviteTeamToTournament(c *gin.Context) {
+	var team models.Team
 
-//	if err := userToInvite.FindOne("username", body.Username); err != nil {
-//		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-//		return
-//	}
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+	body, _ := c.MustGet("body").(models.InviteTeamDto)
 
-//	if err := tournament.AddParticipant(userToInvite); err != nil {
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-//		return
-//	}
+	if err := team.FindOne("name", body.Name); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Team not found"})
+		return
+	}
 
-//	c.JSON(http.StatusNoContent, nil)
-//}
+	if tournament.IsInTeam(team) {
+		c.JSON(http.StatusConflict, gin.H{"error": "Team is already in this tournament"})
+		return
+	}
 
-//// KickUserFromTournament godoc
-////
-////	@Summary		kick user from your tournament
-////	@Description	kick user from your tournament
-////	@Tags			tournament
-////	@Param			id		path	int						true	"Tournament ID"
-////	@Param			kick	body	models.InviteUserDto	true	"Kick"
-////	@Success		204
-////	@Failure		401	{object}	utils.HttpError
-////	@Failure		404	{object}	utils.HttpError
-////	@Failure		500	{object}	utils.HttpError
-////	@Router			/tournaments/{id}/kick [delete]
-//func KickUserFromTournament(c *gin.Context) {
-//	var userToKick models.User
+	if err := tournament.AddTeam(team); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
 
-//	tournament, _ := c.MustGet("tournament").(*models.Tournament)
-//	body, _ := c.MustGet("body").(models.InviteUserDto)
+	c.JSON(http.StatusNoContent, nil)
+}
 
-//	if err := userToKick.FindOne("username", body.Username); err != nil {
-//		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
-//		return
-//	}
+// KickTeamFromTournament godoc
+//
+//	@Summary		kick team from your tournament
+//	@Description	kick team from your tournament
+//	@Tags			tournament
+//	@Param			id		path	int						true	"Tournament ID"
+//	@Param			kick	body	models.InviteTeamDto	true	"Kick"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/kick [delete]
+func KickUserFromTournament(c *gin.Context) {
+	var team models.Team
 
-//	if err := tournament.RemoveParticipant(userToKick); err != nil {
-//		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-//		return
-//	}
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+	body, _ := c.MustGet("body").(models.InviteTeamDto)
 
-//	c.JSON(http.StatusNoContent, nil)
-//}
+	if err := team.FindOne("name", body.Name); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	if !tournament.IsInTeam(team) {
+		c.JSON(http.StatusConflict, gin.H{"error": "Team is not in this tournament"})
+		return
+	}
+
+	if err := tournament.RemoveTeam(team); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
 
 // TogglePrivateTournament godoc
 //
