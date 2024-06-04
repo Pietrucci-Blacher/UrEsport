@@ -52,12 +52,6 @@ func IsLoggedIn(mandatory bool) gin.HandlerFunc {
 			return
 		}
 
-		if !user.Verified {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "User not Verified"})
-			c.Abort()
-			return
-		}
-
 		c.Set("user", user)
 		c.Set("token", token)
 		c.Next()

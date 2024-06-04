@@ -7,12 +7,12 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func IsMe() gin.HandlerFunc {
+func IsTeamOwner() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user, _ := c.MustGet("findedUser").(*models.User)
-		connectedUser, _ := c.MustGet("user").(models.User)
+		user, _ := c.MustGet("user").(models.User)
+		team, _ := c.MustGet("team").(*models.Team)
 
-		if user.ID != connectedUser.ID && !connectedUser.IsRole(models.ROLE_ADMIN) {
+		if user.ID != team.OwnerID && !user.IsRole(models.ROLE_ADMIN) {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return

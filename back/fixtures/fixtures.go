@@ -22,6 +22,9 @@ var (
 
 	TOURNAMENT_NB              = 10
 	TOURNAMENT_PARTICIPANTS_NB = 5
+
+	TEAM_NB         = 10
+	TEAM_MEMBERS_NB = 5
 )
 
 func ImportFixtures() error {
@@ -34,6 +37,10 @@ func ImportFixtures() error {
 	}
 
 	if err := LoadTournaments(); err != nil {
+		return err
+	}
+
+	if err := LoadTeams(); err != nil {
 		return err
 	}
 
