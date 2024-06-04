@@ -71,7 +71,7 @@ func GetTournament(c *gin.Context) {
 func CreateTournament(c *gin.Context) {
 	var tournament models.Tournament
 
-	connectedUser, _ := c.MustGet("user").(models.User)
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	body, _ := c.MustGet("body").(models.CreateTournamentDto)
 
 	tournament.Name = body.Name
@@ -178,7 +178,7 @@ func DeleteTournament(c *gin.Context) {
 //		return
 //	}
 
-//	connectedUser, _ := c.MustGet("user").(models.User)
+//	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
 //	if err := tournament.AddParticipant(connectedUser); err != nil {
 //		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -201,7 +201,7 @@ func DeleteTournament(c *gin.Context) {
 ////	@Router			/tournaments/{id}/leave [delete]
 //func LeaveTournament(c *gin.Context) {
 //	tournament, _ := c.MustGet("tournament").(*models.Tournament)
-//	connectedUser, _ := c.MustGet("user").(models.User)
+//	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
 //	if err := tournament.RemoveParticipant(connectedUser); err != nil {
 //		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
