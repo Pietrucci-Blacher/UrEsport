@@ -8,6 +8,11 @@ RUN go mod download
 COPY . .
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o uresport-api main.go
 
+RUN go get github.com/swaggo/swag/cmd/swag
+
+RUN swag init
+
+# Utilisez une image Alpine pour le runtime
 FROM alpine:3.20
 
 RUN apk add --no-cache libc6-compat gcc g++ libc-dev musl-dev
@@ -21,5 +26,3 @@ WORKDIR /app
 EXPOSE 8080
 
 CMD ["./uresport-api"]
-
-
