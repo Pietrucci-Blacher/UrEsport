@@ -73,7 +73,7 @@ func DropTables() error {
 		&Tournament{},
 		&VerificationCode{},
 		&Team{},
-		"tournament_participants",
+		"tournament_teams",
 		"team_members",
 	)
 }

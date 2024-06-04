@@ -121,7 +121,7 @@ func TestFindAllUsers(t *testing.T) {
 		}
 	}
 
-	query := utils.NewQueryFilter(1, nbUsers, "")
+	query := utils.NewQueryFilter(1, nbUsers, "", "")
 
 	result, err := FindAllUsers(query)
 	if err != nil {
