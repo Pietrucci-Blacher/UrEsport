@@ -149,36 +149,40 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsTournamentOwner(),
 				DeleteTournament,
 			)
-			// tournaments.POST("/:tournament/join",
-			// 	middlewares.IsLoggedIn(true),
-			// 	middlewares.Get[*models.Tournament]("tournament"),
-			// 	JoinTournament,
-			// )
-			// tournaments.POST("/:tournament/invite",
-			// 	middlewares.IsLoggedIn(true),
-			// 	middlewares.Get[*models.Tournament]("tournament"),
-			// 	middlewares.IsTournamentOwner(),
-			// 	middlewares.Validate[models.InviteUserDto](),
-			// 	InviteUserToTournament,
-			// )
-			// tournaments.DELETE("/:tournament/leave",
-			// 	middlewares.IsLoggedIn(true),
-			// 	middlewares.Get[*models.Tournament]("tournament"),
-			// 	LeaveTournament,
-			// )
-			// tournaments.DELETE("/:tournament/kick",
-			// 	middlewares.IsLoggedIn(true),
-			// 	middlewares.Get[*models.Tournament]("tournament"),
-			// 	middlewares.IsTournamentOwner(),
-			// 	middlewares.Validate[models.InviteUserDto](),
-			// 	KickUserFromTournament,
-			// )
-			// tournaments.PATCH("/:tournament/toggle-private",
-			// 	middlewares.IsLoggedIn(true),
-			// 	middlewares.Get[*models.Tournament]("tournament"),
-			// 	middlewares.IsTournamentOwner(),
-			// 	TogglePrivateTournament,
-			// )
+			tournaments.POST("/:tournament/team/:team/join",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				JoinTournament,
+			)
+			tournaments.POST("/:tournament/invite",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.IsTournamentOwner(),
+				middlewares.Validate[models.InviteTeamDto](),
+				InviteTeamToTournament,
+			)
+			tournaments.DELETE("/:tournament/team/:team/leave",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				LeaveTournament,
+			)
+			tournaments.DELETE("/:tournament/kick",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.IsTournamentOwner(),
+				middlewares.Validate[models.InviteTeamDto](),
+				KickUserFromTournament,
+			)
+			tournaments.PATCH("/:tournament/toggle-private",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.IsTournamentOwner(),
+				TogglePrivateTournament,
+			)
 		}
 
 		teams := api.Group("/teams")

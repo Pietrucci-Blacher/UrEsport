@@ -13,7 +13,7 @@ func IsTeamOwner() gin.HandlerFunc {
 		team, _ := c.MustGet("team").(*models.Team)
 
 		if !team.IsOwner(user) && !user.IsRole(models.ROLE_ADMIN) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not the owner of this team"})
 			c.Abort()
 			return
 		}
