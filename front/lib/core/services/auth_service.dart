@@ -226,6 +226,17 @@ class AuthService implements IAuthService {
   }
 
   @override
+  Future<List<User>> fetchUsers() async {
+    final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.body);
+      return jsonResponse.map((user) => User.fromJson(user)).toList();
+    } else {
+      throw Exception('Failed to load users');
+    }
+  }
+
+  @override
   Future<void> verifyCode(String email, String code) async {
     try {
       await _dio.post('${dotenv.env['API_ENDPOINT']}/auth/verify', data: {

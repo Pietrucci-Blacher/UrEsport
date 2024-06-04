@@ -14,9 +14,10 @@ import 'package:uresport/core/services/tournament_service.dart';
 class MyApp extends StatelessWidget {
   final IAuthService authService;
   final ITournamentService tournamentService;
+  final IGameService gameService;
 
   const MyApp(
-      {required this.authService, required this.tournamentService, super.key});
+      {required this.authService, required this.tournamentService, required this.gameService, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +35,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => TournamentBloc(tournamentService),
+        ),
+        BlocProvider(
+          create: (context) => GameBloc(gameService),
         ),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(

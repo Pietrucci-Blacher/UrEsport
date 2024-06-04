@@ -4,10 +4,10 @@ import 'package:uresport/services/game_service.dart';
 import 'package:uresport/blocs/game_event.dart';
 import 'package:uresport/blocs/game_state.dart';
 
-class GamesBloc extends Bloc<GamesEvent, GamesState> {
+class GameBloc extends Bloc<GamesEvent, GamesState> {
   final IGameService gameService;
 
-  GamesBloc(this.gameService) : super(GamesInitial()) {
+  GameBloc(this.gameService) : super(GamesInitial()) {
     on<LoadGames>((event, emit) async {
       emit(GamesLoading());
       try {

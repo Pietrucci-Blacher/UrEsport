@@ -14,6 +14,7 @@ void main() async {
   final dio = Dio();
   final authService = AuthService(dio);
   final tournamentService = TournamentService(dio);
+  final gamesService = GamesService(dio);
 
   connectWebsocket();
 

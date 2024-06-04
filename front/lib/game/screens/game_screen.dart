@@ -13,12 +13,12 @@ class GamesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => GamesBloc(GameService(Dio()))..add(LoadGames()),
+      create: (context) => GameBloc(GameService(Dio()))..add(LoadGames()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Games'),
         ),
-        body: BlocBuilder<GamesBloc, GamesState>(
+        body: BlocBuilder<GameBloc, GamesState>(
           builder: (context, state) {
             if (state is GamesLoading) {
               return const Center(child: CircularProgressIndicator());
