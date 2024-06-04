@@ -9,7 +9,7 @@ import (
 
 func IsTeamOwner() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user, _ := c.MustGet("user").(models.User)
+		user, _ := c.MustGet("connectedUser").(models.User)
 		team, _ := c.MustGet("team").(*models.Team)
 
 		if !team.IsOwner(user) && !user.IsRole(models.ROLE_ADMIN) {

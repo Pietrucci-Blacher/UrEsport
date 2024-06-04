@@ -67,7 +67,7 @@ func GetTeam(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/teams/ [post]
 func CreateTeam(c *gin.Context) {
-	connectedUser, _ := c.MustGet("user").(models.User)
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	body, _ := c.MustGet("body").(models.CreateTeamDto)
 
 	if models.IsTeamExists(body.Name) {
@@ -168,7 +168,7 @@ func JoinTeam(c *gin.Context) {
 		return
 	}
 
-	connectedUser, _ := c.MustGet("user").(models.User)
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
 	if team.IsMember(connectedUser) {
 		c.JSON(http.StatusConflict, gin.H{"error": "You are already a member of this team"})
@@ -198,7 +198,7 @@ func JoinTeam(c *gin.Context) {
 //	@Router			/teams/{id}/leave [delete]
 func LeaveTeam(c *gin.Context) {
 	team, _ := c.MustGet("team").(*models.Team)
-	connectedUser, _ := c.MustGet("user").(models.User)
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
 	if team.IsOwner(connectedUser) {
 		c.JSON(http.StatusConflict, gin.H{"error": "You can't leave the team because you are the owner"})

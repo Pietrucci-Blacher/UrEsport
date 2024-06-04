@@ -36,7 +36,7 @@ func Get[T models.Model](name string) gin.HandlerFunc {
 		var model T
 		var err error
 
-		id, err := strconv.Atoi(c.Param("id"))
+		id, err := strconv.Atoi(c.Param(name))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
 			c.Abort()
