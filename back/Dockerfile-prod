@@ -2,6 +2,26 @@ FROM golang:1.22 AS builder
 
 WORKDIR /app
 
+ARG DB_HOST
+ARG DB_USER
+ARG DB_PASSWORD
+ARG DB_NAME
+ARG DB_PORT
+ARG COOKIE_SECURE
+ARG JWT_SECRET_KEY
+ARG BREVO_API_KEY
+ARG BREVO_SENDER
+
+ENV DB_HOST $DB_HOST
+ENV DB_USER $DB_USER
+ENV DB_PASSWORD $DB_PASSWORD
+ENV DB_NAME $DB_NAME
+ENV DB_PORT $DB_PORT
+ENV COOKIE_SECURE $COOKIE_SECURE
+ENV JWT_SECRET_KEY $JWT_SECRET_KEY
+ENV BREVO_API_KEY $BREVO_API_KEY
+ENV BREVO_SENDER $BREVO_SENDER
+
 COPY go.mod go.sum ./
 RUN go mod download
 
@@ -13,7 +33,6 @@ RUN swag init
 
 RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o uresport-api main.go
 
-# Utilisez une image Alpine pour le runtime
 FROM alpine:3.20
 
 RUN apk add --no-cache libc6-compat gcc g++ libc-dev musl-dev
