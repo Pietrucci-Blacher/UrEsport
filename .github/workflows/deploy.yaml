@@ -28,7 +28,7 @@ jobs:
 
       - name: Retrieve secrets from Doppler for Production
         env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_PROD_TOKEN }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_BACK_PROD_TOKEN }}
         run: doppler secrets download --no-file --format env > .env
 
       - name: Log in to Docker Hub for Production
