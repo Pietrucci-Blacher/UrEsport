@@ -6,21 +6,20 @@ COPY go.mod go.sum ./
 RUN go mod download
 
 COPY . .
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o myapp main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o uresport-api main.go
 
 FROM alpine:3.20
 
 RUN apk add --no-cache libc6-compat gcc g++ libc-dev musl-dev
 
-# Copy the binary from the builder stage
-COPY --from=builder /app/myapp /app/myapp
+COPY --from=builder /app/uresport-api /app/uresport-api
 
-RUN chmod +x /app/myapp
+RUN chmod +x /app/uresport-api
 
 WORKDIR /app
 
 EXPOSE 8080
 
-CMD ["./myapp"]
+CMD ["./uresport-api"]
 
 
