@@ -25,18 +25,17 @@ class TournamentService implements ITournamentService {
             .map((json) => Tournament.fromJson(json))
             .toList();
       } else {
-        throw DioError(
+        throw DioException(
+          requestOptions: response.requestOptions,
           response: response,
           error: 'Failed to load tournaments',
-          type: DioErrorType.response,
+          type: DioExceptionType.badResponse,
         );
       }
     } catch (e) {
-      if (e is DioError) {
-        print('Dio error: ${e.message}');
+      if (e is DioException) {
         rethrow;
       } else {
-        print('Unexpected error: $e');
         throw Exception('Unexpected error occurred');
       }
     }
@@ -52,18 +51,17 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 200) {
-        throw DioError(
+        throw DioException(
+          requestOptions: response.requestOptions,
           response: response,
           error: 'Failed to invite user to tournament',
-          type: DioErrorType.response,
+          type: DioExceptionType.badResponse,
         );
       }
     } catch (e) {
-      if (e is DioError) {
-        print('Dio error: ${e.message}');
+      if (e is DioException) {
         rethrow;
       } else {
-        print('Unexpected error: $e');
         throw Exception('Unexpected error occurred');
       }
     }

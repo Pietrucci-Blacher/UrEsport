@@ -8,11 +8,11 @@ abstract class GameState extends Equatable {
   List<Object> get props => [];
 }
 
-class GamesInitial extends GameState {}
+class GameInitial extends GameState {}
 
-class GamesLoading extends GameState {}
+class GameLoading extends GameState {}
 
-class GamesLoaded extends GameState {
+class GameLoaded extends GameState {
   final List<Game> games;
 
   const GamesLoaded(this.games);
@@ -21,4 +21,4 @@ class GamesLoaded extends GameState {
   List<Object> get props => [games];
 }
 
-class GamesError extends GameState {}
+class GameError extends GameState {}

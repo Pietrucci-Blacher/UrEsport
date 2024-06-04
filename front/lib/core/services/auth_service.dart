@@ -1,3 +1,4 @@
+import 'dart:convert'; // Ajoutez cette ligne
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -14,6 +15,7 @@ abstract class IAuthService {
   Future<void> logout();
   Future<void> loginWithOAuth(String provider);
   Future<User> getUser();
+  Future<List<User>> fetchUsers();
   Future<void> verifyCode(String email, String code);
   Future<void> requestPasswordReset(String email);
   Future<void> requestVerification(String email);
@@ -186,10 +188,9 @@ class AuthService implements IAuthService {
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    final token = parseTokenFromResult(
-        result); // Implémentez parseTokenFromResult pour extraire le token
+    final token = parseTokenFromResult(result);
     if (token != null) {
-      await setToken(token); // Utilisation du token
+      await setToken(token);
     } else {
       throw Exception('Failed to retrieve Twitch access token');
     }
@@ -229,7 +230,7 @@ class AuthService implements IAuthService {
   Future<List<User>> fetchUsers() async {
     final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
     if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.body);
+      List jsonResponse = json.decode(response.data.toString());
       return jsonResponse.map((user) => User.fromJson(user)).toList();
     } else {
       throw Exception('Failed to load users');

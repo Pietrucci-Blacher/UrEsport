@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/core/models/game.dart';
+import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/screens/game_detail.dart';
-import 'package:uresport/services/game_service.dart';
-import 'package:uresport/blocs/games_bloc.dart';
-import 'package:uresport/blocs/game_event.dart';
-import 'package:uresport/blocs/games_state.dart';
+import 'package:uresport/game/bloc/game_bloc.dart';
+import 'package:uresport/game/bloc/game_event.dart';
+import 'package:uresport/game/bloc/games_state.dart';
 
 class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});
@@ -18,11 +18,11 @@ class GamesScreen extends StatelessWidget {
         appBar: AppBar(
           title: const Text('Games'),
         ),
-        body: BlocBuilder<GameBloc, GamesState>(
+        body: BlocBuilder<GameBloc, GameState>(
           builder: (context, state) {
-            if (state is GamesLoading) {
+            if (state is GameLoading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state is GamesLoaded) {
+            } else if (state is GameLoaded) {
               return Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: GridView.builder(
@@ -39,7 +39,7 @@ class GamesScreen extends StatelessWidget {
                   },
                 ),
               );
-            } else if (state is GamesError) {
+            } else if (state is GameError) {
               return const Center(child: Text('An error occurred!'));
             } else {
               return const Center(child: Text('No games available.'));

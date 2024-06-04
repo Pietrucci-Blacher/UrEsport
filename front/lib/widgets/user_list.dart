@@ -1,8 +1,6 @@
-// lib/widgets/user_list.dart
-
 import 'package:flutter/material.dart';
-import '../services/user_service.dart';
-import '../models/user.dart';
+import 'package:uresport/core/services/user_service.dart';
+import 'package:uresport/core/models/user.dart';
 import 'invite_button.dart';
 import 'join_button.dart';
 import 'game_screen.dart';

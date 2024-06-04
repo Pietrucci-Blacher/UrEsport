@@ -14,7 +14,7 @@ void main() async {
   final dio = Dio();
   final authService = AuthService(dio);
   final tournamentService = TournamentService(dio);
-  final gamesService = GamesService(dio);
+  final gameService = GameService(dio);
 
   connectWebsocket();
 
@@ -23,7 +23,7 @@ void main() async {
       providers: [
         Provider<IAuthService>.value(value: authService),
         Provider<ITournamentService>.value(value: tournamentService),
-        Provider<IGamesService>.value(value: gamesService),
+        Provider<IGameService>.value(value: gameService),
       ],
       child:
           MyApp(authService: authService, tournamentService: tournamentService),

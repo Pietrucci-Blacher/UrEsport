@@ -1,20 +1,19 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:uresport/core/models/game.dart';
-import 'package:uresport/services/game_service.dart';
-import 'package:uresport/blocs/game_event.dart';
-import 'package:uresport/blocs/game_state.dart';
+import 'package:uresport/core/services/game_service.dart';
+import 'package:uresport/game/bloc/game_event.dart';
+import 'package:uresport/game/bloc/game_state.dart';
 
-class GameBloc extends Bloc<GamesEvent, GamesState> {
+class GameBloc extends Bloc<GameEvent, GameState> {
   final IGameService gameService;
 
-  GameBloc(this.gameService) : super(GamesInitial()) {
+  GameBloc(this.gameService) : super(GameInitial()) {
     on<LoadGames>((event, emit) async {
-      emit(GamesLoading());
+      emit(GameLoading());
       try {
         final games = await gameService.fetchGames();
-        emit(GamesLoaded(games));
+        emit(GameLoaded(games));
       } catch (_) {
-        emit(GamesError());
+        emit(GameError());
       }
     });
   }

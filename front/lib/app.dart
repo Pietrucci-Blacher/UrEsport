@@ -10,6 +10,8 @@ import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/game/bloc/game_bloc.dart';
+import 'package:uresport/core/services/game_service.dart';
 
 class MyApp extends StatelessWidget {
   final IAuthService authService;

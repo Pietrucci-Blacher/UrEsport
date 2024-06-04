@@ -6,12 +6,14 @@ import 'package:uresport/app.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'auth/mocks/auth_service_mock.dart';
-import 'tournaments/mocks/tournament_service_mock.dart';
+import 'tournament/mocks/tournament_service_mock.dart';
+import 'game/mocks/game_service_mock.dart';
 
 void main() {
   testWidgets('LocaleSwitcher changes locale', (WidgetTester tester) async {
     final mockAuthService = MockAuthService();
     final mockTournamentService = MockTournamentService();
+    final mockGameService = MockGameService();
 
     when(mockAuthService.isLoggedIn()).thenAnswer((_) async => false);
 
@@ -23,7 +25,8 @@ void main() {
         ],
         child: MyApp(
             authService: mockAuthService,
-            tournamentService: mockTournamentService),
+            tournamentService: mockTournamentService,
+            gameService: mockGameService),
       ),
     );
 
