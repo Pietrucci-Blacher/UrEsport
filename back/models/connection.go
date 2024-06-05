@@ -65,6 +65,7 @@ func Migration() error {
 		&Game{},
 		&Invit{},
 		&Game{},
+		&Invit{},
 	)
 }
 
