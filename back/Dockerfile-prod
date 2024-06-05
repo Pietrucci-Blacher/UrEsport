@@ -22,7 +22,9 @@ ENV JWT_SECRET_KEY=$JWT_SECRET_KEY
 ENV BREVO_API_KEY=$BREVO_API_KEY
 ENV BREVO_SENDER=$BREVO_SENDER
 
-COPY generate_env.sh .
+RUN ls
+
+COPY generate_env.sh ./
 RUN chmod +x generate_env.sh && ./generate_env.sh
 
 COPY go.mod go.sum ./
