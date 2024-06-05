@@ -64,19 +64,16 @@ class VerificationScreenState extends State<VerificationScreen> {
         appBar: AppBar(title: Text(AppLocalizations.of(context).verify)),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
-            print('state: $state');
             if (state is AuthFailure) {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(state.error)));
             } else if (state is AuthUnauthenticated) {
-              print('AuthUnauthenticated');
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
                   builder: (context) => const MainScreen(),
                 ),
               );
-              // Navigator.pop(context);
               // Redirection ou autre action après vérification réussie
             }
           },
@@ -128,13 +125,7 @@ class VerificationScreenState extends State<VerificationScreen> {
         counterText: '',
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
       ),
-      onChanged: (value) {
-        if (value.length == 5) {
-          _submitCode(context);
-        }
-      },
-      style:
-          const TextStyle(letterSpacing: 30.0), // Crée l'effet visuel de carrés
+      style: const TextStyle(letterSpacing: 30.0),
     );
   }
 }

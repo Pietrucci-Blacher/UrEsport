@@ -26,6 +26,6 @@
   "forgotPassword": "¿Olvidaste tu contraseña?",
   "passwordResetEmailSent": "Correo electrónico de restablecimiento de contraseña enviado",
   "passwordResetSuccessful": "Restablecimiento de contraseña exitoso",
-  "verificationCodeSent": "Se ha enviado un código de verificación a {email}."
+  "verificationCodeSent": "Se ha enviado un código de verificación a {email}.",
   "resendCode": "Reenviar el código"
 }
