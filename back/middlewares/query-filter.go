@@ -24,9 +24,10 @@ func QueryFilter() gin.HandlerFunc {
 			return
 		}
 
+		populate := c.DefaultQuery("populate", "")
 		where := c.DefaultQuery("where", "")
 		sort := c.DefaultQuery("sort", "")
-		query := utils.NewQueryFilter(page, limit, where, sort)
+		query := utils.NewQueryFilter(page, limit, where, sort, populate)
 
 		c.Set("query", query)
 	}
