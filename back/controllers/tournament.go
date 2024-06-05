@@ -250,8 +250,8 @@ func InviteTeamToTournament(c *gin.Context) {
 		return
 	}
 
-	if err := tournament.AddTeam(team); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if models.NewTournamentInvit(tournament.ID).Save() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while saving invitation"})
 		return
 	}
 

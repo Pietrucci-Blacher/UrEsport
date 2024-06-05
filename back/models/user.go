@@ -14,14 +14,13 @@ const (
 
 // User implements Model
 type User struct {
-	ID        int      `json:"id" gorm:"primaryKey"`
-	Firstname string   `json:"firstname" gorm:"type:varchar(100)"`
-	Lastname  string   `json:"lastname" gorm:"type:varchar(100)"`
-	Username  string   `json:"username" gorm:"type:varchar(100)"`
-	Email     string   `json:"email" gorm:"type:varchar(100)"`
-	Password  string   `json:"password"`
-	Roles     []string `json:"roles" gorm:"json"`
-	// Tournaments []Tournament `json:"tournaments" gorm:"many2many:tournament_participants;"`
+	ID        int       `json:"id" gorm:"primaryKey"`
+	Firstname string    `json:"firstname" gorm:"type:varchar(100)"`
+	Lastname  string    `json:"lastname" gorm:"type:varchar(100)"`
+	Username  string    `json:"username" gorm:"type:varchar(100)"`
+	Email     string    `json:"email" gorm:"type:varchar(100)"`
+	Password  string    `json:"password"`
+	Roles     []string  `json:"roles" gorm:"json"`
 	Teams     []Team    `json:"teams" gorm:"many2many:team_members;"`
 	Verified  bool      `json:"verified" gorm:"default:false"`
 	CreatedAt time.Time `json:"created_at"`
@@ -44,11 +43,10 @@ type UpdateUserDto struct {
 }
 
 type SanitizedUser struct {
-	ID        int    `json:"id"`
-	Username  string `json:"username"`
-	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
-	// Tournaments []SanitizedTournament `json:"tournaments"`
+	ID        int             `json:"id"`
+	Username  string          `json:"username"`
+	Firstname string          `json:"firstname"`
+	Lastname  string          `json:"lastname"`
 	Teams     []SanitizedTeam `json:"teams"`
 	CreatedAt time.Time       `json:"created_at"`
 	UpdatedAt time.Time       `json:"updated_at"`

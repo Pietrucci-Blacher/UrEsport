@@ -248,8 +248,8 @@ func InviteUserToTeam(c *gin.Context) {
 		return
 	}
 
-	if err := team.AddMember(user); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	if models.NewTeamInvit(team.ID).Save() != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while saving the invitation"})
 		return
 	}
 
