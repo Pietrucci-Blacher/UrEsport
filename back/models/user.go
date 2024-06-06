@@ -14,17 +14,17 @@ const (
 
 // User implements Model
 type User struct {
-	ID          int          `json:"id" gorm:"primaryKey"`
-	Firstname   string       `json:"firstname" gorm:"type:varchar(100)"`
-	Lastname    string       `json:"lastname" gorm:"type:varchar(100)"`
-	Username    string       `json:"username" gorm:"type:varchar(100)"`
-	Email       string       `json:"email" gorm:"type:varchar(100)"`
-	Password    string       `json:"password"`
-	Roles       []string     `json:"roles" gorm:"json"`
-	Tournaments []Tournament `json:"tournaments" gorm:"many2many:tournament_participants;"`
-	Verified    bool         `json:"verified" gorm:"default:false"`
-	CreatedAt   time.Time    `json:"created_at"`
-	UpdatedAt   time.Time    `json:"updated_at"`
+	ID        int       `json:"id" gorm:"primaryKey"`
+	Firstname string    `json:"firstname" gorm:"type:varchar(100)"`
+	Lastname  string    `json:"lastname" gorm:"type:varchar(100)"`
+	Username  string    `json:"username" gorm:"type:varchar(100)"`
+	Email     string    `json:"email" gorm:"type:varchar(100)"`
+	Password  string    `json:"password"`
+	Roles     []string  `json:"roles" gorm:"json"`
+	Teams     []Team    `json:"teams" gorm:"many2many:team_members;"`
+	Verified  bool      `json:"verified" gorm:"default:false"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
 }
 
 type CreateUserDto struct {
@@ -43,13 +43,13 @@ type UpdateUserDto struct {
 }
 
 type SanitizedUser struct {
-	ID          int                   `json:"id"`
-	Username    string                `json:"username"`
-	Firstname   string                `json:"firstname"`
-	Lastname    string                `json:"lastname"`
-	Tournaments []SanitizedTournament `json:"tournaments"`
-	CreatedAt   time.Time             `json:"created_at"`
-	UpdatedAt   time.Time             `json:"updated_at"`
+	ID        int             `json:"id"`
+	Username  string          `json:"username"`
+	Firstname string          `json:"firstname"`
+	Lastname  string          `json:"lastname"`
+	Teams     []SanitizedTeam `json:"teams"`
+	CreatedAt time.Time       `json:"created_at"`
+	UpdatedAt time.Time       `json:"updated_at"`
 }
 
 type LoginUserDto struct {
@@ -71,7 +71,8 @@ func FindAllUsers(query utils.QueryFilter) ([]User, error) {
 		Offset(query.GetSkip()).
 		Limit(query.GetLimit()).
 		Where(query.GetWhere()).
-		Preload("Tournaments").
+		Order(query.GetSort()).
+		Preload("Teams").
 		Find(&users).Error
 
 	return users, err
@@ -97,8 +98,8 @@ func CountUsersByUsername(username string) (int64, error) {
 	return count, err
 }
 
-func (u *User) Sanitize(getTournament bool) SanitizedUser {
-	var tournaments []SanitizedTournament
+func (u *User) Sanitize(getTeam bool) SanitizedUser {
+	var teams []SanitizedTeam
 
 	user := SanitizedUser{
 		ID:        u.ID,
@@ -109,12 +110,12 @@ func (u *User) Sanitize(getTournament bool) SanitizedUser {
 		UpdatedAt: u.UpdatedAt,
 	}
 
-	if getTournament {
-		for _, tournament := range u.Tournaments {
-			tournaments = append(tournaments, tournament.Sanitize(false))
+	if getTeam {
+		for _, team := range u.Teams {
+			teams = append(teams, team.Sanitize())
 		}
 
-		user.Tournaments = tournaments
+		user.Teams = teams
 	}
 
 	return user
@@ -147,14 +148,14 @@ func (u *User) ComparePassword(password string) bool {
 
 func (u *User) FindOneById(id int) error {
 	return DB.Model(&User{}).
-		Preload("Tournaments").
+		Preload("Teams").
 		First(&u, id).Error
 }
 
 func (u *User) FindOne(key string, value any) error {
 	return DB.Model(&User{}).
 		Where(key, value).
-		Preload("Tournaments").
+		Preload("Teams").
 		First(&u).Error
 }
 

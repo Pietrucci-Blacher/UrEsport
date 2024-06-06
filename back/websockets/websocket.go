@@ -23,7 +23,7 @@ func RegisterWebsocket(r *gin.Engine) {
 }
 
 func connect(client *services.Client, c *gin.Context) error {
-	user, ok := c.Get("user")
+	user, ok := c.Get("connectedUser")
 	if ok {
 		client.Set("user", user.(models.User))
 	}

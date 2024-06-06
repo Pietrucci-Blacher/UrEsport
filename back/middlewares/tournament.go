@@ -9,11 +9,11 @@ import (
 
 func IsTournamentOwner() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user, _ := c.MustGet("user").(models.User)
+		user, _ := c.MustGet("connectedUser").(models.User)
 		tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
 		if user.ID != tournament.OrganizerID && !user.IsRole(models.ROLE_ADMIN) {
-			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not the owner of this tournament"})
 			c.Abort()
 			return
 		}

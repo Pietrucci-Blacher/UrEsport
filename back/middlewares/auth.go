@@ -52,7 +52,7 @@ func IsLoggedIn(mandatory bool) gin.HandlerFunc {
 			return
 		}
 
-		c.Set("user", user)
+		c.Set("connectedUser", user)
 		c.Set("token", token)
 		c.Next()
 	}
@@ -72,7 +72,7 @@ func IsNotLoggedIn() gin.HandlerFunc {
 
 func IsAdmin() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		user, _ := c.MustGet("user").(models.User)
+		user, _ := c.MustGet("connectedUser").(models.User)
 
 		if !user.IsRole("admin") {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
