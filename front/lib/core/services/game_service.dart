@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/game.dart';
+import 'package:flutter/foundation.dart';
 
 abstract class IGameService {
   Future<List<Game>> fetchGames();
@@ -21,18 +22,22 @@ class GameService implements IGameService {
             .map((json) => Game.fromJson(json))
             .toList();
       } else {
-        throw DioError(
-          response: response,
+        throw DioException(
+          requestOptions: response.requestOptions,
           error: 'Failed to load games',
-          type: DioErrorType.response,
+          type: DioExceptionType.badResponse, // Use appropriate type
         );
       }
     } catch (e) {
-      if (e is DioError) {
-        print('Dio error: ${e.message}');
+      if (e is DioException) {
+        if (kDebugMode) {
+          print('Dio exception: ${e.message}');
+        }
         rethrow;
       } else {
-        print('Unexpected error: $e');
+        if (kDebugMode) {
+          print('Unexpected error: $e');
+        }
         throw Exception('Unexpected error occurred');
       }
     }

@@ -5,7 +5,7 @@ abstract class GameState extends Equatable {
   const GameState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class GameInitial extends GameState {}
@@ -15,10 +15,10 @@ class GameLoading extends GameState {}
 class GameLoaded extends GameState {
   final List<Game> games;
 
-  const GamesLoaded(this.games);
+  const GameLoaded(this.games);
 
   @override
-  List<Object> get props => [games];
+  List<Object?> get props => [games];
 }
 
 class GameError extends GameState {}

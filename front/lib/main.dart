@@ -26,7 +26,7 @@ void main() async {
         Provider<IGameService>.value(value: gameService),
       ],
       child:
-          MyApp(authService: authService, tournamentService: tournamentService),
+          MyApp(authService: authService, tournamentService: tournamentService, gameService: gameService),
     ),
   );
 }

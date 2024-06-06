@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:dio/dio.dart';
 import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/services/game_service.dart';
-import 'package:uresport/screens/game_detail.dart';
+import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/game/bloc/game_bloc.dart';
 import 'package:uresport/game/bloc/game_event.dart';
-import 'package:uresport/game/bloc/games_state.dart';
+import 'package:uresport/game/bloc/game_state.dart';
 
 class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});

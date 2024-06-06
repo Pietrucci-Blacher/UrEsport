@@ -1,11 +1,11 @@
-import 'dart:convert'; // Ajoutez cette ligne
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:uresport/core/models/login_request.dart';
 import 'package:uresport/core/models/register_request.dart';
-import 'package:uresport/auth/bloc/auth_state.dart';
+import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/cache_service.dart';
 
 abstract class IAuthService {
@@ -211,12 +211,7 @@ class AuthService implements IAuthService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        return User(
-          firstName: data['firstname'],
-          lastName: data['lastname'],
-          username: data['username'],
-          email: data['email'],
-        );
+        return User.fromJson(data);
       } else {
         throw Exception('Failed to load user data');
       }
