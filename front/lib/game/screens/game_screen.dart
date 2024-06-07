@@ -7,6 +7,7 @@ import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/game/bloc/game_bloc.dart';
 import 'package:uresport/game/bloc/game_event.dart';
 import 'package:uresport/game/bloc/game_state.dart';
+import 'package:uresport/shared/utils/filter_button.dart';
 
 class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});
@@ -47,6 +48,8 @@ class GamesScreen extends StatelessWidget {
             }
           },
         ),
+        floatingActionButton: const FilterButton(),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uresport/core/models/game.dart';
+import 'package:uresport/shared/utils/filter_button.dart';
 
 class GameDetailPage extends StatelessWidget {
   final Game game;
@@ -15,44 +16,86 @@ class GameDetailPage extends StatelessWidget {
       appBar: AppBar(
         title: Text(game.name),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Center(
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(16.0),
-                child: Image.network(
-                  game.imageUrl,
-                  height: 200,
-                  fit: BoxFit.cover,
-                ),
-              ),
+      body: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          GestureDetector(
+            onTap: () {
+              showDialog(
+                context: context,
+                builder: (context) {
+                  return AlertDialog(
+                    title: Text(game.name),
+                    content: Text(game.description),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Close'),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            child: Image.network(game.imageUrl, fit: BoxFit.cover),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Tournaments',
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
-            const SizedBox(height: 16.0),
-            Text(
-              game.name,
-              style: const TextStyle(
-                fontSize: 24.0,
-                fontWeight: FontWeight.bold,
-              ),
+          ),
+          Expanded(
+            child: ListView.builder(
+              itemCount: game.tournaments.length,
+              itemBuilder: (context, index) {
+                final tournament = game.tournaments[index];
+                return ListTile(
+                  title: Text(tournament.name),
+                  subtitle: Text(tournament.description),
+                );
+              },
             ),
-            const SizedBox(height: 16.0),
-            Text(
-              game.description,
-              style: const TextStyle(fontSize: 16.0),
+          ),
+          Center(
+            child: ElevatedButton.icon(
+              icon: const Icon(Icons.favorite_border),
+              label: const Text('Follow'),
+              onPressed: () {
+                showDialog(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text('Follow Game'),
+                      content: const Text('Do you want to follow this game?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            // Implement follow logic here
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Follow'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
             ),
-            Text('ID du jeu: ${game.id}'),
-            const SizedBox(height: 16.0),
-            ElevatedButton(
-              child: const Text('Modifier le jeu'),
-              onPressed: () =>
-                  Navigator.pushNamed(context, '/games/${game.id}/edit'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
+      floatingActionButton: const FilterButton(),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }
