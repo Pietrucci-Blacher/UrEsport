@@ -24,8 +24,7 @@ void main() async {
         Provider<ITournament>.value(value: tournamentService),
         ChangeNotifierProvider<NotificationService>(create: (_) => NotificationService()),
       ],
-      child:
-      MyApp(authService: authService, tournamentService: tournamentService),
+      child: MyApp(authService: authService, tournamentService: tournamentService),
     ),
   );
 }
