@@ -41,7 +41,7 @@ func GetGames(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/games/{id} [get]
 func GetGame(c *gin.Context) {
-    game, _ := c.MustGet("game").(*models.Game)
+	game, _ := c.MustGet("game").(*models.Game)
 	c.JSON(http.StatusOK, game)
 }
 
@@ -59,7 +59,7 @@ func GetGame(c *gin.Context) {
 //	@Router			/games/ [post]
 func CreateGame(c *gin.Context) {
 	var game models.Game
-    body, _ := c.MustGet("body").(models.CreateGameDto)
+	body, _ := c.MustGet("body").(models.CreateGameDto)
 
 	if count, err := models.CountGameByName(body.Name); err != nil || count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Game already exists"})
@@ -95,7 +95,7 @@ func CreateGame(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/games/{id} [put]
 func UpdateGame(c *gin.Context) {
-    body, _ := c.MustGet("body").(models.UpdateGameDto)
+	body, _ := c.MustGet("body").(models.UpdateGameDto)
 	game, _ := c.MustGet("game").(*models.Game)
 
 	if body.Name != "" {
