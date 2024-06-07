@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:uresport/services/friends_services.dart'; // Assurez-vous que le chemin est correct
+import 'package:uresport/models/friend.dart'; // Assurez-vous que le chemin est correct
 import '../../widgets/friend_list_tile.dart';
+import 'friends_add.dart';
+import 'friends_details.dart';
 
 class FriendsTab extends StatefulWidget {
   const FriendsTab({Key? key}) : super(key: key);
@@ -8,119 +12,181 @@ class FriendsTab extends StatefulWidget {
   _FriendsTabState createState() => _FriendsTabState();
 }
 
-class _FriendsTabState extends State<FriendsTab> {
-  List<Map<String, String>> friends = [
-    {'name': 'Alice', 'favorite': 'true'},
-    {'name': 'Bob', 'favorite': 'false'},
-    {'name': 'Charlie', 'favorite': 'false'},
-    {'name': 'David', 'favorite': 'true'},
-    {'name': 'Eve', 'favorite': 'false'},
-    {'name': 'Zack', 'favorite': 'true'},
-    // Add more friends here
-  ];
-
+class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMixin<FriendsTab> {
+  Future<List<Friend>>? futureFriends;
+  List<Friend> friends = [];
   bool isSorted = false;
 
-  void toggleFavorite(String name) {
+  @override
+  void initState() {
+    super.initState();
+    loadFriends();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    loadFriends();  // Reload friends every time the tab is visited
+  }
+
+  void loadFriends() async {
+    futureFriends = FriendService.fetchFriends();
+    friends = await futureFriends!;
+    setState(() {});
+  }
+
+  void toggleFavorite(Friend friend) {
     setState(() {
-      for (var friend in friends) {
-        if (friend['name'] == name) {
-          friend['favorite'] = (friend['favorite'] == 'true') ? 'false' : 'true';
-        }
+      friend.isFavorite = !friend.isFavorite;
+      friends = List.from(friends);
+    });
+  }
+
+  void navigateToFriendDetails(Friend friend) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => FriendsDetails(friend: friend),
+      ),
+    );
+  }
+
+  void sortFriends(List<Friend> friends) {
+    friends.sort((a, b) {
+      if (isSorted) {
+        return b.name.compareTo(a.name);
+      } else {
+        return a.name.compareTo(b.name);
       }
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, String>> favoriteFriends = friends.where((friend) => friend['favorite'] == 'true').toList();
-    List<Map<String, String>> nonFavoriteFriends = friends.where((friend) => friend['favorite'] == 'false').toList();
-
-    if (isSorted) {
-      favoriteFriends.sort((a, b) => a['name']!.compareTo(b['name']!));
-      nonFavoriteFriends.sort((a, b) => a['name']!.compareTo(b['name']!));
-    } else {
-      favoriteFriends.sort((a, b) => b['name']!.compareTo(a['name']!));
-      nonFavoriteFriends.sort((a, b) => b['name']!.compareTo(a['name']!));
-    }
-
-    Map<String, List<Map<String, String>>> groupedFriends = {};
-
-    for (var friend in nonFavoriteFriends) {
-      String firstLetter = friend['name']![0].toUpperCase();
-      if (!groupedFriends.containsKey(firstLetter)) {
-        groupedFriends[firstLetter] = [];
-      }
-      groupedFriends[firstLetter]!.add(friend);
-    }
-
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Text(
-            'Amis',
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
-        ),
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16.0),
-          child: Align(
-            alignment: Alignment.centerRight,
-            child: ElevatedButton(
-              onPressed: () {
-                setState(() {
-                  isSorted = !isSorted;
-                });
-              },
-              child: Text(isSorted ? 'Trier Z-A' : 'Trier A-Z'),
+    super.build(context); // Required by AutomaticKeepAliveClientMixin
+    return Scaffold(
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: ElevatedButton(
+                onPressed: () {
+                  setState(() {
+                    isSorted = !isSorted;
+                    sortFriends(friends);
+                  });
+                },
+                child: Text(isSorted ? 'Trier Z-A' : 'Trier A-Z'),
+              ),
             ),
           ),
-        ),
-        Expanded(
-          child: ListView(
-            children: [
-              // Favorites block
-              const Padding(
-                padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                child: Text(
-                  'Favoris',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              ...favoriteFriends.map((friend) => FriendListTile(name: friend['name']!)).toList(),
-              // Grouped friends by letter
-              ...groupedFriends.entries.expand((entry) {
-                return [
-                  Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                    child: Text(
-                      entry.key,
-                      style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                  ...entry.value.map((friend) => Dismissible(
-                    key: Key(friend['name']!),
-                    direction: DismissDirection.startToEnd,
-                    onDismissed: (direction) {
-                      setState(() {
-                        toggleFavorite(friend['name']!);
-                      });
-                    },
-                    background: Container(
-                      color: Colors.green,
-                      alignment: Alignment.centerLeft,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Icon(Icons.star, color: Colors.white),
-                    ),
-                    child: FriendListTile(name: friend['name']!),
-                  )).toList(),
-                ];
-              }).toList(),
-            ],
+          Expanded(
+            child: FutureBuilder<List<Friend>>(
+              future: futureFriends,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Failed to load friends'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No friends found'));
+                } else {
+                  friends = snapshot.data!;
+                  sortFriends(friends);
+
+                  List<Friend> favoriteFriends = friends.where((friend) => friend.isFavorite).toList();
+                  List<Friend> nonFavoriteFriends = friends.where((friend) => !friend.isFavorite).toList();
+
+                  Map<String, List<Friend>> groupedFriends = {};
+                  for (var friend in nonFavoriteFriends) {
+                    String firstLetter = friend.name[0].toUpperCase();
+                    groupedFriends.putIfAbsent(firstLetter, () => []).add(friend);
+                  }
+
+                  return ListView(
+                    children: [
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        child: Text(
+                          'Favoris',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      ...favoriteFriends.map((friend) => Dismissible(
+                        key: UniqueKey(),
+                        direction: DismissDirection.endToStart,
+                        onDismissed: (direction) {
+                          setState(() {
+                            toggleFavorite(friend);
+                          });
+                        },
+                        background: Container(
+                          color: Colors.red,
+                          alignment: Alignment.centerRight,
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: const Icon(Icons.remove_circle, color: Colors.white),
+                        ),
+                        child: InkWell(
+                          onTap: () => navigateToFriendDetails(friend),
+                          child: FriendListTile(name: friend.name),
+                        ),
+                      )),
+                      ...groupedFriends.entries.expand((entry) {
+                        return [
+                          Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                            child: Text(
+                              entry.key,
+                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          ...entry.value.map((friend) => Dismissible(
+                            key: UniqueKey(),
+                            direction: DismissDirection.startToEnd,
+                            onDismissed: (direction) {
+                              setState(() {
+                                toggleFavorite(friend);
+                              });
+                            },
+                            background: Container(
+                              color: Colors.green,
+                              alignment: Alignment.centerLeft,
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: const Icon(Icons.star, color: Colors.white),
+                            ),
+                            child: GestureDetector(
+                              onTap: () => navigateToFriendDetails(friend),
+                              child: FriendListTile(name: friend.name),
+                            ),
+                          )),
+                        ];
+                      }),
+                    ],
+                  );
+                }
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => AddFriendPage(userId: 21, currentUser: 'ilies',), // Remplacez 1 par l'ID de l'utilisateur actuel
+            ),
+          );
+          loadFriends(); // Reload friends when returning from AddFriendPage
+        },
+        child: Icon(Icons.person_add),
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
+
+  @override
+  bool get wantKeepAlive => true; // Required by AutomaticKeepAliveClientMixin
 }

@@ -13,9 +13,27 @@ class NotificationsTab extends StatelessWidget {
           itemCount: notifications.length,
           itemBuilder: (context, index) {
             final notification = notifications[index];
-            return NotificationCard(
-              imageUrl: notification['image']!,
-              message: notification['message']!,
+            return Dismissible(
+              key: UniqueKey(),
+              direction: DismissDirection.endToStart,
+              onDismissed: (direction) {
+                notificationService.removeNotification(index);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text('Notification supprimée'),
+                  ),
+                );
+              },
+              background: Container(
+                color: Colors.red,
+                alignment: Alignment.centerRight,
+                padding: EdgeInsets.symmetric(horizontal: 20),
+                child: Icon(Icons.delete, color: Colors.white),
+              ),
+              child: NotificationCard(
+                imageUrl: notification['image']!,
+                message: notification['message']!,
+              ),
             );
           },
         );

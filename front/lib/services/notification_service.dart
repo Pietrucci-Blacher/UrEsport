@@ -9,4 +9,10 @@ class NotificationService extends ChangeNotifier {
     _notifications.add({'message': message, 'image': imageUrl});
     notifyListeners();
   }
+
+  void removeNotification(int index) {
+    _notifications.removeAt(index);
+    notifyListeners();
+  }
+
 }
