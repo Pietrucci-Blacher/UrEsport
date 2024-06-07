@@ -41,7 +41,7 @@ func GetGames(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/games/{id} [get]
 func GetGame(c *gin.Context) {
-    game, _ := := c.MustGet("game").(*models.Game)
+    game, _ := c.MustGet("game").(*models.Game)
 	c.JSON(http.StatusOK, game)
 }
 

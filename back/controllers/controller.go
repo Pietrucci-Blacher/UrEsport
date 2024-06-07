@@ -253,7 +253,7 @@ func RegisterRoutes(r *gin.Engine) {
 			)
 			games.POST("/",
 				middlewares.IsLoggedIn(true),
-				middleware.IsAdmin()
+				middlewares.IsAdmin(),
 				middlewares.Validate[models.CreateGameDto](),
 				CreateGame,
 			)
@@ -263,13 +263,13 @@ func RegisterRoutes(r *gin.Engine) {
 			)
 			games.PATCH("/:game",
 				middlewares.IsLoggedIn(true),
-				middlewares.isAdmin()
+				middlewares.IsAdmin(),
 				middlewares.Validate[models.UpdateGameDto](),
 				UpdateGame,
 			)
 			games.DELETE("/:game",
 				middlewares.IsLoggedIn(true),
-				middlewares.isAdmin()
+				middlewares.IsAdmin(),
 				middlewares.Get[*models.Game]("game"),
 				DeleteGame,
 			)
