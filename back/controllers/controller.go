@@ -244,5 +244,34 @@ func RegisterRoutes(r *gin.Engine) {
 				TogglePrivateTeam,
 			)
 		}
+
+		games := api.Group("/games")
+		{
+			games.GET("/",
+			    middlewares.IsLoggedIn(false),
+				middlewares.QueryFilter(),
+				GetGames,
+			)
+			games.POST("/",
+				middlewares.IsLoggedIn(true),
+				middlewares.Validate[models.CreateGameDto](),
+				CreateGame,
+			)
+			games.GET("/:id",
+			    middlewares.IsLoggedIn(false),
+				middlewares.Get[*models.Game]("game"),
+				GetGame,
+			)
+			games.PATCH("/:id",
+				middlewares.IsLoggedIn(true),
+				middlewares.Validate[models.UpdateGameDto](),
+				UpdateGame,
+			)
+			games.DELETE("/:id",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Game]("game"),
+				DeleteGame,
+			)
+		}
 	}
 }

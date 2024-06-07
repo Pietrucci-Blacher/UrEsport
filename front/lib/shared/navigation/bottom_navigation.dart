@@ -39,8 +39,7 @@ class CustomBottomNavigation extends StatelessWidget {
       unselectedItemColor: Colors.grey[600],
       showUnselectedLabels: true,
       onTap: onTap,
-      type:
-          BottomNavigationBarType.fixed, // This ensures fixed height and layout
+      type: BottomNavigationBarType.fixed,
     );
   }
 }

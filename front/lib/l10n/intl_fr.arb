@@ -27,5 +27,15 @@
   "passwordResetEmailSent": "E-mail de réinitialisation du mot de passe envoyé",
   "passwordResetSuccessful": "Réinitialisation du mot de passe réussie",
   "verificationCodeSent": "Un code de vérification a été envoyé à {email}.",
-  "resendCode": "Ré-envoyer le code"
+  "resendCode": "Ré-envoyer le code",
+  "inviteButton": "Inviter",
+  "inviteSuccess": "Vous avez bien été invité",
+  "inviteError": "Erreur lors de l'invitation",
+  "closeButton": "Fermer",
+  "joinButton": "Rejoindre",
+  "gameButton": "Voir tout les jeux",
+  "gameScreenWelcome": "Bienvenue à l'écran des jeux !",
+  "gameScreenTitle": "Jeux",
+  "modifyGameButton": "Modifier le jeux",
+  "deleteGameButton": "Supprimer le jeux"
 }
