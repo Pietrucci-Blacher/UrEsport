@@ -32,16 +32,16 @@ func LoadTournaments() error {
 
 		fmt.Printf("Tournament %s created\n", tournament.Name)
 
-		var participants models.User
-		if err := participants.FindOneById(rand.Intn(USER_NB-1) + 1); err != nil {
+		var team models.Team
+		if err := team.FindOneById(rand.Intn(TEAM_NB-1) + 1); err != nil {
 			return err
 		}
 
-		if err := tournament.AddParticipant(participants); err != nil {
+		if err := tournament.AddTeam(team); err != nil {
 			return err
 		}
 
-		fmt.Printf("Participant %s added to tournament %s\n", participants.Username, tournament.Name)
+		fmt.Printf("Participant %s added to tournament %s\n", team.Name, tournament.Name)
 	}
 
 	return nil
