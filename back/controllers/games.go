@@ -15,7 +15,7 @@ import (
 //	@Tags			game
 //	@Accept			json
 //	@Produce		json
-//	@Success		200	{object}	[]models.SanitizedGame
+//	@Success		200	{object}	[]models.Game
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/games/ [get]
 func GetGames(c *gin.Context) {
