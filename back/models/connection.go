@@ -62,6 +62,7 @@ func Migration() error {
 		&Tournament{},
 		&VerificationCode{},
 		&Game{},
+		&Friend{},
 	)
 }
 
@@ -73,8 +74,8 @@ func DropTables() error {
 		&Tournament{},
 		&VerificationCode{},
 		&Game{},
+		&Friend{},
 		"tournament_participants",
-
 	)
 }
 

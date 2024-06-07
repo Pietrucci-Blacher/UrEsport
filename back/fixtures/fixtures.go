@@ -43,5 +43,9 @@ func ImportFixtures() error {
 		return err
 	}
 
+	if err := LoadFriends(); err != nil {
+		return err
+	}
+
 	return nil
 }
