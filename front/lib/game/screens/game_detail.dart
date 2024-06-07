@@ -47,12 +47,12 @@ class GameDetailPage extends StatelessWidget {
             const SizedBox(height: 16.0),
             ElevatedButton(
               child: const Text('Modifier le jeu'),
-              onPressed: () => Navigator.pushNamed(context, '/games/${game.id}/edit'),
+              onPressed: () =>
+                  Navigator.pushNamed(context, '/games/${game.id}/edit'),
             ),
           ],
         ),
       ),
     );
   }
-
 }
