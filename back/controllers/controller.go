@@ -248,7 +248,7 @@ func RegisterRoutes(r *gin.Engine) {
 		games := api.Group("/games")
 		{
 			games.GET("/",
-			    middlewares.IsLoggedIn(false),
+				middlewares.IsLoggedIn(false),
 				middlewares.QueryFilter(),
 				GetGames,
 			)
@@ -258,7 +258,7 @@ func RegisterRoutes(r *gin.Engine) {
 				CreateGame,
 			)
 			games.GET("/:id",
-			    middlewares.IsLoggedIn(false),
+				middlewares.IsLoggedIn(false),
 				middlewares.Get[*models.Game]("game"),
 				GetGame,
 			)
