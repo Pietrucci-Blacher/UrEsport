@@ -5,10 +5,7 @@ import 'package:uresport/shared/utils/filter_button.dart';
 class GameDetailPage extends StatelessWidget {
   final Game game;
 
-  const GameDetailPage({
-    super.key,
-    required this.game,
-  });
+  const GameDetailPage({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {

@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
               }
               return const Locale('en', '');
             },
-            home: const SplashScreenHandler(),
+            home: SplashScreenHandler(authService: authService),
             initialRoute: '/',
             onGenerateRoute: RouteGenerator.generateRoute,
             builder: (context, child) {

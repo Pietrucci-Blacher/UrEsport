@@ -39,6 +39,21 @@ class Tournament {
           .toList(),
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'startDate': startDate.toIso8601String(),
+      'endDate': endDate.toIso8601String(),
+      'location': location,
+      'image': image,
+      'private': isPrivate,
+      'organizer': organizer,
+      'participants': participants.map((participant) => participant.toJson()).toList(),
+    };
+  }
 }
 
 class Participant {
@@ -61,5 +76,14 @@ class Participant {
       firstname: json['firstname'],
       lastname: json['lastname'],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'username': username,
+      'firstname': firstname,
+      'lastname': lastname,
+    };
   }
 }

@@ -168,7 +168,7 @@ class ProfileScreen extends StatelessWidget {
                   .profileScreenWelcome(state.user.username),
               style: const TextStyle(fontSize: 24)),
           const SizedBox(height: 20),
-          _buildProfileAvatar(context, state.user.avatarUrl),
+          _buildProfileAvatar(context, state.user.profileImageUrl),
           const SizedBox(height: 20),
           ElevatedButton(
             onPressed: () => context.read<AuthBloc>().add(AuthLoggedOut()),

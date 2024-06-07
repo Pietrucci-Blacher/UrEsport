@@ -71,7 +71,7 @@ class VerificationScreenState extends State<VerificationScreen> {
               Navigator.pushReplacement(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const MainScreen(),
+                  builder: (context) => MainScreen(authService: widget.authService),
                 ),
               );
               // Redirection ou autre action après vérification réussie

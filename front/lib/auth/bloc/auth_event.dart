@@ -1,4 +1,11 @@
-abstract class AuthEvent {}
+import 'package:equatable/equatable.dart';
+
+abstract class AuthEvent extends Equatable {
+  const AuthEvent();
+
+  @override
+  List<Object> get props => [];
+}
 
 class AuthCheckRequested extends AuthEvent {}
 
@@ -8,7 +15,10 @@ class AuthLoggedOut extends AuthEvent {}
 
 class OAuthLoginRequested extends AuthEvent {
   final String provider;
-  OAuthLoginRequested(this.provider);
+  const OAuthLoginRequested(this.provider);
+
+  @override
+  List<Object> get props => [provider];
 }
 
 class RegisterSubmitted extends AuthEvent {
@@ -18,48 +28,66 @@ class RegisterSubmitted extends AuthEvent {
   final String email;
   final String password;
 
-  RegisterSubmitted({
+  const RegisterSubmitted({
     required this.firstName,
     required this.lastName,
     required this.username,
     required this.email,
     required this.password,
   });
+
+  @override
+  List<Object> get props => [firstName, lastName, username, email, password];
 }
 
 class VerifyCodeSubmitted extends AuthEvent {
   final String email;
   final String code;
 
-  VerifyCodeSubmitted({
+  const VerifyCodeSubmitted({
     required this.email,
     required this.code,
   });
+
+  @override
+  List<Object> get props => [email, code];
 }
 
 class PasswordResetRequested extends AuthEvent {
   final String email;
-  PasswordResetRequested(this.email);
+  const PasswordResetRequested(this.email);
+
+  @override
+  List<Object> get props => [email];
 }
 
 class VerificationRequested extends AuthEvent {
   final String email;
-  VerificationRequested(this.email);
+  const VerificationRequested(this.email);
+
+  @override
+  List<Object> get props => [email];
 }
 
 class PasswordResetConfirmRequested extends AuthEvent {
   final String code;
   final String newPassword;
 
-  PasswordResetConfirmRequested(this.code, this.newPassword);
+  const PasswordResetConfirmRequested(this.code, this.newPassword);
+
+  @override
+  List<Object> get props => [code, newPassword];
 }
 
 class LoginButtonPressed extends AuthEvent {
   final String email;
   final String password;
 
-  LoginButtonPressed({
+  const LoginButtonPressed({
     required this.email,
     required this.password,
   });
+
+  @override
+  List<Object> get props => [email, password];
 }
