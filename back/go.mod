@@ -1,6 +1,6 @@
 module challenge
 
-go 1.22.3
+go 1.22.4
 
 require (
 	github.com/coreos/go-oidc/v3 v3.10.0
