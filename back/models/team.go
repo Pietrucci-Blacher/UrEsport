@@ -61,6 +61,19 @@ func FindAllTeams(query utils.QueryFilter) ([]Team, error) {
 	return teams, err
 }
 
+func FindTeamsByUserID(userID int) ([]Team, error) {
+	var teams []Team
+
+	err := DB.Model(&Team{}).
+		Where("owner_id", userID).
+		Preload("Members").
+		Preload("Owner").
+		Preload("Tournaments").
+		Find(&teams).Error
+
+	return teams, err
+}
+
 func IsTeamExists(name string) bool {
 	var team Team
 	DB.Where("name", name).First(&team)

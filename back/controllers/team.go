@@ -234,6 +234,7 @@ func LeaveTeam(c *gin.Context) {
 //	@Router			/teams/{id}/invite [post]
 func InviteUserToTeam(c *gin.Context) {
 	var user models.User
+	var invit models.Invit
 
 	team, _ := c.MustGet("team").(*models.Team)
 	body, _ := c.MustGet("body").(models.InviteUserDto)
@@ -248,7 +249,12 @@ func InviteUserToTeam(c *gin.Context) {
 		return
 	}
 
-	if models.NewTeamInvit(team.ID).Save() != nil {
+	if err := invit.FindOneByTeamAndUser(team.ID, user.ID); err == nil {
+		c.JSON(http.StatusConflict, gin.H{"error": "User already invited"})
+		return
+	}
+
+	if models.NewTeamInvit(team.ID, user.ID).Save() != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while saving the invitation"})
 		return
 	}

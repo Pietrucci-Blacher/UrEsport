@@ -244,5 +244,27 @@ func RegisterRoutes(r *gin.Engine) {
 				TogglePrivateTeam,
 			)
 		}
+
+		invit := api.Group("/invit")
+		{
+			invit.GET("/tournaments/:inout",
+				middlewares.IsLoggedIn(true),
+				GetInvitTournament,
+			)
+			invit.GET("/teams/:inout",
+				middlewares.IsLoggedIn(true),
+				GetInvitTeam,
+			)
+			invit.GET("/:invit/accept",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Invit]("invit"),
+				AcceptInvit,
+			)
+			invit.GET("/:invit/reject",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Invit]("invit"),
+				RejectInvit,
+			)
+		}
 	}
 }
