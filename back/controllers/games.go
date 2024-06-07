@@ -36,23 +36,12 @@ func GetGames(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int	true	"Game ID"
-//	@Success		200	{object}	models.SanitizedGame
+//	@Success		200	{object}	models.Game
 //	@Failure		404	{object}	utils.HttpError
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/games/{id} [get]
 func GetGame(c *gin.Context) {
-	gameID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid game ID"})
-		return
-	}
-
-	var game models.Game
-	if err := game.FindOneById(gameID); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Game not found"})
-		return
-	}
-
+    game, _ := := c.MustGet("game").(*models.Game)
 	c.JSON(http.StatusOK, game)
 }
 
@@ -64,20 +53,15 @@ func GetGame(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			game	body		models.CreateGameDto	true	"Game object"
-//	@Success		201		{object}	models.SanitizedGame
+//	@Success		201		{object}	models.Game
 //	@Failure		400		{object}	utils.HttpError
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/games/ [post]
 func CreateGame(c *gin.Context) {
 	var game models.Game
-	var body models.CreateGameDto
+    body, _ := c.MustGet("body").(models.CreateGameDto)
 
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if count, err := models.CountFeatureByName(body.Name); err != nil || count > 0 {
+	if count, err := models.CountGameByName(body.Name); err != nil || count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Game already exists"})
 		return
 	}
@@ -105,29 +89,14 @@ func CreateGame(c *gin.Context) {
 //	@Produce		json
 //	@Param			id		path		int						true	"Game ID"
 //	@Param			game	body		models.UpdateGameDto	true	"Game object"
-//	@Success		200		{object}	models.SanitizedGame
+//	@Success		200		{object}	models.Game
 //	@Failure		400		{object}	utils.HttpError
 //	@Failure		404	{object}	utils.HttpError
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/games/{id} [put]
 func UpdateGame(c *gin.Context) {
-	gameID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid game ID"})
-		return
-	}
-
-	var game models.Game
-	if err := game.FindOneById(gameID); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Game not found"})
-		return
-	}
-
-	var body models.UpdateGameDto
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
+    body, _ := c.MustGet("body").(models.UpdateGameDto)
+	game, _ := c.MustGet("game").(*models.Game)
 
 	if body.Name != "" {
 		game.Name = body.Name
@@ -157,7 +126,7 @@ func UpdateGame(c *gin.Context) {
 //	@Accept			json
 //	@Produce		json
 //	@Param			id	path		int	true	"Game ID"
-//	@Success		204	{object}	models.SanitizedGame
+//	@Success		204
 //	@Failure		404	{object}	utils.HttpError
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/games/{id} [delete]

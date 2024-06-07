@@ -25,17 +25,20 @@ type UpdateGameDto struct {
 	Image       string `json:"image"`
 }
 
-type SanitizedGame struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Image       string `json:"image"`
-}
-
 func FindAllGames() ([]Game, error) {
 	var games []Game
 	err := DB.Find(&games).Error
 	return games, err
+}
+
+func CountGameByName(name string) (int64, error) {
+	var count int64
+
+	err := DB.Model(&Game{}).
+		Where("name = ?", name).
+		Count(&count).Error
+
+	return count, err
 }
 
 func (g *Game) Save() error {
