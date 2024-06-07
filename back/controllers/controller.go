@@ -298,5 +298,14 @@ func RegisterRoutes(r *gin.Engine) {
 			games.POST("/:id/tournaments/:tournament_id", AddGameTournament)
 			games.DELETE("/:id/tournaments/:tournament_id", RemoveGameTournament)
 		}
+
+		friends := api.Group("/users/:id/friends")
+		{
+			friends.GET("/", GetFriends)
+			friends.GET("/:friend_id", GetFriend)
+			friends.POST("/:friend_id", AddFriend)
+			friends.PATCH("/:friend_id", UpdateFriend)
+			friends.DELETE("/:friend_id", DeleteFriend)
+		}
 	}
 }

@@ -174,3 +174,9 @@ func (u *User) Save() error {
 func ClearUsers() error {
 	return DB.Exec("DELETE FROM users").Error
 }
+
+func UserExists(id int) bool {
+	var count int64
+	DB.Model(&User{}).Where("id = ?", id).Count(&count)
+	return count > 0
+}
