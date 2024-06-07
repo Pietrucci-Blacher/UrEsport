@@ -29,7 +29,9 @@ class JoinButton extends StatelessWidget {
         return AlertDialog(
           title: Text(joinSuccess ? 'Succès' : 'Échec'),
           content: Text(
-            joinSuccess ? 'Vous avez bien rejoint le tournoi !' : 'Impossible de rejoindre le tournoi.',
+            joinSuccess
+                ? 'Vous avez bien rejoint le tournoi !'
+                : 'Impossible de rejoindre le tournoi.',
           ),
           actions: [
             TextButton(

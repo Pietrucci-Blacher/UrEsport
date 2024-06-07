@@ -10,8 +10,8 @@ class TournamentBloc extends Bloc<TournamentEvent, TournamentState> {
     on<LoadTournaments>((event, emit) async {
       emit(TournamentLoadInProgress());
       try {
-        final tournaments =
-            await tournamentService.fetchTournaments(limit: event.limit, page: event.page);
+        final tournaments = await tournamentService.fetchTournaments(
+            limit: event.limit, page: event.page);
         emit(TournamentLoadSuccess(tournaments: tournaments));
       } catch (_) {
         emit(TournamentLoadFailure());

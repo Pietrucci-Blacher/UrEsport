@@ -38,7 +38,9 @@ class InviteButton extends StatelessWidget {
     } else {
       scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: Text(success ? 'Invitation envoyée avec succès' : 'Erreur lors de l\'envoi de l\'invitation'),
+          content: Text(success
+              ? 'Invitation envoyée avec succès'
+              : 'Erreur lors de l\'envoi de l\'invitation'),
         ),
       );
     }
