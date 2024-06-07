@@ -54,34 +54,6 @@ func (g *Game) Delete() error {
 	return DB.Delete(g).Error
 }
 
-func (g *Game) GetTournaments() ([]Tournament, error) {
-	var tournaments []Tournament
-	err := DB.Model(&g).Association("Tournaments").Find(&tournaments)
-	return tournaments, err
-}
-
-func (g *Game) AddTournament(tournament Tournament) error {
-	return DB.Model(&g).Association("Tournaments").Append(&tournament)
-}
-
-func (g *Game) RemoveTournament(tournament Tournament) error {
-	return DB.Model(&g).Association("Tournaments").Delete(&tournament)
-}
-
-func (g *Game) GetParticipants() ([]User, error) {
-	var participants []User
-	err := DB.Model(&g).Association("Participants").Find(&participants)
-	return participants, err
-}
-
-func (g *Game) AddParticipant(user User) error {
-	return DB.Model(&g).Association("Participants").Append(&user)
-}
-
-func (g *Game) RemoveParticipant(user User) error {
-	return DB.Model(&g).Association("Participants").Delete(&user)
-}
-
 func ClearGames() error {
 	return DB.Exec("DELETE FROM games").Error
 }

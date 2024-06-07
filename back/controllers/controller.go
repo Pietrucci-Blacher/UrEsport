@@ -247,20 +247,31 @@ func RegisterRoutes(r *gin.Engine) {
 
 		games := api.Group("/games")
 		{
-			games.GET("/", GetGames)
-			games.POST("/", CreateGame)
-			games.GET("/:id", GetGame)
+			games.GET("/",
+			    middlewares.IsLoggedIn(false),
+				middlewares.QueryFilter(),
+				GetGames,
+			)
+			games.POST("/",
+				middlewares.IsLoggedIn(true),
+				middlewares.Validate[models.CreateGameDto](),
+				CreateGame,
+			)
+			games.GET("/:id",
+			    middlewares.IsLoggedIn(false),
+				middlewares.Get[*models.Game]("game"),
+				GetGame,
+			)
 			games.PATCH("/:id",
-				middlewares.GetGame(),
+				middlewares.IsLoggedIn(true),
+				middlewares.Validate[models.UpdateGameDto](),
 				UpdateGame,
 			)
 			games.DELETE("/:id",
-				middlewares.GetGame(),
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Game]("game"),
 				DeleteGame,
 			)
-			games.GET("/:id/tournaments", GetGameTournaments)
-			games.POST("/:id/tournaments/:tournament_id", AddGameTournament)
-			games.DELETE("/:id/tournaments/:tournament_id", RemoveGameTournament)
 		}
 	}
 }
