@@ -51,7 +51,8 @@ class Tournament {
       'image': image,
       'private': isPrivate,
       'organizer': organizer,
-      'participants': participants.map((participant) => participant.toJson()).toList(),
+      'participants':
+          participants.map((participant) => participant.toJson()).toList(),
     };
   }
 }

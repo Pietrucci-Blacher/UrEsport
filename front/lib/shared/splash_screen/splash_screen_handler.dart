@@ -36,7 +36,9 @@ class SplashScreenHandlerState extends State<SplashScreenHandler> {
         transitionBuilder: (Widget child, Animation<double> animation) {
           return FadeTransition(opacity: animation, child: child);
         },
-        child: _isInitialized ? GlobalScaffold(authService: widget.authService) : const SplashScreen(),
+        child: _isInitialized
+            ? GlobalScaffold(authService: widget.authService)
+            : const SplashScreen(),
       ),
     );
   }

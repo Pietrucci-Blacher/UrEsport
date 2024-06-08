@@ -47,7 +47,8 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      create: (context) =>
+          AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthInitial) {
@@ -66,22 +67,24 @@ class MainScreenState extends State<MainScreen> {
                 leading: IconButton(
                   icon: isLoggedIn && profileImageUrl != null
                       ? CircleAvatar(
-                    backgroundImage: NetworkImage(profileImageUrl),
-                  )
+                          backgroundImage: NetworkImage(profileImageUrl),
+                        )
                       : const Icon(Icons.person),
                   onPressed: () {
                     if (isLoggedIn) {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => ProfileScreen(authService: widget.authService),
+                          builder: (context) =>
+                              ProfileScreen(authService: widget.authService),
                         ),
                       );
                     } else {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => LoginScreen(authService: widget.authService),
+                          builder: (context) =>
+                              LoginScreen(authService: widget.authService),
                         ),
                       );
                     }

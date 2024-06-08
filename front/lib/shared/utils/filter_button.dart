@@ -22,7 +22,8 @@ class FilterButton extends StatelessWidget {
 class FilterSheet extends StatefulWidget {
   const FilterSheet({super.key});
 
-  @override FilterSheetState createState() => FilterSheetState();
+  @override
+  FilterSheetState createState() => FilterSheetState();
 }
 
 class FilterSheetState extends State<FilterSheet> {
@@ -38,7 +39,8 @@ class FilterSheetState extends State<FilterSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
         children: [
-          const Text('Filter and Sort', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+          const Text('Filter and Sort',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
           const SizedBox(height: 16.0),
           TextField(
             decoration: const InputDecoration(
