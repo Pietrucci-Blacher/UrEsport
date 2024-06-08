@@ -38,25 +38,6 @@ class GameDetailPage extends StatelessWidget {
             },
             child: Image.network(game.imageUrl, fit: BoxFit.cover),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Tournaments',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: game.tournaments.length,
-              itemBuilder: (context, index) {
-                final tournament = game.tournaments[index];
-                return ListTile(
-                  title: Text(tournament.name),
-                  subtitle: Text(tournament.description),
-                );
-              },
-            ),
-          ),
           Center(
             child: ElevatedButton.icon(
               icon: const Icon(Icons.favorite_border),

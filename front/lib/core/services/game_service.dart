@@ -18,9 +18,12 @@ class GameService implements IGameService {
       final response = await _dio.get("${dotenv.env['API_ENDPOINT']}/games");
 
       if (response.statusCode == 200) {
-        return (response.data as List)
-            .map((json) => Game.fromJson(json))
-            .toList();
+        final data = response.data;
+        if (data != null && data is List) {
+          return data.map((json) => Game.fromJson(json)).toList();
+        } else {
+          throw Exception('Unexpected response format');
+        }
       } else {
         throw DioException(
           requestOptions: response.requestOptions,

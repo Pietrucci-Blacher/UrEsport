@@ -25,26 +25,17 @@ class GamesScreen extends StatelessWidget {
                 onRefresh: () async {
                   context.read<GameBloc>().add(LoadGames());
                 },
-                child: Padding(
+                child: ListView.builder(
                   padding: const EdgeInsets.all(8.0),
-                  child: GridView.builder(
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 2,
-                      crossAxisSpacing: 8.0,
-                      mainAxisSpacing: 8.0,
-                      childAspectRatio: 0.7,
-                    ),
-                    itemCount: state.games.length,
-                    itemBuilder: (context, index) {
-                      Game game = state.games[index];
-                      return GameCard(game: game);
-                    },
-                  ),
+                  itemCount: state.games.length,
+                  itemBuilder: (context, index) {
+                    Game game = state.games[index];
+                    return GameListItem(game: game);
+                  },
                 ),
               );
             } else if (state is GameError) {
-              return const Center(child: Text('An error occurred!'));
+              return Center(child: Text('An error occurred: ${state.message}'));
             } else {
               return const Center(child: Text('No games available.'));
             }
@@ -55,10 +46,10 @@ class GamesScreen extends StatelessWidget {
   }
 }
 
-class GameCard extends StatelessWidget {
+class GameListItem extends StatelessWidget {
   final Game game;
 
-  const GameCard({super.key, required this.game});
+  const GameListItem({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
@@ -74,38 +65,62 @@ class GameCard extends StatelessWidget {
             MaterialPageRoute(builder: (context) => GameDetailPage(game: game)),
           );
         },
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Expanded(
-              child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(8.0),
-                ),
-                child: Image.network(
-                  game.imageUrl,
-                  fit: BoxFit.cover,
-                ),
+            ClipRRect(
+              borderRadius: const BorderRadius.only(
+                topLeft: Radius.circular(8.0),
+                bottomLeft: Radius.circular(8.0),
+              ),
+              child: Image.network(
+                game.imageUrl,
+                width: 100,
+                height: 100,
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  return Container(
+                    width: 100,
+                    height: 100,
+                    color: Colors.grey,
+                    child: const Icon(Icons.broken_image, color: Colors.white),
+                  );
+                },
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    game.name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      game.name,
+                      style: const TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
                     ),
-                  ),
-                  const SizedBox(height: 4.0),
-                  Text(
-                    game.description,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                ],
+                    const SizedBox(height: 4.0),
+                    Text(
+                      '88k spectators',
+                      style: const TextStyle(
+                        color: Colors.grey,
+                      ),
+                    ),
+                    const SizedBox(height: 8.0),
+                    Wrap(
+                      spacing: 6.0,
+                      runSpacing: 6.0,
+                      children: game.categories.map((category) {
+                        return Chip(
+                          label: Text(category),
+                          backgroundColor: Colors.grey[200],
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],

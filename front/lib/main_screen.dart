@@ -94,8 +94,7 @@ class MainScreenState extends State<MainScreen> {
                     ),
                     const SizedBox(width: 8),
                     Text(
-                      _getTitleForIndex(context,
-                          _selectedIndex), // Utiliser une méthode pour obtenir le titre dynamique
+                      _getTitleForIndex(context, _selectedIndex),
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ],
@@ -115,5 +114,20 @@ class MainScreenState extends State<MainScreen> {
         },
       ),
     );
+  }
+
+  String _getTitleForIndex(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        return AppLocalizations.of(context).homeScreenTitle;
+      case 1:
+        return AppLocalizations.of(context).gameScreenTitle;
+      case 2:
+        return AppLocalizations.of(context).tournamentScreenTitle;
+      case 3:
+        return AppLocalizations.of(context).notificationScreenTitle;
+      default:
+        return '';
+    }
   }
 }

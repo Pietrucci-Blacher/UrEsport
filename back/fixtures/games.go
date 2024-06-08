@@ -14,7 +14,7 @@ func LoadGames() error {
 		game := models.Game{
 			Name:        fake.Lorem().Word(),
 			Description: fake.Lorem().Sentence(20),
-			Image:       fake.Internet().URL(),
+			Image:       fmt.Sprintf("https://picsum.photos/seed/%d/200/300", i),
 		}
 
 		if err := game.Save(); err != nil {

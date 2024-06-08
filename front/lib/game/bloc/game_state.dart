@@ -21,4 +21,11 @@ class GameLoaded extends GameState {
   List<Object?> get props => [games];
 }
 
-class GameError extends GameState {}
+class GameError extends GameState {
+  final String message;
+
+  const GameError(this.message);
+
+  @override
+  List<Object?> get props => [message];
+}

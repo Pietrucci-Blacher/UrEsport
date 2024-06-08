@@ -12,8 +12,8 @@ class GameBloc extends Bloc<GameEvent, GameState> {
       try {
         final games = await gameService.fetchGames();
         emit(GameLoaded(games));
-      } catch (_) {
-        emit(GameError());
+      } catch (error) {
+        emit(GameError(error.toString()));
       }
     });
   }
