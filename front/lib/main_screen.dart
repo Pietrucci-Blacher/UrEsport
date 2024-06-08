@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
+import 'package:uresport/auth/screens/auth_screen.dart';
 import 'package:uresport/home/screens/home_screen.dart';
 import 'package:uresport/notification/screens/notif_screen.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
@@ -11,7 +12,6 @@ import 'package:uresport/game/screens/game_screen.dart';
 import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
-import 'package:uresport/auth/screens/auth_screen.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 
 class MainScreen extends StatefulWidget {
@@ -50,7 +50,11 @@ class MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
+<<<<<<< HEAD
           AuthBloc(widget.authService)..add(AuthCheckRequested()),
+=======
+      AuthBloc(widget.authService)..add(AuthCheckRequested()),
+>>>>>>> c092650 (Fix: Fix comment on PR)
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthInitial) {
@@ -67,35 +71,36 @@ class MainScreenState extends State<MainScreen> {
               appBar: AppBar(
                 title: Row(
                   children: [
-                    IconButton(
-                      icon: isLoggedIn && profileImageUrl != null
-                          ? CircleAvatar(
-                              backgroundImage: NetworkImage(profileImageUrl),
-                            )
-                          : const Icon(Icons.person),
-                      onPressed: () {
-                        if (isLoggedIn) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => ProfileScreen(
-                                  authService: widget.authService),
-                            ),
-                          );
-                        } else {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => AuthScreen(
-                                authService: widget.authService,
-                                showLogin: true,
-                                showRegister: !kIsWeb,
+                    if (!kIsWeb)
+                      IconButton(
+                        icon: isLoggedIn && profileImageUrl != null
+                            ? CircleAvatar(
+                          backgroundImage: NetworkImage(profileImageUrl),
+                        )
+                            : const Icon(Icons.person),
+                        onPressed: () {
+                          if (isLoggedIn) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfileScreen(
+                                    authService: widget.authService),
                               ),
-                            ),
-                          );
-                        }
-                      },
-                    ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AuthScreen(
+                                  authService: widget.authService,
+                                  showLogin: true,
+                                  showRegister: !kIsWeb,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
                     const SizedBox(width: 8),
                     Text(
                       _getTitleForIndex(context, _selectedIndex),
@@ -103,12 +108,23 @@ class MainScreenState extends State<MainScreen> {
                     ),
                   ],
                 ),
+                actions: [
+                  if (kIsWeb)
+                    IconButton(
+                      icon: Icon(Icons.language),
+                      onPressed: () {
+                        // Implement language switch logic here
+                      },
+                    ),
+                ],
               ),
               body: IndexedStack(
                 index: _selectedIndex,
                 children: _widgetOptions,
               ),
-              bottomNavigationBar: CustomBottomNavigation(
+              bottomNavigationBar: kIsWeb
+                  ? null
+                  : CustomBottomNavigation(
                 isLoggedIn: isLoggedIn,
                 selectedIndex: _selectedIndex,
                 onTap: _onItemTapped,

@@ -131,17 +131,7 @@ func UpdateGame(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/games/{id} [delete]
 func DeleteGame(c *gin.Context) {
-	gameID, err := strconv.Atoi(c.Param("id"))
-	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid game ID"})
-		return
-	}
-
-	var game models.Game
-	if err := game.FindOneById(gameID); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Game not found"})
-		return
-	}
+	game, _ := c.MustGet("game").(*models.Game)
 
 	if err := game.Delete(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
