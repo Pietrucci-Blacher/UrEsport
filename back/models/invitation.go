@@ -99,6 +99,7 @@ func (i *Invit) FindOneByTournamentAndTeam(tournamentID, teamID int) error {
 	return DB.Model(&Invit{}).
 		Where("team_id", teamID).
 		Where("tournament_id", tournamentID).
+		Where("type", TOURNAMENT_INVIT).
 		Where("status", PENDING).
 		First(&i).Error
 }
@@ -107,6 +108,7 @@ func (i *Invit) FindOneByTeamAndUser(teamID, userID int) error {
 	return DB.Model(&Invit{}).
 		Where("team_id", teamID).
 		Where("user_id", userID).
+		Where("type", TEAM_INVIT).
 		Where("status", PENDING).
 		First(&i).Error
 }
