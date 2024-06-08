@@ -76,9 +76,9 @@ func IsFriend(id int, id2 int) bool {
 	return true
 }
 
-func UpdateFriend(id int, id2 int, favorite bool) error {
+func UpdateFriend(userID, friendID int, favorite bool) error {
 	var friend Friend
-	if err := DB.Where("user_id = ? AND friend_id = ?", id, id2).First(&friend).Error; err != nil {
+	if err := DB.Where("user_id = ? AND friend_id = ?", userID, friendID).First(&friend).Error; err != nil {
 		return err
 	}
 
