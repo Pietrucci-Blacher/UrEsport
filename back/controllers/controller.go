@@ -264,6 +264,7 @@ func RegisterRoutes(r *gin.Engine) {
 			games.PATCH("/:game",
 				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
+				middlewares.Get[*models.Game]("game"),
 				middlewares.Validate[models.UpdateGameDto](),
 				UpdateGame,
 			)
