@@ -3,6 +3,7 @@ package fixtures
 import (
 	"challenge/models"
 	"fmt"
+
 	"github.com/lib/pq"
 )
 
