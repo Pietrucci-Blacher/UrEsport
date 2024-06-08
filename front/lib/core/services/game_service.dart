@@ -25,7 +25,7 @@ class GameService implements IGameService {
         throw DioException(
           requestOptions: response.requestOptions,
           error: 'Failed to load games',
-          type: DioExceptionType.badResponse, // Use appropriate type
+          type: DioExceptionType.badResponse,
         );
       }
     } catch (e) {

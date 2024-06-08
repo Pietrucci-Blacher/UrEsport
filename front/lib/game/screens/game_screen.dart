@@ -7,7 +7,6 @@ import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/game/bloc/game_bloc.dart';
 import 'package:uresport/game/bloc/game_event.dart';
 import 'package:uresport/game/bloc/game_state.dart';
-import 'package:uresport/shared/utils/filter_button.dart';
 
 class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});
@@ -17,28 +16,30 @@ class GamesScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => GameBloc(GameService(Dio()))..add(LoadGames()),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Games'),
-        ),
         body: BlocBuilder<GameBloc, GameState>(
           builder: (context, state) {
             if (state is GameLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is GameLoaded) {
-              return Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 2,
-                    crossAxisSpacing: 8.0,
-                    mainAxisSpacing: 8.0,
-                    childAspectRatio: 0.7,
+              return RefreshIndicator(
+                onRefresh: () async {
+                  context.read<GameBloc>().add(LoadGames());
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: GridView.builder(
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 8.0,
+                      mainAxisSpacing: 8.0,
+                      childAspectRatio: 0.7,
+                    ),
+                    itemCount: state.games.length,
+                    itemBuilder: (context, index) {
+                      Game game = state.games[index];
+                      return GameCard(game: game);
+                    },
                   ),
-                  itemCount: state.games.length,
-                  itemBuilder: (context, index) {
-                    Game game = state.games[index];
-                    return GameCard(game: game);
-                  },
                 ),
               );
             } else if (state is GameError) {
@@ -48,8 +49,6 @@ class GamesScreen extends StatelessWidget {
             }
           },
         ),
-        floatingActionButton: const FilterButton(),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
