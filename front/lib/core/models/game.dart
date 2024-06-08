@@ -33,7 +33,8 @@ class Game {
       'name': name,
       'description': description,
       'image': imageUrl,
-      'tournaments': tournaments.map((tournament) => tournament.toJson()).toList(),
+      'tournaments':
+          tournaments.map((tournament) => tournament.toJson()).toList(),
     };
   }
 }
