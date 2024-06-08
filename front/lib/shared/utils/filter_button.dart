@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 
 class FilterButton extends StatelessWidget {
-  const FilterButton({super.key});
+  final Function(List<String>) onFilterChanged;
+
+  const FilterButton({super.key, required this.onFilterChanged});
 
   @override
   Widget build(BuildContext context) {
@@ -10,7 +12,7 @@ class FilterButton extends StatelessWidget {
         showModalBottomSheet(
           context: context,
           builder: (context) {
-            return const FilterSheet();
+            return FilterBottomSheet(onFilterChanged: onFilterChanged);
           },
         );
       },
@@ -19,98 +21,60 @@ class FilterButton extends StatelessWidget {
   }
 }
 
-class FilterSheet extends StatefulWidget {
-  const FilterSheet({super.key});
+class FilterBottomSheet extends StatefulWidget {
+  final Function(List<String>) onFilterChanged;
 
-  @override
-  FilterSheetState createState() => FilterSheetState();
+  const FilterBottomSheet({super.key, required this.onFilterChanged});
+
+  @override FilterBottomSheetState createState() => FilterBottomSheetState();
 }
 
-class FilterSheetState extends State<FilterSheet> {
-  String searchQuery = '';
-  String selectedTag = '';
-  String sortOption = 'Number of Participants';
+class FilterBottomSheetState extends State<FilterBottomSheet> {
+  final List<String> _tags = ['FPS', 'MOBA', 'RPG', 'Sports', 'Simulation'];
+  final List<String> _selectedTags = [];
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text('Filter and Sort',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 16.0),
-          TextField(
-            decoration: const InputDecoration(
-              labelText: 'Search by tag',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (value) {
-              setState(() {
-                searchQuery = value;
-              });
-            },
+          const Text(
+            'Filter by Tags',
+            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          const SizedBox(height: 16.0),
-          DropdownButtonFormField<String>(
-            value: selectedTag,
-            items: <String>['Tag1', 'Tag2', 'Tag3']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 6.0,
+            runSpacing: 6.0,
+            children: _tags.map((tag) {
+              final isSelected = _selectedTags.contains(tag);
+              return FilterChip(
+                label: Text(tag),
+                selected: isSelected,
+                onSelected: (selected) {
+                  setState(() {
+                    if (selected) {
+                      _selectedTags.add(tag);
+                    } else {
+                      _selectedTags.remove(tag);
+                    }
+                  });
+                },
               );
             }).toList(),
-            decoration: const InputDecoration(
-              labelText: 'Select Tag',
-              border: OutlineInputBorder(),
-            ),
-            onChanged: (String? newValue) {
-              setState(() {
-                selectedTag = newValue!;
-              });
-            },
           ),
-          const SizedBox(height: 16.0),
-          DropdownButtonFormField<String>(
-            value: sortOption,
-            items: <String>['Number of Participants', 'Alphabetical']
-                .map<DropdownMenuItem<String>>((String value) {
-              return DropdownMenuItem<String>(
-                value: value,
-                child: Text(value),
-              );
-            }).toList(),
-            decoration: const InputDecoration(
-              labelText: 'Sort By',
-              border: OutlineInputBorder(),
+          const SizedBox(height: 20),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                widget.onFilterChanged(_selectedTags);
+                Navigator.pop(context);
+              },
+              child: const Text('Apply Filters'),
             ),
-            onChanged: (String? newValue) {
-              setState(() {
-                sortOption = newValue!;
-              });
-            },
-          ),
-          const SizedBox(height: 16.0),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              TextButton(
-                onPressed: () {
-                  Navigator.pop(context);
-                },
-                child: const Text('Cancel'),
-              ),
-              ElevatedButton(
-                onPressed: () {
-                  // Implement filtering logic here
-                  Navigator.pop(context);
-                },
-                child: const Text('Apply'),
-              ),
-            ],
           ),
         ],
       ),

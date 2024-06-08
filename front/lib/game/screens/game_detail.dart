@@ -38,6 +38,17 @@ class GameDetailPage extends StatelessWidget {
             },
             child: Image.network(game.imageUrl, fit: BoxFit.cover),
           ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(
+              'Game Description',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Text(game.description),
+          ),
           Center(
             child: ElevatedButton.icon(
               icon: const Icon(Icons.favorite_border),
@@ -72,7 +83,11 @@ class GameDetailPage extends StatelessWidget {
           ),
         ],
       ),
-      floatingActionButton: const FilterButton(),
+      floatingActionButton: FilterButton(
+        onFilterChanged: (selectedTags) {
+          // Implement filter logic here
+        },
+      ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }

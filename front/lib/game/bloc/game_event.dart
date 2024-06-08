@@ -8,3 +8,12 @@ abstract class GameEvent extends Equatable {
 }
 
 class LoadGames extends GameEvent {}
+
+class FilterGames extends GameEvent {
+  final List<String> tags;
+
+  const FilterGames(this.tags);
+
+  @override
+  List<Object?> get props => [tags];
+}

@@ -3,16 +3,14 @@ class Game {
   final String name;
   final String description;
   final String imageUrl;
-  final int spectators;
-  final List<String> categories;
+  final List<String> tags;
 
   Game({
     required this.id,
     required this.name,
     required this.description,
     required this.imageUrl,
-    required this.spectators,
-    required this.categories,
+    required this.tags,
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
@@ -21,8 +19,7 @@ class Game {
       name: json['name'],
       description: json['description'],
       imageUrl: json['image'],
-      spectators: json['spectators'] ?? 0,
-      categories: List<String>.from(json['categories'] ?? []),
+      tags: List<String>.from(json['tags'] ?? []),
     );
   }
 
@@ -32,8 +29,7 @@ class Game {
       'name': name,
       'description': description,
       'image': imageUrl,
-      'spectators': spectators,
-      'categories': categories,
+      'tags': tags,
     };
   }
 }

@@ -2,27 +2,31 @@ package models
 
 import (
 	"time"
+	"github.com/lib/pq"
 )
 
 type Game struct {
-	ID          int       `json:"id" gorm:"primaryKey"`
-	Name        string    `json:"name" gorm:"type:varchar(100)"`
-	Description string    `json:"description" gorm:"type:varchar(255)"`
-	Image       string    `json:"image" gorm:"type:varchar(255)"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int            `json:"id" gorm:"primaryKey"`
+	Name        string         `json:"name" gorm:"type:varchar(100)"`
+	Description string         `json:"description" gorm:"type:varchar(255)"`
+	Image       string         `json:"image" gorm:"type:varchar(255)"`
+	Tags        pq.StringArray `json:"tags" gorm:"type:text[]"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
 }
 
 type CreateGameDto struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	Image       string `json:"image" validate:"required"`
+	Name        string   `json:"name" validate:"required"`
+	Description string   `json:"description" validate:"required"`
+	Image       string   `json:"image" validate:"required"`
+	Tags        []string `json:"tags" validate:"required"`
 }
 
 type UpdateGameDto struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Image       string `json:"image"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Image       string   `json:"image"`
+	Tags        []string `json:"tags"`
 }
 
 func FindAllGames() ([]Game, error) {

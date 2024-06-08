@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:dio/dio.dart';
 import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/services/game_service.dart';
-import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/game/bloc/game_bloc.dart';
 import 'package:uresport/game/bloc/game_event.dart';
 import 'package:uresport/game/bloc/game_state.dart';
+import 'package:uresport/game/screens/game_detail.dart';
+import 'package:uresport/shared/utils/filter_button.dart';
 
 class GamesScreen extends StatelessWidget {
   const GamesScreen({super.key});
@@ -29,35 +30,39 @@ class GamesScreen extends StatelessWidget {
                   padding: const EdgeInsets.all(8.0),
                   itemCount: state.games.length,
                   itemBuilder: (context, index) {
-                    Game game = state.games[index];
-                    return GameListItem(game: game);
+                    final game = state.games[index];
+                    return GameCard(game: game);
                   },
                 ),
               );
             } else if (state is GameError) {
-              return Center(child: Text('An error occurred: ${state.message}'));
+              return const Center(child: Text('An error occurred!'));
             } else {
               return const Center(child: Text('No games available.'));
             }
           },
         ),
+        floatingActionButton: FilterButton(
+          onFilterChanged: (selectedTags) {
+            // Implement filter logic here
+          },
+        ),
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
       ),
     );
   }
 }
 
-class GameListItem extends StatelessWidget {
+class GameCard extends StatelessWidget {
   final Game game;
 
-  const GameListItem({super.key, required this.game});
+  const GameCard({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
     return Card(
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(8.0),
-      ),
+      margin: const EdgeInsets.symmetric(vertical: 8.0),
       child: InkWell(
         onTap: () {
           Navigator.push(
@@ -65,65 +70,52 @@ class GameListItem extends StatelessWidget {
             MaterialPageRoute(builder: (context) => GameDetailPage(game: game)),
           );
         },
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            ClipRRect(
-              borderRadius: const BorderRadius.only(
-                topLeft: Radius.circular(8.0),
-                bottomLeft: Radius.circular(8.0),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Row(
+            children: [
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8.0),
+                child: Image.network(
+                  game.imageUrl,
+                  width: 100,
+                  height: 100,
+                  fit: BoxFit.cover,
+                ),
               ),
-              child: Image.network(
-                game.imageUrl,
-                width: 100,
-                height: 100,
-                fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) {
-                  return Container(
-                    width: 100,
-                    height: 100,
-                    color: Colors.grey,
-                    child: const Icon(Icons.broken_image, color: Colors.white),
-                  );
-                },
-              ),
-            ),
-            Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(8.0),
+              const SizedBox(width: 16),
+              Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
                       game.name,
                       style: const TextStyle(
-                        fontWeight: FontWeight.bold,
                         fontSize: 18,
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                    const SizedBox(height: 4.0),
+                    const SizedBox(height: 8),
                     Text(
-                      '88k spectators',
-                      style: const TextStyle(
-                        color: Colors.grey,
-                      ),
+                      game.description,
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 8.0),
+                    const SizedBox(height: 8),
                     Wrap(
-                      spacing: 6.0,
-                      runSpacing: 6.0,
-                      children: game.categories.map((category) {
+                      spacing: 8.0,
+                      runSpacing: 4.0,
+                      children: game.tags.map((tag) {
                         return Chip(
-                          label: Text(category),
-                          backgroundColor: Colors.grey[200],
+                          label: Text(tag),
                         );
                       }).toList(),
                     ),
                   ],
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
