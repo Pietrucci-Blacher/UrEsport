@@ -26,7 +26,8 @@ class FilterBottomSheet extends StatefulWidget {
 
   const FilterBottomSheet({super.key, required this.onFilterChanged});
 
-  @override FilterBottomSheetState createState() => FilterBottomSheetState();
+  @override
+  FilterBottomSheetState createState() => FilterBottomSheetState();
 }
 
 class FilterBottomSheetState extends State<FilterBottomSheet> {
