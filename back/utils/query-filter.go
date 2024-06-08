@@ -16,12 +16,24 @@ type QueryFilter struct {
 }
 
 func NewQueryFilter(query map[string][]string) (QueryFilter, error) {
+	queryFilter := QueryFilter{
+		Page:     1,
+		Limit:    10,
+		Skip:     0,
+		Where:    make(map[string]any),
+		Sort:     "id asc",
+		Populate: []string{},
+	}
+
+	if err := queryFilter.initQuery(query); err != nil {
+		return QueryFilter{}, err
+	}
+
+	return queryFilter, nil
+}
+
+func (q *QueryFilter) initQuery(query map[string][]string) error {
 	var err error
-	var queryFilter QueryFilter = QueryFilter{}
-	var page, limit int = 1, 10
-	var populate []string = []string{}
-	var sort string = "id asc"
-	var where map[string]any = make(map[string]any)
 
 	matchWhere, _ := regexp.Compile(`where\[.*\]`)
 	replaceWhere, _ := regexp.Compile(`where\[(.*)\]`)
@@ -29,36 +41,29 @@ func NewQueryFilter(query map[string][]string) (QueryFilter, error) {
 	for key, value := range query {
 		if matchWhere.MatchString(key) {
 			replacedKey := replaceWhere.ReplaceAllString(key, "$1")
-			where[replacedKey] = value[0]
+			q.Where[replacedKey] = value[0]
 			continue
 		}
 
 		switch key {
 		case "page":
-			page, err = strconv.Atoi(value[0])
+			q.Page, err = strconv.Atoi(value[0])
 		case "limit":
-			limit, err = strconv.Atoi(value[0])
+			q.Limit, err = strconv.Atoi(value[0])
 		case "populate":
-			populate = strings.Split(value[0], ",")
+			q.Populate = strings.Split(value[0], ",")
 		case "sort":
-			sort = value[0]
+			q.Sort = value[0]
 		}
 
 		if err != nil {
-			return queryFilter, err
+			return err
 		}
 	}
 
-	queryFilter = QueryFilter{
-		Page:     page,
-		Limit:    limit,
-		Skip:     (page - 1) * limit,
-		Where:    where,
-		Sort:     sort,
-		Populate: populate,
-	}
+	q.Skip = (q.Page - 1) * q.Limit
 
-	return queryFilter, nil
+	return nil
 }
 
 func (q *QueryFilter) GetPage() int {
