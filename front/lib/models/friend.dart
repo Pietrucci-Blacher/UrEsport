@@ -1,23 +1,31 @@
 class Friend {
+  final int id;
+  final int userId;
   final String name;
   bool isFavorite;
 
   Friend({
+    required this.id,
+    required this.userId,
     required this.name,
     this.isFavorite = false,
   });
 
   factory Friend.fromJson(Map<String, dynamic> json) {
     return Friend(
-      name: json['firstname'],
-      isFavorite: json['isFavorite'] ?? false,
+      id: json['id'] ?? 0,
+      userId: json['user_id'] ?? 0,
+      name: json['firstname'] ?? 'Unknown',
+      isFavorite: json['favorite'] ?? false,
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
+      'id': id,
+      'user_id': userId,
       'name': name,
-      'isFavorite': isFavorite,
+      'favorite': isFavorite,
     };
   }
 }

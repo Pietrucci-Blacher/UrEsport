@@ -198,7 +198,7 @@ func DeleteFriend(c *gin.Context) {
 // @Failure 400 {object} utils.HttpError
 // @Failure 404 {object} utils.HttpError
 // @Failure 500 {object} utils.HttpError
-// @Router /users/{id}/friends/{friend_id} [put]
+// @Router /users/{id}/friends/{friend_id} [patch]
 func UpdateFriend(c *gin.Context) {
 	userIDStr := c.Param("id")
 	friendIDStr := c.Param("friend_id")

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uresport/services/friends_services.dart'; // Assurez-vous que le chemin est correct
-import 'package:uresport/models/friend.dart'; // Assurez-vous que le chemin est correct
+import 'package:uresport/services/friends_services.dart';
+import 'package:uresport/models/friend.dart';
 import '../../widgets/friend_list_tile.dart';
 import 'friends_add.dart';
 import 'friends_details.dart';
@@ -17,6 +17,8 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
   List<Friend> friends = [];
   bool isSorted = false;
 
+  int get currentUserId => 21;
+
   @override
   void initState() {
     super.initState();
@@ -26,7 +28,7 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    loadFriends();  // Reload friends every time the tab is visited
+    loadFriends();
   }
 
   void loadFriends() async {
@@ -35,12 +37,19 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
     setState(() {});
   }
 
-  void toggleFavorite(Friend friend) {
-    setState(() {
-      friend.isFavorite = !friend.isFavorite;
-      friends = List.from(friends);
-    });
+  void toggleFavorite(Friend friend) async {
+    try {
+      await FriendService.updateFavoriteStatus(currentUserId, friend.id, !friend.isFavorite);
+      setState(() {
+        friend.isFavorite = !friend.isFavorite;
+        friends = List.from(friends);
+      });
+    } catch (e) {
+      print('Failed to update favorite status: $e');
+    }
   }
+
+
 
   void navigateToFriendDetails(Friend friend) {
     Navigator.push(
@@ -63,7 +72,7 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
 
   @override
   Widget build(BuildContext context) {
-    super.build(context); // Required by AutomaticKeepAliveClientMixin
+    super.build(context);
     return Scaffold(
       body: Column(
         children: [
@@ -176,10 +185,10 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddFriendPage(userId: 21, currentUser: 'ilies',), // Remplacez 1 par l'ID de l'utilisateur actuel
+              builder: (context) => AddFriendPage(userId: 21, currentUser: 'ilies'),
             ),
           );
-          loadFriends(); // Reload friends when returning from AddFriendPage
+          loadFriends();
         },
         child: Icon(Icons.person_add),
       ),
@@ -188,5 +197,5 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
   }
 
   @override
-  bool get wantKeepAlive => true; // Required by AutomaticKeepAliveClientMixin
+  bool get wantKeepAlive => true;
 }
