@@ -11,7 +11,7 @@ import (
 
 var fake = faker.New()
 
-func TestSave(t *testing.T) {
+func TestUserSave(t *testing.T) {
 	var nbUsers int = 10
 	var result []User
 	var users []User
@@ -182,7 +182,7 @@ func TestFindAllUsers(t *testing.T) {
 	}
 }
 
-func TestFindOneById(t *testing.T) {
+func TestUserFindOneById(t *testing.T) {
 	var user User
 	var result User
 

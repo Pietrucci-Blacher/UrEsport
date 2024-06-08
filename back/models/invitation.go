@@ -88,11 +88,11 @@ func FindInvitByType(invitType, param string, ids []int) ([]Invit, error) {
 }
 
 func (i *Invit) IsForTeam(team Team) bool {
-	return i.TeamID == &team.ID
+	return *i.TeamID == team.ID
 }
 
 func (i *Invit) IsForTournament(tournament Tournament) bool {
-	return i.TournamentID == &tournament.ID
+	return *i.TournamentID == tournament.ID
 }
 
 func (i *Invit) FindOneByTournamentAndTeam(tournamentID, teamID int) error {
