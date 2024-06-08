@@ -16,7 +16,11 @@ class AuthScreen extends StatelessWidget {
   final bool showLogin;
   final bool showRegister;
 
-  const AuthScreen({super.key, required this.authService, this.showLogin = true, this.showRegister = true});
+  const AuthScreen(
+      {super.key,
+      required this.authService,
+      this.showLogin = true,
+      this.showRegister = true});
 
   @override
   Widget build(BuildContext context) {
@@ -34,11 +38,15 @@ class AuthScreen extends StatelessWidget {
               );
             } else if (state is PasswordResetEmailSent) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context).passwordResetEmailSent)),
+                SnackBar(
+                    content: Text(
+                        AppLocalizations.of(context).passwordResetEmailSent)),
               );
             } else if (state is PasswordResetConfirmed) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context).passwordResetSuccessful)),
+                SnackBar(
+                    content: Text(
+                        AppLocalizations.of(context).passwordResetSuccessful)),
               );
             }
           },
@@ -77,11 +85,13 @@ class AuthScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => LoginScreen(authService: authService),
                   ),
-                ).then((_) => context.read<AuthBloc>().add(AuthCheckRequested()));
+                ).then(
+                    (_) => context.read<AuthBloc>().add(AuthCheckRequested()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -95,13 +105,16 @@ class AuthScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => RegisterScreen(authService: authService),
+                    builder: (context) =>
+                        RegisterScreen(authService: authService),
                   ),
-                ).then((_) => context.read<AuthBloc>().add(AuthCheckRequested()));
+                ).then(
+                    (_) => context.read<AuthBloc>().add(AuthCheckRequested()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -137,7 +150,8 @@ class AuthScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => ResetPasswordScreen(authService: authService),
+                    builder: (context) =>
+                        ResetPasswordScreen(authService: authService),
                   ),
                 );
               },
@@ -148,7 +162,8 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOAuthButton(BuildContext context, IconData icon, Color color, String provider) {
+  Widget _buildOAuthButton(
+      BuildContext context, IconData icon, Color color, String provider) {
     return GestureDetector(
       onTap: () => context.read<AuthBloc>().add(OAuthLoginRequested(provider)),
       child: Container(
@@ -172,7 +187,8 @@ class AuthScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            AppLocalizations.of(context).profileScreenWelcome(state.user.username),
+            AppLocalizations.of(context)
+                .profileScreenWelcome(state.user.username),
             style: const TextStyle(fontSize: 24),
           ),
           const SizedBox(height: 20),
@@ -200,8 +216,8 @@ class AuthScreen extends StatelessWidget {
         //final picker = ImagePicker();
         //final pickedFile = await picker.pickImage(source: ImageSource.gallery);
         //if (pickedFile != null) {
-          // Update the user's avatar in the state or database
-          // Example: context.read<AuthBloc>().add(UpdateAvatarRequested(pickedFile.path));
+        // Update the user's avatar in the state or database
+        // Example: context.read<AuthBloc>().add(UpdateAvatarRequested(pickedFile.path));
         //}
       },
       child: CircleAvatar(

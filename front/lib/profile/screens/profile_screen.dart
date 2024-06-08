@@ -30,11 +30,15 @@ class ProfileScreen extends StatelessWidget {
               );
             } else if (state is PasswordResetEmailSent) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context).passwordResetEmailSent)),
+                SnackBar(
+                    content: Text(
+                        AppLocalizations.of(context).passwordResetEmailSent)),
               );
             } else if (state is PasswordResetConfirmed) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context).passwordResetSuccessful)),
+                SnackBar(
+                    content: Text(
+                        AppLocalizations.of(context).passwordResetSuccessful)),
               );
             }
           },
@@ -99,7 +103,8 @@ class ProfileScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            AppLocalizations.of(context).profileScreenWelcome(state.user.username),
+            AppLocalizations.of(context)
+                .profileScreenWelcome(state.user.username),
             style: const TextStyle(fontSize: 24),
           ),
           const SizedBox(height: 20),
