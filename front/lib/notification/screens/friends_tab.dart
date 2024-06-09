@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:uresport/services/friends_services.dart';
 import 'package:uresport/models/friend.dart';
@@ -6,7 +7,7 @@ import 'friends_add.dart';
 import 'friends_details.dart';
 
 class FriendsTab extends StatefulWidget {
-  const FriendsTab({Key? key}) : super(key: key);
+  const FriendsTab({super.key});
 
   @override
   _FriendsTabState createState() => _FriendsTabState();
@@ -47,7 +48,9 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
         friends = List.from(friends);
       });
     } catch (e) {
-      print('Failed to update favorite status: $e');
+      if (kDebugMode) {
+        print('Failed to update favorite status: $e');
+      }
     }
   }
 
@@ -58,7 +61,9 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
         friends.remove(friend);
       });
     } catch (e) {
-      print('Failed to delete friend: $e');
+      if (kDebugMode) {
+        print('Failed to delete friend: $e');
+      }
     }
   }
 
@@ -108,11 +113,11 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
               future: futureFriends,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
-                  return Center(child: Text('Failed to load friends'));
+                  return const Center(child: Text('Failed to load friends'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No friends found'));
+                  return const Center(child: Text('No friends found'));
                 } else {
                   friends = snapshot.data!;
                   sortFriends(friends);
@@ -210,12 +215,12 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => AddFriendPage(userId: 21, currentUser: 'ilies'),
+              builder: (context) => const AddFriendPage(userId: 21, currentUser: 'ilies'),
             ),
           );
           loadFriends();
         },
-        child: Icon(Icons.person_add),
+        child: const Icon(Icons.person_add),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );

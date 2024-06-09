@@ -3,15 +3,13 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:uresport/services/notification_service.dart';
-
-import '../../provider/NotificationProvider.dart'; // Assurez-vous que le chemin est correct
+import '../../provider/NotificationProvider.dart';
 
 class AddFriendPage extends StatefulWidget {
   final int userId;
   final String currentUser;
 
-  const AddFriendPage({Key? key, required this.userId, required this.currentUser}) : super(key: key);
+  const AddFriendPage({super.key, required this.userId, required this.currentUser});
 
   @override
   _AddFriendPageState createState() => _AddFriendPageState();
@@ -54,7 +52,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Friend'),
+        title: const Text('Add Friend'),
       ),
       body: Column(
         children: [
@@ -70,7 +68,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
                     searchController.clear();
                     filterUsers('');
                   },
-                  icon: Icon(Icons.clear),
+                  icon: const Icon(Icons.clear),
                 ),
               ),
             ),
@@ -87,12 +85,12 @@ class _AddFriendPageState extends State<AddFriendPage> {
                     final currentUser = widget.currentUser;
                     final response = await http.post(Uri.parse('${dotenv.env['API_ENDPOINT']}/users/${widget.userId}/friends/$friendId'));
                     if (response.statusCode == 200) {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Friend added successfully')));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ami ajouté avec succes')));
                       // Envoie une notification
                       Provider.of<NotificationProvider>(context, listen: false)
                           .addNotification('$currentUser vous à ajouté en ami: ${user['firstname']}');
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add friend')));
+                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erreur lors de l\'ajout de l\'ami ou ami déjà ajouté')));
                     }
                   },
                 );

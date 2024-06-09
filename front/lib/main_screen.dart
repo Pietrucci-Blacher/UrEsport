@@ -107,19 +107,19 @@ class MainScreenState extends State<MainScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => GamesScreen()),
+                          MaterialPageRoute(builder: (context) => const GamesScreen()),
                         );
                       },
-                      child: Text('Voir les jeux'),
+                      child: const Text('Voir les jeux'),
                     ),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => UserList()),
+                          MaterialPageRoute(builder: (context) => const UserList()),
                         );
                       },
-                      child: Text('Voir les utilisateurs'),
+                      child: const Text('Voir les utilisateurs'),
                     ),
                   ],
                 ),

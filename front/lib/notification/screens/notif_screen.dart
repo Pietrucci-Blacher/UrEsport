@@ -52,7 +52,7 @@ class NotificationScreen extends StatelessWidget {
             ],
           ),
         ),
-        body: TabBarView(
+        body: const TabBarView(
           children: [
             NotificationsTab(),
             FriendsTab(),

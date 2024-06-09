@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -27,7 +27,9 @@ Future<void> inviteUserToTournament(String tournamentId, String username, Functi
       throw Exception('Failed to invite $username to tournament');
     }
   } catch (error) {
-    print('Error: $error');
+    if (kDebugMode) {
+      print('Error: $error');
+    }
     callback('Erreur lors de l\'invitation à $username et du tournoi $tournamentId', true);
   }
 }
@@ -57,7 +59,6 @@ Future<void> joinTournament(String tournamentId, String username, Function callb
       throw Exception('Ce tournoi est privé ou complet');
     }
   } catch (error) {
-    print('Error: $error');
     callback('Erreur lors de la tentative de rejoindre le tournoi $tournamentId'' ou Ce tournoi est privé ou complet', true);
   }
 }
