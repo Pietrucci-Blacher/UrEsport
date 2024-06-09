@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-import 'package:uresport/home/screens/home_screen.dart';
-import 'package:uresport/notification/screens/notif_screen.dart';
-import 'package:uresport/profile/screens/profile_screen.dart';
-import 'package:uresport/shared/navigation/bottom_navigation.dart';
-import 'package:uresport/tournament/screens/tournament_screen.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
+import 'package:uresport/auth/screens/auth_screen.dart';
+import 'package:uresport/home/screens/home_screen.dart';
+import 'package:uresport/notification/screens/notif_screen.dart';
+import 'package:uresport/shared/navigation/bottom_navigation.dart';
+import 'package:uresport/tournament/screens/tournament_screen.dart';
+import 'package:uresport/game/screens/game_screen.dart';
+import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:uresport/cubit/locale_cubit.dart';
+import 'package:uresport/shared/locale_switcher.dart';
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({super.key});
+  final IAuthService authService;
+
+  const MainScreen({super.key, required this.authService});
 
   @override
   MainScreenState createState() => MainScreenState();
@@ -26,15 +33,12 @@ class MainScreenState extends State<MainScreen> {
   @override
   void initState() {
     super.initState();
-    BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
-
-    final authService = Provider.of<IAuthService>(context, listen: false);
 
     _widgetOptions = [
       const HomeScreen(),
+      const GamesScreen(),
       const TournamentScreen(),
       const NotificationScreen(),
-      ProfileScreen(authService: authService),
     ];
   }
 
@@ -46,27 +50,99 @@ class MainScreenState extends State<MainScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<AuthBloc, AuthState>(
-      builder: (context, state) {
-        if (state is AuthInitial) {
-          return const Scaffold(
-            body: Center(child: CircularProgressIndicator()),
-          );
-        } else {
-          bool isLoggedIn = state is AuthAuthenticated;
-          return Scaffold(
-            body: IndexedStack(
-              index: _selectedIndex,
-              children: _widgetOptions,
-            ),
-            bottomNavigationBar: CustomBottomNavigation(
-              isLoggedIn: isLoggedIn,
-              selectedIndex: _selectedIndex,
-              onTap: _onItemTapped,
-            ),
-          );
-        }
-      },
+    return BlocProvider(
+      create: (context) => AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      child: BlocBuilder<AuthBloc, AuthState>(
+        builder: (context, state) {
+          if (state is AuthInitial) {
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
+          } else {
+            bool isLoggedIn = state is AuthAuthenticated;
+            String? profileImageUrl;
+            if (isLoggedIn) {
+              profileImageUrl = state.user.profileImageUrl;
+            }
+            return Scaffold(
+              appBar: AppBar(
+                title: Row(
+                  children: [
+                    if (!kIsWeb)
+                      IconButton(
+                        icon: isLoggedIn && profileImageUrl != null
+                            ? CircleAvatar(
+                          backgroundImage: NetworkImage(profileImageUrl),
+                        )
+                            : const Icon(Icons.person),
+                        onPressed: () {
+                          if (isLoggedIn) {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => ProfileScreen(
+                                    authService: widget.authService),
+                              ),
+                            );
+                          } else {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => AuthScreen(
+                                  authService: widget.authService,
+                                  showLogin: true,
+                                  showRegister: !kIsWeb,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
+                    const SizedBox(width: 8),
+                    Text(
+                      _getTitleForIndex(context, _selectedIndex),
+                      style: Theme.of(context).textTheme.headlineSmall,
+                    ),
+                  ],
+                ),
+                actions: [
+                  LocaleSwitcher(
+                    onLocaleChanged: (locale) {
+                      context.read<LocaleCubit>().setLocale(locale);
+                    },
+                  ),
+                ],
+              ),
+              body: IndexedStack(
+                index: _selectedIndex,
+                children: _widgetOptions,
+              ),
+              bottomNavigationBar: kIsWeb
+                  ? null
+                  : CustomBottomNavigation(
+                isLoggedIn: isLoggedIn,
+                selectedIndex: _selectedIndex,
+                onTap: _onItemTapped,
+              ),
+            );
+          }
+        },
+      ),
     );
+  }
+
+  String _getTitleForIndex(BuildContext context, int index) {
+    switch (index) {
+      case 0:
+        return AppLocalizations.of(context).homeScreenTitle;
+      case 1:
+        return AppLocalizations.of(context).gameScreenTitle;
+      case 2:
+        return AppLocalizations.of(context).tournamentScreenTitle;
+      case 3:
+        return AppLocalizations.of(context).notificationScreenTitle;
+      default:
+        return '';
+    }
   }
 }

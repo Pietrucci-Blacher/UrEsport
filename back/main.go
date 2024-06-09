@@ -55,6 +55,12 @@ func main() {
 		os.Exit(0)
 	}
 
+	ginMode := os.Getenv("GIN_MODE")
+	if ginMode == "" {
+		ginMode = gin.ReleaseMode
+	}
+	gin.SetMode(ginMode)
+
 	r := gin.Default()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())

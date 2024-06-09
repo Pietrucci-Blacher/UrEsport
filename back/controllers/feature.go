@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetUsers godoc
+// GetFeatures godoc
 //
 //	@Summary		get all features
 //	@Description	get all features
@@ -28,7 +28,7 @@ func GetFeatures(c *gin.Context) {
 	c.JSON(http.StatusOK, feature)
 }
 
-// GetUsers godoc
+// GetFeature godoc
 //
 //	@Summary		get features by id
 //	@Description	get features by id
