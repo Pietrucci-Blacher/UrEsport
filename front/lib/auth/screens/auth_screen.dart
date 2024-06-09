@@ -28,7 +28,7 @@ class AuthScreen extends StatelessWidget {
       create: (context) => AuthBloc(authService)..add(AuthCheckRequested()),
       child: Scaffold(
         appBar: AppBar(
-          leading: BackButton(),
+          leading: const BackButton(),
         ),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {

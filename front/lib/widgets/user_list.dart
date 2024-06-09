@@ -1,21 +1,20 @@
-// lib/widgets/user_list.dart
-
 import 'package:flutter/material.dart';
-import '../services/user_service.dart';
-import '../models/user.dart';
-import 'invite_button.dart';
-import 'join_button.dart';
-import 'games_screen.dart';
+import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/models/user.dart';
+import 'package:uresport/shared/utils/invite_button.dart';
+import 'package:uresport/shared/utils/join_button.dart';
+import 'package:uresport/game/screens/game_screen.dart';
 
 class UserList extends StatelessWidget {
   final String tournamentId;
+  final AuthService authService;
 
-  const UserList({super.key, required this.tournamentId});
+  const UserList({super.key, required this.tournamentId, required this.authService});
 
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<List<User>>(
-      future: UserService.fetchUsers(),
+      future: authService.fetchUsers(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -48,7 +47,7 @@ class UserList extends StatelessWidget {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => GamesScreen()),
+                                builder: (context) => const GamesScreen()),
                           );
                         },
                         child: const Text('Voir les jeux'),

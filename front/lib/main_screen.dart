@@ -49,12 +49,7 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-<<<<<<< HEAD
-          AuthBloc(widget.authService)..add(AuthCheckRequested()),
-=======
-      AuthBloc(widget.authService)..add(AuthCheckRequested()),
->>>>>>> c092650 (Fix: Fix comment on PR)
+      create: (context) => AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthInitial) {
@@ -111,7 +106,7 @@ class MainScreenState extends State<MainScreen> {
                 actions: [
                   if (kIsWeb)
                     IconButton(
-                      icon: Icon(Icons.language),
+                      icon: const Icon(Icons.language),
                       onPressed: () {
                         // Implement language switch logic here
                       },
