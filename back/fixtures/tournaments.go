@@ -32,17 +32,37 @@ func LoadTournaments() error {
 
 		fmt.Printf("Tournament %s created\n", tournament.Name)
 
-		var team models.Team
-		if err := team.FindOneById(rand.Intn(TEAM_NB-1) + 1); err != nil {
-			return err
+		for j := 0; j < TOURNAMENT_TEAM_NB; j++ {
+			if err := addTeamToTournament(tournament.ID); err != nil {
+				return err
+			}
 		}
-
-		if err := tournament.AddTeam(team); err != nil {
-			return err
-		}
-
-		fmt.Printf("Participant %s added to tournament %s\n", team.Name, tournament.Name)
 	}
+
+	return nil
+}
+
+func addTeamToTournament(tournamentID int) error {
+	var tournament models.Tournament
+	var team models.Team
+
+	if err := tournament.FindOneById(tournamentID); err != nil {
+		return err
+	}
+
+	if err := team.FindOneById(rand.Intn(TEAM_NB-1) + 1); err != nil {
+		return err
+	}
+
+	if tournament.HasTeam(team) {
+		return addTeamToTournament(tournamentID)
+	}
+
+	if err := tournament.AddTeam(team); err != nil {
+		return err
+	}
+
+	fmt.Printf("Team %s added to tournament %s\n", team.Name, tournament.Name)
 
 	return nil
 }

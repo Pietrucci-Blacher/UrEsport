@@ -180,7 +180,7 @@ func JoinTournament(c *gin.Context) {
 		return
 	}
 
-	if tournament.IsInTeam(*team) {
+	if tournament.HasTeam(*team) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Team already in this tournament"})
 		return
 	}
@@ -209,7 +209,7 @@ func LeaveTournament(c *gin.Context) {
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 	team, _ := c.MustGet("team").(*models.Team)
 
-	if !tournament.IsInTeam(*team) {
+	if !tournament.HasTeam(*team) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Team not found in this tournament"})
 		return
 	}
@@ -246,7 +246,7 @@ func InviteTeamToTournament(c *gin.Context) {
 		return
 	}
 
-	if tournament.IsInTeam(team) {
+	if tournament.HasTeam(team) {
 		c.JSON(http.StatusConflict, gin.H{"error": "Team is already in this tournament"})
 		return
 	}
@@ -287,7 +287,7 @@ func KickUserFromTournament(c *gin.Context) {
 		return
 	}
 
-	if !tournament.IsInTeam(team) {
+	if !tournament.HasTeam(team) {
 		c.JSON(http.StatusConflict, gin.H{"error": "Team is not in this tournament"})
 		return
 	}
@@ -342,7 +342,7 @@ func AcceptTournamentInvitation(c *gin.Context) {
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 	team, _ := c.MustGet("team").(*models.Team)
 
-	if tournament.IsInTeam(*team) {
+	if tournament.HasTeam(*team) {
 		c.JSON(http.StatusConflict, gin.H{"error": "Team is already in this tournament"})
 		return
 	}
