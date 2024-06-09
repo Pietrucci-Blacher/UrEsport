@@ -29,11 +29,13 @@ class CustomBottomNavigation extends StatelessWidget {
         ),
         BottomNavigationBarItem(
           icon: Stack(
+            clipBehavior: Clip.none,
             children: [
               const Icon(Icons.notifications),
               if (notificationCount > 0)
                 Positioned(
-                  right: 0,
+                  top: -8,
+                  right: -8,
                   child: Container(
                     padding: const EdgeInsets.all(2),
                     decoration: BoxDecoration(
@@ -58,6 +60,7 @@ class CustomBottomNavigation extends StatelessWidget {
           ),
           label: AppLocalizations.of(context).notificationScreenTitle,
         ),
+
         BottomNavigationBarItem(
           icon: const Icon(Icons.person),
           label: AppLocalizations.of(context).profileScreenTitle,
