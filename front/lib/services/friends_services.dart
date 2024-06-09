@@ -28,4 +28,13 @@ class FriendService {
     }
   }
 
+  static Future<void> deleteFriend(int currentUserId, int id) async {
+    final response = await http.delete(
+      Uri.parse('${dotenv.env['API_ENDPOINT']}/users/$currentUserId/friends/$id'),
+    );
+    if (response.statusCode != 204) {
+      throw Exception('Failed to delete friend');
+    }
+  }
+
 }
