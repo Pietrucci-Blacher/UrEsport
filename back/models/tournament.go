@@ -132,7 +132,7 @@ func (t *Tournament) RemoveAllTeams() error {
 	return DB.Model(t).Association("Teams").Clear()
 }
 
-func (r *Tournament) IsInTeam(team Team) bool {
+func (r *Tournament) HasTeam(team Team) bool {
 	for _, t := range r.Teams {
 		if t.ID == team.ID {
 			return true

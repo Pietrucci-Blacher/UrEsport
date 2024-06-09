@@ -114,7 +114,7 @@ func TestIsMember(t *testing.T) {
 	user, team := createSampleTeamData()
 	_ = team.AddMember(user)
 
-	assert.True(t, team.IsMember(user))
+	assert.True(t, team.HasMember(user))
 }
 
 func TestSaveTeam(t *testing.T) {
