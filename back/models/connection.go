@@ -86,3 +86,13 @@ type Model interface {
 	Save() error
 	Delete() error
 }
+
+// setup db connection for testing
+func setup() {
+	_ = ConnectDB(true)
+}
+
+// close db connection after testing
+func close() {
+	_ = CloseDB()
+}

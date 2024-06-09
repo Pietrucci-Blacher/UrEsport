@@ -234,6 +234,7 @@ func LeaveTeam(c *gin.Context) {
 //	@Router			/teams/{id}/invite [post]
 func InviteUserToTeam(c *gin.Context) {
 	var user models.User
+	var invit models.Invit
 
 	team, _ := c.MustGet("team").(*models.Team)
 	body, _ := c.MustGet("body").(models.InviteUserDto)
@@ -248,7 +249,12 @@ func InviteUserToTeam(c *gin.Context) {
 		return
 	}
 
-	if models.NewTeamInvit(team.ID).Save() != nil {
+	if err := invit.FindOneByTeamAndUser(team.ID, user.ID); err == nil {
+		c.JSON(http.StatusConflict, gin.H{"error": "User already invited"})
+		return
+	}
+
+	if models.NewTeamInvit(team.ID, user.ID).Save() != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while saving the invitation"})
 		return
 	}
@@ -318,6 +324,84 @@ func TogglePrivateTeam(c *gin.Context) {
 	team.TogglePrivate()
 
 	if err := team.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+// AcceptTeamInvitation godoc
+//
+//	@Summary		accept team invitation
+//	@Description	accept team invitation
+//	@Tags			team
+//	@Accept			json
+//	@Produce		json
+//	@Param			team	path	int	true	"Team ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/teams/{team}/accept [get]
+func AcceptTeamInvitation(c *gin.Context) {
+	var invit models.Invit
+
+	team, _ := c.MustGet("team").(*models.Team)
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
+
+	if team.IsMember(connectedUser) {
+		c.JSON(http.StatusConflict, gin.H{"error": "You are already a member of this team"})
+		return
+	}
+
+	if err := invit.FindOneByTeamAndUser(team.ID, connectedUser.ID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Invitation not found"})
+		return
+	}
+
+	if err := team.AddMember(connectedUser); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	invit.Status = models.ACCEPTED
+
+	if err := invit.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+// RejectTeamInvitation godoc
+//
+//	@Summary		reject team invitation
+//	@Description	reject team invitation
+//	@Tags			team
+//	@Accept			json
+//	@Produce		json
+//	@Param			team	path	int	true	"Team ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/teams/{team}/reject [get]
+func RejectTeamInvitation(c *gin.Context) {
+	var invit models.Invit
+
+	team, _ := c.MustGet("team").(*models.Team)
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
+
+	if err := invit.FindOneByTeamAndUser(team.ID, connectedUser.ID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Invitation not found"})
+		return
+	}
+
+	invit.Status = models.REJECTED
+
+	if err := invit.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

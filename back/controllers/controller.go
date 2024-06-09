@@ -163,6 +163,20 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Validate[models.InviteTeamDto](),
 				InviteTeamToTournament,
 			)
+			tournaments.GET("/:tournament/team/:team/accept",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				AcceptTournamentInvitation,
+			)
+			tournaments.GET("/:tournament/team/:team/reject",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				RejectTournamentInvitation,
+			)
 			tournaments.DELETE("/:tournament/team/:team/leave",
 				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.Tournament]("tournament"),
@@ -230,6 +244,16 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Validate[models.InviteUserDto](),
 				InviteUserToTeam,
 			)
+			teams.GET("/:team/accept",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				AcceptTeamInvitation,
+			)
+			teams.GET("/:team/reject",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				RejectTeamInvitation,
+			)
 			teams.DELETE("/:team/kick",
 				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.Team]("team"),
@@ -242,6 +266,18 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Get[*models.Team]("team"),
 				middlewares.IsTeamOwner(),
 				TogglePrivateTeam,
+			)
+		}
+
+		invit := api.Group("/invit")
+		{
+			invit.GET("/tournaments/:inout",
+				middlewares.IsLoggedIn(true),
+				GetInvitTournament,
+			)
+			invit.GET("/teams/:inout",
+				middlewares.IsLoggedIn(true),
+				GetInvitTeam,
 			)
 		}
 	}
