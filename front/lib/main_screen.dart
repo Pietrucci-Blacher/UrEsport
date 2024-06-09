@@ -13,6 +13,8 @@ import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:uresport/cubit/locale_cubit.dart';
+import 'package:uresport/shared/locale_switcher.dart';
 
 class MainScreen extends StatefulWidget {
   final IAuthService authService;
@@ -104,13 +106,11 @@ class MainScreenState extends State<MainScreen> {
                   ],
                 ),
                 actions: [
-                  if (kIsWeb)
-                    IconButton(
-                      icon: const Icon(Icons.language),
-                      onPressed: () {
-                        // Implement language switch logic here
-                      },
-                    ),
+                  LocaleSwitcher(
+                    onLocaleChanged: (locale) {
+                      context.read<LocaleCubit>().setLocale(locale);
+                    },
+                  ),
                 ],
               ),
               body: IndexedStack(

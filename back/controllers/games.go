@@ -3,7 +3,6 @@ package controllers
 import (
 	"challenge/models"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )

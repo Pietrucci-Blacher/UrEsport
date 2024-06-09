@@ -12,76 +12,82 @@ class GameDetailPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(game.name),
-      ),
-      body: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          GestureDetector(
-            onTap: () {
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite_border),
+            onPressed: () {
               showDialog(
                 context: context,
                 builder: (context) {
                   return AlertDialog(
-                    title: Text(game.name),
-                    content: Text(game.description),
+                    title: const Text('Follow Game'),
+                    content: const Text('Do you want to follow this game?'),
                     actions: [
                       TextButton(
                         onPressed: () {
                           Navigator.pop(context);
                         },
-                        child: const Text('Close'),
+                        child: const Text('Cancel'),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Implement follow logic here
+                          Navigator.pop(context);
+                        },
+                        child: const Text('Follow'),
                       ),
                     ],
                   );
                 },
               );
             },
-            child: Image.network(game.imageUrl, fit: BoxFit.cover),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(
-              'Game Description',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Text(game.description),
-          ),
-          Center(
-            child: ElevatedButton.icon(
-              icon: const Icon(Icons.favorite_border),
-              label: const Text('Follow'),
-              onPressed: () {
-                showDialog(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text('Follow Game'),
-                      content: const Text('Do you want to follow this game?'),
-                      actions: [
-                        TextButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Cancel'),
-                        ),
-                        TextButton(
-                          onPressed: () {
-                            // Implement follow logic here
-                            Navigator.pop(context);
-                          },
-                          child: const Text('Follow'),
-                        ),
-                      ],
-                    );
-                  },
-                );
-              },
-            ),
           ),
         ],
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Image.network(
+              game.imageUrl,
+              width: double.infinity,
+              height: 250,
+              fit: BoxFit.cover,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    'Game Description',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    game.description,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 20),
+                  Text(
+                    'Tags',
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const SizedBox(height: 10),
+                  Wrap(
+                    spacing: 8.0,
+                    runSpacing: 4.0,
+                    children: game.tags.map((tag) {
+                      return Chip(
+                        label: Text(tag),
+                      );
+                    }).toList(),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
       floatingActionButton: FilterButton(
         onFilterChanged: (selectedTags) {
