@@ -69,19 +69,19 @@ func GetTournament(c *gin.Context) {
 //	@Failure		500			{object}	utils.HttpError
 //	@Router			/tournaments/ [post]
 func CreateTournament(c *gin.Context) {
-	var tournament models.Tournament
-
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	body, _ := c.MustGet("body").(models.CreateTournamentDto)
 
-	tournament.Name = body.Name
-	tournament.Description = body.Description
-	tournament.Location = body.Location
-	tournament.Image = body.Image
-	tournament.StartDate = body.StartDate
-	tournament.EndDate = body.EndDate
-	tournament.OrganizerID = connectedUser.ID
-	tournament.Private = body.Private
+	tournament := models.Tournament{
+		Name:        body.Name,
+		Description: body.Description,
+		Location:    body.Location,
+		Image:       body.Image,
+		StartDate:   body.StartDate,
+		EndDate:     body.EndDate,
+		OwnerID:     connectedUser.ID,
+		Private:     body.Private,
+	}
 
 	if err := tournament.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -236,6 +236,7 @@ func LeaveTournament(c *gin.Context) {
 //	@Router			/tournaments/{id}/invite [post]
 func InviteTeamToTournament(c *gin.Context) {
 	var team models.Team
+	var invit models.Invit
 
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 	body, _ := c.MustGet("body").(models.InviteTeamDto)
@@ -250,7 +251,12 @@ func InviteTeamToTournament(c *gin.Context) {
 		return
 	}
 
-	if models.NewTournamentInvit(tournament.ID).Save() != nil {
+	if err := invit.FindOneByTournamentAndTeam(tournament.ID, team.ID); err == nil {
+		c.JSON(http.StatusConflict, gin.H{"error": "Team already invited"})
+		return
+	}
+
+	if models.NewTournamentInvit(tournament.ID, team.ID).Save() != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while saving invitation"})
 		return
 	}
@@ -311,6 +317,82 @@ func TogglePrivateTournament(c *gin.Context) {
 	tournament.TogglePrivate()
 
 	if err := tournament.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+// AcceptTournamentInvitation godoc
+//
+//	@Summary		accept tournament invitation
+//	@Description	accept tournament invitation
+//	@Tags			tournament
+//	@Param			tournament	path	int	true	"Tournament ID"
+//	@Param			team		path	int	true	"Team ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{tournament}/team/{team}/accept [get]
+func AcceptTournamentInvitation(c *gin.Context) {
+	var invit models.Invit
+
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+	team, _ := c.MustGet("team").(*models.Team)
+
+	if tournament.IsInTeam(*team) {
+		c.JSON(http.StatusConflict, gin.H{"error": "Team is already in this tournament"})
+		return
+	}
+
+	if err := invit.FindOneByTournamentAndTeam(tournament.ID, team.ID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Invitation not found"})
+		return
+	}
+
+	if err := tournament.AddTeam(*team); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	invit.Status = models.ACCEPTED
+
+	if err := invit.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
+// RejectTournamentInvitation godoc
+//
+//	@Summary		reject tournament invitation
+//	@Description	reject tournament invitation
+//	@Tags			tournament
+//	@Param			tournament	path	int	true	"Tournament ID"
+//	@Param			team		path	int	true	"Team ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{tournament}/team/{team}/reject [get]
+func RejectTournamentInvitation(c *gin.Context) {
+	var invit models.Invit
+
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+	team, _ := c.MustGet("team").(*models.Team)
+
+	if err := invit.FindOneByTournamentAndTeam(tournament.ID, team.ID); err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Invitation not found"})
+		return
+	}
+
+	invit.Status = models.REJECTED
+
+	if err := invit.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

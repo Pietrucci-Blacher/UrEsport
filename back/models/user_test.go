@@ -2,6 +2,7 @@ package models
 
 import (
 	"challenge/utils"
+	"strconv"
 	"testing"
 
 	faker "github.com/jaswdr/faker/v2"
@@ -10,7 +11,7 @@ import (
 
 var fake = faker.New()
 
-func TestSave(t *testing.T) {
+func TestUserSave(t *testing.T) {
 	var nbUsers int = 10
 	var result []User
 	var users []User
@@ -121,7 +122,16 @@ func TestFindAllUsers(t *testing.T) {
 		}
 	}
 
-	query := utils.NewQueryFilter(1, nbUsers, "", "", "")
+	params := map[string][]string{
+		"page":  {"1"},
+		"limit": {strconv.Itoa(nbUsers)},
+	}
+
+	query, err := utils.NewQueryFilter(params)
+	if err != nil {
+		t.Error(err)
+		return
+	}
 
 	result, err := FindAllUsers(query)
 	if err != nil {
@@ -172,7 +182,7 @@ func TestFindAllUsers(t *testing.T) {
 	}
 }
 
-func TestFindOneById(t *testing.T) {
+func TestUserFindOneById(t *testing.T) {
 	var user User
 	var result User
 

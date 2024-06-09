@@ -12,7 +12,8 @@ type Tournament struct {
 	StartDate   time.Time `json:"start_date"`
 	EndDate     time.Time `json:"end_date"`
 	Location    string    `json:"location" gorm:"type:varchar(100)"`
-	OrganizerID int       `json:"organizer" gorm:"foreignKey:ID"`
+	OwnerID     int       `json:"owner_id"`
+	Owner       User      `json:"owner" gorm:"foreignKey:OwnerID"`
 	Teams       []Team    `json:"teams" gorm:"many2many:tournament_teams;"`
 	Image       string    `json:"image" gorm:"type:varchar(255)"`
 	Private     bool      `json:"private" gorm:"default:false"`
@@ -48,7 +49,8 @@ type SanitizedTournament struct {
 	Location    string          `json:"location"`
 	Image       string          `json:"image"`
 	Private     bool            `json:"private"`
-	OrganizerID int             `json:"organizer"`
+	OwnerID     int             `json:"owner_id"`
+	Owner       SanitizedUser   `json:"owner"`
 	Teams       []SanitizedTeam `json:"teams"`
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
@@ -63,6 +65,19 @@ func FindAllTournaments(query utils.QueryFilter) ([]Tournament, error) {
 		Where(query.GetWhere()).
 		Order(query.GetSort()).
 		Preload("Teams").
+		Preload("Owner").
+		Find(&tournaments).Error
+
+	return tournaments, err
+}
+
+func FindTournamentsByUserID(userID int) ([]Tournament, error) {
+	var tournaments []Tournament
+
+	err := DB.Model(&Tournament{}).
+		Where("owner_id", userID).
+		Preload("Teams").
+		Preload("Owner").
 		Find(&tournaments).Error
 
 	return tournaments, err
@@ -80,7 +95,8 @@ func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {
 		Location:    t.Location,
 		Image:       t.Image,
 		Private:     t.Private,
-		OrganizerID: t.OrganizerID,
+		OwnerID:     t.OwnerID,
+		Owner:       t.Owner.Sanitize(false),
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
 	}
@@ -94,6 +110,10 @@ func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {
 	}
 
 	return tournament
+}
+
+func (t *Tournament) IsOwner(user User) bool {
+	return t.OwnerID == user.ID
 }
 
 func (t *Tournament) TogglePrivate() {
@@ -128,12 +148,14 @@ func (t *Tournament) Save() error {
 func (t *Tournament) FindOneById(id int) error {
 	return DB.Model(&Tournament{}).
 		Preload("Teams").
+		Preload("Owner").
 		First(&t, id).Error
 }
 
 func (t *Tournament) FindOne(key string, value any) error {
 	return DB.Model(&Tournament{}).
 		Preload("Teams").
+		Preload("Owner").
 		Where(key, value).
 		First(t).Error
 }

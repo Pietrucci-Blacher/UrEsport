@@ -13,7 +13,7 @@ func LoadTournaments() error {
 	}
 
 	for i := 0; i < TOURNAMENT_NB; i++ {
-		organizer := rand.Intn(USER_NB-1) + 1
+		owner := rand.Intn(USER_NB-1) + 1
 
 		tournament := models.Tournament{
 			Name:        fake.Lorem().Word(),
@@ -21,7 +21,7 @@ func LoadTournaments() error {
 			StartDate:   time.Now(),
 			EndDate:     time.Now().AddDate(0, 0, 7),
 			Location:    fake.Address().City(),
-			OrganizerID: organizer,
+			OwnerID:     owner,
 			Image:       fake.Lorem().Word(),
 			Private:     fake.Bool(),
 		}
