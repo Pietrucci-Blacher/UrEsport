@@ -6,7 +6,7 @@ import 'join_button.dart';
 import 'package:infinite_scroll_pagination/infinite_scroll_pagination.dart';
 
 class UserList extends StatefulWidget {
-  const UserList({Key? key}) : super(key: key);
+  const UserList({super.key});
 
   @override
   _UserListState createState() => _UserListState();
@@ -31,7 +31,7 @@ class _UserListState extends State<UserList> {
 
   Future<void> _fetchPage(int pageKey) async {
     try {
-      final int pageSize = 10; // Nombre d'utilisateurs par page
+      const int pageSize = 10; // Nombre d'utilisateurs par page
       final List<User> newItems = await UserService.fetchUsers(page: pageKey + 1, limit: pageSize);
 
       if (newItems.isEmpty) {

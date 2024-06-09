@@ -16,7 +16,7 @@ import 'package:uresport/widgets/qrcode.dart';
 import 'package:uresport/widgets/user_list.dart'; // Importer le NotificationProvider
 
 class MainScreen extends StatefulWidget {
-  const MainScreen({Key? key}) : super(key: key);
+  const MainScreen({super.key});
 
   @override
   MainScreenState createState() => MainScreenState();
@@ -116,19 +116,19 @@ class MainScreenState extends State<MainScreen> {
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => GamesScreen()),
+                          MaterialPageRoute(builder: (context) => const GamesScreen()),
                         );
                       },
-                      child: Text('Voir les jeux'),
+                      child: const Text('Voir les jeux'),
                     ),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => UserList()),
+                          MaterialPageRoute(builder: (context) => const UserList()),
                         );
                       },
-                      child: Text('Voir les utilisateurs'),
+                      child: const Text('Voir les utilisateurs'),
                     ),
                   ],
                 ),

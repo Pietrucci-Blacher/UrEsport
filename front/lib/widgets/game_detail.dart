@@ -8,7 +8,7 @@ import 'game_modify.dart';
 class GameDetailPage extends StatelessWidget {
   final Game game;
 
-  const GameDetailPage({Key? key, required this.game}) : super(key: key);
+  const GameDetailPage({super.key, required this.game});
   void _redirectToGamesPage(BuildContext context) {
     Navigator.pushReplacementNamed(context, '/games');
   }
@@ -36,11 +36,11 @@ class GameDetailPage extends StatelessWidget {
                   loadStateChanged: (state) {
                     switch (state.extendedImageLoadState) {
                       case LoadState.loading:
-                        return CircularProgressIndicator();
+                        return const CircularProgressIndicator();
                       case LoadState.completed:
                         return null;
                       case LoadState.failed:
-                        return Text('Failed to load image.');
+                        return const Text('Failed to load image.');
                     }
                   },
                 ),

@@ -6,7 +6,7 @@ class GameDeleteButton extends StatelessWidget {
   final Game game;
   final VoidCallback onDeleteSuccess; // Callback pour la redirection après la suppression réussie
 
-  const GameDeleteButton({Key? key, required this.game, required this.onDeleteSuccess}) : super(key: key);
+  const GameDeleteButton({super.key, required this.game, required this.onDeleteSuccess});
 
   Future<void> _deleteGame(BuildContext context) async {
     final url = 'http://10.0.2.2:8080/games/${game.id}';
@@ -33,19 +33,19 @@ class GameDeleteButton extends StatelessWidget {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Confirmation'),
-              content: Text('Voulez-vous vraiment supprimer ce jeu ?'),
+              title: const Text('Confirmation'),
+              content: const Text('Voulez-vous vraiment supprimer ce jeu ?'),
               actions: <Widget>[
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(false),
-                  child: Text('Annuler'),
+                  child: const Text('Annuler'),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.of(context).pop(true);
                     _deleteGame(context);
                   },
-                  child: Text('Supprimer'),
+                  child: const Text('Supprimer'),
                 ),
               ],
             );

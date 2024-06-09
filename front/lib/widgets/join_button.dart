@@ -4,7 +4,7 @@ import 'package:uresport/services/network_services.dart'; // Assurez-vous d'impo
 class JoinButton extends StatefulWidget {
   final String username;
 
-  const JoinButton({Key? key, required this.username}) : super(key: key);
+  const JoinButton({super.key, required this.username});
 
   @override
   _JoinButtonState createState() => _JoinButtonState();
@@ -33,7 +33,7 @@ class _JoinButtonState extends State<JoinButton> {
           context: context,
           builder: (BuildContext context) {
             return AlertDialog(
-              title: Text('Rejoindre le tournoi'),
+              title: const Text('Rejoindre le tournoi'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -50,7 +50,7 @@ class _JoinButtonState extends State<JoinButton> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Annuler'),
+                  child: const Text('Annuler'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -75,14 +75,14 @@ class _JoinButtonState extends State<JoinButton> {
                     }
                     Navigator.of(context).pop();
                   },
-                  child: Text('Rejoindre le tournoi'),
+                  child: const Text('Rejoindre le tournoi'),
                 ),
               ],
             );
           },
         );
       },
-      child: Text('Rejoindre le tournoi'),
+      child: const Text('Rejoindre le tournoi'),
     );
   }
 }

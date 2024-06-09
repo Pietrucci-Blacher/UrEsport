@@ -5,6 +5,8 @@ import '../../provider/NotificationProvider.dart';
 import '../../widgets/notification_card.dart';
 
 class NotificationsTab extends StatelessWidget {
+  const NotificationsTab({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Consumer<NotificationProvider>(
@@ -20,7 +22,7 @@ class NotificationsTab extends StatelessWidget {
               onDismissed: (direction) {
                 notificationProvider.removeNotification(index);
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
+                  const SnackBar(
                     content: Text('Notification supprimée'),
                   ),
                 );
@@ -28,8 +30,8 @@ class NotificationsTab extends StatelessWidget {
               background: Container(
                 color: Colors.red,
                 alignment: Alignment.centerRight,
-                padding: EdgeInsets.symmetric(horizontal: 20),
-                child: Icon(Icons.delete, color: Colors.white),
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: const Icon(Icons.delete, color: Colors.white),
               ),
               child: NotificationCard(
                 message: notification, imageUrl: notification,

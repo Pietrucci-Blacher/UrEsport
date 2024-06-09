@@ -2,12 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:uresport/services/network_services.dart';
 import 'package:uresport/services/notification_service.dart';
 import 'package:provider/provider.dart';
-import 'package:uresport/l10n/app_localizations.dart';
 
 class InviteButton extends StatefulWidget {
   final String username;
 
-  const InviteButton({Key? key, required this.username}) : super(key: key);
+  const InviteButton({super.key, required this.username});
 
   @override
   _InviteButtonState createState() => _InviteButtonState();
@@ -53,7 +52,7 @@ class _InviteButtonState extends State<InviteButton> {
                   onPressed: () {
                     Navigator.of(context).pop();
                   },
-                  child: Text('Annuler'),
+                  child: const Text('Annuler'),
                 ),
                 ElevatedButton(
                   onPressed: () {
@@ -85,7 +84,7 @@ class _InviteButtonState extends State<InviteButton> {
                     }
                     Navigator.of(context).pop();
                   },
-                  child: Text('Envoyer l\'invitation'),
+                  child: const Text('Envoyer l\'invitation'),
                 ),
               ],
             );
