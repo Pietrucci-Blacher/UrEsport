@@ -19,6 +19,8 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
 
   int get currentUserId => 21;
 
+  get direction => null;
+
   @override
   void initState() {
     super.initState();
@@ -49,6 +51,16 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
     }
   }
 
+  void deleteFriend(Friend friend) async {
+    try {
+      await FriendService.deleteFriend(currentUserId, friend.id);
+      setState(() {
+        friends.remove(friend);
+      });
+    } catch (e) {
+      print('Failed to delete friend: $e');
+    }
+  }
 
 
   void navigateToFriendDetails(Friend friend) {
@@ -153,23 +165,36 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
                           ),
                           ...entry.value.map((friend) => Dismissible(
                             key: UniqueKey(),
-                            direction: DismissDirection.startToEnd,
+                            direction: DismissDirection.horizontal,
                             onDismissed: (direction) {
-                              setState(() {
+                              if (direction == DismissDirection.endToStart) {
+                                // Supprime l'ami de la liste d'amis
+                                deleteFriend(friend);
+                              } else {
+                                // Met à jour le statut favori de l'ami
                                 toggleFavorite(friend);
-                              });
+                              }
                             },
                             background: Container(
-                              color: Colors.green,
+                              color: Colors.green, // Couleur rouge pour la suppression de l'ami
                               alignment: Alignment.centerLeft,
                               padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: const Icon(Icons.star, color: Colors.white),
+                            ),
+                            secondaryBackground: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.symmetric(horizontal: 20),
+                              child: const Icon(Icons.remove_circle, color: Colors.white),
                             ),
                             child: GestureDetector(
                               onTap: () => navigateToFriendDetails(friend),
                               child: FriendListTile(name: friend.name),
                             ),
                           )),
+
+
+
                         ];
                       }),
                     ],
