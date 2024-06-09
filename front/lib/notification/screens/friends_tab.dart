@@ -2,12 +2,12 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:uresport/services/friends_services.dart';
 import 'package:uresport/models/friend.dart';
-import '../../widgets/friend_list_tile.dart';
-import 'friends_add.dart';
-import 'friends_details.dart';
+import 'package:uresport/widgets/friend_list_tile.dart';
+import 'package:uresport/notification/screens/friends_add.dart';
+import 'package:uresport/notification/screens/friends_details.dart';
 
 class FriendsTab extends StatefulWidget {
-  const FriendsTab({super.key});
+  const FriendsTab({Key? key}) : super(key: key);
 
   @override
   _FriendsTabState createState() => _FriendsTabState();
@@ -19,8 +19,6 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
   bool isSorted = false;
 
   int get currentUserId => 21;
-
-  get direction => null;
 
   @override
   void initState() {
@@ -54,7 +52,7 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
     }
   }
 
-  void deleteFriend(Friend friend) async {
+  Future<void> deleteFriend(Friend friend) async {
     try {
       await FriendService.deleteFriend(currentUserId, friend.id);
       setState(() {
@@ -66,7 +64,6 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
       }
     }
   }
-
 
   void navigateToFriendDetails(Friend friend) {
     Navigator.push(
@@ -159,6 +156,13 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
                           child: FriendListTile(name: friend.name),
                         ),
                       )),
+                      const Padding(
+                        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        child: Text(
+                          'Amis',
+                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                      ),
                       ...groupedFriends.entries.expand((entry) {
                         return [
                           Padding(
@@ -171,35 +175,57 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
                           ...entry.value.map((friend) => Dismissible(
                             key: UniqueKey(),
                             direction: DismissDirection.horizontal,
-                            onDismissed: (direction) {
+                            confirmDismiss: (direction) async {
+                              if (direction == DismissDirection.endToStart) {
+                                return await showDialog<bool>(
+                                  context: context,
+                                  builder: (BuildContext context) {
+                                    return AlertDialog(
+                                      title: const Text('Confirmation'),
+                                      content: Text('Voulez-vous vraiment supprimer ${friend.name} de vos amis ?'),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.of(context).pop(false),
+                                          child: const Text('Non'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => Navigator.of(context).pop(true),
+                                          child: const Text('Oui'),
+                                        ),
+                                      ],
+                                    );
+                                  },
+                                ) ?? false;
+                              } else {
+                                return true;
+                              }
+                            },
+                            onDismissed: (direction) async {
                               if (direction == DismissDirection.endToStart) {
                                 // Supprime l'ami de la liste d'amis
-                                deleteFriend(friend);
+                                await deleteFriend(friend);
                               } else {
                                 // Met à jour le statut favori de l'ami
                                 toggleFavorite(friend);
                               }
                             },
                             background: Container(
-                              color: Colors.green, // Couleur rouge pour la suppression de l'ami
+                              color: Colors.green, // Couleur verte pour mettre en favori
                               alignment: Alignment.centerLeft,
                               padding: const EdgeInsets.symmetric(horizontal: 20),
                               child: const Icon(Icons.star, color: Colors.white),
                             ),
                             secondaryBackground: Container(
-                              color: Colors.red,
+                              color: Colors.red, // Couleur rouge pour supprimer l'ami
                               alignment: Alignment.centerRight,
                               padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: const Icon(Icons.remove_circle, color: Colors.white),
+                              child: const Icon(Icons.delete, color: Colors.white),
                             ),
                             child: GestureDetector(
                               onTap: () => navigateToFriendDetails(friend),
                               child: FriendListTile(name: friend.name),
                             ),
                           )),
-
-
-
                         ];
                       }),
                     ],
@@ -218,10 +244,11 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
               builder: (context) => const AddFriendPage(userId: 21, currentUser: 'ilies'),
             ),
           );
-          loadFriends();
+          loadFriends(); // Rechargez la liste des amis après que l'utilisateur ait ajouté un nouvel ami
         },
         child: const Icon(Icons.person_add),
       ),
+
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }

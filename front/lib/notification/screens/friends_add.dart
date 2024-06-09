@@ -3,7 +3,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import '../../provider/NotificationProvider.dart';
+import 'package:uresport/provider/NotificationProvider.dart';
+import 'package:uresport/widgets/custom_toast.dart'; // Importer le widget personnalisé
 
 class AddFriendPage extends StatefulWidget {
   final int userId;
@@ -48,6 +49,29 @@ class _AddFriendPageState extends State<AddFriendPage> {
     });
   }
 
+  void showNotificationToast(BuildContext context, String message, {Color? backgroundColor, Color? textColor}) {
+    final overlay = Overlay.of(context)!;
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => CustomToast(
+        message: message,
+        backgroundColor: backgroundColor ?? Colors.green, // Valeur par défaut pour la couleur de fond
+        textColor: textColor ?? Colors.white, // Valeur par défaut pour la couleur du texte
+        onClose: () {
+          overlayEntry.remove();
+        },
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
+  }
+
+
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -85,12 +109,17 @@ class _AddFriendPageState extends State<AddFriendPage> {
                     final currentUser = widget.currentUser;
                     final response = await http.post(Uri.parse('${dotenv.env['API_ENDPOINT']}/users/${widget.userId}/friends/$friendId'));
                     if (response.statusCode == 200) {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Ami ajouté avec succes')));
+                      showNotificationToast(context, 'Ami ajouté avec succès');
                       // Envoie une notification
                       Provider.of<NotificationProvider>(context, listen: false)
-                          .addNotification('$currentUser vous à ajouté en ami: ${user['firstname']}');
+                          .addNotification('$currentUser vous a ajouté en ami: ${user['firstname']}');
                     } else {
-                      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Erreur lors de l\'ajout de l\'ami ou ami déjà ajouté')));
+                      showNotificationToast(
+                        context,
+                        'Erreur lors de l\'ajout de l\'ami ou ami déjà ajouté',
+                        backgroundColor: Colors.red, // Couleur de fond du toast
+                        textColor: Colors.white,     // Couleur du texte du toast
+                      );
                     }
                   },
                 );

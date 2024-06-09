@@ -40,13 +40,13 @@ void main() {
         ),
       );
 
-      await tester.enterText(find.byType(TextField).at(0), 'test@example.com');
+      await tester.enterText(find.byType(TextField).at(0), 'test.dart@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'password');
       await tester.tap(find.byType(ElevatedButton));
       await tester.pump();
 
       verify(mockAuthService.login(
-        LoginRequest(email: 'test@example.com', password: 'password'),
+        LoginRequest(email: 'test.dart@example.com', password: 'password'),
       )).called(1);
     });
   });
