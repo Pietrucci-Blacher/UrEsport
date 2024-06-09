@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uresport/services/notification_service.dart';
+
+import '../../provider/NotificationProvider.dart';
 import '../../widgets/notification_card.dart';
 
 class NotificationsTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Consumer<NotificationService>(
-      builder: (context, notificationService, child) {
-        final notifications = notificationService.notifications;
+    return Consumer<NotificationProvider>(
+      builder: (context, notificationProvider, child) {
+        final notifications = notificationProvider.notifications;
         return ListView.builder(
           itemCount: notifications.length,
           itemBuilder: (context, index) {
@@ -17,7 +18,7 @@ class NotificationsTab extends StatelessWidget {
               key: UniqueKey(),
               direction: DismissDirection.endToStart,
               onDismissed: (direction) {
-                notificationService.removeNotification(index);
+                notificationProvider.removeNotification(index);
                 ScaffoldMessenger.of(context).showSnackBar(
                   SnackBar(
                     content: Text('Notification supprimée'),
@@ -31,8 +32,8 @@ class NotificationsTab extends StatelessWidget {
                 child: Icon(Icons.delete, color: Colors.white),
               ),
               child: NotificationCard(
-                imageUrl: notification['image']!,
-                message: notification['message']!,
+                message: notification, imageUrl: notification,
+                // Ajoutez la logique pour récupérer l'image si nécessaire
               ),
             );
           },

@@ -3,7 +3,9 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:uresport/services/notification_service.dart'; // Assurez-vous que le chemin est correct
+import 'package:uresport/services/notification_service.dart';
+
+import '../../provider/NotificationProvider.dart'; // Assurez-vous que le chemin est correct
 
 class AddFriendPage extends StatefulWidget {
   final int userId;
@@ -87,8 +89,8 @@ class _AddFriendPageState extends State<AddFriendPage> {
                     if (response.statusCode == 200) {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Friend added successfully')));
                       // Envoie une notification
-                      Provider.of<NotificationService>(context, listen: false)
-                          .addNotification('$currentUser vous à ajouté en ami: ${user['firstname']}', ''); // Ajoutez l'URL de l'image si nécessaire
+                      Provider.of<NotificationProvider>(context, listen: false)
+                          .addNotification('$currentUser vous à ajouté en ami: ${user['firstname']}');
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Failed to add friend')));
                     }
