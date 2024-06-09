@@ -20,10 +20,11 @@ var (
 	USER_NB       = 20
 	USER_ROLES    = []string{models.ROLE_USER, models.ROLE_ADMIN}
 
-	TOURNAMENT_NB              = 10
-	TOURNAMENT_PARTICIPANTS_NB = 5
+	TOURNAMENT_NB      = 10
+	TOURNAMENT_TEAM_NB = 5
 
-	GAME_NB = 10
+	TEAM_NB         = 10
+	TEAM_MEMBERS_NB = 4
 )
 
 func ImportFixtures() error {
@@ -35,11 +36,11 @@ func ImportFixtures() error {
 		return err
 	}
 
-	if err := LoadTournaments(); err != nil {
+	if err := LoadTeams(); err != nil {
 		return err
 	}
 
-	if err := LoadGames(); err != nil {
+	if err := LoadTournaments(); err != nil {
 		return err
 	}
 
