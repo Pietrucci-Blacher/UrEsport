@@ -1,59 +1,53 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="$FLUTTER_BASE_HREF">
 
   <meta charset="UTF-8">
-  <meta content="IE=Edge" http-equiv="X-UA-Compatible">
-  <meta name="description" content="A new Flutter project.">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <!-- iOS meta tags & icons -->
+  <!-- SEO meta tags -->
+  <meta name="description" content="A new Flutter project offering unique sports experiences and insights.">
+  <meta name="keywords" content="Flutter, sports, experiences, insights, uresport">
+  <meta name="author" content="uresport team">
+
+  <!-- Open Graph meta tags for social media sharing -->
+  <meta property="og:title" content="uresport - Unique Sports Experiences">
+  <meta property="og:description" content="Discover unique sports experiences and insights with uresport.">
+  <meta property="og:image" content="icons/Icon-192.png">
+  <meta property="og:url" content="https://www.uresport.com">
+  <meta property="og:type" content="website">
+
+  <!-- Twitter card meta tags -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="uresport - Unique Sports Experiences">
+  <meta name="twitter:description" content="Discover unique sports experiences and insights with uresport.">
+  <meta name="twitter:image" content="icons/Icon-192.png">
+
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
   <meta name="apple-mobile-web-app-title" content="uresport">
   <link rel="apple-touch-icon" href="icons/Icon-192.png">
 
-  <!-- Favicon -->
   <link rel="icon" type="image/png" href="favicon.png"/>
 
-  <title>uresport</title>
+  <title>uresport - Unique ESports Experiences</title>
   <link rel="manifest" href="manifest.json">
 
+  <!-- Flutter service worker version injected by build -->
   <script>
-    // The value below is injected by flutter build, do not touch.
-    const serviceWorkerVersion = null;
+    const serviceWorkerVersion = null; // Injected by flutter build
   </script>
-  <!-- This script adds the flutter initialization JS code -->
+  <!-- Flutter initialization script -->
   <script src="flutter.js" defer></script>
 </head>
+
 <body>
-  <script>
-    window.addEventListener('load', function(ev) {
-      // Download main.dart.js
-      _flutter.loader.loadEntrypoint({
-        serviceWorker: {
-          serviceWorkerVersion: serviceWorkerVersion,
-        },
-        onEntrypointLoaded: function(engineInitializer) {
-          engineInitializer.initializeEngine().then(function(appRunner) {
-            appRunner.runApp();
-          });
-        }
-      });
-    });
-  </script>
+<noscript>
+  <p>JavaScript is required to run this application. Please enable JavaScript in your browser settings and refresh the page.</p>
+</noscript>
+
+<script src="flutter_bootstrap.js" async></script>
 </body>
 </html>

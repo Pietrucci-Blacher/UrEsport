@@ -37,5 +37,6 @@
   "gameScreenWelcome": "¡Bienvenido a la pantalla de juegos!",
   "gameScreenTitle": "Juegos",
   "modifyGameButton": "Modificar el juego",
-  "deleteGameButton": "Eliminar el juego"
+  "deleteGameButton": "Eliminar el juego",
+    "resendCode": "Reenviar el código"
 }

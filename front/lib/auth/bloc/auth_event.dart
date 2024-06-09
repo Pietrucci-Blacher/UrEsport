@@ -42,6 +42,11 @@ class PasswordResetRequested extends AuthEvent {
   PasswordResetRequested(this.email);
 }
 
+class VerificationRequested extends AuthEvent {
+  final String email;
+  VerificationRequested(this.email);
+}
+
 class PasswordResetConfirmRequested extends AuthEvent {
   final String code;
   final String newPassword;

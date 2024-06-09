@@ -38,4 +38,5 @@
   "gameScreenTitle": "Games",
   "modifyGameButtonTitle": "Modify Game",
   "deleteGameButtonTitle": "Delete Game"
+  "resendCode": "Resend code"
 }

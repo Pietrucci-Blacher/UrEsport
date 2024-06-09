@@ -3,6 +3,7 @@ package middlewares
 import (
 	"challenge/models"
 	"net/http"
+	"reflect"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
@@ -33,21 +34,23 @@ func Validate[T any]() gin.HandlerFunc {
 func Get[T models.Model](name string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		var model T
+		var err error
 
-		id, err := strconv.Atoi(c.Param("id"))
+		id, err := strconv.Atoi(c.Param(name))
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
 			c.Abort()
 			return
 		}
 
-		if err := model.FindOneById(id); err != nil {
+		instance := reflect.New(reflect.TypeOf(model).Elem()).Interface().(models.Model)
+		if instance.FindOneById(id) != nil {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Not Found"})
 			c.Abort()
 			return
 		}
 
-		c.Set(name, model)
+		c.Set(name, instance)
 		c.Next()
 	}
 }

@@ -260,6 +260,14 @@ class AppLocalizations {
     );
   }
 
+  String get resendCode {
+    return Intl.message(
+      'Resend Code',
+      name: 'resendCode',
+      desc: 'Resend code title',
+    );
+  }
+
   String get inviteButtonTitle {
     return Intl.message(
       'Invite',

@@ -49,7 +49,7 @@ func GetUsers(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/users/{id} [get]
 func GetUser(c *gin.Context) {
-	user, _ := c.MustGet("findedUser").(models.User)
+	user, _ := c.MustGet("user").(*models.User)
 
 	sanitized := user.Sanitize(true)
 
@@ -66,7 +66,7 @@ func GetUser(c *gin.Context) {
 //	@Success		200	{object}	models.SanitizedUser
 //	@Router			/users/me [get]
 func GetUserMe(c *gin.Context) {
-	connectedUser, _ := c.MustGet("user").(models.User)
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	c.JSON(http.StatusOK, connectedUser)
 }
 
@@ -86,7 +86,7 @@ func GetUserMe(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/users/{id} [patch]
 func UpdateUser(c *gin.Context) {
-	user, _ := c.MustGet("findedUser").(models.User)
+	user, _ := c.MustGet("user").(*models.User)
 	body, _ := c.MustGet("body").(models.UpdateUserDto)
 
 	if count, err := models.CountUsersByEmail(body.Email); err != nil || count > 0 {
@@ -136,7 +136,7 @@ func UpdateUser(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/users/{id} [delete]
 func DeleteUser(c *gin.Context) {
-	user, _ := c.MustGet("findedUser").(models.User)
+	user, _ := c.MustGet("user").(*models.User)
 
 	if err := user.Delete(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
