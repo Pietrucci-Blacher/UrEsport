@@ -137,12 +137,12 @@ func TestRemoveAllTeams(t *testing.T) {
 	assert.Equal(t, 0, len(tournament.Teams))
 }
 
-func TestIsInTeam(t *testing.T) {
+func TestHasTeam(t *testing.T) {
 	setup()
 	defer close()
 	_, team, tournament := createSampleData()
 
-	assert.True(t, tournament.IsInTeam(team))
+	assert.True(t, tournament.HasTeam(team))
 }
 
 func TestTournamentSave(t *testing.T) {

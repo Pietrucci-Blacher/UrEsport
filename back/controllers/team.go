@@ -169,7 +169,7 @@ func JoinTeam(c *gin.Context) {
 		return
 	}
 
-	if team.IsMember(connectedUser) {
+	if team.HasMember(connectedUser) {
 		c.JSON(http.StatusConflict, gin.H{"error": "You are already a member of this team"})
 		return
 	}
@@ -204,7 +204,7 @@ func LeaveTeam(c *gin.Context) {
 		return
 	}
 
-	if !team.IsMember(connectedUser) {
+	if !team.HasMember(connectedUser) {
 		c.JSON(http.StatusConflict, gin.H{"error": "You are not a member of this team"})
 		return
 	}
@@ -244,7 +244,7 @@ func InviteUserToTeam(c *gin.Context) {
 		return
 	}
 
-	if team.IsMember(user) {
+	if team.HasMember(user) {
 		c.JSON(http.StatusConflict, gin.H{"error": "User is already a member of this team"})
 		return
 	}
@@ -292,7 +292,7 @@ func KickUserFromTeam(c *gin.Context) {
 		return
 	}
 
-	if !team.IsMember(user) {
+	if !team.HasMember(user) {
 		c.JSON(http.StatusConflict, gin.H{"error": "User is not a member of this team"})
 		return
 	}
@@ -350,7 +350,7 @@ func AcceptTeamInvitation(c *gin.Context) {
 	team, _ := c.MustGet("team").(*models.Team)
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
-	if team.IsMember(connectedUser) {
+	if team.HasMember(connectedUser) {
 		c.JSON(http.StatusConflict, gin.H{"error": "You are already a member of this team"})
 		return
 	}
