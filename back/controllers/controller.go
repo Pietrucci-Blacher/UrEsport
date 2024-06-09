@@ -297,8 +297,8 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsAdmin(),
 				middlewares.Get[*models.Game]("game"),
 				DeleteGame,
-       )
-		}           
+			)
+		}
 		invit := api.Group("/invit")
 		{
 			invit.GET("/tournaments/:inout",
