@@ -9,7 +9,8 @@ class UserList extends StatelessWidget {
   final String tournamentId;
   final AuthService authService;
 
-  const UserList({super.key, required this.tournamentId, required this.authService});
+  const UserList(
+      {super.key, required this.tournamentId, required this.authService});
 
   @override
   Widget build(BuildContext context) {
