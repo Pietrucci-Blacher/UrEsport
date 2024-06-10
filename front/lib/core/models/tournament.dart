@@ -1,3 +1,5 @@
+import 'package:uresport/core/models/team.dart';
+
 class Tournament {
   final int id;
   final String name;
@@ -7,8 +9,8 @@ class Tournament {
   final String location;
   final String image;
   final bool isPrivate;
-  final int organizer;
-  final List<Participant> participants;
+  final int owner;
+  final List<Team> teams;
 
   Tournament({
     required this.id,
@@ -19,8 +21,8 @@ class Tournament {
     required this.location,
     required this.image,
     required this.isPrivate,
-    required this.organizer,
-    required this.participants,
+    required this.owner,
+    required this.teams,
   });
 
   factory Tournament.fromJson(Map<String, dynamic> json) {
@@ -33,9 +35,9 @@ class Tournament {
       location: json['location'],
       image: json['image'],
       isPrivate: json['private'],
-      organizer: json['organizer'],
-      participants: (json['participants'] as List)
-          .map((participant) => Participant.fromJson(participant))
+      owner: json['owner'],
+      teams: (json['teams'] as List)
+          .map((participant) => Team.fromJson(participant))
           .toList(),
     );
   }
@@ -50,9 +52,9 @@ class Tournament {
       'location': location,
       'image': image,
       'private': isPrivate,
-      'organizer': organizer,
-      'participants':
-          participants.map((participant) => participant.toJson()).toList(),
+      'owner': owner,
+      'teams':
+          teams.map((team) => team.toJson()).toList(),
     };
   }
 }
