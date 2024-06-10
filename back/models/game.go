@@ -2,40 +2,48 @@ package models
 
 import (
 	"time"
+
+	"github.com/lib/pq"
 )
 
 type Game struct {
-	ID          int       `json:"id" gorm:"primaryKey"`
-	Name        string    `json:"name" gorm:"type:varchar(100)"`
-	Description string    `json:"description" gorm:"type:varchar(255)"`
-	Image       string    `json:"image" gorm:"type:varchar(255)"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int            `json:"id" gorm:"primaryKey"`
+	Name        string         `json:"name" gorm:"type:varchar(100)"`
+	Description string         `json:"description" gorm:"type:varchar(255)"`
+	Image       string         `json:"image" gorm:"type:varchar(255)"`
+	Tags        pq.StringArray `json:"tags" gorm:"type:text[]"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
 }
 
 type CreateGameDto struct {
-	Name        string `json:"name" validate:"required"`
-	Description string `json:"description" validate:"required"`
-	Image       string `json:"image" validate:"required"`
+	Name        string   `json:"name" validate:"required"`
+	Description string   `json:"description" validate:"required"`
+	Image       string   `json:"image" validate:"required"`
+	Tags        []string `json:"tags" validate:"required"`
 }
 
 type UpdateGameDto struct {
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Image       string `json:"image"`
-}
-
-type SanitizedGame struct {
-	ID          int    `json:"id"`
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	Image       string `json:"image"`
+	Name        string   `json:"name"`
+	Description string   `json:"description"`
+	Image       string   `json:"image"`
+	Tags        []string `json:"tags"`
 }
 
 func FindAllGames() ([]Game, error) {
 	var games []Game
 	err := DB.Find(&games).Error
 	return games, err
+}
+
+func CountGameByName(name string) (int64, error) {
+	var count int64
+
+	err := DB.Model(&Game{}).
+		Where("name = ?", name).
+		Count(&count).Error
+
+	return count, err
 }
 
 func (g *Game) Save() error {
@@ -52,34 +60,6 @@ func (g *Game) FindOne(key string, value interface{}) error {
 
 func (g *Game) Delete() error {
 	return DB.Delete(g).Error
-}
-
-func (g *Game) GetTournaments() ([]Tournament, error) {
-	var tournaments []Tournament
-	err := DB.Model(&g).Association("Tournaments").Find(&tournaments)
-	return tournaments, err
-}
-
-func (g *Game) AddTournament(tournament Tournament) error {
-	return DB.Model(&g).Association("Tournaments").Append(&tournament)
-}
-
-func (g *Game) RemoveTournament(tournament Tournament) error {
-	return DB.Model(&g).Association("Tournaments").Delete(&tournament)
-}
-
-func (g *Game) GetParticipants() ([]User, error) {
-	var participants []User
-	err := DB.Model(&g).Association("Participants").Find(&participants)
-	return participants, err
-}
-
-func (g *Game) AddParticipant(user User) error {
-	return DB.Model(&g).Association("Participants").Append(&user)
-}
-
-func (g *Game) RemoveParticipant(user User) error {
-	return DB.Model(&g).Association("Participants").Delete(&user)
 }
 
 func ClearGames() error {

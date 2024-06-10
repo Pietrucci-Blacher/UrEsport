@@ -1,10 +1,11 @@
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:uresport/core/models/login_request.dart';
 import 'package:uresport/core/models/register_request.dart';
-import 'package:uresport/auth/bloc/auth_state.dart';
+import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/cache_service.dart';
 
 abstract class IAuthService {
@@ -14,6 +15,7 @@ abstract class IAuthService {
   Future<void> logout();
   Future<void> loginWithOAuth(String provider);
   Future<User> getUser();
+  Future<List<User>> fetchUsers();
   Future<void> verifyCode(String email, String code);
   Future<void> requestPasswordReset(String email);
   Future<void> requestVerification(String email);
@@ -186,10 +188,9 @@ class AuthService implements IAuthService {
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    final token = parseTokenFromResult(
-        result); // Implémentez parseTokenFromResult pour extraire le token
+    final token = parseTokenFromResult(result);
     if (token != null) {
-      await setToken(token); // Utilisation du token
+      await setToken(token);
     } else {
       throw Exception('Failed to retrieve Twitch access token');
     }
@@ -210,18 +211,24 @@ class AuthService implements IAuthService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        return User(
-          firstName: data['firstname'],
-          lastName: data['lastname'],
-          username: data['username'],
-          email: data['email'],
-        );
+        return User.fromJson(data);
       } else {
         throw Exception('Failed to load user data');
       }
     } catch (e) {
       await logout();
       throw Exception('Failed to load user data: $e');
+    }
+  }
+
+  @override
+  Future<List<User>> fetchUsers() async {
+    final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.data.toString());
+      return jsonResponse.map((user) => User.fromJson(user)).toList();
+    } else {
+      throw Exception('Failed to load users');
     }
   }
 

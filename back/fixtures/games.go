@@ -3,6 +3,8 @@ package fixtures
 import (
 	"challenge/models"
 	"fmt"
+
+	"github.com/lib/pq"
 )
 
 func LoadGames() error {
@@ -14,7 +16,8 @@ func LoadGames() error {
 		game := models.Game{
 			Name:        fake.Lorem().Word(),
 			Description: fake.Lorem().Sentence(20),
-			Image:       fake.Internet().URL(),
+			Image:       fmt.Sprintf("https://picsum.photos/seed/%d/200/300", i),
+			Tags:        pq.StringArray{"RPG", "Aventure"},
 		}
 
 		if err := game.Save(); err != nil {

@@ -24,6 +24,10 @@ class CustomBottomNavigation extends StatelessWidget {
           label: AppLocalizations.of(context).homeScreenTitle,
         ),
         BottomNavigationBarItem(
+          icon: const Icon(Icons.games),
+          label: AppLocalizations.of(context).gameScreenTitle,
+        ),
+        BottomNavigationBarItem(
           icon: const Icon(Icons.sports_esports),
           label: AppLocalizations.of(context).tournamentScreenTitle,
         ),
@@ -60,15 +64,6 @@ class CustomBottomNavigation extends StatelessWidget {
           ),
           label: AppLocalizations.of(context).notificationScreenTitle,
         ),
-
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.person),
-          label: AppLocalizations.of(context).profileScreenTitle,
-        ),
-        /*BottomNavigationBarItem(
-          icon: Icon(Icons.person),
-          label: 'QRCode',
-        ),*/
       ],
       currentIndex: selectedIndex,
       selectedItemColor: Colors.blue[800],
