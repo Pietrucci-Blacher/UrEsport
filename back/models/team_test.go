@@ -1,7 +1,7 @@
 package models
 
 import (
-	"challenge/utils"
+	"challenge/services"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -35,7 +35,7 @@ func TestFindAllTeams(t *testing.T) {
 	_, _ = createSampleTeamData()
 
 	params := map[string][]string{}
-	query, _ := utils.NewQueryFilter(params)
+	query, _ := services.NewQueryFilter(params)
 	teams, err := FindAllTeams(query)
 
 	assert.Nil(t, err)

@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"challenge/models"
-	"challenge/utils"
+	"challenge/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,7 @@ import (
 func GetTeams(c *gin.Context) {
 	var sanitized []models.SanitizedTeam
 
-	query, _ := c.MustGet("query").(utils.QueryFilter)
+	query, _ := c.MustGet("query").(services.QueryFilter)
 
 	teams, err := models.FindAllTeams(query)
 	if err != nil {
