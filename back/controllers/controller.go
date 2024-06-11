@@ -4,6 +4,7 @@ import (
 	"challenge/docs"
 	"challenge/middlewares"
 	"challenge/models"
+	"challenge/utils"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -131,6 +132,13 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsLoggedIn(true),
 				middlewares.Validate[models.CreateTournamentDto](),
 				CreateTournament,
+			)
+			tournaments.POST("/:tournament/image",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.IsTournamentOwner(),
+				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
+				UploadTournamentImage,
 			)
 			tournaments.GET("/:tournament",
 				middlewares.Get[*models.Tournament]("tournament"),
@@ -299,6 +307,7 @@ func RegisterRoutes(r *gin.Engine) {
 				DeleteGame,
 			)
 		}
+
 		invit := api.Group("/invit")
 		{
 			invit.GET("/tournaments/:inout",

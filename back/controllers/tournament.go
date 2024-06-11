@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"challenge/models"
-	"challenge/utils"
+	"challenge/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,7 @@ import (
 func GetTournaments(c *gin.Context) {
 	var sanitized []models.SanitizedTournament
 
-	query, _ := c.MustGet("query").(utils.QueryFilter)
+	query, _ := c.MustGet("query").(services.QueryFilter)
 
 	tournaments, err := models.FindAllTournaments(query)
 	if err != nil {
@@ -76,7 +76,6 @@ func CreateTournament(c *gin.Context) {
 		Name:        body.Name,
 		Description: body.Description,
 		Location:    body.Location,
-		Image:       body.Image,
 		StartDate:   body.StartDate,
 		EndDate:     body.EndDate,
 		OwnerID:     connectedUser.ID,
@@ -119,9 +118,6 @@ func UpdateTournament(c *gin.Context) {
 	if body.Location != "" {
 		tournament.Location = body.Location
 	}
-	if body.Image != "" {
-		tournament.Image = body.Image
-	}
 	if !body.StartDate.IsZero() {
 		tournament.StartDate = body.StartDate
 	}
@@ -135,6 +131,35 @@ func UpdateTournament(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, tournament)
+}
+
+// UpdateTournamentImage godoc
+//
+//	@Summary		update tournament image
+//	@Description	update tournament image
+//	@Tags			tournament
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Param			tournament		path	int		true	"Tournament ID"
+//	@Param			upload[]		formData	file	true	"Image"
+//	@Success		200			{object}	models.SanitizedTournament
+//	@Failure		400			{object}	utils.HttpError
+//	@Failure		401			{object}	utils.HttpError
+//	@Failure		404			{object}	utils.HttpError
+//	@Failure		500			{object}	utils.HttpError
+//	@Router			/tournaments/{tournament}/image [post]
+func UploadTournamentImage(c *gin.Context) {
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+	files, _ := c.MustGet("files").([]string)
+
+	tournament.Image = files[0]
+
+	if err := tournament.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, tournament.Sanitize(false))
 }
 
 // DeleteTournament godoc
