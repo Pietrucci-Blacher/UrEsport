@@ -51,7 +51,8 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      create: (context) =>
+          AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthInitial) {
@@ -72,8 +73,8 @@ class MainScreenState extends State<MainScreen> {
                       IconButton(
                         icon: isLoggedIn && profileImageUrl != null
                             ? CircleAvatar(
-                          backgroundImage: NetworkImage(profileImageUrl),
-                        )
+                                backgroundImage: NetworkImage(profileImageUrl),
+                              )
                             : const Icon(Icons.person),
                         onPressed: () {
                           if (isLoggedIn) {
@@ -120,10 +121,10 @@ class MainScreenState extends State<MainScreen> {
               bottomNavigationBar: kIsWeb
                   ? null
                   : CustomBottomNavigation(
-                isLoggedIn: isLoggedIn,
-                selectedIndex: _selectedIndex,
-                onTap: _onItemTapped,
-              ),
+                      isLoggedIn: isLoggedIn,
+                      selectedIndex: _selectedIndex,
+                      onTap: _onItemTapped,
+                    ),
             );
           }
         },

@@ -7,7 +7,8 @@ class MapWidget extends StatefulWidget {
 
   const MapWidget({super.key, required this.tournaments});
 
-  @override MapWidgetState createState() => MapWidgetState();
+  @override
+  MapWidgetState createState() => MapWidgetState();
 }
 
 class MapWidgetState extends State<MapWidget> {
@@ -24,7 +25,8 @@ class MapWidgetState extends State<MapWidget> {
       _markers.addAll(widget.tournaments.map((tournament) {
         return Marker(
           markerId: MarkerId(tournament.id.toString()),
-          position: LatLng(tournament.latitude, tournament.longitude), // Utilisez latitude et longitude
+          position: LatLng(tournament.latitude,
+              tournament.longitude), // Utilisez latitude et longitude
           infoWindow: InfoWindow(
             title: tournament.name,
             snippet: tournament.location,
