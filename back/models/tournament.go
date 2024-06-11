@@ -1,7 +1,7 @@
 package models
 
 import (
-	"challenge/utils"
+	"challenge/services"
 	"time"
 )
 
@@ -55,7 +55,7 @@ type SanitizedTournament struct {
 	UpdatedAt   time.Time       `json:"updated_at"`
 }
 
-func FindAllTournaments(query utils.QueryFilter) ([]Tournament, error) {
+func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
 	var tournaments []Tournament
 
 	err := DB.Model(&Tournament{}).

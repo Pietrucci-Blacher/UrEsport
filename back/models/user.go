@@ -1,7 +1,7 @@
 package models
 
 import (
-	"challenge/utils"
+	"challenge/services"
 	"time"
 
 	"golang.org/x/crypto/bcrypt"
@@ -64,7 +64,7 @@ type UserInfo struct {
 	Lastname  string `json:"lastname"`
 }
 
-func FindAllUsers(query utils.QueryFilter) ([]User, error) {
+func FindAllUsers(query services.QueryFilter) ([]User, error) {
 	var users []User
 
 	err := DB.Model(&User{}).

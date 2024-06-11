@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"challenge/models"
-	"challenge/utils"
+	"challenge/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,7 @@ import (
 func GetTournaments(c *gin.Context) {
 	var sanitized []models.SanitizedTournament
 
-	query, _ := c.MustGet("query").(utils.QueryFilter)
+	query, _ := c.MustGet("query").(services.QueryFilter)
 
 	tournaments, err := models.FindAllTournaments(query)
 	if err != nil {
