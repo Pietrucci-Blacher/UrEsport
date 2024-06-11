@@ -10,6 +10,7 @@ func LoadGames() error {
 		return err
 	}
 
+	GAME_NB := 10
 	for i := 0; i < GAME_NB; i++ {
 		game := models.Game{
 			Name:        fake.Lorem().Word(),
