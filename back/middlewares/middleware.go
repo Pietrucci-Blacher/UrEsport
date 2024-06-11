@@ -4,7 +4,7 @@ import (
 	"challenge/models"
 	"challenge/services"
 	"challenge/utils"
-	"errors"
+	"fmt"
 	"io"
 	"mime/multipart"
 	"net/http"
@@ -108,11 +108,11 @@ func uploadFile(file *multipart.FileHeader, availableType []string, size int) (s
 	}
 
 	if len(buf) > size {
-		return "", errors.New("File size is too large")
+		return "", fmt.Errorf("File size is too large, maximum %s", utils.FormatSize(size))
 	}
 
 	if !utils.IsFileType(buf, availableType) {
-		return "", errors.New("Invalid file type")
+		return "", fmt.Errorf("File type is not allowed, only %v are accepted", availableType)
 	}
 
 	return services.UploadFile(file)

@@ -1,6 +1,8 @@
 package utils
 
 import (
+	"fmt"
+
 	"github.com/h2non/filetype"
 )
 
@@ -21,6 +23,7 @@ var (
 	SIZE_100MB = 100 << 20
 	SIZE_200MB = 200 << 20
 	SIZE_500MB = 500 << 20
+	SIZE_1GB   = 1 << 30
 )
 
 func IsFileType(buf []byte, fileType []string) bool {
@@ -30,4 +33,16 @@ func IsFileType(buf []byte, fileType []string) bool {
 		}
 	}
 	return false
+}
+
+func FormatSize(size int) string {
+	if size < SIZE_1KB {
+		return fmt.Sprintf("%d Byte", size)
+	} else if size < SIZE_1MB {
+		return fmt.Sprintf("%d KB", size/SIZE_1KB)
+	} else if size < SIZE_1GB {
+		return fmt.Sprintf("%d MB", size/SIZE_1MB)
+	} else {
+		return fmt.Sprintf("%d GB", size/SIZE_1GB)
+	}
 }
