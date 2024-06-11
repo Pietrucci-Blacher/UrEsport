@@ -15,7 +15,7 @@ type Tournament struct {
 	OwnerID     int       `json:"owner_id"`
 	Owner       User      `json:"owner" gorm:"foreignKey:OwnerID"`
 	Teams       []Team    `json:"teams" gorm:"many2many:tournament_teams;"`
-	Image       string    `json:"image" gorm:"type:varchar(255)"`
+	Image       string    `json:"image" gorm:"type:text"`
 	Private     bool      `json:"private" gorm:"default:false"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
@@ -27,7 +27,6 @@ type CreateTournamentDto struct {
 	StartDate   time.Time `json:"start_date" validate:"required"`
 	EndDate     time.Time `json:"end_date" validate:"required"`
 	Location    string    `json:"location" validate:"required"`
-	Image       string    `json:"image" validate:"required"`
 	Private     bool      `json:"private"`
 }
 
