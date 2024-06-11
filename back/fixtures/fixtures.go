@@ -23,9 +23,9 @@ var (
 	TOURNAMENT_NB      = 10
 	TOURNAMENT_TEAM_NB = 5
 
-	TEAM_NB         = 10
+	TEAM_NB = 10
 
-	GAME_NB = 40
+	GAME_NB         = 40
 	TEAM_MEMBERS_NB = 4
 )
 
