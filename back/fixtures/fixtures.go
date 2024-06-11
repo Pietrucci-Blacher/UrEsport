@@ -20,6 +20,8 @@ var (
 	USER_NB       = 20
 	USER_ROLES    = []string{models.ROLE_USER, models.ROLE_ADMIN}
 
+	GAME_TAGS = []string{"RPG", "Aventure", "Action", "FPS", "MMORPG", "Survival", "Horror", "Simulation", "Sport", "Battle Royale"}
+
 	TOURNAMENT_NB      = 10
 	TOURNAMENT_TEAM_NB = 5
 

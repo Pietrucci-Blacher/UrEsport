@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/lib/pq"
 )
 
 type Game struct {
@@ -11,7 +9,7 @@ type Game struct {
 	Name        string         `json:"name" gorm:"type:varchar(100)"`
 	Description string         `json:"description" gorm:"type:varchar(255)"`
 	Image       string         `json:"image" gorm:"type:varchar(255)"`
-	Tags        pq.StringArray `json:"tags" gorm:"type:text[]"`
+	Tags        []string       `json:"tags" gorm:"json"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
 }
