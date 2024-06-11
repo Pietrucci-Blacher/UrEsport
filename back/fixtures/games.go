@@ -3,8 +3,7 @@ package fixtures
 import (
 	"challenge/models"
 	"fmt"
-
-	"github.com/lib/pq"
+	"math/rand"
 )
 
 func LoadGames() error {
@@ -13,11 +12,14 @@ func LoadGames() error {
 	}
 
 	for i := 0; i < GAME_NB; i++ {
+		rand.Shuffle(len(GAME_TAGS), func(i, j int) { GAME_TAGS[i], GAME_TAGS[j] = GAME_TAGS[j], GAME_TAGS[i] })
+		tags := GAME_TAGS[:3]
+
 		game := models.Game{
 			Name:        fake.Lorem().Word(),
 			Description: fake.Lorem().Sentence(20),
 			Image:       fmt.Sprintf("https://picsum.photos/seed/%d/200/300", i),
-			Tags:        pq.StringArray{"RPG", "Aventure"},
+			Tags:        tags,
 		}
 
 		if err := game.Save(); err != nil {
