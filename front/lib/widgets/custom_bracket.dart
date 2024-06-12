@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tournament_bracket/tournament_bracket.dart';
+import '../../widgets/custom_poules.dart'; // Assurez-vous que le chemin est correct
 
 class TournamentBracketPage extends StatefulWidget {
   @override
@@ -18,20 +19,22 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
   void initState() {
     super.initState();
 
+    // Ajout des noms de rounds
     addRound("8ème");
     addRound("Quart de final");
     addRound("Demi-final");
     addRound("Final");
 
+    // Ajout des équipes qualifiées des poules
     addTeams([
-      Team(name: 'Team A', score: '5'),
-      Team(name: 'Team B', score: '3'),
-      Team(name: 'Team C', score: '6'),
-      Team(name: 'Team D', score: '2'),
-      Team(name: 'Team E', score: '8'),
-      Team(name: 'Team F', score: '1'),
-      Team(name: 'Team G', score: '7'),
-      Team(name: 'Team H', score: '4'),
+      Team(name: 'Team 1', score: '3'),
+      Team(name: 'Team 6', score: '3'),
+      Team(name: 'Team 3', score: '2'),
+      Team(name: 'Team 5', score: '2'),
+      Team(name: 'Team 2', score: '1'),
+      Team(name: 'Team 8', score: '1'),
+      Team(name: 'Team 9', score: '1'),
+      Team(name: 'Team 10', score: '1'),
     ], 0);
 
     _initializeRounds();
@@ -98,6 +101,15 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        title: Text('Tournament Bracket'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
       body: Column(
         children: [
           // Header des niveaux
