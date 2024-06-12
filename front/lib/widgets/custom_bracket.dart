@@ -11,16 +11,83 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
   int selectedLevel = 0;
   final ScrollController _scrollController = ScrollController();
 
-  final all = [
-    List.generate(
-        8, (index) => Team(name: 'team1 ${index + 1}', age: index + 1)),
-    List.generate(
-        4, (index) => Team(name: 'team2 ${(index * 2) + 1}', age: index + 1)),
-    List.generate(
-        2, (index) => Team(name: 'team3 ${index + 1}', age: index + 1)),
-    List.generate(
-        1, (index) => Team(name: 'team4 ${index + 1}', age: index + 1)),
-  ];
+  final List<List<Team>> all = [];
+  final List<String> roundNames = [];
+
+  @override
+  void initState() {
+    super.initState();
+
+    addRound("8ème");
+    addRound("Quart de final");
+    addRound("Demi-final");
+    addRound("Final");
+
+    addTeams([
+      Team(name: 'Team A', score: '5'),
+      Team(name: 'Team B', score: '3'),
+      Team(name: 'Team C', score: '6'),
+      Team(name: 'Team D', score: '2'),
+      Team(name: 'Team E', score: '8'),
+      Team(name: 'Team F', score: '1'),
+      Team(name: 'Team G', score: '7'),
+      Team(name: 'Team H', score: '4'),
+    ], 0);
+
+    _initializeRounds();
+  }
+
+  void addTeams(List<Team> teams, int roundIndex) {
+    if (roundIndex >= all.length) {
+      // Create new rounds if necessary
+      for (int i = all.length; i <= roundIndex; i++) {
+        all.add([]);
+        roundNames.add("Round ${i + 1}");
+      }
+    }
+    all[roundIndex].addAll(teams);
+    setState(() {});
+  }
+
+  void addRound(String roundName) {
+    roundNames.add(roundName);
+    all.add([]);
+    setState(() {});
+  }
+
+  void _initializeRounds() {
+    // Determine winners for round 1
+    List<Team> round1Winners = _getWinners(all[0]);
+    all[1] = round1Winners;
+
+    // Determine winners for round 2
+    if (round1Winners.length > 1) {
+      List<Team> round2Winners = _getWinners(round1Winners);
+      all[2] = round2Winners;
+
+      // Determine winner for round 3
+      if (round2Winners.length > 1) {
+        List<Team> finalWinners = _getWinners(round2Winners);
+        if (finalWinners.isNotEmpty) {
+          all[3] = [finalWinners.first]; // Only add the final winner
+        }
+      }
+    }
+  }
+
+  List<Team> _getWinners(List<Team> teams) {
+    List<Team> winners = [];
+    for (int i = 0; i < teams.length; i += 2) {
+      if (i + 1 < teams.length) {
+        winners.add(
+          int.parse(teams[i].score) > int.parse(teams[i + 1].score)
+              ? teams[i]
+              : teams[i + 1],
+        );
+      }
+    }
+    return winners;
+  }
 
   @override
   void dispose() {
@@ -31,17 +98,14 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Tournament Bracket"),
-      ),
       body: Column(
         children: [
           // Header des niveaux
           SizedBox(
-            height: 50,
+            height: 130, // Ajustez la hauteur selon vos besoins
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
-              itemCount: all.length,
+              itemCount: roundNames.length,
               itemBuilder: (context, index) => GestureDetector(
                 onTap: () {
                   setState(() {
@@ -51,20 +115,34 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
                     _scrollToLevel(index);
                   });
                 },
-                child: Container(
-                  alignment: Alignment.center,
-                  width: 100,
-                  padding: const EdgeInsets.all(15),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    border: Border.all(
-                      width: 1,
-                      color: selectedLevel == index
-                          ? Colors.blue
-                          : Colors.black,
-                    ),
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        roundNames[index],
+                        style: TextStyle(
+                          fontWeight: selectedLevel == index ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+                      Container(
+                        alignment: Alignment.center,
+                        width: 100,
+                        padding: const EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(
+                            width: 1,
+                            color: selectedLevel == index
+                                ? Colors.blue
+                                : Colors.black,
+                          ),
+                        ),
+                        child: _buildRoundButton(index),
+                      ),
+                    ],
                   ),
-                  child: Text("Level ${index + 1}"),
                 ),
               ),
             ),
@@ -91,7 +169,7 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
                       height: 30,
                       alignment: Alignment.center,
                       child: Text(
-                        'Round ${index + 1}',
+                        roundNames[index],
                         style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           color: Colors.black,
@@ -112,7 +190,7 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
                   ),
                   containt: all,
                   teamNameBuilder: (Team t) => BracketText(
-                    text: t.name,
+                    text: '${t.name} (${t.score})',
                     textStyle: const TextStyle(
                       color: Colors.black,
                       fontWeight: FontWeight.bold,
@@ -150,14 +228,12 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
     );
   }
 
-  List<List<Team>> _getFilteredTeams() {
-    List<List<Team>> filteredTeams = [];
-    for (int i = 0; i <= selectedLevel; i++) {
-      if (i < all.length) {
-        filteredTeams.add(all[i]);
-      }
-    }
-    return filteredTeams;
+  Widget _buildRoundButton(int index) {
+    int numMatches = all[index].length ~/ 2;
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: List.generate(numMatches, (i) => Divider(thickness: 2)),
+    );
   }
 
   void _scrollToLevel(int index) {
@@ -202,10 +278,9 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
 class Team {
   Team({
     required this.name,
-    required this.age,
+    required this.score,
   });
 
-  final int age;
+  final String score;
   final String name;
 }
-
