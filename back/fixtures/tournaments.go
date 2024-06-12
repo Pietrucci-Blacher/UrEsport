@@ -22,7 +22,7 @@ func LoadTournaments() error {
 			EndDate:     time.Now().AddDate(0, 0, 7),
 			Location:    fake.Address().City(),
 			OwnerID:     owner,
-			Image:       fake.Lorem().Word(),
+			Image:       fmt.Sprintf("https://picsum.photos/seed/%d/200/300", i),
 			Private:     fake.Bool(),
 		}
 

@@ -53,40 +53,7 @@ class Tournament {
       'image': image,
       'private': isPrivate,
       'owner': owner,
-      'teams':
-          teams.map((team) => team.toJson()).toList(),
-    };
-  }
-}
-
-class Participant {
-  final int id;
-  final String username;
-  final String firstname;
-  final String lastname;
-
-  Participant({
-    required this.id,
-    required this.username,
-    required this.firstname,
-    required this.lastname,
-  });
-
-  factory Participant.fromJson(Map<String, dynamic> json) {
-    return Participant(
-      id: json['id'],
-      username: json['username'],
-      firstname: json['firstname'],
-      lastname: json['lastname'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'username': username,
-      'firstname': firstname,
-      'lastname': lastname,
+      'teams': teams.map((team) => team.toJson()).toList(),
     };
   }
 }

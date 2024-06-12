@@ -1,11 +1,12 @@
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/user.dart';
 
 class Team {
     final int id;
     final String name;
     final bool private;
     final int owner;
-    // final List<User> members;
+    final List<User> members;
     final List<Tournament> tournaments;
 
     Team({
@@ -13,7 +14,7 @@ class Team {
         required this.name,
         required this.private,
         required this.owner,
-        // required this.members,
+        required this.members,
         required this.tournaments,
     });
 
@@ -23,9 +24,9 @@ class Team {
             name: json['name'],
             private: json['private'],
             owner: json['owner'],
-            // members: (json['members'] as List)
-            //     .map((user) => User.fromJson(user))
-            //     .toList(),
+            members: (json['members'] as List)
+                .map((user) => User.fromJson(user))
+                .toList(),
             tournaments: (json['tournaments'] as List)
                 .map((tournament) => Tournament.fromJson(tournament))
                 .toList(),
@@ -38,7 +39,7 @@ class Team {
             'name': name,
             'private': private,
             'owner': owner,
-            // 'members': members.map((member) => member.toJson()).toList(),
+            'members': members.map((member) => member.toJson()).toList(),
             'tournaments': tournaments.map((tournament) => tournament.toJson()).toList(),
         };
     }
