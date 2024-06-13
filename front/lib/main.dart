@@ -26,8 +26,11 @@ void main() async {
         Provider<IAuthService>.value(value: authService),
         Provider<ITournamentService>.value(value: tournamentService),
         Provider<IGameService>.value(value: gameService),
-        ChangeNotifierProvider<NotificationService>(create: (_) => NotificationService()),
-        ChangeNotifierProvider<NotificationProvider>(create: (_) => NotificationProvider()), // Add the NotificationProvider
+        ChangeNotifierProvider<NotificationService>(
+            create: (_) => NotificationService()),
+        ChangeNotifierProvider<NotificationProvider>(
+            create: (_) =>
+                NotificationProvider()), // Add the NotificationProvider
       ],
       child: MyApp(
           authService: authService,

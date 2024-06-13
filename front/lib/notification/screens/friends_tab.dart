@@ -13,7 +13,8 @@ class FriendsTab extends StatefulWidget {
   _FriendsTabState createState() => _FriendsTabState();
 }
 
-class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMixin<FriendsTab> {
+class _FriendsTabState extends State<FriendsTab>
+    with AutomaticKeepAliveClientMixin<FriendsTab> {
   Future<List<Friend>>? futureFriends;
   List<Friend> friends = [];
   bool isSorted = false;
@@ -40,7 +41,8 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
 
   void toggleFavorite(Friend friend) async {
     try {
-      await FriendService.updateFavoriteStatus(currentUserId, friend.id, !friend.isFavorite);
+      await FriendService.updateFavoriteStatus(
+          currentUserId, friend.id, !friend.isFavorite);
       setState(() {
         friend.isFavorite = !friend.isFavorite;
         friends = List.from(friends);
@@ -119,113 +121,139 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
                   friends = snapshot.data!;
                   sortFriends(friends);
 
-                  List<Friend> favoriteFriends = friends.where((friend) => friend.isFavorite).toList();
-                  List<Friend> nonFavoriteFriends = friends.where((friend) => !friend.isFavorite).toList();
+                  List<Friend> favoriteFriends =
+                      friends.where((friend) => friend.isFavorite).toList();
+                  List<Friend> nonFavoriteFriends =
+                      friends.where((friend) => !friend.isFavorite).toList();
 
                   Map<String, List<Friend>> groupedFriends = {};
                   for (var friend in nonFavoriteFriends) {
                     String firstLetter = friend.name[0].toUpperCase();
-                    groupedFriends.putIfAbsent(firstLetter, () => []).add(friend);
+                    groupedFriends
+                        .putIfAbsent(firstLetter, () => [])
+                        .add(friend);
                   }
 
                   return ListView(
                     children: [
                       const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
                         child: Text(
                           'Favoris',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                       ...favoriteFriends.map((friend) => Dismissible(
-                        key: UniqueKey(),
-                        direction: DismissDirection.endToStart,
-                        onDismissed: (direction) {
-                          setState(() {
-                            toggleFavorite(friend);
-                          });
-                        },
-                        background: Container(
-                          color: Colors.red,
-                          alignment: Alignment.centerRight,
-                          padding: const EdgeInsets.symmetric(horizontal: 20),
-                          child: const Icon(Icons.remove_circle, color: Colors.white),
-                        ),
-                        child: InkWell(
-                          onTap: () => navigateToFriendDetails(friend),
-                          child: FriendListTile(name: friend.name),
-                        ),
-                      )),
+                            key: UniqueKey(),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (direction) {
+                              setState(() {
+                                toggleFavorite(friend);
+                              });
+                            },
+                            background: Container(
+                              color: Colors.red,
+                              alignment: Alignment.centerRight,
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 20),
+                              child: const Icon(Icons.remove_circle,
+                                  color: Colors.white),
+                            ),
+                            child: InkWell(
+                              onTap: () => navigateToFriendDetails(friend),
+                              child: FriendListTile(name: friend.name),
+                            ),
+                          )),
                       const Padding(
-                        padding: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                        padding: EdgeInsets.symmetric(
+                            vertical: 8.0, horizontal: 16.0),
                         child: Text(
                           'Amis',
-                          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                       ),
                       ...groupedFriends.entries.expand((entry) {
                         return [
                           Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
                             child: Text(
                               entry.key,
-                              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
                             ),
                           ),
                           ...entry.value.map((friend) => Dismissible(
-                            key: UniqueKey(),
-                            direction: DismissDirection.horizontal,
-                            confirmDismiss: (direction) async {
-                              if (direction == DismissDirection.endToStart) {
-                                return await showDialog<bool>(
-                                  context: context,
-                                  builder: (BuildContext context) {
-                                    return AlertDialog(
-                                      title: const Text('Confirmation'),
-                                      content: Text('Voulez-vous vraiment supprimer ${friend.name} de vos amis ?'),
-                                      actions: [
-                                        TextButton(
-                                          onPressed: () => Navigator.of(context).pop(false),
-                                          child: const Text('Non'),
-                                        ),
-                                        TextButton(
-                                          onPressed: () => Navigator.of(context).pop(true),
-                                          child: const Text('Oui'),
-                                        ),
-                                      ],
-                                    );
-                                  },
-                                ) ?? false;
-                              } else {
-                                return true;
-                              }
-                            },
-                            onDismissed: (direction) async {
-                              if (direction == DismissDirection.endToStart) {
-                                // Supprime l'ami de la liste d'amis
-                                await deleteFriend(friend);
-                              } else {
-                                // Met à jour le statut favori de l'ami
-                                toggleFavorite(friend);
-                              }
-                            },
-                            background: Container(
-                              color: Colors.green, // Couleur verte pour mettre en favori
-                              alignment: Alignment.centerLeft,
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: const Icon(Icons.star, color: Colors.white),
-                            ),
-                            secondaryBackground: Container(
-                              color: Colors.red, // Couleur rouge pour supprimer l'ami
-                              alignment: Alignment.centerRight,
-                              padding: const EdgeInsets.symmetric(horizontal: 20),
-                              child: const Icon(Icons.delete, color: Colors.white),
-                            ),
-                            child: GestureDetector(
-                              onTap: () => navigateToFriendDetails(friend),
-                              child: FriendListTile(name: friend.name),
-                            ),
-                          )),
+                                key: UniqueKey(),
+                                direction: DismissDirection.horizontal,
+                                confirmDismiss: (direction) async {
+                                  if (direction ==
+                                      DismissDirection.endToStart) {
+                                    return await showDialog<bool>(
+                                          context: context,
+                                          builder: (BuildContext context) {
+                                            return AlertDialog(
+                                              title: const Text('Confirmation'),
+                                              content: Text(
+                                                  'Voulez-vous vraiment supprimer ${friend.name} de vos amis ?'),
+                                              actions: [
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.of(context)
+                                                          .pop(false),
+                                                  child: const Text('Non'),
+                                                ),
+                                                TextButton(
+                                                  onPressed: () =>
+                                                      Navigator.of(context)
+                                                          .pop(true),
+                                                  child: const Text('Oui'),
+                                                ),
+                                              ],
+                                            );
+                                          },
+                                        ) ??
+                                        false;
+                                  } else {
+                                    return true;
+                                  }
+                                },
+                                onDismissed: (direction) async {
+                                  if (direction ==
+                                      DismissDirection.endToStart) {
+                                    // Supprime l'ami de la liste d'amis
+                                    await deleteFriend(friend);
+                                  } else {
+                                    // Met à jour le statut favori de l'ami
+                                    toggleFavorite(friend);
+                                  }
+                                },
+                                background: Container(
+                                  color: Colors
+                                      .green, // Couleur verte pour mettre en favori
+                                  alignment: Alignment.centerLeft,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: const Icon(Icons.star,
+                                      color: Colors.white),
+                                ),
+                                secondaryBackground: Container(
+                                  color: Colors
+                                      .red, // Couleur rouge pour supprimer l'ami
+                                  alignment: Alignment.centerRight,
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 20),
+                                  child: const Icon(Icons.delete,
+                                      color: Colors.white),
+                                ),
+                                child: GestureDetector(
+                                  onTap: () => navigateToFriendDetails(friend),
+                                  child: FriendListTile(name: friend.name),
+                                ),
+                              )),
                         ];
                       }),
                     ],
@@ -241,14 +269,14 @@ class _FriendsTabState extends State<FriendsTab> with AutomaticKeepAliveClientMi
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => const AddFriendPage(userId: 21, currentUser: 'ilies'),
+              builder: (context) =>
+                  const AddFriendPage(userId: 21, currentUser: 'ilies'),
             ),
           );
           loadFriends(); // Rechargez la liste des amis après que l'utilisateur ait ajouté un nouvel ami
         },
         child: const Icon(Icons.person_add),
       ),
-
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }

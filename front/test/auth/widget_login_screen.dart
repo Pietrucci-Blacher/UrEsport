@@ -40,7 +40,8 @@ void main() {
         ),
       );
 
-      await tester.enterText(find.byType(TextField).at(0), 'test.dart@example.com');
+      await tester.enterText(
+          find.byType(TextField).at(0), 'test.dart@example.com');
       await tester.enterText(find.byType(TextField).at(1), 'password');
       await tester.tap(find.byType(ElevatedButton));
       await tester.pump();

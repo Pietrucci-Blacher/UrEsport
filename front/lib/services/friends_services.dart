@@ -7,7 +7,8 @@ import '../models/friend.dart';
 class FriendService {
   static Future<List<Friend>> fetchFriends() async {
     const int userId = 21; // Utilisateur fixe
-    final response = await http.get(Uri.parse('${dotenv.env['API_ENDPOINT']}/users/$userId/friends'));
+    final response = await http
+        .get(Uri.parse('${dotenv.env['API_ENDPOINT']}/users/$userId/friends'));
 
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.body);
@@ -17,9 +18,11 @@ class FriendService {
     }
   }
 
-  static Future<void> updateFavoriteStatus(int userId, int friendId, bool isFavorite) async {
+  static Future<void> updateFavoriteStatus(
+      int userId, int friendId, bool isFavorite) async {
     final response = await http.patch(
-      Uri.parse('${dotenv.env['API_ENDPOINT']}/users/$userId/friends/$friendId?favorite=$isFavorite'),
+      Uri.parse(
+          '${dotenv.env['API_ENDPOINT']}/users/$userId/friends/$friendId?favorite=$isFavorite'),
       headers: {'Content-Type': 'application/json'},
     );
 
@@ -30,11 +33,11 @@ class FriendService {
 
   static Future<void> deleteFriend(int currentUserId, int id) async {
     final response = await http.delete(
-      Uri.parse('${dotenv.env['API_ENDPOINT']}/users/$currentUserId/friends/$id'),
+      Uri.parse(
+          '${dotenv.env['API_ENDPOINT']}/users/$currentUserId/friends/$id'),
     );
     if (response.statusCode != 204) {
       throw Exception('Failed to delete friend');
     }
   }
-
 }

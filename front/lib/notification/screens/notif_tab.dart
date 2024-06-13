@@ -46,15 +46,18 @@ class NotificationsTab extends StatelessWidget {
     );
   }
 
-  void showNotificationToast(BuildContext context, String message, {Color? backgroundColor, Color? textColor}) {
+  void showNotificationToast(BuildContext context, String message,
+      {Color? backgroundColor, Color? textColor}) {
     final overlay = Overlay.of(context)!;
     late OverlayEntry overlayEntry;
 
     overlayEntry = OverlayEntry(
       builder: (context) => CustomToast(
         message: message,
-        backgroundColor: backgroundColor ?? Colors.grey, // Valeur par défaut pour la couleur de fond
-        textColor: textColor ?? Colors.white, // Valeur par défaut pour la couleur du texte
+        backgroundColor: backgroundColor ??
+            Colors.grey, // Valeur par défaut pour la couleur de fond
+        textColor: textColor ??
+            Colors.white, // Valeur par défaut pour la couleur du texte
         onClose: () {
           overlayEntry.remove();
         },
@@ -66,5 +69,4 @@ class NotificationsTab extends StatelessWidget {
       overlayEntry.remove();
     });
   }
-
 }
