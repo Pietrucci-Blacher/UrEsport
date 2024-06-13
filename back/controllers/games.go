@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"challenge/models"
-	"challenge/utils"
+	"challenge/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,7 +19,7 @@ import (
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/games/ [get]
 func GetGames(c *gin.Context) {
-	query, _ := c.MustGet("query").(utils.QueryFilter)
+	query, _ := c.MustGet("query").(services.QueryFilter)
 
 	games, err := models.FindAllGames(query)
 	if err != nil {

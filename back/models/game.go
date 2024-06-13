@@ -1,7 +1,7 @@
 package models
 
 import (
-	"challenge/utils"
+	"challenge/services"
 	"time"
 )
 
@@ -29,7 +29,7 @@ type UpdateGameDto struct {
 	Tags        []string `json:"tags"`
 }
 
-func FindAllGames(query utils.QueryFilter) ([]Game, error) {
+func FindAllGames(query services.QueryFilter) ([]Game, error) {
 	var games []Game
 
 	err := DB.Model(&Game{}).
