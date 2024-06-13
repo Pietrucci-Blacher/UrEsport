@@ -1,7 +1,7 @@
 package models
 
 import (
-	"challenge/utils"
+	"challenge/services"
 	"testing"
 	"time"
 
@@ -67,7 +67,7 @@ func TestFindAllInvits(t *testing.T) {
 	_, _, _, _, _ = createSampleInvitData()
 
 	params := map[string][]string{}
-	query, _ := utils.NewQueryFilter(params)
+	query, _ := services.NewQueryFilter(params)
 	invitations, err := FindAllInvits(query)
 
 	assert.Nil(t, err)

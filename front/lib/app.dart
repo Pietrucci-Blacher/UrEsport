@@ -10,13 +10,19 @@ import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/game/bloc/game_bloc.dart';
+import 'package:uresport/core/services/game_service.dart';
 
 class MyApp extends StatelessWidget {
   final IAuthService authService;
-  final ITournament tournamentService;
+  final ITournamentService tournamentService;
+  final IGameService gameService;
 
   const MyApp(
-      {required this.authService, required this.tournamentService, super.key});
+      {required this.authService,
+      required this.tournamentService,
+      required this.gameService,
+      super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -34,6 +40,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => TournamentBloc(tournamentService),
+        ),
+        BlocProvider(
+          create: (context) => GameBloc(gameService),
         ),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(
@@ -67,7 +76,7 @@ class MyApp extends StatelessWidget {
               }
               return const Locale('en', '');
             },
-            home: const SplashScreenHandler(),
+            home: SplashScreenHandler(authService: authService),
             initialRoute: '/',
             onGenerateRoute: RouteGenerator.generateRoute,
             builder: (context, child) {

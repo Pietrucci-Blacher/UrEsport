@@ -76,7 +76,7 @@ class AppLocalizations {
 
   String get welcome {
     return Intl.message(
-      'Welcome',
+      'Welcome to UrEsport!',
       name: 'welcome',
       desc: 'Welcome message',
     );

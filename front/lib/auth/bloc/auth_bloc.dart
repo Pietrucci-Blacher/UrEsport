@@ -2,8 +2,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
-import 'package:uresport/core/models/register_request.dart';
 import 'package:uresport/core/models/login_request.dart';
+import 'package:uresport/core/models/register_request.dart';
 import 'package:uresport/core/services/cache_service.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {

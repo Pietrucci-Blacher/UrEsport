@@ -63,9 +63,9 @@ class LocaleSwitcher extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
+    return IconButton(
+      icon: const Icon(Icons.language),
       onPressed: () => _showLocaleDialog(context),
-      child: const Icon(Icons.language),
     );
   }
 }

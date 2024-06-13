@@ -26,8 +26,8 @@
   "forgotPassword": "¿Olvidaste tu contraseña?",
   "passwordResetEmailSent": "Correo electrónico de restablecimiento de contraseña enviado",
   "passwordResetSuccessful": "Restablecimiento de contraseña exitoso",
-  "verificationCodeSent": "Se ha enviado un código de verificación a {email}."
-  "notificationScreenWelcome": "¡Bienvenido a la pantalla de notificaciones!",
+  "verificationCodeSent": "Se ha enviado un código de verificación a {email}.",
+  "resendCode": "Reenviar el código",
   "inviteButton": "Invitar",
   "inviteSuccess": "Ha sido invitado",
   "inviteError": "Error de invitación",
@@ -37,6 +37,5 @@
   "gameScreenWelcome": "¡Bienvenido a la pantalla de juegos!",
   "gameScreenTitle": "Juegos",
   "modifyGameButton": "Modificar el juego",
-  "deleteGameButton": "Eliminar el juego",
-    "resendCode": "Reenviar el código"
+  "deleteGameButton": "Eliminar el juego"
 }

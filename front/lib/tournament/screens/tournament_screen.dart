@@ -12,9 +12,6 @@ class TournamentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Tournaments'),
-      ),
       body: BlocBuilder<TournamentBloc, TournamentState>(
         builder: (context, state) {
           if (state is TournamentInitial) {

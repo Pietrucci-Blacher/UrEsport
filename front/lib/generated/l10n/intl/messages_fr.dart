@@ -34,6 +34,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "firstName": MessageLookupByLibrary.simpleMessage("Prénom"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("Mot de passe oublié ?"),
+        "gameScreenTitle": MessageLookupByLibrary.simpleMessage("Jeux"),
+        "gameScreenWelcome": MessageLookupByLibrary.simpleMessage(
+            "Bienvenue à l\'écran des jeux !"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Accueil"),
         "homeScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Bienvenue à l\'écran d\'accueil !"),

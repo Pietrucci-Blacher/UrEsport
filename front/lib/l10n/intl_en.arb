@@ -26,8 +26,8 @@
   "forgotPassword": "Forgot Password?",
   "passwordResetEmailSent": "Password reset email sent",
   "passwordResetSuccessful": "Password reset successful",
-  "verificationCodeSent": "A verification code has been sent to {email}."
-  "notificationScreenWelcome": "Welcome to the Notification screen!",
+  "verificationCodeSent": "A verification code has been sent to {email}.",
+  "resendCode": "Resend code",
   "inviteButtonTitle": "Invite",
   "inviteSuccessTitle": "You have been invited successfully",
   "inviteErrorTitle": "An error occurred while sending the invitation",
@@ -38,5 +38,4 @@
   "gameScreenTitle": "Games",
   "modifyGameButtonTitle": "Modify Game",
   "deleteGameButtonTitle": "Delete Game"
-  "resendCode": "Resend code"
 }
