@@ -5,6 +5,8 @@ class Tournament {
   final DateTime startDate;
   final DateTime endDate;
   final String location;
+  final double latitude;
+  final double longitude;
   final String image;
   final bool isPrivate;
   final int ownerId;
@@ -18,6 +20,8 @@ class Tournament {
     required this.startDate,
     required this.endDate,
     required this.location,
+    required this.latitude,
+    required this.longitude,
     required this.image,
     required this.isPrivate,
     required this.ownerId,
@@ -33,13 +37,13 @@ class Tournament {
       startDate: DateTime.parse(json['start_date']),
       endDate: DateTime.parse(json['end_date']),
       location: json['location'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
       image: json['image'],
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams: (json['teams'] as List)
-          .map((team) => Team.fromJson(team))
-          .toList(),
+      teams: (json['teams'] as List).map((team) => Team.fromJson(team)).toList(),
     );
   }
 
@@ -48,12 +52,14 @@ class Tournament {
       'id': id,
       'name': name,
       'description': description,
-      'startDate': startDate.toIso8601String(),
-      'endDate': endDate.toIso8601String(),
+      'start_date': startDate.toIso8601String(),
+      'end_date': endDate.toIso8601String(),
       'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
       'image': image,
       'private': isPrivate,
-      'ownerId': ownerId,
+      'owner_id': ownerId,
       'owner': owner.toJson(),
       'teams': teams.map((team) => team.toJson()).toList(),
     };

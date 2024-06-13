@@ -41,16 +41,23 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
+                  const SizedBox(height: 20),
+                  const Text(
                     'Tournois en tendance',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   _buildTrendingTournaments(context),
                   const SizedBox(height: 20),
-                  Text(
+                  const Text(
                     'Jeux populaires',
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const SizedBox(height: 10),
                   _buildGamesList(context),
@@ -110,7 +117,7 @@ class HomeScreen extends StatelessWidget {
         );
       },
       child: Container(
-        height: 150,
+        height: 200,
         width: double.infinity,
         decoration: BoxDecoration(
           color: Colors.grey[300],
