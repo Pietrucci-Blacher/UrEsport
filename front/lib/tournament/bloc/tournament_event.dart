@@ -4,15 +4,15 @@ abstract class TournamentEvent extends Equatable {
   const TournamentEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class LoadTournaments extends TournamentEvent {
-  final int limit;
-  final int page;
+  final int? limit;
+  final int? page;
 
-  const LoadTournaments({required this.limit, required this.page});
+  const LoadTournaments({this.limit, this.page});
 
   @override
-  List<Object> get props => [limit, page];
+  List<Object?> get props => [limit, page];
 }

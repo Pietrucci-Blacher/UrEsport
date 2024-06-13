@@ -3,8 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/tournament.dart';
 
 abstract class ITournamentService {
-  Future<List<Tournament>> fetchTournaments(
-      {required int limit, required int page});
+  Future<List<Tournament>> fetchTournaments({int? limit, int? page});
   Future<void> inviteUserToTournament(String tournamentId, String username);
 }
 
@@ -14,12 +13,19 @@ class TournamentService implements ITournamentService {
   TournamentService(this._dio);
 
   @override
-  Future<List<Tournament>> fetchTournaments(
-      {required int limit, required int page}) async {
+  Future<List<Tournament>> fetchTournaments({int? limit, int? page}) async {
     try {
+      final Map<String, dynamic> queryParameters = {};
+      if (limit != null) {
+        queryParameters['limit'] = limit;
+      }
+      if (page != null) {
+        queryParameters['page'] = page;
+      }
+
       final response = await _dio.get(
         "${dotenv.env['API_ENDPOINT']}/tournaments",
-        queryParameters: {'limit': limit, 'page': page},
+        queryParameters: queryParameters,
       );
 
       if (response.statusCode == 200) {
@@ -44,14 +50,12 @@ class TournamentService implements ITournamentService {
   }
 
   @override
-  Future<void> inviteUserToTournament(
-      String tournamentId, String username) async {
+  Future<void> inviteUserToTournament(String tournamentId, String username) async {
     try {
       final response = await _dio.post(
         "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/invite",
         data: {'username': username},
-        options: Options(
-            headers: {'Content-Type': 'application/json; charset=UTF-8'}),
+        options: Options(headers: {'Content-Type': 'application/json; charset=UTF-8'}),
       );
 
       if (response.statusCode != 200) {

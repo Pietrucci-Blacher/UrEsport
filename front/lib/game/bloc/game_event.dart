@@ -7,7 +7,14 @@ abstract class GameEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-class LoadGames extends GameEvent {}
+class LoadGames extends GameEvent {
+  final int? limit;
+
+  const LoadGames({this.limit});
+
+  @override
+  List<Object?> get props => [limit];
+}
 
 class FilterGames extends GameEvent {
   final List<String> tags;

@@ -25,8 +25,7 @@ class MapWidgetState extends State<MapWidget> {
       _markers.addAll(widget.tournaments.map((tournament) {
         return Marker(
           markerId: MarkerId(tournament.id.toString()),
-          position: LatLng(tournament.latitude,
-              tournament.longitude), // Utilisez latitude et longitude
+          position: LatLng(tournament.latitude, tournament.longitude),
           infoWindow: InfoWindow(
             title: tournament.name,
             snippet: tournament.location,
