@@ -21,7 +21,7 @@ import (
 // @Failure 500 {object} utils.HttpError
 // @Router /users/{id}/friends [get]
 func GetFriends(c *gin.Context) {
-	userIDStr := c.Param("id")
+	userIDStr := c.Param("user")
 	userID, err := strconv.Atoi(userIDStr)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID"})
@@ -58,7 +58,7 @@ func GetFriends(c *gin.Context) {
 // @Failure 500 {object} utils.HttpError
 // @Router /users/{id}/friends/{friend_id} [get]
 func GetFriend(c *gin.Context) {
-	userIDStr := c.Param("id")
+	userIDStr := c.Param("user")
 	friendIDStr := c.Param("friend_id")
 
 	userID, err := strconv.Atoi(userIDStr)
@@ -103,7 +103,7 @@ func GetFriend(c *gin.Context) {
 // @Failure 500 {object} utils.HttpError
 // @Router /users/{id}/friends/{friend_id} [post]
 func AddFriend(c *gin.Context) {
-	userIDStr := c.Param("id")
+	userIDStr := c.Param("user")
 	friendIDStr := c.Param("friend_id")
 
 	userID, err := strconv.Atoi(userIDStr)
@@ -154,7 +154,7 @@ func AddFriend(c *gin.Context) {
 // @Failure 500 {object} utils.HttpError
 // @Router /users/{id}/friends/{friend_id} [delete]
 func DeleteFriend(c *gin.Context) {
-	userIDStr := c.Param("id")
+	userIDStr := c.Param("user")
 	friendIDStr := c.Param("friend_id")
 
 	userID, err := strconv.Atoi(userIDStr)
@@ -200,7 +200,7 @@ func DeleteFriend(c *gin.Context) {
 // @Failure 500 {object} utils.HttpError
 // @Router /users/{id}/friends/{friend_id} [patch]
 func UpdateFriend(c *gin.Context) {
-	userIDStr := c.Param("id")
+	userIDStr := c.Param("user")
 	friendIDStr := c.Param("friend_id")
 
 	userID, err := strconv.Atoi(userIDStr)

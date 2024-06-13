@@ -51,11 +51,11 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsLoggedIn(true),
 				GetUserMe,
 			)
-			users.GET("/users/friends/", GetFriends)
-			users.GET("/users/friends/:friend_id", GetFriend)
-			users.POST("/users/friends/:friend_id", AddFriend)
-			users.PATCH("/users/friends/:friend_id", UpdateFriend)
-			users.DELETE("/users/friends/:friend_id", DeleteFriend)
+			users.GET("/:user/friends/", GetFriends)
+			users.GET("/:user/friends/:friend_id", GetFriend)
+			users.POST("/:user/friends/:friend_id", AddFriend)
+			users.PATCH("/:user/friends/:friend_id", UpdateFriend)
+			users.DELETE("/:user/friends/:friend_id", DeleteFriend)
 		}
 
 		features := api.Group("/features")
