@@ -29,8 +29,8 @@ type CreateTournamentDto struct {
 	StartDate   time.Time `json:"start_date" validate:"required"`
 	EndDate     time.Time `json:"end_date" validate:"required"`
 	Location    string    `json:"location" validate:"required"`
-	Latitude    float64   `json:"latitude" validate:"required" gorm:"type:decimal(10,8)"`
-	Longitude   float64   `json:"longitude" validate:"required" gorm:"type:decimal(11,8)"`
+	Latitude    float64   `json:"latitude" validate:"required"`
+	Longitude   float64   `json:"longitude" validate:"required"`
 	Private     bool      `json:"private"`
 }
 
