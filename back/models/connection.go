@@ -81,7 +81,6 @@ func DropTables() error {
 		&Friend{},
 		"tournament_teams",
 		"team_members",
-
 	)
 }
 
