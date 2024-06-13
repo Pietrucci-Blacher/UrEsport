@@ -44,6 +44,9 @@ func ImportFixtures() error {
 		return err
 	}
 
+	if err := LoadGames(); err != nil {
+		return err
+	}
 
 	if err := LoadTournaments(); err != nil {
 		return err

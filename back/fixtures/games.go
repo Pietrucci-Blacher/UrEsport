@@ -11,7 +11,6 @@ func LoadGames() error {
 		return err
 	}
 
-	GAME_NB := 10
 	for i := 0; i < GAME_NB; i++ {
 		rand.Shuffle(len(GAME_TAGS), func(i, j int) { GAME_TAGS[i], GAME_TAGS[j] = GAME_TAGS[j], GAME_TAGS[i] })
 		tags := GAME_TAGS[:3]
