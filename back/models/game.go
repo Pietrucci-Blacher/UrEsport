@@ -1,8 +1,8 @@
 package models
 
 import (
-	"time"
 	"challenge/utils"
+	"time"
 )
 
 type Game struct {
@@ -32,12 +32,12 @@ type UpdateGameDto struct {
 func FindAllGames(query utils.QueryFilter) ([]Game, error) {
 	var games []Game
 
-    err := DB.Model(&Game{}).
-        Offset(query.GetSkip()).
-    	Limit(query.GetLimit()).
-    	Where(query.GetWhere()).
-    	Order(query.GetSort()).
-    	Find(&games).Error
+	err := DB.Model(&Game{}).
+		Offset(query.GetSkip()).
+		Limit(query.GetLimit()).
+		Where(query.GetWhere()).
+		Order(query.GetSort()).
+		Find(&games).Error
 
 	return games, err
 }
