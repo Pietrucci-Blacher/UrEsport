@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:uresport/game/bloc/game_bloc.dart';
 import 'package:uresport/game/bloc/game_event.dart';
 import 'package:uresport/game/bloc/game_state.dart';
@@ -12,6 +13,7 @@ import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/game/screens/game_detail.dart';
+import 'package:uresport/tournament/screens/tournament_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -22,17 +24,17 @@ class HomeScreen extends StatelessWidget {
       providers: [
         BlocProvider(
           create: (context) => TournamentBloc(TournamentService(Dio()))
-            ..add(const LoadTournaments(limit: 5, page: 1)),
+            ..add(const LoadTournaments(limit: 10, page: 1)),
         ),
         BlocProvider(
-          create: (context) => GameBloc(GameService(Dio()))..add(LoadGames()),
+          create: (context) => GameBloc(GameService(Dio()))..add(const LoadGames(limit: 10)),
         ),
       ],
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
-            context.read<TournamentBloc>().add(const LoadTournaments(limit: 5, page: 1));
-            context.read<GameBloc>().add(LoadGames());
+            context.read<TournamentBloc>().add(const LoadTournaments(limit: 10, page: 1));
+            context.read<GameBloc>().add(const LoadGames(limit: 10));
           },
           child: SingleChildScrollView(
             physics: const AlwaysScrollableScrollPhysics(),
@@ -41,23 +43,61 @@ class HomeScreen extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const SizedBox(height: 20),
-                  const Text(
-                    'Tournois en tendance',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Tournois en tendance',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const TournamentScreen(),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          children: const [
+                            Text('Afficher tout'),
+                            SizedBox(width: 5),
+                            FaIcon(FontAwesomeIcons.arrowRight, size: 12),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   _buildTrendingTournaments(context),
                   const SizedBox(height: 20),
-                  const Text(
-                    'Jeux populaires',
-                    style: TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      const Text(
+                        'Jeux populaires',
+                        style: TextStyle(
+                          fontSize: 20,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      TextButton(
+                        onPressed: () {
+                          // Navigate to the full game list screen if needed
+                        },
+                        child: Row(
+                          children: const [
+                            Text('Afficher tout'),
+                            SizedBox(width: 5),
+                            FaIcon(FontAwesomeIcons.arrowRight, size: 12),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 10),
                   _buildGamesList(context),
@@ -98,36 +138,87 @@ class HomeScreen extends StatelessWidget {
       );
     }
 
-    final tournament = tournaments.first;
-    return GestureDetector(
-      onTap: () {
-        // Naviguer vers la page de détails du tournoi
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Scaffold(
-              appBar: AppBar(
-                title: Text(tournament.name),
+    final mainTournament = tournaments.first;
+    final otherTournaments = tournaments.length > 1 ? tournaments.sublist(1) : [];
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => Scaffold(
+                  appBar: AppBar(
+                    title: Text(mainTournament.name),
+                  ),
+                  body: Center(
+                    child: Text('Détails du tournoi ${mainTournament.name}'),
+                  ),
+                ),
               ),
-              body: Center(
-                child: Text('Détails du tournoi ${tournament.name}'),
+            );
+          },
+          child: Container(
+            height: 200,
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Colors.grey[300],
+              borderRadius: BorderRadius.circular(10),
+              image: DecorationImage(
+                image: NetworkImage(mainTournament.image),
+                fit: BoxFit.cover,
               ),
             ),
           ),
-        );
-      },
-      child: Container(
-        height: 200,
-        width: double.infinity,
-        decoration: BoxDecoration(
-          color: Colors.grey[300],
-          borderRadius: BorderRadius.circular(10),
-          image: DecorationImage(
-            image: NetworkImage(tournament.image),
-            fit: BoxFit.cover,
+        ),
+        const SizedBox(height: 10),
+        Divider(
+          color: Colors.grey.shade300, // Couleur discrète
+          thickness: 1, // Épaisseur fine
+        ),
+        const SizedBox(height: 10),
+        SizedBox(
+          height: 120,
+          child: ListView.builder(
+            scrollDirection: Axis.horizontal,
+            itemCount: otherTournaments.length,
+            itemBuilder: (context, index) {
+              final tournament = otherTournaments[index];
+              return GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Scaffold(
+                        appBar: AppBar(
+                          title: Text(tournament.name),
+                        ),
+                        body: Center(
+                          child: Text('Détails du tournoi ${tournament.name}'),
+                        ),
+                      ),
+                    ),
+                  );
+                },
+                child: Container(
+                  width: 150,
+                  margin: const EdgeInsets.symmetric(horizontal: 8),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
+                    image: DecorationImage(
+                      image: NetworkImage(tournament.image),
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+              );
+            },
           ),
         ),
-      ),
+      ],
     );
   }
 

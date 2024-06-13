@@ -2,6 +2,7 @@ package models
 
 import (
 	"time"
+	"challenge/utils"
 )
 
 type Game struct {
@@ -28,9 +29,16 @@ type UpdateGameDto struct {
 	Tags        []string `json:"tags"`
 }
 
-func FindAllGames() ([]Game, error) {
+func FindAllGames(query utils.QueryFilter) ([]Game, error) {
 	var games []Game
-	err := DB.Find(&games).Error
+
+    err := DB.Model(&Game{}).
+        Offset(query.GetSkip()).
+    	Limit(query.GetLimit()).
+    	Where(query.GetWhere()).
+    	Order(query.GetSort()).
+    	Find(&games).Error
+
 	return games, err
 }
 
