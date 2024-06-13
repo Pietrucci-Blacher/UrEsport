@@ -9,8 +9,9 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 
 class LoginScreen extends StatefulWidget {
   final IAuthService authService;
+  final String? returnRoute;
 
-  const LoginScreen({super.key, required this.authService});
+  const LoginScreen({super.key, required this.authService, this.returnRoute});
 
   @override
   LoginScreenState createState() => LoginScreenState();
@@ -34,6 +35,18 @@ class LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  void _onLoginButtonPressed(BuildContext context) {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    context.read<AuthBloc>().add(
+      LoginButtonPressed(
+        email: email,
+        password: password,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -53,8 +66,7 @@ class LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
-              child:
-                  kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
+              child: kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
             ),
           ),
         ),
@@ -88,14 +100,7 @@ class LoginScreenState extends State<LoginScreen> {
                   return const CircularProgressIndicator();
                 }
                 return ElevatedButton(
-                  onPressed: () {
-                    context.read<AuthBloc>().add(
-                          LoginButtonPressed(
-                            email: _emailController.text,
-                            password: _passwordController.text,
-                          ),
-                        );
-                  },
+                  onPressed: () => _onLoginButtonPressed(context),
                   child: Text(AppLocalizations.of(context).login),
                 );
               },
@@ -124,14 +129,7 @@ class LoginScreenState extends State<LoginScreen> {
               return const CircularProgressIndicator();
             }
             return ElevatedButton(
-              onPressed: () {
-                context.read<AuthBloc>().add(
-                      LoginButtonPressed(
-                        email: _emailController.text,
-                        password: _passwordController.text,
-                      ),
-                    );
-              },
+              onPressed: () => _onLoginButtonPressed(context),
               child: Text(AppLocalizations.of(context).login),
             );
           },
