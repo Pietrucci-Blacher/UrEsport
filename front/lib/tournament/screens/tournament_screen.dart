@@ -73,9 +73,9 @@ class TournamentScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 5),
-            Text(
-              'Participants: ${tournament.participants.length}',
-              style: const TextStyle(fontSize: 16),
+            const Text(
+              'Participants:',
+              style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 15),
             ElevatedButton(
