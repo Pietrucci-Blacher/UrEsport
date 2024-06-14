@@ -27,13 +27,16 @@ class HomeScreen extends StatelessWidget {
             ..add(const LoadTournaments(limit: 10, page: 1)),
         ),
         BlocProvider(
-          create: (context) => GameBloc(GameService(Dio()))..add(const LoadGames(limit: 10)),
+          create: (context) =>
+              GameBloc(GameService(Dio()))..add(const LoadGames(limit: 10)),
         ),
       ],
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
-            context.read<TournamentBloc>().add(const LoadTournaments(limit: 10, page: 1));
+            context
+                .read<TournamentBloc>()
+                .add(const LoadTournaments(limit: 10, page: 1));
             context.read<GameBloc>().add(const LoadGames(limit: 10));
           },
           child: SingleChildScrollView(
@@ -62,8 +65,8 @@ class HomeScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          children: [
                             Text('Afficher tout'),
                             SizedBox(width: 5),
                             FaIcon(FontAwesomeIcons.arrowRight, size: 12),
@@ -89,8 +92,8 @@ class HomeScreen extends StatelessWidget {
                         onPressed: () {
                           // Navigate to the full game list screen if needed
                         },
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          children: [
                             Text('Afficher tout'),
                             SizedBox(width: 5),
                             FaIcon(FontAwesomeIcons.arrowRight, size: 12),
@@ -126,7 +129,8 @@ class HomeScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildTrendingTournament(BuildContext context, List<Tournament> tournaments) {
+  Widget _buildTrendingTournament(
+      BuildContext context, List<Tournament> tournaments) {
     if (tournaments.isEmpty) {
       return Container(
         height: 150,
@@ -139,7 +143,8 @@ class HomeScreen extends StatelessWidget {
     }
 
     final mainTournament = tournaments.first;
-    final otherTournaments = tournaments.length > 1 ? tournaments.sublist(1) : [];
+    final otherTournaments =
+        tournaments.length > 1 ? tournaments.sublist(1) : [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

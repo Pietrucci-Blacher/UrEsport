@@ -50,12 +50,14 @@ class TournamentService implements ITournamentService {
   }
 
   @override
-  Future<void> inviteUserToTournament(String tournamentId, String username) async {
+  Future<void> inviteUserToTournament(
+      String tournamentId, String username) async {
     try {
       final response = await _dio.post(
         "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/invite",
         data: {'username': username},
-        options: Options(headers: {'Content-Type': 'application/json; charset=UTF-8'}),
+        options: Options(
+            headers: {'Content-Type': 'application/json; charset=UTF-8'}),
       );
 
       if (response.statusCode != 200) {
