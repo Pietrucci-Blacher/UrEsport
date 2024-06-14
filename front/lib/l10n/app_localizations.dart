@@ -21,7 +21,7 @@ class AppLocalizations {
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
-      AppLocalizationsDelegate();
+  AppLocalizationsDelegate();
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = [
     delegate,
     GlobalMaterialLocalizations.delegate,
@@ -268,57 +268,57 @@ class AppLocalizations {
     );
   }
 
-  String get inviteButtonTitle {
+  String get inviteButton {
     return Intl.message(
       'Invite',
-      name: 'inviteButtonTitle',
+      name: 'inviteButton',
       desc: 'Title for the Invite button',
     );
   }
 
-  String get inviteSuccessTitle {
+  String get inviteSuccess {
     return Intl.message(
-      'Invite Success',
-      name: 'inviteSuccessTitle',
+      'You have been invited successfully',
+      name: 'inviteSuccess',
       desc: 'Title for the invite success dialog',
     );
   }
 
-  String get inviteErrorTitle {
+  String get inviteError {
     return Intl.message(
-      'Invite Error',
-      name: 'inviteErrorTitle',
+      'An error occurred while sending the invitation',
+      name: 'inviteError',
       desc: 'Title for the invite error dialog',
     );
   }
 
-  String get closeButtonTitle {
+  String get closeButton {
     return Intl.message(
       'Close',
-      name: 'closeButtonTitle',
+      name: 'closeButton',
       desc: 'Title for the close button',
     );
   }
 
-  String get joinButtonTitle {
+  String get joinButton {
     return Intl.message(
       'Join',
-      name: 'JoinButtonTitle',
+      name: 'joinButton',
       desc: 'Title for the Join button',
     );
   }
 
-  String get gameButtonTitle {
+  String get gameButton {
     return Intl.message(
-      'Games',
-      name: 'gameButtonTitle',
+      'All Games',
+      name: 'gameButton',
       desc: 'Title for the Games button',
     );
   }
 
   String get gameScreenWelcome {
     return Intl.message(
-      'Welcome to the Games screen!',
+      'Welcome to the Game Screen!',
       name: 'gameScreenWelcome',
       desc: 'Welcome message for the Games screen',
     );
@@ -332,19 +332,43 @@ class AppLocalizations {
     );
   }
 
-  String get modifyGameButtonTitle {
+  String get modifyGameButton {
     return Intl.message(
-      'Modify',
-      name: 'modifyGameButtonTitle',
+      'Modify Game',
+      name: 'modifyGameButton',
       desc: 'Title for the Modify button',
     );
   }
 
-  String get deleteGameButtonTitle {
+  String get deleteGameButton {
     return Intl.message(
-      'Delete',
-      name: 'deleteGameButtonTitle',
+      'Delete Game',
+      name: 'deleteGameButton',
       desc: 'Title for the Delete button',
+    );
+  }
+
+  String get trendingTournamentsTitle {
+    return Intl.message(
+      'Trending Tournaments',
+      name: 'trendingTournamentsTitle',
+      desc: 'Title for the Trending Tournaments section',
+    );
+  }
+
+  String get popularGamesTitle {
+    return Intl.message(
+      'Popular Games',
+      name: 'popularGamesTitle',
+      desc: 'Title for the Popular Games section',
+    );
+  }
+
+  String get viewAll {
+    return Intl.message(
+      'View All',
+      name: 'viewAll',
+      desc: 'Title for the View All button',
     );
   }
 }

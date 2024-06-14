@@ -14,6 +14,7 @@ import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/tournament/screens/tournament_screen.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -28,7 +29,7 @@ class HomeScreen extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) =>
-              GameBloc(GameService(Dio()))..add(const LoadGames(limit: 10)),
+          GameBloc(GameService(Dio()))..add(const LoadGames(limit: 10)),
         ),
       ],
       child: Scaffold(
@@ -49,9 +50,9 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Tournois en tendance',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context).trendingTournamentsTitle,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -65,11 +66,11 @@ class HomeScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Text('Afficher tout'),
-                            SizedBox(width: 5),
-                            FaIcon(FontAwesomeIcons.arrowRight, size: 12),
+                            Text(AppLocalizations.of(context).viewAll),
+                            const SizedBox(width: 5),
+                            const FaIcon(FontAwesomeIcons.arrowRight, size: 12),
                           ],
                         ),
                       ),
@@ -81,9 +82,9 @@ class HomeScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      const Text(
-                        'Jeux populaires',
-                        style: TextStyle(
+                      Text(
+                        AppLocalizations.of(context).popularGamesTitle,
+                        style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
                         ),
@@ -92,11 +93,11 @@ class HomeScreen extends StatelessWidget {
                         onPressed: () {
                           // Navigate to the full game list screen if needed
                         },
-                        child: const Row(
+                        child: Row(
                           children: [
-                            Text('Afficher tout'),
-                            SizedBox(width: 5),
-                            FaIcon(FontAwesomeIcons.arrowRight, size: 12),
+                            Text(AppLocalizations.of(context).viewAll),
+                            const SizedBox(width: 5),
+                            const FaIcon(FontAwesomeIcons.arrowRight, size: 12),
                           ],
                         ),
                       ),
@@ -144,7 +145,7 @@ class HomeScreen extends StatelessWidget {
 
     final mainTournament = tournaments.first;
     final otherTournaments =
-        tournaments.length > 1 ? tournaments.sublist(1) : [];
+    tournaments.length > 1 ? tournaments.sublist(1) : [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
