@@ -4,7 +4,7 @@ import 'package:uresport/core/models/game.dart';
 import 'package:flutter/foundation.dart';
 
 abstract class IGameService {
-  Future<List<Game>> fetchGames();
+  Future<List<Game>> fetchGames({int? limit});
 }
 
 class GameService implements IGameService {
@@ -13,9 +13,12 @@ class GameService implements IGameService {
   GameService(this._dio);
 
   @override
-  Future<List<Game>> fetchGames() async {
+  Future<List<Game>> fetchGames({int? limit}) async {
     try {
-      final response = await _dio.get("${dotenv.env['API_ENDPOINT']}/games");
+      final response = await _dio.get(
+        "${dotenv.env['API_ENDPOINT']}/games",
+        queryParameters: limit != null ? {'limit': limit} : null,
+      );
 
       if (response.statusCode == 200) {
         final data = response.data;

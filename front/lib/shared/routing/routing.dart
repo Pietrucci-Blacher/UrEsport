@@ -7,7 +7,7 @@ import 'package:uresport/game/screens/game_screen.dart';
 class RouteGenerator {
   static Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
-      case '/':
+      case '/home':
         return MaterialPageRoute(builder: (_) => const HomeScreen());
       case '/game':
         return MaterialPageRoute(builder: (_) => const GamesScreen());
