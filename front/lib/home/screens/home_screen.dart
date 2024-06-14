@@ -65,8 +65,8 @@ class HomeScreen extends StatelessWidget {
                             ),
                           );
                         },
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          children: [
                             Text('Afficher tout'),
                             SizedBox(width: 5),
                             FaIcon(FontAwesomeIcons.arrowRight, size: 12),
@@ -92,8 +92,8 @@ class HomeScreen extends StatelessWidget {
                         onPressed: () {
                           // Navigate to the full game list screen if needed
                         },
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          children: [
                             Text('Afficher tout'),
                             SizedBox(width: 5),
                             FaIcon(FontAwesomeIcons.arrowRight, size: 12),
