@@ -40,11 +40,11 @@ class LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text.trim();
 
     context.read<AuthBloc>().add(
-      LoginButtonPressed(
-        email: email,
-        password: password,
-      ),
-    );
+          LoginButtonPressed(
+            email: email,
+            password: password,
+          ),
+        );
   }
 
   @override
@@ -66,7 +66,8 @@ class LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
-              child: kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
+              child:
+                  kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
             ),
           ),
         ),

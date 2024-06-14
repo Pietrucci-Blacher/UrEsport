@@ -43,7 +43,8 @@ class Tournament {
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams: (json['teams'] as List).map((team) => Team.fromJson(team)).toList(),
+      teams:
+          (json['teams'] as List).map((team) => Team.fromJson(team)).toList(),
     );
   }
 
@@ -140,10 +141,14 @@ class Team {
       id: json['id'],
       name: json['name'],
       members: json['members'] != null
-          ? (json['members'] as List).map((member) => Member.fromJson(member)).toList()
+          ? (json['members'] as List)
+              .map((member) => Member.fromJson(member))
+              .toList()
           : null,
       tournaments: json['tournaments'] != null
-          ? (json['tournaments'] as List).map((tournament) => Tournament.fromJson(tournament)).toList()
+          ? (json['tournaments'] as List)
+              .map((tournament) => Tournament.fromJson(tournament))
+              .toList()
           : null,
       owner: Owner.fromJson(json['owner']),
       ownerId: json['owner_id'],
@@ -158,7 +163,8 @@ class Team {
       'id': id,
       'name': name,
       'members': members?.map((member) => member.toJson()).toList(),
-      'tournaments': tournaments?.map((tournament) => tournament.toJson()).toList(),
+      'tournaments':
+          tournaments?.map((tournament) => tournament.toJson()).toList(),
       'owner': owner.toJson(),
       'owner_id': ownerId,
       'private': isPrivate,
