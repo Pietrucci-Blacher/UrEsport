@@ -14,17 +14,18 @@ const (
 
 // User implements Model
 type User struct {
-	ID        int       `json:"id" gorm:"primaryKey"`
-	Firstname string    `json:"firstname" gorm:"type:varchar(100)"`
-	Lastname  string    `json:"lastname" gorm:"type:varchar(100)"`
-	Username  string    `json:"username" gorm:"type:varchar(100)"`
-	Email     string    `json:"email" gorm:"type:varchar(100)"`
-	Password  string    `json:"password"`
-	Roles     []string  `json:"roles" gorm:"json"`
-	Teams     []Team    `json:"teams" gorm:"many2many:team_members;"`
-	Verified  bool      `json:"verified" gorm:"default:false"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	ID             int       `json:"id" gorm:"primaryKey"`
+	Firstname      string    `json:"firstname" gorm:"type:varchar(100)"`
+	Lastname       string    `json:"lastname" gorm:"type:varchar(100)"`
+	Username       string    `json:"username" gorm:"type:varchar(100)"`
+	Email          string    `json:"email" gorm:"type:varchar(100)"`
+	Password       string    `json:"password"`
+	ProfileImageUrl string   `json:"profile_image_url" gorm:"type:varchar(255)"`
+	Roles          []string  `json:"roles" gorm:"json"`
+	Teams          []Team    `json:"teams" gorm:"many2many:team_members;"`
+	Verified       bool      `json:"verified" gorm:"default:false"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 type CreateUserDto struct {
@@ -40,16 +41,19 @@ type UpdateUserDto struct {
 	Lastname  string `json:"lastname"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
+	Password  string `json:"password"`
+    ProfileImageUrl string `json:"profile_image_url"`
 }
 
 type SanitizedUser struct {
-	ID        int             `json:"id"`
-	Username  string          `json:"username"`
-	Firstname string          `json:"firstname"`
-	Lastname  string          `json:"lastname"`
-	Teams     []SanitizedTeam `json:"teams"`
-	CreatedAt time.Time       `json:"created_at"`
-	UpdatedAt time.Time       `json:"updated_at"`
+	ID             int             `json:"id"`
+	Username       string          `json:"username"`
+	Firstname      string          `json:"firstname"`
+	Lastname       string          `json:"lastname"`
+	ProfileImageUrl string         `json:"profile_image_url"`
+	Teams          []SanitizedTeam `json:"teams"`
+	CreatedAt      time.Time       `json:"created_at"`
+	UpdatedAt      time.Time       `json:"updated_at"`
 }
 
 type LoginUserDto struct {
@@ -58,10 +62,11 @@ type LoginUserDto struct {
 }
 
 type UserInfo struct {
-	Email     string `json:"email"`
-	Username  string `json:"username"`
-	Firstname string `json:"firstname"`
-	Lastname  string `json:"lastname"`
+	Email          string `json:"email"`
+	Username       string `json:"username"`
+	Firstname      string `json:"firstname"`
+	Lastname       string `json:"lastname"`
+	ProfileImageUrl string `json:"profile_image_url"`
 }
 
 func FindAllUsers(query services.QueryFilter) ([]User, error) {
@@ -106,6 +111,7 @@ func (u *User) Sanitize(getTeam bool) SanitizedUser {
 		Username:  u.Username,
 		Firstname: u.Firstname,
 		Lastname:  u.Lastname,
+		ProfileImageUrl: u.ProfileImageUrl,
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: u.UpdatedAt,
 	}
