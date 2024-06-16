@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class CustomPoulesPage extends StatelessWidget {
   const CustomPoulesPage({super.key});
@@ -74,22 +75,282 @@ class _TournamentPoulesState extends State<TournamentPoules> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      itemCount: poules.length,
-      itemBuilder: (context, index) {
-        final poule = poules[index];
-        poule.teams.sort((a, b) => int.parse(b.score).compareTo(int.parse(a.score))); // Tri par score décroissant
-        return Card(
-          margin: EdgeInsets.all(10),
-          child: ExpansionTile(
-            title: Text(poule.name),
-            children: poule.teams.map((team) {
-              return ListTile(
-                title: Text(team.name),
-                trailing: Text(team.score),
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: poules.length,
+            itemBuilder: (context, index) {
+              final poule = poules[index];
+              poule.teams.sort((a, b) => int.parse(b.score).compareTo(int.parse(a.score)));
+              return Card(
+                margin: EdgeInsets.all(10),
+                child: ExpansionTile(
+                  title: Text(
+                    poule.name,
+                    style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  children: [
+                    _buildPouleTable(poule),
+                  ],
+                ),
               );
-            }).toList(),
+            },
           ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: ElevatedButton(
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => PouleBracketView(poules: poules),
+                ),
+              );
+            },
+            child: Text('Voir les Brackets'),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPouleTable(Poule poule) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: Table(
+        border: TableBorder.all(),
+        columnWidths: const {
+          0: FlexColumnWidth(3),
+          1: FlexColumnWidth(1),
+        },
+        children: [
+          TableRow(
+            children: [
+              TableCell(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Team',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ),
+              TableCell(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    'Score',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          ...poule.teams.map(
+                (team) => TableRow(
+              children: [
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(team.name),
+                  ),
+                ),
+                TableCell(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      team.score,
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class PouleBracketView extends StatefulWidget {
+  final List<Poule> poules;
+
+  const PouleBracketView({super.key, required this.poules});
+
+  @override
+  _PouleBracketViewState createState() => _PouleBracketViewState();
+}
+
+class _PouleBracketViewState extends State<PouleBracketView> {
+  final Map<String, Map<String, String>> matchResults = {};
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Brackets des Poules'),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context);
+          },
+        ),
+      ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(8.0),
+        child: Column(
+          children: widget.poules.map((poule) {
+            return Card(
+              margin: const EdgeInsets.symmetric(vertical: 10.0),
+              child: ExpansionTile(
+                title: Text(
+                  poule.name,
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+                children: [
+                  SingleChildScrollView(
+                    scrollDirection: Axis.horizontal,
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Table(
+                        border: TableBorder.all(),
+                        defaultColumnWidth: FixedColumnWidth(120.0),
+                        children: _buildRoundRobinTableRows(poule.teams),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
+      ),
+    );
+  }
+
+  List<TableRow> _buildRoundRobinTableRows(List<Team> teams) {
+    List<TableRow> rows = [];
+
+    // Add header row
+    rows.add(
+      TableRow(
+        children: [
+          TableCell(child: Container()),
+          ...teams.map((team) => Center(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                team.name,
+                style: TextStyle(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          )),
+        ],
+      ),
+    );
+
+    for (int i = 0; i < teams.length; i++) {
+      List<Widget> cells = [];
+      cells.add(
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Text(
+            teams[i].name,
+            style: TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+      );
+
+      for (int j = 0; j < teams.length; j++) {
+        if (i == j) {
+          cells.add(
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                '---',
+                textAlign: TextAlign.center,
+              ),
+            ),
+          );
+        } else {
+          cells.add(
+            GestureDetector(
+              onTap: () {
+                _showResultDialog(context, teams[i], teams[j]);
+              },
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  matchResults[teams[i].name]?[teams[j].name] ?? 'VS',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                ),
+              ),
+            ),
+          );
+        }
+      }
+
+      rows.add(TableRow(children: cells));
+    }
+
+    return rows;
+  }
+
+  void _showResultDialog(BuildContext context, Team team1, Team team2) {
+    final TextEditingController scoreController1 = TextEditingController();
+    final TextEditingController scoreController2 = TextEditingController();
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Enter result for ${team1.name} vs ${team2.name}'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextFormField(
+                controller: scoreController1,
+                decoration: InputDecoration(
+                  labelText: '${team1.name} Score',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+              TextFormField(
+                controller: scoreController2,
+                decoration: InputDecoration(
+                  labelText: '${team2.name} Score',
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              child: Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            ElevatedButton(
+              child: Text('Save'),
+              onPressed: () {
+                setState(() {
+                  matchResults[team1.name] = matchResults[team1.name] ?? {};
+                  matchResults[team2.name] = matchResults[team2.name] ?? {};
+                  matchResults[team1.name]![team2.name] = '${scoreController1.text} - ${scoreController2.text}';
+                  matchResults[team2.name]![team1.name] = '${scoreController2.text} - ${scoreController1.text}';
+                });
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
         );
       },
     );
@@ -113,5 +374,11 @@ class Team {
   });
 
   final String name;
-  final String score;
+  String score;
+}
+
+void main() {
+  runApp(MaterialApp(
+    home: CustomPoulesPage(),
+  ));
 }
