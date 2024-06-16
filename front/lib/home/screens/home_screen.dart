@@ -58,7 +58,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/tournaments');
+                          Navigator.pushNamed(context, '/tournaments');
                         },
                         child: Row(
                           children: [
@@ -85,7 +85,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushReplacementNamed(context, '/games');
+                          Navigator.pushNamed(context, '/games');
                         },
                         child: Row(
                           children: [

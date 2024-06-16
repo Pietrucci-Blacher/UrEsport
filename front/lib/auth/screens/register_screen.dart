@@ -44,18 +44,6 @@ class RegisterScreenState extends State<RegisterScreen> {
     showDialog(
       context: context,
       builder: (BuildContext context) {
-        Future.delayed(const Duration(seconds: 2), () {
-          Navigator.of(context).pop(true);
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VerificationScreen(
-                email: _emailController.text,
-                authService: widget.authService,
-              ),
-            ),
-          );
-        });
         return AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -68,6 +56,19 @@ class RegisterScreenState extends State<RegisterScreen> {
         );
       },
     );
+
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.of(context).pop(true);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VerificationScreen(
+            email: _emailController.text,
+            authService: widget.authService,
+          ),
+        ),
+      );
+    });
   }
 
   @override
@@ -124,14 +125,14 @@ class RegisterScreenState extends State<RegisterScreen> {
                       return ElevatedButton(
                         onPressed: () {
                           context.read<AuthBloc>().add(
-                                RegisterSubmitted(
-                                  firstName: _firstnameController.text,
-                                  lastName: _lastnameController.text,
-                                  username: _usernameController.text,
-                                  email: _emailController.text,
-                                  password: _passwordController.text,
-                                ),
-                              );
+                            RegisterSubmitted(
+                              firstName: _firstnameController.text,
+                              lastName: _lastnameController.text,
+                              username: _usernameController.text,
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                            ),
+                          );
                         },
                         child: Text(AppLocalizations.of(context).register),
                       );
