@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'dart:convert';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 import 'package:uresport/provider/NotificationProvider.dart';
-import 'package:uresport/widgets/custom_toast.dart'; // Importer le widget personnalisé
+import 'package:uresport/core/services/cache_service.dart';
+import 'package:dio/dio.dart';
+import 'package:uresport/services/friends_services.dart';
 
 class AddFriendPage extends StatefulWidget {
   final int userId;
@@ -21,6 +21,10 @@ class _AddFriendPageState extends State<AddFriendPage> {
   List<dynamic> allUsers = [];
   List<dynamic> filteredUsers = [];
 
+  final FriendService friendService = FriendService(Dio(BaseOptions(
+    baseUrl: dotenv.env['API_ENDPOINT']!,
+  )));
+
   @override
   void initState() {
     super.initState();
@@ -28,14 +32,14 @@ class _AddFriendPageState extends State<AddFriendPage> {
   }
 
   void fetchAllUsers() async {
-    final response = await http.get(Uri.parse('${dotenv.env['API_ENDPOINT']}/users'));
-    if (response.statusCode == 200) {
+    try {
+      final response = await Dio().get('${dotenv.env['API_ENDPOINT']}/users');
       setState(() {
-        allUsers = jsonDecode(response.body);
+        allUsers = response.data;
         filteredUsers = List.from(allUsers);
       });
-    } else {
-      throw Exception('Failed to load users');
+    } catch (e) {
+      throw Exception('Failed to load users: $e');
     }
   }
 
@@ -56,8 +60,8 @@ class _AddFriendPageState extends State<AddFriendPage> {
     overlayEntry = OverlayEntry(
       builder: (context) => CustomToast(
         message: message,
-        backgroundColor: backgroundColor ?? Colors.green, // Valeur par défaut pour la couleur de fond
-        textColor: textColor ?? Colors.white, // Valeur par défaut pour la couleur du texte
+        backgroundColor: backgroundColor ?? Colors.green,
+        textColor: textColor ?? Colors.white,
         onClose: () {
           overlayEntry.remove();
         },
@@ -69,8 +73,6 @@ class _AddFriendPageState extends State<AddFriendPage> {
       overlayEntry.remove();
     });
   }
-
-
 
   @override
   Widget build(BuildContext context) {
@@ -107,18 +109,31 @@ class _AddFriendPageState extends State<AddFriendPage> {
                   onTap: () async {
                     final friendId = user['id'];
                     final currentUser = widget.currentUser;
-                    final response = await http.post(Uri.parse('${dotenv.env['API_ENDPOINT']}/users/${widget.userId}/friends/$friendId'));
-                    if (response.statusCode == 200) {
+                    try {
+                      await friendService.addFriend(
+                        widget.userId,
+                        friendId,
+                      );
                       showNotificationToast(context, 'Ami ajouté avec succès');
                       // Envoie une notification
                       Provider.of<NotificationProvider>(context, listen: false)
                           .addNotification('$currentUser vous a ajouté en ami: ${user['firstname']}');
-                    } else {
+                    } catch (e) {
+                      String errorMessage;
+                      if (e is DioError) {
+                        if (e.message == 'Ami déjà ajouté') {
+                          errorMessage = 'Ami déjà ajouté';
+                        } else {
+                          errorMessage = 'Erreur lors de l\'ajout de l\'ami';
+                        }
+                      } else {
+                        errorMessage = 'Erreur lors de l\'ajout de l\'ami';
+                      }
                       showNotificationToast(
                         context,
-                        'Erreur lors de l\'ajout de l\'ami ou ami déjà ajouté',
-                        backgroundColor: Colors.red, // Couleur de fond du toast
-                        textColor: Colors.white,     // Couleur du texte du toast
+                        errorMessage,
+                        backgroundColor: Colors.red,
+                        textColor: Colors.white,
                       );
                     }
                   },

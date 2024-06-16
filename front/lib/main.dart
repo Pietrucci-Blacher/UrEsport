@@ -9,6 +9,7 @@ import 'package:uresport/provider/NotificationProvider.dart';
 import 'package:uresport/shared/websocket/websocket.dart';
 import 'package:uresport/services/notification_service.dart'; // Import the NotificationProvider
 import 'app.dart';
+import 'package:uresport/services/friends_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +18,7 @@ void main() async {
   final authService = AuthService(dio);
   final tournamentService = TournamentService(dio);
   final gameService = GameService(dio);
+  final friendService = FriendService(dio);
 
   connectWebsocket();
 
@@ -26,13 +28,15 @@ void main() async {
         Provider<IAuthService>.value(value: authService),
         Provider<ITournamentService>.value(value: tournamentService),
         Provider<IGameService>.value(value: gameService),
+        Provider<IFriendService>.value(value: friendService),
         ChangeNotifierProvider<NotificationService>(create: (_) => NotificationService()),
         ChangeNotifierProvider<NotificationProvider>(create: (_) => NotificationProvider()), // Add the NotificationProvider
       ],
       child: MyApp(
           authService: authService,
           tournamentService: tournamentService,
-          gameService: gameService),
+          gameService: gameService,
+      ),
     ),
   );
 }
