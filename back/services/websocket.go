@@ -18,6 +18,7 @@ var WebsocketInstance *Websocket
 type EventFunc func(*Client, any) error
 type OnConnectFunc func(*Client, *gin.Context) error
 type OnDisconnectFunc func(*Client) error
+type CbClient func(*Client) bool
 
 // Websocket is the main struct for managing websocket
 type Websocket struct {
@@ -140,6 +141,51 @@ func (w *Websocket) GetClients() map[string]*Client {
 	return w.clients
 }
 
+// GetClient returns a client by its ID
+//
+// ws.GetClient(client.ID)
+func (w *Websocket) GetClient(id string) *Client {
+	return w.clients[id]
+}
+
+// FindClient returns a client by a callback function
+//
+//	ws.FindClient(func(client *Client) bool {
+//		if !c.Get("logged").(bool) {
+//			return false
+//		}
+//		return c.Get("user").(models.User).ID == 2
+//	})
+func (w *Websocket) FindClient(cb CbClient) *Client {
+	for _, client := range w.clients {
+		if cb(client) {
+			return client
+		}
+	}
+
+	return nil
+}
+
+// FilterClient returns a list of clients by a callback function
+//
+//	ws.FilterClient(func(client *Client) bool {
+//		if !c.Get("logged").(bool) {
+//			return false
+//		}
+//		return c.Get("user").(models.User).ID == 2
+//	})
+func (w *Websocket) FilterClient(cb CbClient) []*Client {
+	var clients []*Client
+
+	for _, client := range w.clients {
+		if cb(client) {
+			clients = append(clients, client)
+		}
+	}
+
+	return clients
+}
+
 // AddClient adds a new client to the list of connected clients
 //
 // ws.AddClient(client)
@@ -173,19 +219,12 @@ func (w *Websocket) Close(id string) {
 	client := w.GetClient(id)
 
 	if err := w.RemoveClient(id); err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Printf("Error: %s\n", err.Error())
 	}
 
 	if err := w.onDisconnect(client); err != nil {
-		fmt.Printf("Error: %v\n", err)
+		fmt.Printf("Error: %s\n", err.Error())
 	}
-}
-
-// GetClient returns a client by its ID
-//
-// ws.GetClient(client.ID)
-func (w *Websocket) GetClient(id string) *Client {
-	return w.clients[id]
 }
 
 // SendJson sends a message to all connected clients

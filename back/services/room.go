@@ -38,6 +38,51 @@ func (r *Room) GetClients() map[string]*Client {
 	return r.clients
 }
 
+// GetClient returns a client by its ID
+//
+// ws.GetClient(client.ID)
+func (r *Room) GetClient(id string) *Client {
+	return r.clients[id]
+}
+
+// FindClient returns a client by a callback function
+//
+//	ws.FindClient(func(client *Client) bool {
+//		if !c.Get("logged").(bool) {
+//			return false
+//		}
+//		return c.Get("user").(models.User).ID == 2
+//	})
+func (r *Room) FindClient(cb CbClient) *Client {
+	for _, client := range r.clients {
+		if cb(client) {
+			return client
+		}
+	}
+
+	return nil
+}
+
+// FilterClient returns a list of clients by a callback function
+//
+//	ws.FilterClient(func(client *Client) bool {
+//		if !c.Get("logged").(bool) {
+//			return false
+//		}
+//		return c.Get("user").(models.User).ID == 2
+//	})
+func (r *Room) FilterClient(cb CbClient) []*Client {
+	var clients []*Client
+
+	for _, client := range r.clients {
+		if cb(client) {
+			clients = append(clients, client)
+		}
+	}
+
+	return clients
+}
+
 // SendJson sends a message to all clients in the room
 func (r *Room) SendJson(message Message) error {
 	for _, client := range r.clients {

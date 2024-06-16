@@ -5,6 +5,7 @@ import 'auth_state.dart';
 import 'package:uresport/core/models/login_request.dart';
 import 'package:uresport/core/models/register_request.dart';
 import 'package:uresport/core/services/cache_service.dart';
+import 'package:uresport/core/websocket/websocket.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final IAuthService authService;
@@ -12,6 +13,17 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   AuthBloc(this.authService) : super(AuthInitial()) {
     on<AuthCheckRequested>((event, emit) async {
       final isLoggedIn = await authService.isLoggedIn();
+      final ws = Websocket.getInstance();
+
+      if (isLoggedIn && isLoggedIn != ws.isLogged()) {
+        final token = await CacheService.instance.getString('token');
+        ws.reconnect(token: token);
+      } else if (!isLoggedIn && isLoggedIn != ws.isLogged()){
+        ws.reconnect();
+      }
+
+      ws.setLogged(isLoggedIn);
+
       if (isLoggedIn) {
         final user = await authService.getUser();
         emit(AuthAuthenticated(user));
