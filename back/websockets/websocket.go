@@ -25,8 +25,7 @@ func RegisterWebsocket(r *gin.Engine) {
 func connect(client *services.Client, c *gin.Context) error {
 	user, ok := c.Get("connectedUser")
 	if ok {
-		user = user.(models.User)
-		client.Set("user", user)
+		client.Set("user", user.(models.User))
 	}
 
 	client.Set("logged", ok)
