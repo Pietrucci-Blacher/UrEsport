@@ -5,6 +5,7 @@ import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:intl/intl.dart';
+import 'package:uresport/shared/map/map.dart';
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
@@ -12,27 +13,52 @@ class TournamentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: BlocBuilder<TournamentBloc, TournamentState>(
-        builder: (context, state) {
-          if (state is TournamentInitial) {
-            BlocProvider.of<TournamentBloc>(context)
-                .add(const LoadTournaments(limit: 10, page: 1));
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is TournamentLoadInProgress) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is TournamentLoadSuccess) {
-            return ListView.builder(
-              itemCount: state.tournaments.length,
-              itemBuilder: (context, index) {
-                final tournament = state.tournaments[index];
-                return _buildTournamentCard(context, tournament);
-              },
-            );
-          } else if (state is TournamentLoadFailure) {
-            return const Center(child: Text('Failed to load tournaments'));
-          }
-          return const Center(child: Text('Unknown state'));
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<TournamentBloc>().add(const LoadTournaments());
         },
+        child: BlocBuilder<TournamentBloc, TournamentState>(
+          builder: (context, state) {
+            if (state is TournamentInitial) {
+              BlocProvider.of<TournamentBloc>(context)
+                  .add(const LoadTournaments());
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is TournamentLoadInProgress) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (state is TournamentLoadSuccess) {
+              return Stack(
+                children: [
+                  ListView.builder(
+                    itemCount: state.tournaments.length,
+                    itemBuilder: (context, index) {
+                      final tournament = state.tournaments[index];
+                      return _buildTournamentCard(context, tournament);
+                    },
+                  ),
+                  Positioned(
+                    bottom: 16,
+                    right: 16,
+                    child: FloatingActionButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                MapWidget(tournaments: state.tournaments),
+                          ),
+                        );
+                      },
+                      child: const Icon(Icons.map),
+                    ),
+                  ),
+                ],
+              );
+            } else if (state is TournamentLoadFailure) {
+              return const Center(child: Text('Failed to load tournaments'));
+            }
+            return const Center(child: Text('Unknown state'));
+          },
+        ),
       ),
     );
   }
@@ -73,9 +99,9 @@ class TournamentScreen extends StatelessWidget {
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 5),
-            Text(
-              'Participants: ${tournament.participants.length}',
-              style: const TextStyle(fontSize: 16),
+            const Text(
+              'Participants:',
+              style: TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 15),
             ElevatedButton(

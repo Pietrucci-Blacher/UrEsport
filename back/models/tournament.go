@@ -12,6 +12,8 @@ type Tournament struct {
 	StartDate   time.Time `json:"start_date"`
 	EndDate     time.Time `json:"end_date"`
 	Location    string    `json:"location" gorm:"type:varchar(100)"`
+	Latitude    float64   `json:"latitude" gorm:"type:decimal(10,8)"`
+	Longitude   float64   `json:"longitude" gorm:"type:decimal(11,8)"`
 	OwnerID     int       `json:"owner_id"`
 	Owner       User      `json:"owner" gorm:"foreignKey:OwnerID"`
 	Teams       []Team    `json:"teams" gorm:"many2many:tournament_teams;"`
@@ -27,6 +29,8 @@ type CreateTournamentDto struct {
 	StartDate   time.Time `json:"start_date" validate:"required"`
 	EndDate     time.Time `json:"end_date" validate:"required"`
 	Location    string    `json:"location" validate:"required"`
+	Latitude    float64   `json:"latitude" validate:"required"`
+	Longitude   float64   `json:"longitude" validate:"required"`
 	Private     bool      `json:"private"`
 }
 
@@ -36,6 +40,8 @@ type UpdateTournamentDto struct {
 	StartDate   time.Time `json:"start_date"`
 	EndDate     time.Time `json:"end_date"`
 	Location    string    `json:"location"`
+	Latitude    float64   `json:"latitude"`
+	Longitude   float64   `json:"longitude"`
 	Image       string    `json:"image"`
 }
 
@@ -46,6 +52,8 @@ type SanitizedTournament struct {
 	StartDate   time.Time       `json:"start_date"`
 	EndDate     time.Time       `json:"end_date"`
 	Location    string          `json:"location"`
+	Latitude    float64         `json:"latitude"`
+	Longitude   float64         `json:"longitude"`
 	Image       string          `json:"image"`
 	Private     bool            `json:"private"`
 	OwnerID     int             `json:"owner_id"`
@@ -92,6 +100,8 @@ func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {
 		StartDate:   t.StartDate,
 		EndDate:     t.EndDate,
 		Location:    t.Location,
+		Latitude:    t.Latitude,
+		Longitude:   t.Longitude,
 		Image:       t.Image,
 		Private:     t.Private,
 		OwnerID:     t.OwnerID,
@@ -131,8 +141,8 @@ func (t *Tournament) RemoveAllTeams() error {
 	return DB.Model(t).Association("Teams").Clear()
 }
 
-func (r *Tournament) HasTeam(team Team) bool {
-	for _, t := range r.Teams {
+func (t *Tournament) HasTeam(team Team) bool {
+	for _, t := range t.Teams {
 		if t.ID == team.ID {
 			return true
 		}

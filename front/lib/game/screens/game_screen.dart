@@ -15,7 +15,7 @@ class GamesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => GameBloc(GameService(Dio()))..add(LoadGames()),
+      create: (context) => GameBloc(GameService(Dio()))..add(const LoadGames()),
       child: Scaffold(
         body: BlocBuilder<GameBloc, GameState>(
           builder: (context, state) {
@@ -24,7 +24,7 @@ class GamesScreen extends StatelessWidget {
             } else if (state is GameLoaded) {
               return RefreshIndicator(
                 onRefresh: () async {
-                  context.read<GameBloc>().add(LoadGames());
+                  context.read<GameBloc>().add(const LoadGames());
                 },
                 child: ListView.builder(
                   padding: const EdgeInsets.all(8.0),

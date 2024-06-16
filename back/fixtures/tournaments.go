@@ -21,6 +21,8 @@ func LoadTournaments() error {
 			StartDate:   time.Now(),
 			EndDate:     time.Now().AddDate(0, 0, 7),
 			Location:    fake.Address().City(),
+			Latitude:    fake.Address().Latitude(),
+			Longitude:   fake.Address().Longitude(),
 			OwnerID:     owner,
 			Image:       fake.Lorem().Word(),
 			Private:     fake.Bool(),

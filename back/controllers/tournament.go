@@ -76,6 +76,8 @@ func CreateTournament(c *gin.Context) {
 		Name:        body.Name,
 		Description: body.Description,
 		Location:    body.Location,
+		Latitude:    body.Latitude,
+		Longitude:   body.Longitude,
 		StartDate:   body.StartDate,
 		EndDate:     body.EndDate,
 		OwnerID:     connectedUser.ID,
@@ -117,6 +119,12 @@ func UpdateTournament(c *gin.Context) {
 	}
 	if body.Location != "" {
 		tournament.Location = body.Location
+	}
+	if body.Latitude != 0 {
+		tournament.Latitude = body.Latitude
+	}
+	if body.Longitude != 0 {
+		tournament.Longitude = body.Longitude
 	}
 	if !body.StartDate.IsZero() {
 		tournament.StartDate = body.StartDate
