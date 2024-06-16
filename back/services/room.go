@@ -40,14 +40,15 @@ func (r *Room) GetClients() map[string]*Client {
 
 // GetClient returns a client by its ID
 //
-// ws.GetClient(client.ID)
+// client := room.GetClient(client.ID)
+// client := client.Ws.Room("room-name").GetClient(client.ID)
 func (r *Room) GetClient(id string) *Client {
 	return r.clients[id]
 }
 
 // FindClient returns a client by a callback function
 //
-//	ws.FindClient(func(client *Client) bool {
+//	room.FindClient(func(client *Client) bool {
 //		if !c.Get("logged").(bool) {
 //			return false
 //		}
@@ -65,7 +66,7 @@ func (r *Room) FindClient(cb CbClient) *Client {
 
 // FilterClient returns a list of clients by a callback function
 //
-//	ws.FilterClient(func(client *Client) bool {
+//	room.FilterClient(func(client *Client) bool {
 //		if !c.Get("logged").(bool) {
 //			return false
 //		}
