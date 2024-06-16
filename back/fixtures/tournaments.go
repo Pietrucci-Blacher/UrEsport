@@ -24,7 +24,7 @@ func LoadTournaments() error {
 			Latitude:    fake.Address().Latitude(),
 			Longitude:   fake.Address().Longitude(),
 			OwnerID:     owner,
-			Image:       fake.Lorem().Word(),
+			Image:       fmt.Sprintf("https://picsum.photos/seed/%d/200/300", i),
 			Private:     fake.Bool(),
 		}
 
