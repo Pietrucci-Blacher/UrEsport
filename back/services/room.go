@@ -67,10 +67,7 @@ func (r *Room) FindClient(cb CbClient) *Client {
 // FilterClient returns a list of clients by a callback function
 //
 //	room.FilterClient(func(client *Client) bool {
-//		if !c.Get("logged").(bool) {
-//			return false
-//		}
-//		return c.Get("user").(models.User).ID == 2
+//		return c.Get("logged").(bool)
 //	})
 func (r *Room) FilterClient(cb CbClient) []*Client {
 	var clients []*Client

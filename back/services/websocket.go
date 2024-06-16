@@ -169,10 +169,7 @@ func (w *Websocket) FindClient(cb CbClient) *Client {
 // FilterClient returns a list of clients by a callback function
 //
 //	ws.FilterClient(func(client *Client) bool {
-//		if !c.Get("logged").(bool) {
-//			return false
-//		}
-//		return c.Get("user").(models.User).ID == 2
+//		return c.Get("logged").(bool)
 //	})
 func (w *Websocket) FilterClient(cb CbClient) []*Client {
 	var clients []*Client
