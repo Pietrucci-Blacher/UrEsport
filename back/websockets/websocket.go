@@ -43,6 +43,10 @@ func connect(client *services.Client, c *gin.Context) error {
 		)
 	}
 
+	if err := client.Emit("connected", nil); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -73,6 +77,20 @@ func disconnect(client *services.Client) error {
 func PingTest(client *services.Client, msg any) error {
 	if err := client.Ws.Emit("pong", "test broadcast"); err != nil {
 		return err
+	}
+
+	// Try to find a client with user ID 2
+	cl := client.Ws.FindClient(func(c *services.Client) bool {
+		if !c.Get("logged").(bool) {
+			return false
+		}
+		return c.Get("user").(models.User).ID == 2
+	})
+
+	if cl != nil {
+		if err := cl.Emit("pong", "test private"); err != nil {
+			return err
+		}
 	}
 
 	return client.Emit("pong", msg)
