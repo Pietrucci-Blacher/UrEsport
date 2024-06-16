@@ -6,6 +6,7 @@ import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/shared/websocket/websocket.dart';
+import 'package:uresport/shared/routing/routing.dart';
 import 'app.dart';
 
 void main() async {
@@ -15,6 +16,7 @@ void main() async {
   final authService = AuthService(dio);
   final tournamentService = TournamentService(dio);
   final gameService = GameService(dio);
+  final routeGenerator = RouteGenerator(authService);
 
   connectWebsocket();
 
@@ -26,9 +28,11 @@ void main() async {
         Provider<IGameService>.value(value: gameService),
       ],
       child: MyApp(
-          authService: authService,
-          tournamentService: tournamentService,
-          gameService: gameService),
+        authService: authService,
+        tournamentService: tournamentService,
+        gameService: gameService,
+        routeGenerator: routeGenerator,
+      ),
     ),
   );
 }

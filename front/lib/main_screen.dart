@@ -18,22 +18,26 @@ import 'package:uresport/shared/locale_switcher.dart';
 
 class MainScreen extends StatefulWidget {
   final IAuthService authService;
+  final int initialIndex;
 
-  const MainScreen({super.key, required this.authService});
+  const MainScreen({
+    super.key,
+    required this.authService,
+    this.initialIndex = 0,
+  });
 
   @override
   MainScreenState createState() => MainScreenState();
 }
 
 class MainScreenState extends State<MainScreen> {
-  int _selectedIndex = 0;
-
+  late int _selectedIndex;
   late final List<Widget> _widgetOptions;
 
   @override
   void initState() {
     super.initState();
-
+    _selectedIndex = widget.initialIndex;
     _widgetOptions = [
       const HomeScreen(),
       const GamesScreen(),
@@ -52,7 +56,7 @@ class MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: BlocBuilder<AuthBloc, AuthState>(
         builder: (context, state) {
           if (state is AuthInitial) {
@@ -73,8 +77,8 @@ class MainScreenState extends State<MainScreen> {
                       IconButton(
                         icon: isLoggedIn && profileImageUrl != null
                             ? CircleAvatar(
-                                backgroundImage: NetworkImage(profileImageUrl),
-                              )
+                          backgroundImage: NetworkImage(profileImageUrl),
+                        )
                             : const Icon(Icons.person),
                         onPressed: () {
                           if (isLoggedIn) {
@@ -121,10 +125,10 @@ class MainScreenState extends State<MainScreen> {
               bottomNavigationBar: kIsWeb
                   ? null
                   : CustomBottomNavigation(
-                      isLoggedIn: isLoggedIn,
-                      selectedIndex: _selectedIndex,
-                      onTap: _onItemTapped,
-                    ),
+                isLoggedIn: isLoggedIn,
+                selectedIndex: _selectedIndex,
+                onTap: _onItemTapped,
+              ),
             );
           }
         },

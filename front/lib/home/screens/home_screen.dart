@@ -13,7 +13,6 @@ import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/game/screens/game_detail.dart';
-import 'package:uresport/tournament/screens/tournament_screen.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -59,12 +58,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const TournamentScreen(),
-                            ),
-                          );
+                          Navigator.pushReplacementNamed(context, '/tournaments');
                         },
                         child: Row(
                           children: [
@@ -91,7 +85,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          // Navigate to the full game list screen if needed
+                          Navigator.pushReplacementNamed(context, '/games');
                         },
                         child: Row(
                           children: [
