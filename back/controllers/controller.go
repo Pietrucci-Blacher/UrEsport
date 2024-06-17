@@ -36,12 +36,12 @@ func RegisterRoutes(r *gin.Engine) {
 				GetUser,
 			)
 			users.POST("/:user/image",
-                middlewares.IsLoggedIn(true),
-                middlewares.Get[*models.User]("user"),
-                middlewares.IsMe(),
-                middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
-                UploadUserImage,
-            )
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.IsMe(),
+				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
+				UploadUserImage,
+			)
 			users.PATCH("/:user",
 				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.User]("user"),
@@ -312,6 +312,13 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsAdmin(),
 				middlewares.Get[*models.Game]("game"),
 				DeleteGame,
+			)
+			games.POST("/:game/image",
+				middlewares.IsLoggedIn(true),
+				middlewares.IsAdmin(),
+				middlewares.Get[*models.Game]("game"),
+				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
+				UploadGameImage,
 			)
 		}
 

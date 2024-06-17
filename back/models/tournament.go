@@ -19,6 +19,9 @@ type Tournament struct {
 	Teams       []Team    `json:"teams" gorm:"many2many:tournament_teams;"`
 	Image       string    `json:"image" gorm:"type:text"`
 	Private     bool      `json:"private" gorm:"default:false"`
+	GameID      int       `json:"game_id"`
+	Game        Game      `json:"game" gorm:"foreignKey:GameID"`
+	NbPlayer    int       `json:"nb_player" gorm:"default:1"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
@@ -32,6 +35,8 @@ type CreateTournamentDto struct {
 	Latitude    float64   `json:"latitude" validate:"required"`
 	Longitude   float64   `json:"longitude" validate:"required"`
 	Private     bool      `json:"private"`
+	NbPlayer    int       `json:"nb_player" validate:"required"`
+	GameID      int       `json:"game_id" validate:"required"`
 }
 
 type UpdateTournamentDto struct {
@@ -43,6 +48,8 @@ type UpdateTournamentDto struct {
 	Latitude    float64   `json:"latitude"`
 	Longitude   float64   `json:"longitude"`
 	Image       string    `json:"image"`
+	NbPlayer    int       `json:"nb_player"`
+	GameID      int       `json:"game_id"`
 }
 
 type SanitizedTournament struct {
@@ -59,6 +66,9 @@ type SanitizedTournament struct {
 	OwnerID     int             `json:"owner_id"`
 	Owner       SanitizedUser   `json:"owner"`
 	Teams       []SanitizedTeam `json:"teams"`
+	GameID      int             `json:"game_id"`
+	Game        Game            `json:"game"`
+	NbPlayer    int             `json:"nb_player"`
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
 }
@@ -73,6 +83,7 @@ func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
 		Order(query.GetSort()).
 		Preload("Teams").
 		Preload("Owner").
+		Preload("Game").
 		Find(&tournaments).Error
 
 	return tournaments, err
@@ -85,6 +96,7 @@ func FindTournamentsByUserID(userID int) ([]Tournament, error) {
 		Where("owner_id", userID).
 		Preload("Teams").
 		Preload("Owner").
+		Preload("Game").
 		Find(&tournaments).Error
 
 	return tournaments, err
@@ -106,6 +118,9 @@ func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {
 		Private:     t.Private,
 		OwnerID:     t.OwnerID,
 		Owner:       t.Owner.Sanitize(false),
+		GameID:      t.GameID,
+		Game:        t.Game,
+		NbPlayer:    t.NbPlayer,
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
 	}
@@ -158,6 +173,7 @@ func (t *Tournament) FindOneById(id int) error {
 	return DB.Model(&Tournament{}).
 		Preload("Teams").
 		Preload("Owner").
+		Preload("Game").
 		First(&t, id).Error
 }
 
@@ -165,8 +181,9 @@ func (t *Tournament) FindOne(key string, value any) error {
 	return DB.Model(&Tournament{}).
 		Preload("Teams").
 		Preload("Owner").
+		Preload("Game").
 		Where(key, value).
-		First(t).Error
+		First(&t).Error
 }
 
 func (t *Tournament) Delete() error {
