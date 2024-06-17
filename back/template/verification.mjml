@@ -8,7 +8,7 @@
                 <mj-text>
                     Votre code de vérification est : {{.Code}}
                 </mj-text>
-                <mj-text>
+                <mj-text color="red">
                     Ce code expirera dans 15 minutes.
                 </mj-text>
             </mj-column>

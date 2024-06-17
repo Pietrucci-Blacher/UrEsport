@@ -1,26 +1,50 @@
 import 'package:flutter/material.dart';
 import 'package:uresport/home/screens/home_screen.dart';
-import 'package:uresport/notification/screens/notif_screen.dart';
-import 'package:uresport/tournament/screens/tournament_screen.dart';
-import 'package:uresport/game/screens/game_screen.dart';
+import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/main_screen.dart';
 
 class RouteGenerator {
-  static Route<dynamic>? generateRoute(RouteSettings settings) {
+  final IAuthService authService;
+
+  RouteGenerator(this.authService);
+
+  Route<dynamic>? generateRoute(RouteSettings settings) {
     switch (settings.name) {
       case '/home':
-        return MaterialPageRoute(builder: (_) => const HomeScreen());
-      case '/game':
-        return MaterialPageRoute(builder: (_) => const GamesScreen());
-      case '/tournament':
-        return MaterialPageRoute(builder: (_) => const TournamentScreen());
-      case '/notification':
-        return MaterialPageRoute(builder: (_) => const NotificationScreen());
+        return MaterialPageRoute(
+          builder: (_) => const HomeScreen(),
+          settings: settings,
+        );
+      case '/games':
+        return MaterialPageRoute(
+          builder: (_) => MainScreen(
+            authService: authService,
+            initialIndex: 1,
+          ),
+          settings: settings,
+        );
+      case '/tournaments':
+        return MaterialPageRoute(
+          builder: (_) => MainScreen(
+            authService: authService,
+            initialIndex: 2,
+          ),
+          settings: settings,
+        );
+      case '/notifications':
+        return MaterialPageRoute(
+          builder: (_) => MainScreen(
+            authService: authService,
+            initialIndex: 3,
+          ),
+          settings: settings,
+        );
       default:
         return _errorRoute();
     }
   }
 
-  static Route<dynamic> _errorRoute() {
+  Route<dynamic> _errorRoute() {
     return MaterialPageRoute(builder: (_) {
       return Scaffold(
         appBar: AppBar(title: const Text('Error')),

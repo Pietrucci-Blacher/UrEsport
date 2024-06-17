@@ -17,7 +17,7 @@ class InviteButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return ElevatedButton(
       onPressed: () => _onInvitePressed(context),
-      child: Text(AppLocalizations.of(context).inviteButtonTitle),
+      child: Text(AppLocalizations.of(context).inviteButton),
     );
   }
 
@@ -53,7 +53,7 @@ class InviteButton extends StatelessWidget {
         return AlertDialog(
           title: Text(success ? 'Invitation envoyée' : 'Erreur'),
           content: Text(success
-              ? 'Bonjour $username, ${AppLocalizations.of(context).inviteSuccessTitle}'
+              ? 'Bonjour $username, ${AppLocalizations.of(context).inviteSuccess}'
               : 'Échec de l\'invitation.'),
           actions: [
             TextButton(

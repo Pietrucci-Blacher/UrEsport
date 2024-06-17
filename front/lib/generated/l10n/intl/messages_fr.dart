@@ -27,19 +27,32 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
+        "closeButton": MessageLookupByLibrary.simpleMessage("Fermer"),
+        "deleteGameButton":
+            MessageLookupByLibrary.simpleMessage("Supprimer le jeux"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "firstName": MessageLookupByLibrary.simpleMessage("Prénom"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("Mot de passe oublié ?"),
+        "gameButton":
+            MessageLookupByLibrary.simpleMessage("Voir tout les jeux"),
         "gameScreenTitle": MessageLookupByLibrary.simpleMessage("Jeux"),
         "gameScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Bienvenue à l\'écran des jeux !"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Accueil"),
         "homeScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Bienvenue à l\'écran d\'accueil !"),
+        "inviteButton": MessageLookupByLibrary.simpleMessage("Inviter"),
+        "inviteError": MessageLookupByLibrary.simpleMessage(
+            "Erreur lors de l\'invitation"),
+        "inviteSuccess":
+            MessageLookupByLibrary.simpleMessage("Vous avez bien été invité"),
+        "joinButton": MessageLookupByLibrary.simpleMessage("Rejoindre"),
         "lastName": MessageLookupByLibrary.simpleMessage("Nom"),
         "logIn": MessageLookupByLibrary.simpleMessage("Connexion"),
         "login": MessageLookupByLibrary.simpleMessage("Connexion"),
+        "modifyGameButton":
+            MessageLookupByLibrary.simpleMessage("Modifier le jeux"),
         "notificationScreenTitle":
             MessageLookupByLibrary.simpleMessage("Notifications"),
         "notificationScreenWelcome": MessageLookupByLibrary.simpleMessage(
@@ -51,6 +64,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "E-mail de réinitialisation du mot de passe envoyé"),
         "passwordResetSuccessful": MessageLookupByLibrary.simpleMessage(
             "Réinitialisation du mot de passe réussie"),
+        "popularGamesTitle":
+            MessageLookupByLibrary.simpleMessage("Jeux populaires"),
         "profileScreenTitle": MessageLookupByLibrary.simpleMessage("Profil"),
         "profileScreenWelcome": m0,
         "register": MessageLookupByLibrary.simpleMessage("Inscription"),
@@ -64,9 +79,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Tournois"),
         "tournamentScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Bienvenue à l\'écran des tournois !"),
+        "trendingTournamentsTitle":
+            MessageLookupByLibrary.simpleMessage("Tournois en tendance"),
         "username": MessageLookupByLibrary.simpleMessage("Nom d\'utilisateur"),
         "verificationCodeSent": m1,
         "verify": MessageLookupByLibrary.simpleMessage("Vérifier"),
+        "viewAll": MessageLookupByLibrary.simpleMessage("Afficher tout"),
         "welcome":
             MessageLookupByLibrary.simpleMessage("Bienvenue sur UrEsport"),
         "youAreNotLoggedIn":

@@ -121,6 +121,36 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, sanitized)
 }
 
+
+// UpdateUserImage godoc
+//
+//	@Summary		update user image
+//	@Description	update user image
+//	@Tags			user
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Param			user		path	int		true	"User ID"
+//	@Param			upload[]		formData	file	true	"Image"
+//	@Success		200			{object}	models.SanitizedUser
+//	@Failure		400			{object}	utils.HttpError
+//	@Failure		401			{object}	utils.HttpError
+//	@Failure		404			{object}	utils.HttpError
+//	@Failure		500			{object}	utils.HttpError
+//	@Router			/users/{user}/image [post]
+func UploadUserImage(c *gin.Context) {
+	user, _ := c.MustGet("user").(*models.User)
+	files, _ := c.MustGet("files").([]string)
+
+	user.ProfileImageUrl = files[0]
+
+	if err := user.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, user.Sanitize(false))
+}
+
 // DeleteUser godoc
 //
 //	@Summary		delete user

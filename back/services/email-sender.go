@@ -1,8 +1,10 @@
 package services
 
 import (
+	"bytes"
 	"context"
 	"fmt"
+	"html/template"
 	"math/rand"
 	"os"
 	"time"
@@ -10,12 +12,15 @@ import (
 	sib_api_v3_sdk "github.com/getbrevo/brevo-go/lib"
 )
 
-type EmailTemplate string
+type EmailTemplate struct {
+	Name string
+	Path string
+}
 
-const (
-	WelcomeEmail       EmailTemplate = "WELCOME_EMAIL"
-	PasswordResetEmail EmailTemplate = "PASSWORD_RESET_EMAIL"
-	VerificationEmail  EmailTemplate = "VERIFICATION_EMAIL"
+var (
+	WelcomeEmail       = EmailTemplate{Name: "welcome", Path: "template-html/welcome.html"}
+	PasswordResetEmail = EmailTemplate{Name: "password_reset", Path: "template-html/password_reset.html"}
+	VerificationEmail  = EmailTemplate{Name: "verification", Path: "template-html/verification.html"}
 )
 
 func SendEmail(userEmail string, template EmailTemplate) error {
@@ -32,7 +37,7 @@ func SendEmail(userEmail string, template EmailTemplate) error {
 	cfg := sib_api_v3_sdk.NewConfiguration()
 	cfg.AddDefaultHeader("api-key", apiKey)
 
-	sib := sib_api_v3_sdk.NewAPIClient(cfg)
+	client := sib_api_v3_sdk.NewAPIClient(cfg)
 
 	subject, htmlContent := getEmailContent(template, "")
 
@@ -56,7 +61,7 @@ func SendEmail(userEmail string, template EmailTemplate) error {
 	}
 
 	ctx := context.Background()
-	response, httpResp, err := sib.TransactionalEmailsApi.SendTransacEmail(ctx, body)
+	response, httpResp, err := client.TransactionalEmailsApi.SendTransacEmail(ctx, body)
 	if err != nil {
 		return fmt.Errorf("error sending email: %w, response: %v, http response: %v", err, response, httpResp)
 	}
@@ -82,7 +87,7 @@ func SendEmailWithCode(userEmail string, template EmailTemplate, code string) er
 	cfg := sib_api_v3_sdk.NewConfiguration()
 	cfg.AddDefaultHeader("api-key", apiKey)
 
-	sib := sib_api_v3_sdk.NewAPIClient(cfg)
+	client := sib_api_v3_sdk.NewAPIClient(cfg)
 
 	subject, htmlContent := getEmailContent(template, code)
 
@@ -107,7 +112,7 @@ func SendEmailWithCode(userEmail string, template EmailTemplate, code string) er
 	}
 
 	ctx := context.Background()
-	response, httpResp, err := sib.TransactionalEmailsApi.SendTransacEmail(ctx, body)
+	response, httpResp, err := client.TransactionalEmailsApi.SendTransacEmail(ctx, body)
 	if err != nil {
 		return fmt.Errorf("error sending email: %w, response: %v, http response: %v", err, response, httpResp)
 	}
@@ -116,21 +121,46 @@ func SendEmailWithCode(userEmail string, template EmailTemplate, code string) er
 }
 
 func getEmailContent(template EmailTemplate, code string) (subject, htmlContent string) {
-	switch template {
-	case WelcomeEmail:
-		subject = "Bienvenue sur notre plateforme !"
-		htmlContent = "<p>Nous sommes ravis de vous accueillir. Commencez dès maintenant à explorer nos fonctionnalités.</p>"
-	case PasswordResetEmail:
+	params := map[string]interface{}{
+		"Code": code,
+	}
+
+	htmlContent = loadHTMLTemplate(template.Path, params)
+	switch template.Name {
+	case WelcomeEmail.Name:
+		subject = "Bienvenue sur notre plateforme!"
+	case PasswordResetEmail.Name:
 		subject = "Réinitialisation de votre mot de passe"
-		htmlContent = "<p>Suivez ce lien pour réinitialiser votre mot de passe. Si vous n'avez pas demandé cette réinitialisation, veuillez ignorer cet email.</p>"
-	case VerificationEmail:
+	case VerificationEmail.Name:
 		subject = "Vérifiez votre compte"
-		htmlContent = fmt.Sprintf("<p>Votre code de vérification est : %s</p><p>Ce code expirera dans 15 minutes.</p>", code)
 	default:
 		subject = "Hello from Golang"
 		htmlContent = "<p>Hello world</p>"
 	}
 	return subject, htmlContent
+}
+
+func loadHTMLTemplate(filePath string, params map[string]interface{}) string {
+	content, err := os.ReadFile(filePath)
+	if err != nil {
+		fmt.Printf("Error loading HTML template: %v\n", err)
+		return "<p>Error loading template</p>"
+	}
+
+	tmpl := template.New("email")
+	tmpl, err = tmpl.Parse(string(content))
+	if err != nil {
+		fmt.Printf("Error parsing template: %v\n", err)
+		return "<p>Error parsing template</p>"
+	}
+
+	var buffer bytes.Buffer
+	if err := tmpl.Execute(&buffer, params); err != nil {
+		fmt.Printf("Error executing template: %v\n", err)
+		return "<p>Error executing template</p>"
+	}
+
+	return buffer.String()
 }
 
 func GenerateVerificationCode() int {

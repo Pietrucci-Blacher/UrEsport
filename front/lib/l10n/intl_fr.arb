@@ -37,5 +37,8 @@
   "gameScreenWelcome": "Bienvenue à l'écran des jeux !",
   "gameScreenTitle": "Jeux",
   "modifyGameButton": "Modifier le jeux",
-  "deleteGameButton": "Supprimer le jeux"
+  "deleteGameButton": "Supprimer le jeux",
+  "trendingTournamentsTitle": "Tournois en tendance",
+  "popularGamesTitle": "Jeux populaires",
+  "viewAll": "Afficher tout"
 }
