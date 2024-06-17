@@ -1,36 +1,61 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:uresport/services/friends_services.dart';
-import 'package:uresport/models/friend.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:uresport/core/services/friends_services.dart';
+import 'package:uresport/core/models/friend.dart';
 import 'package:uresport/widgets/friend_list_tile.dart';
-import 'package:uresport/notification/screens/friends_add.dart';
-import 'package:uresport/notification/screens/friends_details.dart';
+import 'package:uresport/friends/screens/friends_add.dart';
+import 'package:uresport/friends/screens/friends_details.dart';
 import 'package:dio/dio.dart';
-import 'package:uresport/core/services/cache_service.dart';
-import '../blocs/friends_bloc.dart';
-import '../blocs/friends_event.dart';
-import '../blocs/friends_state.dart';
+import 'package:uresport/friends/bloc/friends_bloc.dart';
+import 'package:uresport/friends/bloc/friends_event.dart';
+import 'package:uresport/friends/bloc/friends_state.dart';
 
-class FriendsTab extends StatelessWidget {
+
+class FriendsTab extends StatefulWidget {
   final int userId;
 
   const FriendsTab({Key? key, required this.userId}) : super(key: key);
 
-  void navigateToFriendDetails(BuildContext context, Friend friend) {
-    Navigator.push(
+  @override
+  _FriendsTabState createState() => _FriendsTabState();
+}
+
+class _FriendsTabState extends State<FriendsTab> {
+  late FriendsBloc _friendsBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _friendsBloc = FriendsBloc(FriendService(Dio(BaseOptions(
+      baseUrl: dotenv.env['API_ENDPOINT']!,
+    ))));
+    _friendsBloc.add(LoadFriends(widget.userId));
+  }
+
+  @override
+  void dispose() {
+    _friendsBloc.close();
+    super.dispose();
+  }
+
+  Future<void> _navigateAndRefresh(BuildContext context) async {
+    // Naviguer vers AddFriendPage et attendre jusqu'à ce que la page soit fermée
+    await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FriendsDetails(friend: friend),
+        builder: (context) => AddFriendPage(userId: widget.userId, currentUser: 'ilies'),
       ),
     );
+
+    // Recharger les amis après être revenu de AddFriendPage
+    _friendsBloc.add(LoadFriends(widget.userId));
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => FriendsBloc(FriendService(Dio(BaseOptions(
-        baseUrl: dotenv.env['API_ENDPOINT']!,
-      ))))..add(LoadFriends(userId)),
+      create: (context) => _friendsBloc,
       child: Scaffold(
         body: Column(
           children: [
@@ -54,7 +79,14 @@ class FriendsTab extends StatelessWidget {
               ),
             ),
             Expanded(
-              child: BlocBuilder<FriendsBloc, FriendsState>(
+              child: BlocConsumer<FriendsBloc, FriendsState>(
+                listener: (context, state) {
+                  if (state is FriendsError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.message)),
+                    );
+                  }
+                },
                 builder: (context, state) {
                   if (state is FriendsLoading) {
                     return const Center(child: CircularProgressIndicator());
@@ -88,7 +120,7 @@ class FriendsTab extends StatelessWidget {
                           key: UniqueKey(),
                           direction: DismissDirection.endToStart,
                           onDismissed: (direction) {
-                            context.read<FriendsBloc>().add(ToggleFavorite(friend, userId));
+                            context.read<FriendsBloc>().add(ToggleFavorite(friend, widget.userId));
                           },
                           background: Container(
                             color: Colors.red,
@@ -97,7 +129,7 @@ class FriendsTab extends StatelessWidget {
                             child: const Icon(Icons.remove_circle, color: Colors.white),
                           ),
                           child: GestureDetector(
-                            onTap: () => navigateToFriendDetails(context, friend),
+                            //onTap: () => navigateToFriendDetails(context, friend),
                             child: FriendListTile(name: friend.name),
                           ),
                         )),
@@ -147,9 +179,9 @@ class FriendsTab extends StatelessWidget {
                               },
                               onDismissed: (direction) {
                                 if (direction == DismissDirection.endToStart) {
-                                  context.read<FriendsBloc>().add(DeleteFriend(friend, userId));
+                                  context.read<FriendsBloc>().add(DeleteFriend(friend, widget.userId));
                                 } else {
-                                  context.read<FriendsBloc>().add(ToggleFavorite(friend, userId));
+                                  context.read<FriendsBloc>().add(ToggleFavorite(friend, widget.userId));
                                 }
                               },
                               background: Container(
@@ -165,7 +197,7 @@ class FriendsTab extends StatelessWidget {
                                 child: const Icon(Icons.delete, color: Colors.white),
                               ),
                               child: GestureDetector(
-                                onTap: () => navigateToFriendDetails(context, friend),
+                                //onTap: () => navigateToFriendDetails(context, friend),
                                 child: FriendListTile(name: friend.name),
                               ),
                             )),
@@ -181,15 +213,7 @@ class FriendsTab extends StatelessWidget {
           ],
         ),
         floatingActionButton: FloatingActionButton(
-          onPressed: () async {
-            await Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => AddFriendPage(userId: userId, currentUser: 'ilies'),
-              ),
-            );
-            context.read<FriendsBloc>().add(LoadFriends(userId));
-          },
+          onPressed: () => _navigateAndRefresh(context),
           child: const Icon(Icons.person_add),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

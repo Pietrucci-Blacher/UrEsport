@@ -9,7 +9,7 @@ import 'package:uresport/provider/NotificationProvider.dart';
 import 'package:uresport/shared/websocket/websocket.dart';
 import 'package:uresport/services/notification_service.dart'; // Import the NotificationProvider
 import 'app.dart';
-import 'package:uresport/services/friends_services.dart';
+import 'package:uresport/core/services/friends_services.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

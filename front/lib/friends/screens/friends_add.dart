@@ -4,7 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:uresport/provider/NotificationProvider.dart';
 import 'package:uresport/core/services/cache_service.dart';
 import 'package:dio/dio.dart';
-import 'package:uresport/services/friends_services.dart';
+import 'package:uresport/core/services/friends_services.dart';
+import 'package:uresport/widgets/custom_toast.dart';
 
 class AddFriendPage extends StatefulWidget {
   final int userId;
@@ -120,7 +121,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
                           .addNotification('$currentUser vous a ajouté en ami: ${user['firstname']}');
                     } catch (e) {
                       String errorMessage;
-                      if (e is DioError) {
+                      if (e is DioException) {
                         if (e.message == 'Ami déjà ajouté') {
                           errorMessage = 'Ami déjà ajouté';
                         } else {

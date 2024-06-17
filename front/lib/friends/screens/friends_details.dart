@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../models/friends.dart'; // Assurez-vous que le chemin est correct
+import 'package:uresport/core/models/friend.dart'; // Assurez-vous que le chemin est correct;
 
 class FriendsDetails extends StatelessWidget {
   final Friend friend;

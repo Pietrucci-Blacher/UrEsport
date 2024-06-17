@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:uresport/models/friend.dart';
+import 'package:uresport/core/models/friend.dart';
 
 abstract class FriendsState extends Equatable {
   const FriendsState();

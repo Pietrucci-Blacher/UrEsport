@@ -11,6 +11,20 @@ class Friend {
     this.isFavorite = false,
   });
 
+  Friend copyWith({
+    int? id,
+    int? userId,
+    String? name,
+    bool? isFavorite,
+  }) {
+    return Friend(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      name: name ?? this.name,
+      isFavorite: isFavorite ?? this.isFavorite,
+    );
+  }
+
   factory Friend.fromJson(Map<String, dynamic> json) {
     return Friend(
       id: json['id'] ?? 0,
