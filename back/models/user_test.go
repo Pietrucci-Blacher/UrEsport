@@ -1,7 +1,7 @@
 package models
 
 import (
-	"challenge/utils"
+	"challenge/services"
 	"strconv"
 	"testing"
 
@@ -127,7 +127,7 @@ func TestFindAllUsers(t *testing.T) {
 		"limit": {strconv.Itoa(nbUsers)},
 	}
 
-	query, err := utils.NewQueryFilter(params)
+	query, err := services.NewQueryFilter(params)
 	if err != nil {
 		t.Error(err)
 		return

@@ -1,7 +1,7 @@
 package models
 
 import (
-	"challenge/utils"
+	"challenge/services"
 	"testing"
 	"time"
 
@@ -30,6 +30,8 @@ func createSampleData() (User, Team, Tournament) {
 		StartDate:   time.Now(),
 		EndDate:     time.Now().Add(24 * time.Hour),
 		Location:    fake.Address().City(),
+		Latitude:    fake.Address().Latitude(),
+		Longitude:   fake.Address().Longitude(),
 		OwnerID:     user.ID,
 		Image:       fake.Internet().URL(),
 		Private:     false,
@@ -49,7 +51,7 @@ func TestFindAllTournaments(t *testing.T) {
 	_, _, _ = createSampleData()
 
 	params := map[string][]string{}
-	query, _ := utils.NewQueryFilter(params)
+	query, _ := services.NewQueryFilter(params)
 	tournaments, err := FindAllTournaments(query)
 
 	assert.Nil(t, err)
@@ -80,6 +82,8 @@ func TestSanitize(t *testing.T) {
 	assert.Equal(t, tournament.StartDate, sanitized.StartDate)
 	assert.Equal(t, tournament.EndDate, sanitized.EndDate)
 	assert.Equal(t, tournament.Location, sanitized.Location)
+	assert.Equal(t, tournament.Latitude, sanitized.Latitude)
+	assert.Equal(t, tournament.Longitude, sanitized.Longitude)
 	assert.Equal(t, tournament.Image, sanitized.Image)
 	assert.Equal(t, tournament.Private, sanitized.Private)
 	assert.Equal(t, tournament.OwnerID, sanitized.OwnerID)

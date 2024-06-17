@@ -1,7 +1,7 @@
 package models
 
 import (
-	"challenge/utils"
+	"challenge/services"
 	"time"
 )
 
@@ -45,7 +45,7 @@ type InviteTeamDto struct {
 	Name string `json:"name" validate:"required"`
 }
 
-func FindAllTeams(query utils.QueryFilter) ([]Team, error) {
+func FindAllTeams(query services.QueryFilter) ([]Team, error) {
 	var teams []Team
 
 	err := DB.Model(&Team{}).

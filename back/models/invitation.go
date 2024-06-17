@@ -1,7 +1,7 @@
 package models
 
 import (
-	"challenge/utils"
+	"challenge/services"
 	"time"
 )
 
@@ -46,7 +46,7 @@ func NewTournamentInvit(tournamentID int, teamID int) *Invit {
 	}
 }
 
-func FindAllInvits(query utils.QueryFilter) ([]Invit, error) {
+func FindAllInvits(query services.QueryFilter) ([]Invit, error) {
 	var invitations []Invit
 
 	err := DB.Model(&Invit{}).

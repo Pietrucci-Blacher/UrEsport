@@ -1,19 +1,18 @@
 package models
 
 import (
+	"challenge/services"
 	"time"
-
-	"github.com/lib/pq"
 )
 
 type Game struct {
-	ID          int            `json:"id" gorm:"primaryKey"`
-	Name        string         `json:"name" gorm:"type:varchar(100)"`
-	Description string         `json:"description" gorm:"type:varchar(255)"`
-	Image       string         `json:"image" gorm:"type:varchar(255)"`
-	Tags        pq.StringArray `json:"tags" gorm:"type:text[]"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
+	ID          int       `json:"id" gorm:"primaryKey"`
+	Name        string    `json:"name" gorm:"type:varchar(100)"`
+	Description string    `json:"description" gorm:"type:varchar(255)"`
+	Image       string    `json:"image" gorm:"type:varchar(255)"`
+	Tags        []string  `json:"tags" gorm:"json"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }
 
 type CreateGameDto struct {
@@ -30,9 +29,16 @@ type UpdateGameDto struct {
 	Tags        []string `json:"tags"`
 }
 
-func FindAllGames() ([]Game, error) {
+func FindAllGames(query services.QueryFilter) ([]Game, error) {
 	var games []Game
-	err := DB.Find(&games).Error
+
+	err := DB.Model(&Game{}).
+		Offset(query.GetSkip()).
+		Limit(query.GetLimit()).
+		Where(query.GetWhere()).
+		Order(query.GetSort()).
+		Find(&games).Error
+
 	return games, err
 }
 

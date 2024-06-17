@@ -14,8 +14,11 @@ func IsLoggedIn(mandatory bool) gin.HandlerFunc {
 		var token models.Token
 
 		accessToken, err := c.Cookie("access_token")
-		if err != nil {
+		if accessToken == "" || err != nil {
 			accessToken = c.GetHeader("Authorization")
+		}
+		if accessToken == "" {
+			accessToken = c.Query("token")
 		}
 
 		if !mandatory && accessToken == "" {

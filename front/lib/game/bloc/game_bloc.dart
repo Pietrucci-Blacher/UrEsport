@@ -10,7 +10,7 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<LoadGames>((event, emit) async {
       emit(GameLoading());
       try {
-        final games = await gameService.fetchGames();
+        final games = await gameService.fetchGames(limit: event.limit);
         emit(GameLoaded(games));
       } catch (error) {
         emit(GameError(error.toString()));
