@@ -42,7 +42,6 @@ type UpdateUserDto struct {
 	Username  string `json:"username"`
 	Email     string `json:"email"`
 	Password  string `json:"password"`
-    ProfileImageUrl string `json:"profile_image_url"`
 }
 
 type SanitizedUser struct {

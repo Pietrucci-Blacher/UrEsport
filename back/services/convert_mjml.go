@@ -25,30 +25,32 @@ func ConvertMJMLToHTML(inputDir, outputDir string) error {
 	}
 
 	for _, file := range files {
-		if filepath.Ext(file.Name()) == ".mjml" {
-			inputPath := filepath.Join(inputDir, file.Name())
-			outputPath := filepath.Join(outputDir, file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]+".html")
+        if filepath.Ext(file.Name()) != ".mjml" {
+            continue
+        }
 
-			mjmlContent, err := ioutil.ReadFile(inputPath)
-			if err != nil {
-				return fmt.Errorf("failed to read MJML file %s: %v", inputPath, err)
-			}
+        inputPath := filepath.Join(inputDir, file.Name())
+        outputPath := filepath.Join(outputDir, file.Name()[:len(file.Name())-len(filepath.Ext(file.Name()))]+".html")
 
-			htmlContent, err := mjml.ToHTML(context.Background(), string(mjmlContent), mjml.WithMinify(true))
-			if err != nil {
-				var mjmlError mjml.Error
-				if errors.As(err, &mjmlError) {
-					fmt.Printf("MJML error: %s, details: %v\n", mjmlError.Message, mjmlError.Details)
-				}
-				return fmt.Errorf("failed to render MJML to HTML for file %s: %v", inputPath, err)
-			}
+        mjmlContent, err := ioutil.ReadFile(inputPath)
+        if err != nil {
+            return fmt.Errorf("failed to read MJML file %s: %v", inputPath, err)
+        }
 
-			err = ioutil.WriteFile(outputPath, []byte(htmlContent), os.ModePerm)
-			if err != nil {
-				return fmt.Errorf("failed to write HTML file %s: %v", outputPath, err)
-			}
-		}
-	}
+        htmlContent, err := mjml.ToHTML(context.Background(), string(mjmlContent), mjml.WithMinify(true))
+        if err != nil {
+            var mjmlError mjml.Error
+            if errors.As(err, &mjmlError) {
+                fmt.Printf("MJML error: %s, details: %v\n", mjmlError.Message, mjmlError.Details)
+            }
+            return fmt.Errorf("failed to render MJML to HTML for file %s: %v", inputPath, err)
+        }
+
+        err = ioutil.WriteFile(outputPath, []byte(htmlContent), os.ModePerm)
+        if err != nil {
+            return fmt.Errorf("failed to write HTML file %s: %v", outputPath, err)
+        }
+    }
 
 	return nil
 }
