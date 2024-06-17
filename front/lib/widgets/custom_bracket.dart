@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:tournament_bracket/tournament_bracket.dart';
-import '../../widgets/custom_poules.dart'; // Assurez-vous que le chemin est correct
 
 class TournamentBracketPage extends StatefulWidget {
   @override
@@ -102,9 +101,9 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Tournament Bracket'),
+        title: const Text('Tournament Bracket'),
         leading: IconButton(
-          icon: Icon(Icons.arrow_back),
+          icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.pop(context);
           },
@@ -137,7 +136,7 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
                           fontWeight: selectedLevel == index ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Container(
                         alignment: Alignment.center,
                         width: 100,
@@ -244,7 +243,7 @@ class _TournamentBracketPageState extends State<TournamentBracketPage> {
     int numMatches = all[index].length ~/ 2;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      children: List.generate(numMatches, (i) => Divider(thickness: 2)),
+      children: List.generate(numMatches, (i) => const Divider(thickness: 2)),
     );
   }
 
