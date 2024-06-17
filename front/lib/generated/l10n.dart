@@ -320,61 +320,71 @@ class S {
     );
   }
 
+  /// `Resend code`
+  String get resendCode {
+    return Intl.message(
+      'Resend code',
+      name: 'resendCode',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Invite`
-  String get inviteButtonTitle {
+  String get inviteButton {
     return Intl.message(
       'Invite',
-      name: 'inviteButtonTitle',
+      name: 'inviteButton',
       desc: '',
       args: [],
     );
   }
 
   /// `You have been invited successfully`
-  String get inviteSuccessTitle {
+  String get inviteSuccess {
     return Intl.message(
       'You have been invited successfully',
-      name: 'inviteSuccessTitle',
+      name: 'inviteSuccess',
       desc: '',
       args: [],
     );
   }
 
   /// `An error occurred while sending the invitation`
-  String get inviteErrorTitle {
+  String get inviteError {
     return Intl.message(
       'An error occurred while sending the invitation',
-      name: 'inviteErrorTitle',
+      name: 'inviteError',
       desc: '',
       args: [],
     );
   }
 
   /// `Close`
-  String get closeButtonTitle {
+  String get closeButton {
     return Intl.message(
       'Close',
-      name: 'closeButtonTitle',
+      name: 'closeButton',
       desc: '',
       args: [],
     );
   }
 
   /// `Join`
-  String get joinButtonTitle {
+  String get joinButton {
     return Intl.message(
       'Join',
-      name: 'joinButtonTitle',
+      name: 'joinButton',
       desc: '',
       args: [],
     );
   }
 
   /// `All Games`
-  String get gameButtonTitle {
+  String get gameButton {
     return Intl.message(
       'All Games',
-      name: 'gameButtonTitle',
+      name: 'gameButton',
       desc: '',
       args: [],
     );
@@ -401,20 +411,50 @@ class S {
   }
 
   /// `Modify Game`
-  String get modifyGameButtonTitle {
+  String get modifyGameButton {
     return Intl.message(
       'Modify Game',
-      name: 'modifyGameButtonTitle',
+      name: 'modifyGameButton',
       desc: '',
       args: [],
     );
   }
 
   /// `Delete Game`
-  String get deleteGameButtonTitle {
+  String get deleteGameButton {
     return Intl.message(
       'Delete Game',
-      name: 'deleteGameButtonTitle',
+      name: 'deleteGameButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Trending Tournaments`
+  String get trendingTournamentsTitle {
+    return Intl.message(
+      'Trending Tournaments',
+      name: 'trendingTournamentsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Popular Games`
+  String get popularGamesTitle {
+    return Intl.message(
+      'Popular Games',
+      name: 'popularGamesTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View All`
+  String get viewAll {
+    return Intl.message(
+      'View All',
+      name: 'viewAll',
       desc: '',
       args: [],
     );

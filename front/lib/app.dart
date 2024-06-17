@@ -17,12 +17,15 @@ class MyApp extends StatelessWidget {
   final IAuthService authService;
   final ITournamentService tournamentService;
   final IGameService gameService;
+  final RouteGenerator routeGenerator;
 
-  const MyApp(
-      {required this.authService,
-      required this.tournamentService,
-      required this.gameService,
-      super.key});
+  const MyApp({
+    required this.authService,
+    required this.tournamentService,
+    required this.gameService,
+    required this.routeGenerator,
+    super.key,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -78,7 +81,7 @@ class MyApp extends StatelessWidget {
             },
             home: SplashScreenHandler(authService: authService),
             initialRoute: '/',
-            onGenerateRoute: RouteGenerator.generateRoute,
+            onGenerateRoute: routeGenerator.generateRoute,
             builder: (context, child) {
               return child!;
             },

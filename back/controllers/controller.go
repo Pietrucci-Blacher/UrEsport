@@ -35,6 +35,13 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Get[*models.User]("user"),
 				GetUser,
 			)
+			users.POST("/:user/image",
+                middlewares.IsLoggedIn(true),
+                middlewares.Get[*models.User]("user"),
+                middlewares.IsMe(),
+                middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
+                UploadUserImage,
+            )
 			users.PATCH("/:user",
 				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.User]("user"),

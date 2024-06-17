@@ -27,31 +27,29 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
+        "closeButton": MessageLookupByLibrary.simpleMessage("Close"),
+        "deleteGameButton": MessageLookupByLibrary.simpleMessage("Delete Game"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "firstName": MessageLookupByLibrary.simpleMessage("First Name"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("Forgot Password?"),
-        "closeButtonTitle": MessageLookupByLibrary.simpleMessage("Close"),
-        "deleteGameButtonTitle":
-            MessageLookupByLibrary.simpleMessage("Delete Game"),
-        "gameButtonTitle": MessageLookupByLibrary.simpleMessage("All Games"),
+        "gameButton": MessageLookupByLibrary.simpleMessage("All Games"),
         "gameScreenTitle": MessageLookupByLibrary.simpleMessage("Games"),
         "gameScreenWelcome":
             MessageLookupByLibrary.simpleMessage("Welcome to the Game Screen!"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home"),
         "homeScreenWelcome":
             MessageLookupByLibrary.simpleMessage("Welcome to the Home Screen!"),
+        "inviteButton": MessageLookupByLibrary.simpleMessage("Invite"),
+        "inviteError": MessageLookupByLibrary.simpleMessage(
+            "An error occurred while sending the invitation"),
+        "inviteSuccess": MessageLookupByLibrary.simpleMessage(
+            "You have been invited successfully"),
+        "joinButton": MessageLookupByLibrary.simpleMessage("Join"),
         "lastName": MessageLookupByLibrary.simpleMessage("Last Name"),
         "logIn": MessageLookupByLibrary.simpleMessage("Log In"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
-        "inviteButtonTitle": MessageLookupByLibrary.simpleMessage("Invite"),
-        "inviteErrorTitle": MessageLookupByLibrary.simpleMessage(
-            "An error occurred while sending the invitation"),
-        "inviteSuccessTitle": MessageLookupByLibrary.simpleMessage(
-            "You have been invited successfully"),
-        "joinButtonTitle": MessageLookupByLibrary.simpleMessage("Join"),
-        "modifyGameButtonTitle":
-            MessageLookupByLibrary.simpleMessage("Modify Game"),
+        "modifyGameButton": MessageLookupByLibrary.simpleMessage("Modify Game"),
         "notificationScreenTitle":
             MessageLookupByLibrary.simpleMessage("Notifications"),
         "notificationScreenWelcome": MessageLookupByLibrary.simpleMessage(
@@ -62,6 +60,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Password reset email sent"),
         "passwordResetSuccessful":
             MessageLookupByLibrary.simpleMessage("Password reset successful"),
+        "popularGamesTitle":
+            MessageLookupByLibrary.simpleMessage("Popular Games"),
         "profileScreenTitle": MessageLookupByLibrary.simpleMessage("Profile"),
         "profileScreenWelcome": m0,
         "register": MessageLookupByLibrary.simpleMessage("Register"),
@@ -73,9 +73,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Tournaments"),
         "tournamentScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Welcome to the Tournament Screen!"),
+        "trendingTournamentsTitle":
+            MessageLookupByLibrary.simpleMessage("Trending Tournaments"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
         "verificationCodeSent": m1,
         "verify": MessageLookupByLibrary.simpleMessage("Verify"),
+        "viewAll": MessageLookupByLibrary.simpleMessage("View All"),
         "welcome": MessageLookupByLibrary.simpleMessage("Welcome to UrEsport"),
         "youAreNotLoggedIn":
             MessageLookupByLibrary.simpleMessage("You are not logged in")

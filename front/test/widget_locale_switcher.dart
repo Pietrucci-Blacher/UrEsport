@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:uresport/app.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/core/services/game_service.dart';
+import 'package:uresport/shared/routing/routing.dart';
 import 'auth/mocks/auth_service_mock.dart';
 import 'tournament/mocks/tournament_service_mock.dart';
 import 'game/mocks/game_service_mock.dart';
@@ -22,11 +24,14 @@ void main() {
         providers: [
           Provider<IAuthService>.value(value: mockAuthService),
           Provider<ITournamentService>.value(value: mockTournamentService),
+          Provider<IGameService>.value(value: mockGameService),
         ],
         child: MyApp(
-            authService: mockAuthService,
-            tournamentService: mockTournamentService,
-            gameService: mockGameService),
+          authService: mockAuthService,
+          tournamentService: mockTournamentService,
+          gameService: mockGameService,
+          routeGenerator: RouteGenerator(mockAuthService),
+        ),
       ),
     );
 
