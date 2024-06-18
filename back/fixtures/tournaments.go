@@ -14,6 +14,7 @@ func LoadTournaments() error {
 
 	for i := 0; i < TOURNAMENT_NB; i++ {
 		owner := rand.Intn(USER_NB-1) + 1
+		game := rand.Intn(GAME_NB-1) + 1
 
 		tournament := models.Tournament{
 			Name:        fake.Lorem().Word(),
@@ -26,6 +27,8 @@ func LoadTournaments() error {
 			OwnerID:     owner,
 			Image:       fmt.Sprintf("https://picsum.photos/seed/%d/200/300", i),
 			Private:     fake.Bool(),
+			GameID:      game,
+			NbPlayer:    TEAM_MEMBERS_NB + 1,
 		}
 
 		if err := tournament.Save(); err != nil {

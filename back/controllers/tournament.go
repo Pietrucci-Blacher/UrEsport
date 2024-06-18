@@ -3,6 +3,7 @@ package controllers
 import (
 	"challenge/models"
 	"challenge/services"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -82,6 +83,8 @@ func CreateTournament(c *gin.Context) {
 		EndDate:     body.EndDate,
 		OwnerID:     connectedUser.ID,
 		Private:     body.Private,
+		GameID:      body.GameID,
+		NbPlayer:    body.NbPlayer,
 	}
 
 	if err := tournament.Save(); err != nil {
@@ -131,6 +134,12 @@ func UpdateTournament(c *gin.Context) {
 	}
 	if !body.EndDate.IsZero() {
 		tournament.EndDate = body.EndDate
+	}
+	if body.GameID != 0 {
+		tournament.GameID = body.GameID
+	}
+	if body.NbPlayer >= 1 {
+		tournament.NbPlayer = body.NbPlayer
 	}
 
 	if err := tournament.Save(); err != nil {
@@ -213,6 +222,13 @@ func JoinTournament(c *gin.Context) {
 		return
 	}
 
+	if len(team.Members) != tournament.NbPlayer {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": fmt.Sprintf("Team must contain %d members", tournament.NbPlayer),
+		})
+		return
+	}
+
 	if tournament.HasTeam(*team) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Team already in this tournament"})
 		return
@@ -281,6 +297,13 @@ func InviteTeamToTournament(c *gin.Context) {
 
 	if tournament.HasTeam(team) {
 		c.JSON(http.StatusConflict, gin.H{"error": "Team is already in this tournament"})
+		return
+	}
+
+	if len(team.Members) != tournament.NbPlayer {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": fmt.Sprintf("Team must contain %d members", tournament.NbPlayer),
+		})
 		return
 	}
 
@@ -377,6 +400,13 @@ func AcceptTournamentInvitation(c *gin.Context) {
 
 	if tournament.HasTeam(*team) {
 		c.JSON(http.StatusConflict, gin.H{"error": "Team is already in this tournament"})
+		return
+	}
+
+	if len(team.Members) != tournament.NbPlayer {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": fmt.Sprintf("Team must contain %d members", tournament.NbPlayer),
+		})
 		return
 	}
 
