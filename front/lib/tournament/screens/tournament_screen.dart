@@ -7,6 +7,8 @@ import 'package:uresport/core/models/tournament.dart';
 import 'package:intl/intl.dart';
 import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/bracket/screens/custom_poules_page.dart';
+import 'package:uresport/bracket/screens/custom_bracket.dart';
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
@@ -16,51 +18,90 @@ class TournamentScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => TournamentBloc(context.read<ITournamentService>())..add(const LoadTournaments()),
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Tournaments'),
+        ),
         body: RefreshIndicator(
           onRefresh: () async {
             context.read<TournamentBloc>().add(const LoadTournaments());
           },
-          child: BlocBuilder<TournamentBloc, TournamentState>(
-            builder: (context, state) {
-              if (state is TournamentInitial) {
-                context.read<TournamentBloc>().add(const LoadTournaments());
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is TournamentLoadInProgress) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is TournamentLoadSuccess) {
-                return Stack(
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    ListView.builder(
-                      itemCount: state.tournaments.length,
-                      itemBuilder: (context, index) {
-                        final tournament = state.tournaments[index];
-                        return _buildTournamentCard(context, tournament);
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const TournamentBracketPage(),
+                          ),
+                        );
                       },
+                      child: const Text('Custom Bracket'),
                     ),
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: FloatingActionButton(
-                        heroTag: 'map-fab',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  MapWidget(tournaments: state.tournaments),
-                            ),
-                          );
-                        },
-                        child: const Icon(Icons.map),
-                      ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CustomPoulesPage(),
+                          ),
+                        );
+                      },
+                      child: const Text('Custom Poules'),
                     ),
                   ],
-                );
-              } else if (state is TournamentLoadFailure) {
-                return const Center(child: Text('Failed to load tournaments'));
-              }
-              return const Center(child: Text('Unknown state'));
-            },
+                ),
+              ),
+              Expanded(
+                child: BlocBuilder<TournamentBloc, TournamentState>(
+                  builder: (context, state) {
+                    if (state is TournamentInitial) {
+                      context.read<TournamentBloc>().add(const LoadTournaments());
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is TournamentLoadInProgress) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is TournamentLoadSuccess) {
+                      return Stack(
+                        children: [
+                          ListView.builder(
+                            itemCount: state.tournaments.length,
+                            itemBuilder: (context, index) {
+                              final tournament = state.tournaments[index];
+                              return _buildTournamentCard(context, tournament);
+                            },
+                          ),
+                          Positioned(
+                            bottom: 16,
+                            right: 16,
+                            child: FloatingActionButton(
+                              heroTag: 'map-fab',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        MapWidget(tournaments: state.tournaments),
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.map),
+                            ),
+                          ),
+                        ],
+                      );
+                    } else if (state is TournamentLoadFailure) {
+                      return const Center(child: Text('Failed to load tournaments'));
+                    }
+                    return const Center(child: Text('Unknown state'));
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),
@@ -69,7 +110,7 @@ class TournamentScreen extends StatelessWidget {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-        DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
