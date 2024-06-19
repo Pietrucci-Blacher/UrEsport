@@ -102,6 +102,26 @@ func FindTournamentsByUserID(userID int) ([]Tournament, error) {
 	return tournaments, err
 }
 
+func (t *Tournament) GenerateBraket() ([]Match, error) {
+	var matches []Match
+
+	if len(t.Teams) < 2 {
+		return matches, nil
+	}
+
+	for i := 0; i < len(t.Teams); i += 2 {
+		match := NewMatch(t.ID, t.Teams[i].ID, t.Teams[i+1].ID)
+
+		if err := match.Save(); err != nil {
+			return matches, err
+		}
+
+		matches = append(matches, match)
+	}
+
+	return matches, nil
+}
+
 func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {
 	var teams []SanitizedTeam
 

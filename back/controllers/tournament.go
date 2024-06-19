@@ -462,3 +462,25 @@ func RejectTournamentInvitation(c *gin.Context) {
 
 	c.JSON(http.StatusNoContent, nil)
 }
+
+// GenerateTournamentBracket godoc
+//
+//	@Summary		generate tournament bracket
+//	@Description	generate tournament bracket
+//	@Tags			tournament
+//	@Param			id	path	int	true	"Tournament ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/generate [post]
+// func GenerateTournamentBracket(c *gin.Context) {
+// 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+
+// 	if err := tournament.GenerateBracket(); err != nil {
+// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+// 		return
+// 	}
+
+// 	c.JSON(http.StatusNoContent, nil)
+// }
