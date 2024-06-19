@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"challenge/models"
-	"challenge/services"
 	"github.com/gin-gonic/gin"
 	"net/http"
 )
@@ -70,7 +69,7 @@ func GetFriend(c *gin.Context) {
 // @Failure 500 {object} utils.HttpError
 // @Router /users/{id}/friends/{friend_id} [post]
 func AddFriend(c *gin.Context) {
-	w := services.GetWebsocket()
+	//w := services.GetWebsocket()
 	user, _ := c.MustGet("user").(*models.User)
 	friend, _ := c.MustGet("friend").(*models.User)
 
