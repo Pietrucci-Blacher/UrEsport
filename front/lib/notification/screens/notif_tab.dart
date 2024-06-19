@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uresport/widgets/custom_toast.dart'; // Importer le widget personnalisé
+import 'package:uresport/widgets/custom_toast.dart';
 
-import '../../provider/NotificationProvider.dart';
-import '../../widgets/notification_card.dart';
+import 'package:uresport/provider/NotificationProvider.dart';
+import 'package:uresport/widgets/notification_card.dart';
 
 class NotificationsTab extends StatelessWidget {
   const NotificationsTab({super.key});

@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-const FRIEND_NB = 10
-
 func LoadFriends() error {
 	// Seed the random number generator
 	rand.Seed(time.Now().UnixNano())

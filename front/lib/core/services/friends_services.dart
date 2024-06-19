@@ -9,6 +9,7 @@ abstract class IFriendService {
   Future<void> addFriend(int currentUserId, int friendId);
   Future<void> updateFavoriteStatus(int userId, int friendId, bool isFavorite);
   Future<void> deleteFriend(int currentUserId, int id);
+  Future<List<dynamic>> fetchAllUsers(); // Ajoutez cette ligne
 }
 
 class FriendService implements IFriendService {
@@ -98,6 +99,16 @@ class FriendService implements IFriendService {
 
     if (response.statusCode != 204) {
       throw Exception('Failed to delete friends');
+    }
+  }
+
+  @override
+  Future<List<dynamic>> fetchAllUsers() async {
+    try {
+      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
+      return response.data;
+    } catch (e) {
+      throw Exception('Failed to load users: $e');
     }
   }
 }

@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/provider/NotificationProvider.dart';
-import 'package:uresport/core/services/cache_service.dart';
 import 'package:dio/dio.dart';
 import 'package:uresport/core/services/friends_services.dart';
 import 'package:uresport/widgets/custom_toast.dart';
@@ -34,13 +33,13 @@ class _AddFriendPageState extends State<AddFriendPage> {
 
   void fetchAllUsers() async {
     try {
-      final response = await Dio().get('${dotenv.env['API_ENDPOINT']}/users');
+      final users = await friendService.fetchAllUsers();
       setState(() {
-        allUsers = response.data;
+        allUsers = users;
         filteredUsers = List.from(allUsers);
       });
     } catch (e) {
-      throw Exception('Failed to load users: $e');
+      showNotificationToast(context, 'Erreur lors de la récupération des utilisateurs', backgroundColor: Colors.red, textColor: Colors.white);
     }
   }
 
