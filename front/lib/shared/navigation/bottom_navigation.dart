@@ -5,12 +5,14 @@ class CustomBottomNavigation extends StatelessWidget {
   final bool isLoggedIn;
   final int selectedIndex;
   final void Function(int index) onTap;
+  final int notificationCount;
 
   const CustomBottomNavigation({
     super.key,
     required this.isLoggedIn,
     required this.selectedIndex,
     required this.onTap,
+    required this.notificationCount, // Add this parameter
   });
 
   @override
@@ -30,7 +32,36 @@ class CustomBottomNavigation extends StatelessWidget {
           label: AppLocalizations.of(context).tournamentScreenTitle,
         ),
         BottomNavigationBarItem(
-          icon: const Icon(Icons.notifications),
+          icon: Stack(
+            clipBehavior: Clip.none,
+            children: [
+              const Icon(Icons.notifications),
+              if (notificationCount > 0)
+                Positioned(
+                  top: -8,
+                  right: -8,
+                  child: Container(
+                    padding: const EdgeInsets.all(2),
+                    decoration: BoxDecoration(
+                      color: Colors.red,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    constraints: const BoxConstraints(
+                      minWidth: 18,
+                      minHeight: 18,
+                    ),
+                    child: Text(
+                      '$notificationCount',
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+            ],
+          ),
           label: AppLocalizations.of(context).notificationScreenTitle,
         ),
       ],
