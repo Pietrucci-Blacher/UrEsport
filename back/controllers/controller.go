@@ -212,6 +212,12 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsTournamentOwner(),
 				TogglePrivateTournament,
 			)
+			// tournaments.POST("/:tournament/bracket",
+			// 	middlewares.IsLoggedIn(true),
+			// 	middlewares.Get[*models.Tournament]("tournament"),
+			// 	middlewares.IsTournamentOwner(),
+			// 	GenerateTournamentBracket,
+			// )
 		}
 
 		teams := api.Group("/teams")
@@ -319,6 +325,24 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Get[*models.Game]("game"),
 				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
 				UploadGameImage,
+			)
+		}
+
+		matchs := api.Group("/match")
+		{
+			matchs.GET("/",
+				middlewares.QueryFilter(),
+				GetMatchs,
+			)
+			matchs.GET("/:match",
+				middlewares.Get[*models.Match]("match"),
+				GetMatch,
+			)
+			matchs.PATCH("/:match/score",
+				middlewares.Get[*models.Match]("match"),
+				middlewares.IsTeamOwnerInMatch(),
+				middlewares.Validate[models.ScoreMatchDto](),
+				ScoreMatch,
 			)
 		}
 
