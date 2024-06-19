@@ -29,6 +29,8 @@ var (
 
 	GAME_NB         = 40
 	TEAM_MEMBERS_NB = 4
+
+	FRIEND_NB = 10
 )
 
 func ImportFixtures() error {
@@ -49,6 +51,10 @@ func ImportFixtures() error {
 	}
 
 	if err := LoadTournaments(); err != nil {
+		return err
+	}
+
+	if err := LoadFriends(); err != nil {
 		return err
 	}
 
