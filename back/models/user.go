@@ -14,18 +14,18 @@ const (
 
 // User implements Model
 type User struct {
-	ID             int       `json:"id" gorm:"primaryKey"`
-	Firstname      string    `json:"firstname" gorm:"type:varchar(100)"`
-	Lastname       string    `json:"lastname" gorm:"type:varchar(100)"`
-	Username       string    `json:"username" gorm:"type:varchar(100)"`
-	Email          string    `json:"email" gorm:"type:varchar(100)"`
-	Password       string    `json:"password"`
-	ProfileImageUrl string   `json:"profile_image_url" gorm:"type:varchar(255)"`
-	Roles          []string  `json:"roles" gorm:"json"`
-	Teams          []Team    `json:"teams" gorm:"many2many:team_members;"`
-	Verified       bool      `json:"verified" gorm:"default:false"`
-	CreatedAt      time.Time `json:"created_at"`
-	UpdatedAt      time.Time `json:"updated_at"`
+	ID              int       `json:"id" gorm:"primaryKey"`
+	Firstname       string    `json:"firstname" gorm:"type:varchar(100)"`
+	Lastname        string    `json:"lastname" gorm:"type:varchar(100)"`
+	Username        string    `json:"username" gorm:"type:varchar(100)"`
+	Email           string    `json:"email" gorm:"type:varchar(100)"`
+	Password        string    `json:"password"`
+	ProfileImageUrl string    `json:"profile_image_url" gorm:"type:varchar(255)"`
+	Roles           []string  `json:"roles" gorm:"json"`
+	Teams           []Team    `json:"teams" gorm:"many2many:team_members;"`
+	Verified        bool      `json:"verified" gorm:"default:false"`
+	CreatedAt       time.Time `json:"created_at"`
+	UpdatedAt       time.Time `json:"updated_at"`
 }
 
 type CreateUserDto struct {
@@ -45,14 +45,14 @@ type UpdateUserDto struct {
 }
 
 type SanitizedUser struct {
-	ID             int             `json:"id"`
-	Username       string          `json:"username"`
-	Firstname      string          `json:"firstname"`
-	Lastname       string          `json:"lastname"`
-	ProfileImageUrl string         `json:"profile_image_url"`
-	Teams          []SanitizedTeam `json:"teams"`
-	CreatedAt      time.Time       `json:"created_at"`
-	UpdatedAt      time.Time       `json:"updated_at"`
+	ID              int             `json:"id"`
+	Username        string          `json:"username"`
+	Firstname       string          `json:"firstname"`
+	Lastname        string          `json:"lastname"`
+	ProfileImageUrl string          `json:"profile_image_url"`
+	Teams           []SanitizedTeam `json:"teams"`
+	CreatedAt       time.Time       `json:"created_at"`
+	UpdatedAt       time.Time       `json:"updated_at"`
 }
 
 type LoginUserDto struct {
@@ -61,10 +61,10 @@ type LoginUserDto struct {
 }
 
 type UserInfo struct {
-	Email          string `json:"email"`
-	Username       string `json:"username"`
-	Firstname      string `json:"firstname"`
-	Lastname       string `json:"lastname"`
+	Email           string `json:"email"`
+	Username        string `json:"username"`
+	Firstname       string `json:"firstname"`
+	Lastname        string `json:"lastname"`
 	ProfileImageUrl string `json:"profile_image_url"`
 }
 
@@ -106,13 +106,13 @@ func (u *User) Sanitize(getTeam bool) SanitizedUser {
 	var teams []SanitizedTeam
 
 	user := SanitizedUser{
-		ID:        u.ID,
-		Username:  u.Username,
-		Firstname: u.Firstname,
-		Lastname:  u.Lastname,
+		ID:              u.ID,
+		Username:        u.Username,
+		Firstname:       u.Firstname,
+		Lastname:        u.Lastname,
 		ProfileImageUrl: u.ProfileImageUrl,
-		CreatedAt: u.CreatedAt,
-		UpdatedAt: u.UpdatedAt,
+		CreatedAt:       u.CreatedAt,
+		UpdatedAt:       u.UpdatedAt,
 	}
 
 	if getTeam {
@@ -178,4 +178,10 @@ func (u *User) Save() error {
 
 func ClearUsers() error {
 	return DB.Exec("DELETE FROM users").Error
+}
+
+func UserExists(id int) bool {
+	var count int64
+	DB.Model(&User{}).Where("id = ?", id).Count(&count)
+	return count > 0
 }
