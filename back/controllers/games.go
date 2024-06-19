@@ -95,7 +95,7 @@ func CreateGame(c *gin.Context) {
 //	@Failure		400		{object}	utils.HttpError
 //	@Failure		404	{object}	utils.HttpError
 //	@Failure		500	{object}	utils.HttpError
-//	@Router			/games/{id} [put]
+//	@Router			/games/{id} [patch]
 func UpdateGame(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.UpdateGameDto)
 	game, _ := c.MustGet("game").(*models.Game)
@@ -141,4 +141,32 @@ func DeleteGame(c *gin.Context) {
 	}
 
 	c.Status(http.StatusNoContent)
+}
+
+// UploadGameImage godoc
+//
+//	@Summary		upload a game image
+//	@Description	upload a game image
+//	@Tags			game
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Param			id		path		int	true	"Game ID"
+//	@Param			image	formData	file	true	"Game image"
+//	@Success		200		{object}	models.Game
+//	@Failure		400		{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/games/{id}/image [post]
+func UploadGameImage(c *gin.Context) {
+	game, _ := c.MustGet("game").(*models.Game)
+	files, _ := c.MustGet("files").([]string)
+
+	game.Image = files[0]
+
+	if err := game.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, game)
 }
