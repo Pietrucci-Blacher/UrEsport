@@ -50,11 +50,11 @@ func ImportFixtures() error {
 		return err
 	}
 
-	if err := LoadTournaments(); err != nil {
+	if err := LoadFriends(); err != nil {
 		return err
 	}
 
-	if err := LoadFriends(); err != nil {
+	if err := LoadTournaments(); err != nil {
 		return err
 	}
 
