@@ -4,9 +4,9 @@ import (
 	"challenge/models"
 	"challenge/services"
 	"fmt"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	"log"
+	"net/http"
 )
 
 // GetTournaments godoc
@@ -461,4 +461,53 @@ func RejectTournamentInvitation(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusNoContent, nil)
+}
+
+// AddUpvote godoc
+//
+//	@Summary		add upvote to tournament
+//	@Description	add upvote to tournament
+//	@Tags			tournament
+//	@Param			id	path	int	true	"Tournament ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/upvote [post]
+func AddUpvote(c *gin.Context) {
+	connectedUser, exists := c.Get("connectedUser")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User not authenticated"})
+		return
+	}
+
+	user, ok := connectedUser.(models.User)
+	if !ok {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid user"})
+		return
+	}
+
+	tournament, exists := c.Get("tournament")
+	if !exists {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Tournament not found in context"})
+		return
+	}
+
+	// Cast to the correct type
+	t, ok := tournament.(*models.Tournament)
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Invalid tournament type"})
+		return
+	}
+
+	// Log the tournament ID
+	log.Printf("Tournament ID: %d", t.ID)
+
+	// Perform the upvote
+	if err := t.AddUpvote(user.ID); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Upvote added"})
 }

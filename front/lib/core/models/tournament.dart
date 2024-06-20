@@ -12,6 +12,7 @@ class Tournament {
   final int ownerId;
   final Owner owner;
   final List<Team> teams;
+  final int upvotes; // Ajoutez ce champ
 
   Tournament({
     required this.id,
@@ -27,6 +28,7 @@ class Tournament {
     required this.ownerId,
     required this.owner,
     required this.teams,
+    required this.upvotes, // Ajoutez ce champ
   });
 
   factory Tournament.fromJson(Map<String, dynamic> json) {
@@ -43,8 +45,8 @@ class Tournament {
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams:
-          (json['teams'] as List).map((team) => Team.fromJson(team)).toList(),
+      teams: (json['teams'] as List).map((team) => Team.fromJson(team)).toList(),
+      upvotes: json['upvotes'] ?? 0, // Ajoutez ce champ
     );
   }
 
@@ -63,6 +65,7 @@ class Tournament {
       'owner_id': ownerId,
       'owner': owner.toJson(),
       'teams': teams.map((team) => team.toJson()).toList(),
+      'upvotes': upvotes, // Ajoutez ce champ
     };
   }
 }

@@ -64,6 +64,7 @@ func Migration() error {
 		&Team{},
 		&Game{},
 		&Invit{},
+		&Upvote{},
 	)
 }
 
@@ -79,6 +80,7 @@ func DropTables() error {
 		"tournament_teams",
 		"team_members",
 		&Game{},
+		&Upvote{},
 	)
 }
 

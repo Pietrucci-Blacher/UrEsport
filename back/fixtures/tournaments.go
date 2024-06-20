@@ -42,6 +42,9 @@ func LoadTournaments() error {
 				return err
 			}
 		}
+		if err := addUpvotesToTournament(tournament.ID); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -68,6 +71,26 @@ func addTeamToTournament(tournamentID int) error {
 	}
 
 	fmt.Printf("Team %s added to tournament %s\n", team.Name, tournament.Name)
+
+	return nil
+}
+
+func addUpvotesToTournament(tournamentID int) error {
+	var tournament models.Tournament
+	if err := tournament.FindOneById(tournamentID); err != nil {
+		return err
+	}
+
+	for i := 0; i < rand.Intn(4)+1; i++ { // 1 to 4 upvotes
+		userID := rand.Intn(USER_NB-1) + 1
+		if err := tournament.AddUpvote(userID); err != nil {
+			if err.Error() == "User has already upvoted this tournament" {
+				continue // Skip if the user has already upvoted
+			}
+			return err
+		}
+		fmt.Printf("User %d upvoted tournament %s\n", userID, tournament.Name)
+	}
 
 	return nil
 }

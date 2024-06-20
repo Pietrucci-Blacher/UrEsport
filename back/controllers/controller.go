@@ -212,6 +212,11 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsTournamentOwner(),
 				TogglePrivateTournament,
 			)
+			tournaments.POST("/:tournament/upvote",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				AddUpvote,
+			)
 		}
 
 		teams := api.Group("/teams")

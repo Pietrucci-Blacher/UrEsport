@@ -166,7 +166,7 @@ class TournamentScreen extends StatelessWidget {
                 ),
                 Row(
                   children: [
-                    const Icon(Icons.local_fire_department, color: Colors.deepOrange,),
+                    const Icon(Icons.thumb_up),
                     const SizedBox(width: 4),
                     Text('${tournament.upvotes}'), // Affiche le nombre de upvotes
                   ],

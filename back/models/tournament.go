@@ -2,6 +2,8 @@ package models
 
 import (
 	"challenge/services"
+	"errors"
+	"gorm.io/gorm"
 	"time"
 )
 
@@ -24,6 +26,7 @@ type Tournament struct {
 	NbPlayer    int       `json:"nb_player" gorm:"default:1"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	Upvotes     int       `json:"upvote" gorm:"default:0"`
 }
 
 type CreateTournamentDto struct {
@@ -71,6 +74,7 @@ type SanitizedTournament struct {
 	NbPlayer    int             `json:"nb_player"`
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
+	Upvotes     int             `json:"upvotes"`
 }
 
 func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
@@ -123,6 +127,7 @@ func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {
 		NbPlayer:    t.NbPlayer,
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
+		Upvotes:     t.Upvotes,
 	}
 
 	if getTeam {
@@ -195,4 +200,47 @@ func (t *Tournament) Delete() error {
 
 func ClearTournaments() error {
 	return DB.Exec("DELETE FROM tournaments").Error
+}
+
+/*func (t *Tournament) AddUpvote(userID int) error {
+	upvote := Upvote{
+		UserID:       userID,
+		TournamentID: t.ID,
+	}
+
+	return DB.Save(&upvote).Error
+}*/
+
+func (t *Tournament) AddUpvote(userID int) error {
+	return DB.Transaction(func(tx *gorm.DB) error {
+		upvote := Upvote{UserID: userID, TournamentID: t.ID}
+
+		// Vérifier si l'utilisateur a déjà upvoté ce tournoi
+		var count int64
+		if err := tx.Model(&Upvote{}).Where("user_id = ? AND tournament_id = ?", userID, t.ID).Count(&count).Error; err != nil {
+			return err
+		}
+		if count > 0 {
+			return errors.New("User has already upvoted this tournament")
+		}
+
+		// Ajouter l'upvote
+		if err := tx.Create(&upvote).Error; err != nil {
+			return err
+		}
+
+		// Incrémenter le compteur de upvotes
+		if err := tx.Model(&Tournament{}).Where("id = ?", t.ID).UpdateColumn("upvotes", gorm.Expr("upvotes + ?", 1)).Error; err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+// Compter le nombre de upvotes d'un tournoi
+func (t *Tournament) CountUpvotes() (int64, error) {
+	var count int64
+	err := DB.Model(&Upvote{}).Where("tournament_id = ?", t.ID).Count(&count).Error
+	return count, err
 }
