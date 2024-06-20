@@ -328,19 +328,29 @@ func RegisterRoutes(r *gin.Engine) {
 			)
 		}
 
-		matchs := api.Group("/match")
+		matches := api.Group("/matches")
 		{
-			matchs.GET("/",
+			matches.GET("/",
 				middlewares.QueryFilter(),
 				GetMatchs,
 			)
-			matchs.GET("/:match",
+			matches.GET("/:match",
 				middlewares.Get[*models.Match]("match"),
 				GetMatch,
 			)
-			matchs.PATCH("/:match/score",
+			matches.PATCH("/:match",
+				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.Match]("match"),
-				middlewares.IsTeamOwnerInMatch(),
+				middlewares.IsMatchTournmanentOwner(),
+				middlewares.Validate[models.UpdateMatchDto](),
+				UpdateMatch,
+			)
+			matches.PATCH("/:match/team/:team/score",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Match]("match"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				middlewares.IsTeamInMatch(),
 				middlewares.Validate[models.ScoreMatchDto](),
 				ScoreMatch,
 			)

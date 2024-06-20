@@ -21,9 +21,17 @@ type Match struct {
 	UpdatedAt    time.Time  `json:"updated_at"`
 }
 
+type UpdateMatchDto struct {
+	Team1ID     *int `json:"team1_id"`
+	Team2ID     *int `json:"team2_id"`
+	Score1      int  `json:"score1"`
+	Score2      int  `json:"score2"`
+	WinnerID    *int `json:"winner_id"`
+	NextMatchID *int `json:"next_match_id"`
+}
+
 type ScoreMatchDto struct {
-	Score1 int `json:"score1" validate:"required"`
-	Score2 int `json:"score2" validate:"required"`
+	Score int `json:"score" validate:"required"`
 }
 
 func NewEmptyMatch(tournamentID int) Match {
@@ -66,14 +74,13 @@ func FindAllMatchs(query services.QueryFilter) ([]Match, error) {
 	return matches, err
 }
 
-func (m *Match) SetWinner(score1, score2 int) Team {
-	if score1 > score2 {
-		m.WinnerID = m.Team1ID
-		return m.Team1
+func (m *Match) SetScore(team Team, score int) {
+	if *m.Team1ID == team.ID {
+		m.Score1 = score
+		return
 	}
 
-	m.WinnerID = m.Team2ID
-	return m.Team2
+	m.Score2 = score
 }
 
 func (m *Match) HasTeam(team Team) bool {

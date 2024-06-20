@@ -52,6 +52,54 @@ func GetMatchs(c *gin.Context) {
 	c.JSON(http.StatusOK, matches)
 }
 
+// UpdateMatch godoc
+//
+//	@Summary		Update a match
+//	@Description 	Update a match
+//	@Tags 			match
+//	@Accept 		json
+//	@Produce 		json
+//	@Param 			id path int true "Match ID"
+//	@Param 			body body models.UpdateMatchDto true "Match"
+//	@Success 		200 {object} models.Match
+//	@Failure 		400 {object} utils.HttpError
+//	@Failure 		404 {object} utils.HttpError
+//	@Router 		/matches/{id} [patch]
+func UpdateMatch(c *gin.Context) {
+	ws := services.GetWebsocket()
+	match, _ := c.MustGet("match").(*models.Match)
+	body, _ := c.MustGet("body").(models.UpdateMatchDto)
+
+	if body.Team1ID != nil {
+		match.Team1ID = body.Team1ID
+	}
+	if body.Team2ID != nil {
+		match.Team2ID = body.Team2ID
+	}
+	if body.Score1 != 0 {
+		match.Score1 = body.Score1
+	}
+	if body.Score2 != 0 {
+		match.Score2 = body.Score2
+	}
+	if body.WinnerID != nil {
+		match.WinnerID = body.WinnerID
+	}
+	if body.NextMatchID != nil {
+		match.NextMatchID = body.NextMatchID
+	}
+
+	if err := match.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	roomName := fmt.Sprintf("tournament:%d", match.TournamentID)
+	_ = ws.Room(roomName).Emit("match:update", match)
+
+	c.JSON(http.StatusOK, match)
+}
+
 // ScoreMatch godoc
 //
 //	@Summary		Score a match
@@ -59,19 +107,20 @@ func GetMatchs(c *gin.Context) {
 //	@Tags 			match
 //	@Accept 		json
 //	@Produce 		json
-//	@Param id 		path int true "Match ID"
-//	@Param body 	body models.ScoreMatchDto true "Score"
+//	@Param 			match path int true "Match ID"
+//	@Param 			team path int true "Team ID"
+//	@Param 			body body models.ScoreMatchDto true "Score"
 //	@Success 		200 {object} models.Match
 //	@Failure 		400 {object} utils.HttpError
 //	@Failure 		404 {object} utils.HttpError
-//	@Router 		/matches/{id}/score [patch]
+//	@Router 		/matches/{id}/team/{team}/score [patch]
 func ScoreMatch(c *gin.Context) {
 	ws := services.GetWebsocket()
 	match, _ := c.MustGet("match").(*models.Match)
+	team, _ := c.MustGet("team").(*models.Team)
 	body, _ := c.MustGet("body").(models.ScoreMatchDto)
 
-	winner := match.SetWinner(body.Score1, body.Score2)
-	match.WinnerID = &winner.ID
+	match.SetScore(*team, body.Score)
 
 	if err := match.Save(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
