@@ -10,7 +10,7 @@ import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/bracket/screens/custom_poules_page.dart';
 import 'package:uresport/bracket/screens/custom_bracket.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
-import '../../widgets/GradientIcon.dart'; // Importez votre widget personnalisé ici
+import 'package:uresport/widgets/GradientIcon.dart';
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
