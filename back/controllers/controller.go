@@ -36,12 +36,12 @@ func RegisterRoutes(r *gin.Engine) {
 				GetUser,
 			)
 			users.POST("/:user/image",
-                middlewares.IsLoggedIn(true),
-                middlewares.Get[*models.User]("user"),
-                middlewares.IsMe(),
-                middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
-                UploadUserImage,
-            )
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.IsMe(),
+				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
+				UploadUserImage,
+			)
 			users.PATCH("/:user",
 				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.User]("user"),
@@ -58,6 +58,39 @@ func RegisterRoutes(r *gin.Engine) {
 			users.GET("/me",
 				middlewares.IsLoggedIn(true),
 				GetUserMe,
+			)
+			users.GET("/:user/friends/",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.IsMe(),
+				GetFriends,
+			)
+			users.GET("/:user/friends/:friend",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.Get[*models.User]("friend"),
+				GetFriend,
+			)
+			users.POST("/:user/friends/:friend",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.Get[*models.User]("friend"),
+				middlewares.IsMe(),
+				AddFriend,
+			)
+			users.PATCH("/:user/friends/:friend",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.Get[*models.User]("friend"),
+				middlewares.IsMe(),
+				UpdateFriend,
+			)
+			users.DELETE("/:user/friends/:friend",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.Get[*models.User]("friend"),
+				middlewares.IsMe(),
+				DeleteFriend,
 			)
 		}
 
@@ -312,6 +345,13 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsAdmin(),
 				middlewares.Get[*models.Game]("game"),
 				DeleteGame,
+			)
+			games.POST("/:game/image",
+				middlewares.IsLoggedIn(true),
+				middlewares.IsAdmin(),
+				middlewares.Get[*models.Game]("game"),
+				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
+				UploadGameImage,
 			)
 		}
 
