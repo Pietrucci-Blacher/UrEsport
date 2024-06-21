@@ -16,8 +16,9 @@ import 'package:uresport/cubit/locale_cubit.dart';
 
 class ProfileScreen extends StatefulWidget {
   final IAuthService authService;
+  final ValueChanged<String>? onProfileImageUpdated;
 
-  const ProfileScreen({super.key, required this.authService});
+  const ProfileScreen({super.key, required this.authService, this.onProfileImageUpdated});
 
   @override
   ProfileScreenState createState() => ProfileScreenState();
@@ -25,6 +26,7 @@ class ProfileScreen extends StatefulWidget {
 
 class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveClientMixin {
   bool _isEditing = false;
+  bool _isModified = false;
   final Map<String, dynamic> _updatedFields = {};
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
@@ -170,6 +172,7 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
               setState(() {
                 _user = _user?.copyWith(profileImageUrl: imageUrl);
               });
+              widget.onProfileImageUpdated?.call(imageUrl);
               context.read<AuthBloc>().add(ProfileImageUpdated(imageUrl));
             },
           ),
@@ -198,15 +201,16 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            const Text(
-              'Edit Profile',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            Text(
+              AppLocalizations.of(context).editProfile,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             IconButton(
               icon: Icon(_isEditing ? Icons.close : Icons.edit),
               onPressed: () {
                 setState(() {
                   _isEditing = !_isEditing;
+                  _isModified = false;
                   if (!_isEditing && _user != null) {
                     _initializeControllers(_user!);
                   }
@@ -216,25 +220,25 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
           ],
         ),
         const SizedBox(height: 10),
-        _buildEditableField(_firstNameController, 'First Name', 'firstname'),
+        _buildEditableField(_firstNameController, AppLocalizations.of(context).firstName, 'firstname'),
         const SizedBox(height: 10),
-        _buildEditableField(_lastNameController, 'Last Name', 'lastname'),
+        _buildEditableField(_lastNameController, AppLocalizations.of(context).lastName, 'lastname'),
         const SizedBox(height: 10),
-        _buildEditableField(_usernameController, 'Username', 'username'),
+        _buildEditableField(_usernameController, AppLocalizations.of(context).username, 'username'),
         const SizedBox(height: 10),
-        _buildEditableField(_emailController, 'Email', 'email'),
+        _buildEditableField(_emailController, AppLocalizations.of(context).email, 'email'),
         const SizedBox(height: 20),
         if (_isEditing)
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               ElevatedButton(
-                onPressed: _updatedFields.isNotEmpty ? () => _saveProfile() : null,
-                child: const Text('Save'),
+                onPressed: _isModified ? () => _saveProfile() : null,
+                child: Text(AppLocalizations.of(context).save),
               ),
               ElevatedButton(
                 onPressed: () => _cancelEditing(context),
-                child: const Text('Cancel'),
+                child: Text(AppLocalizations.of(context).cancel),
               ),
             ],
           ),
@@ -242,39 +246,37 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
     );
   }
 
-  Widget _buildEditableField(TextEditingController controller, String label, String field) {
+  Widget _buildEditableField(TextEditingController controller, String label, String fieldName) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(labelText: label),
       enabled: _isEditing,
       onChanged: (value) {
-        setState(() {
-          if (value != (_user?.toJson()[field] ?? '')) {
-            _updatedFields[field] = value;
-          } else {
-            _updatedFields.remove(field);
-          }
-        });
+        _updatedFields[fieldName] = value;
+        _setModified();
       },
     );
   }
 
   Future<void> _saveProfile() async {
-    if (_user == null) return;
-    final userId = _user!.id;
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
+    final updatedFields = Map<String, dynamic>.from(_updatedFields);
     final authBloc = context.read<AuthBloc>();
     try {
-      await authBloc.authService.updateUserInfo(userId, _updatedFields);
-      authBloc.add(UserInfoUpdated(userId, _updatedFields));
+      await authBloc.authService.updateUserInfo(_user!.id, updatedFields);
+      if (!mounted) return; // Ajout de cette ligne
+      authBloc.add(UserFieldUpdated(updatedFields));
       setState(() {
         _isEditing = false;
-        _updatedFields.clear();
+        _isModified = false;
       });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).profileUpdated)),
+      );
     } catch (e) {
       debugPrint('Error saving profile: $e');
-      scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('Error saving profile: $e')),
+      if (!mounted) return; // Ajout de cette ligne
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context).errorSavingProfile)),
       );
     }
   }
@@ -282,10 +284,17 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
   void _cancelEditing(BuildContext context) {
     setState(() {
       _isEditing = false;
-      _updatedFields.clear();
-      if (_user != null) {
-        _initializeControllers(_user!);
+      _isModified = false;
+      final authState = context.read<AuthBloc>().state;
+      if (authState is AuthAuthenticated) {
+        _initializeControllers(authState.user);
       }
+    });
+  }
+
+  void _setModified() {
+    setState(() {
+      _isModified = true;
     });
   }
 
@@ -293,40 +302,42 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Text(
-          'Danger Zone',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+        Text(
+          AppLocalizations.of(context).dangerZone,
+          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
         ),
         const SizedBox(height: 10),
         _buildDangerZoneTile(
           context,
           icon: Icons.logout,
-          label: 'Logout',
+          label: AppLocalizations.of(context).logout,
           onTap: () => _showConfirmationDialog(
             context,
-            title: 'Logout',
-            content: 'Are you sure you want to logout?',
+            title: AppLocalizations.of(context).logout,
+            content: AppLocalizations.of(context).logoutConfirmation,
             confirmAction: () => context.read<AuthBloc>().add(AuthLoggedOut()),
           ),
         ),
         _buildDangerZoneTile(
           context,
           icon: Icons.delete,
-          label: 'Delete Account',
+          label: AppLocalizations.of(context).deleteAccount,
           onTap: () => _showConfirmationDialog(
             context,
-            title: 'Delete Account',
-            content: 'Are you sure you want to delete your account? This action cannot be undone.',
+            title: AppLocalizations.of(context).deleteAccount,
+            content: AppLocalizations.of(context).deleteAccountConfirmation,
             confirmAction: () async {
               final authBloc = context.read<AuthBloc>();
               final scaffoldMessenger = ScaffoldMessenger.of(context);
               try {
-                await authBloc.authService.deleteAccount(userId);
+                authBloc.authService.deleteAccount(userId);
+                if (!mounted) return;
                 authBloc.add(AuthLoggedOut());
               } catch (e) {
                 debugPrint('Error deleting account: $e');
+                if (!mounted) return;
                 scaffoldMessenger.showSnackBar(
-                  SnackBar(content: Text('Error deleting account: $e')),
+                  SnackBar(content: Text(AppLocalizations.of(context).errorDeletingAccount)),
                 );
               }
             },
@@ -366,13 +377,13 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
           content: Text(content),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(AppLocalizations.of(context).cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Confirm'),
+              child: Text(AppLocalizations.of(context).confirm),
               onPressed: () {
                 confirmAction();
                 Navigator.of(context).pop();
@@ -461,7 +472,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: const Text('Photo Library'),
+                title: Text(AppLocalizations.of(context).photoLibrary),
                 onTap: () {
                   _pickImage(ImageSource.gallery);
                   Navigator.of(context).pop();
@@ -469,7 +480,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_camera),
-                title: const Text('Camera'),
+                title: Text(AppLocalizations.of(context).camera),
                 onTap: () {
                   _pickImage(ImageSource.camera);
                   Navigator.of(context).pop();
@@ -495,8 +506,9 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
       }
     } catch (e) {
       debugPrint('Error picking image: $e');
+      if (!mounted) return;
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('Error picking image: $e')),
+        SnackBar(content: Text(AppLocalizations.of(context).errorPickingImage)),
       );
     }
   }
@@ -510,6 +522,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
     final userId = widget.user!.id;
     try {
       final imageUrl = await authBloc.authService.uploadProfileImage(userId, _imageFile!);
+      if (!mounted) return;
       setState(() {
         _profileImageUrl = '$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}';
         _isUpdatingImage = false;
@@ -517,11 +530,12 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
       widget.onImageUpdated(_profileImageUrl!);
     } catch (e) {
       debugPrint('Error uploading profile image: $e');
+      if (!mounted) return;
       setState(() {
         _isUpdatingImage = false;
       });
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('Error uploading profile image: $e')),
+        SnackBar(content: Text(AppLocalizations.of(context).errorUploadingProfileImage)),
       );
     }
   }
