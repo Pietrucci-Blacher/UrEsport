@@ -10,6 +10,7 @@ import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/bracket/screens/custom_poules_page.dart';
 import 'package:uresport/bracket/screens/custom_bracket.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
+import '../../widgets/GradientIcon.dart'; // Importez votre widget personnalisé ici
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
@@ -85,8 +86,7 @@ class TournamentScreen extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        MapWidget(tournaments: state.tournaments),
+                                    builder: (context) => MapWidget(tournaments: state.tournaments),
                                   ),
                                 );
                               },
@@ -110,71 +110,127 @@ class TournamentScreen extends StatelessWidget {
   }
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
-    final DateFormat dateFormat =
-    DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    final DateFormat dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              tournament.name,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      elevation: 5,
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Image.network(
+              tournament.image,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 150,
             ),
-            const SizedBox(height: 10),
-            Text(
-              tournament.description,
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Location: ${tournament.location}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'Start Date: ${dateFormat.format(tournament.startDate)}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'End Date: ${dateFormat.format(tournament.endDate)}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            const Text(
-              'Participants:',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 15),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          ),
+          Container(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TournamentDetailsScreen(tournament: tournament),
-                      ),
-                    );
-                  },
-                  child: const Text('View Details'),
+                Text(
+                  tournament.name,
+                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(height: 10),
+                Text(
+                  tournament.description,
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                const SizedBox(height: 10),
                 Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    const Icon(Icons.local_fire_department, color: Colors.deepOrange,),
-                    const SizedBox(width: 4),
-                    Text('${tournament.upvotes}'), // Affiche le nombre de upvotes
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Text(
+                              tournament.location,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Icon(Icons.calendar_today, color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Start: ${dateFormat.format(tournament.startDate)}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Icon(Icons.calendar_today, color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Text(
+                              'End: ${dateFormat.format(tournament.endDate)}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            GradientIcon(
+                              icon: Icons.local_fire_department,
+                              size: 30.0,
+                              gradient: LinearGradient(
+                                colors: <Color>[
+                                  Colors.red,
+                                  Colors.red.withOpacity(0.7),
+                                  Colors.orange,
+                                  Colors.yellow,
+                                ],
+                                stops: [0.0, 0.3, 0.6, 1.0],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+
+                            const SizedBox(width: 5),
+                            Text(
+                              '${tournament.upvotes}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TournamentDetailsScreen(tournament: tournament),
+                              ),
+                            );
+                          },
+                          child: const Text('View Details'),
+                        ),
+                      ],
+                    ),
                   ],
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
