@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/shared/provider/NotificationProvider.dart';
-import 'package:uresport/core/services/cache_service.dart';
 import 'package:dio/dio.dart';
 import 'package:uresport/core/services/friends_services.dart';
 import 'package:uresport/widgets/custom_toast.dart';
@@ -13,11 +12,10 @@ class AddFriendPage extends StatefulWidget {
 
   const AddFriendPage({super.key, required this.userId, required this.currentUser});
 
-  @override
-  _AddFriendPageState createState() => _AddFriendPageState();
+  @override AddFriendPageState createState() => AddFriendPageState();
 }
 
-class _AddFriendPageState extends State<AddFriendPage> {
+class AddFriendPageState extends State<AddFriendPage> {
   TextEditingController searchController = TextEditingController();
   List<dynamic> allUsers = [];
   List<dynamic> filteredUsers = [];
@@ -55,7 +53,7 @@ class _AddFriendPageState extends State<AddFriendPage> {
   }
 
   void showNotificationToast(BuildContext context, String message, {Color? backgroundColor, Color? textColor}) {
-    final overlay = Overlay.of(context)!;
+    final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
     overlayEntry = OverlayEntry(
@@ -111,12 +109,11 @@ class _AddFriendPageState extends State<AddFriendPage> {
                     final friendId = user['id'];
                     final currentUser = widget.currentUser;
                     try {
-                      await friendService.addFriend(
+                      friendService.addFriend(
                         widget.userId,
                         friendId,
                       );
                       showNotificationToast(context, 'Ami ajouté avec succès');
-                      // Envoie une notification
                       Provider.of<NotificationProvider>(context, listen: false)
                           .addNotification('$currentUser vous a ajouté en ami: ${user['firstname']}');
                     } catch (e) {
