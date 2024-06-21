@@ -28,9 +28,17 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
+        "cancel": MessageLookupByLibrary.simpleMessage("Cancelar"),
+        "cancelEditing":
+            MessageLookupByLibrary.simpleMessage("Cancelar edición"),
         "closeButton": MessageLookupByLibrary.simpleMessage("Cerrar"),
+        "confirm": MessageLookupByLibrary.simpleMessage("Confirmar"),
+        "dangerZone": MessageLookupByLibrary.simpleMessage("Zona de peligro"),
+        "deleteAccount":
+            MessageLookupByLibrary.simpleMessage("Eliminar cuenta"),
         "deleteGameButton":
             MessageLookupByLibrary.simpleMessage("Eliminar el juego"),
+        "editProfile": MessageLookupByLibrary.simpleMessage("Editar perfil"),
         "email": MessageLookupByLibrary.simpleMessage("Correo electrónico"),
         "firstName": MessageLookupByLibrary.simpleMessage("Nombre"),
         "forgotPassword":
@@ -52,6 +60,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lastName": MessageLookupByLibrary.simpleMessage("Apellido"),
         "logIn": MessageLookupByLibrary.simpleMessage("Iniciar sesión"),
         "login": MessageLookupByLibrary.simpleMessage("Iniciar sesión"),
+        "logout": MessageLookupByLibrary.simpleMessage("Cerrar sesión"),
         "modifyGameButton":
             MessageLookupByLibrary.simpleMessage("Modificar el juego"),
         "notificationScreenTitle":
@@ -74,6 +83,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Reenviar el código"),
         "resetPassword":
             MessageLookupByLibrary.simpleMessage("Restablecer la contraseña"),
+        "save": MessageLookupByLibrary.simpleMessage("Guardar"),
         "sendResetEmail": MessageLookupByLibrary.simpleMessage(
             "Enviar correo de restablecimiento"),
         "tournamentScreenTitle":

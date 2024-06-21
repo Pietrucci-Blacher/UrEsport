@@ -91,3 +91,21 @@ class LoginButtonPressed extends AuthEvent {
   @override
   List<Object> get props => [email, password];
 }
+
+class ProfileImageUpdated extends AuthEvent {
+  final String imageUrl;
+
+  const ProfileImageUpdated(this.imageUrl);
+
+  @override
+  List<Object> get props => [imageUrl];
+}
+
+class UserFieldUpdated extends AuthEvent {
+  final Map<String, dynamic> updatedFields;
+
+  const UserFieldUpdated(this.updatedFields);
+
+  @override
+  List<Object> get props => [updatedFields];
+}

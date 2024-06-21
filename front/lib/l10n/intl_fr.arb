@@ -40,5 +40,13 @@
   "deleteGameButton": "Supprimer le jeux",
   "trendingTournamentsTitle": "Tournois en tendance",
   "popularGamesTitle": "Jeux populaires",
-  "viewAll": "Afficher tout"
+  "viewAll": "Afficher tout",
+  "editProfile": "Modifier le profil",
+  "save": "Enregistrer",
+  "cancel": "Annuler",
+  "dangerZone": "Zone de danger",
+  "logout": "Déconnexion",
+  "deleteAccount": "Supprimer le compte",
+  "confirm": "Confirmer",
+  "cancelEditing": "Annuler l'édition"
 }
