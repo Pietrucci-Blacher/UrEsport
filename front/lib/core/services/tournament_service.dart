@@ -8,6 +8,7 @@ abstract class ITournamentService {
   Future<List<Tournament>> fetchTournaments({int? limit, int? page});
   Future<void> inviteUserToTournament(String tournamentId, String username);
   Future<void> upvoteTournament(int tournamentId, String username);
+  Future<bool> hasUpvoted(int tournamentId, String username);
 }
 
 class TournamentService implements ITournamentService {
@@ -109,6 +110,50 @@ class TournamentService implements ITournamentService {
           requestOptions: response.requestOptions,
           response: response,
           error: 'Failed to upvote tournament. Status code: ${response.statusCode}',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print('DioException: ${e.message}');
+        print('DioException type: ${e.type}');
+        print('DioException response: ${e.response?.data}');
+        rethrow;
+      } else {
+        print('Unexpected error: $e');
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+  @override
+  Future<bool> hasUpvoted(int tournamentId, String username) async {
+    try {
+      final token = await _cacheService.getString('token');
+      if (token == null) throw Exception('No token found');
+
+      final response = await _dio.get(
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/upvoted",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500; // Accepter les codes de statut < 500
+          },
+        ),
+      );
+
+      print('Has upvoted response status: ${response.statusCode}');
+      print('Has upvoted response data: ${response.data}');
+
+      if (response.statusCode == 200) {
+        return response.data['upvoted'] as bool;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to check if upvoted. Status code: ${response.statusCode}',
           type: DioExceptionType.badResponse,
         );
       }

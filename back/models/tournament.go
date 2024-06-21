@@ -213,24 +213,29 @@ func ClearTournaments() error {
 
 func (t *Tournament) AddUpvote(userID int) error {
 	return DB.Transaction(func(tx *gorm.DB) error {
-		upvote := Upvote{UserID: userID, TournamentID: t.ID}
+		var upvote Upvote
+		err := tx.Where("user_id = ? AND tournament_id = ?", userID, t.ID).First(&upvote).Error
 
-		// Vérifier si l'utilisateur a déjà upvoté ce tournoi
-		var count int64
-		if err := tx.Model(&Upvote{}).Where("user_id = ? AND tournament_id = ?", userID, t.ID).Count(&count).Error; err != nil {
-			return err
-		}
-		if count > 0 {
-			return errors.New("User has already upvoted this tournament")
-		}
-
-		// Ajouter l'upvote
-		if err := tx.Create(&upvote).Error; err != nil {
-			return err
-		}
-
-		// Incrémenter le compteur de upvotes
-		if err := tx.Model(&Tournament{}).Where("id = ?", t.ID).UpdateColumn("upvotes", gorm.Expr("upvotes + ?", 1)).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// Ajouter l'upvote
+			upvote = Upvote{UserID: userID, TournamentID: t.ID}
+			if err := tx.Create(&upvote).Error; err != nil {
+				return err
+			}
+			// Incrémenter le compteur de upvotes
+			if err := tx.Model(&Tournament{}).Where("id = ?", t.ID).UpdateColumn("upvotes", gorm.Expr("upvotes + ?", 1)).Error; err != nil {
+				return err
+			}
+		} else if err == nil {
+			// Retirer l'upvote
+			if err := tx.Delete(&upvote).Error; err != nil {
+				return err
+			}
+			// Décrémenter le compteur de upvotes
+			if err := tx.Model(&Tournament{}).Where("id = ?", t.ID).UpdateColumn("upvotes", gorm.Expr("upvotes - ?", 1)).Error; err != nil {
+				return err
+			}
+		} else {
 			return err
 		}
 

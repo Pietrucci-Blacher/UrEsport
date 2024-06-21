@@ -509,5 +509,5 @@ func AddUpvote(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Upvote added"})
+	c.JSON(http.StatusOK, gin.H{"message": "Upvote toggled"})
 }
