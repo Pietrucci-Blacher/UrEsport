@@ -9,6 +9,7 @@ import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/bracket/screens/custom_poules_page.dart';
 import 'package:uresport/bracket/screens/custom_bracket.dart';
+import 'package:uresport/bracket/screens/custom_schedule.dart'; // Importation de CustomSchedulePage
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
@@ -29,8 +30,9 @@ class TournamentScreen extends StatelessWidget {
             children: [
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                child: Wrap(
+                  spacing: 8.0, // espace horizontal entre les boutons
+                  runSpacing: 8.0, // espace vertical entre les lignes de boutons
                   children: [
                     ElevatedButton(
                       onPressed: () {
@@ -53,6 +55,17 @@ class TournamentScreen extends StatelessWidget {
                         );
                       },
                       child: const Text('Custom Poules'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const CustomSchedulePage(),
+                          ),
+                        );
+                      },
+                      child: const Text('Custom Schedule'),
                     ),
                   ],
                 ),
