@@ -29,7 +29,7 @@ dependencies:
   google_maps_flutter: ^2.7.0
   tournament_bracket: ^0.0.4
   flutter_local_notifications: ^9.1.5
-  overlay_support: ^1.2.1
+  overlay_support: ^2.0.0
 
 dev_dependencies:
   flutter_test:
