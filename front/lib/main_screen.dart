@@ -17,6 +17,7 @@ import 'package:uresport/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:uresport/cubit/locale_cubit.dart';
 import 'package:uresport/shared/locale_switcher.dart';
+import 'package:uresport/shared/utils/image_util.dart';
 
 class MainScreen extends StatefulWidget {
   final IAuthService authService;
@@ -35,6 +36,7 @@ class MainScreen extends StatefulWidget {
 class MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
   late final List<Widget> _widgetOptions;
+  String? _profileImageUrl;
 
   @override
   void initState() {
@@ -58,6 +60,12 @@ class MainScreenState extends State<MainScreen> {
     });
   }
 
+  void _updateProfileImage(String imageUrl) {
+    setState(() {
+      _profileImageUrl = imageUrl;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -72,9 +80,8 @@ class MainScreenState extends State<MainScreen> {
                 );
               } else {
                 bool isLoggedIn = state is AuthAuthenticated;
-                String? profileImageUrl;
                 if (isLoggedIn) {
-                  profileImageUrl = state.user.profileImageUrl;
+                  _profileImageUrl = state.user.profileImageUrl;
                 }
                 return Scaffold(
                   appBar: AppBar(
@@ -82,11 +89,12 @@ class MainScreenState extends State<MainScreen> {
                       children: [
                         if (!kIsWeb)
                           IconButton(
-                            icon: isLoggedIn && profileImageUrl != null
+                            icon: isLoggedIn && _profileImageUrl != null
                                 ? Stack(
                               children: [
-                                CircleAvatar(
-                                  backgroundImage: NetworkImage(profileImageUrl),
+                                CachedImageWidget(
+                                  url: _profileImageUrl!,
+                                  size: 40,
                                 ),
                                 if (notificationProvider.notificationCount > 0)
                                   Positioned(
@@ -115,14 +123,20 @@ class MainScreenState extends State<MainScreen> {
                               ],
                             )
                                 : const Icon(Icons.person),
-                            onPressed: () {
+                            onPressed: () async {
                               if (isLoggedIn) {
-                                Navigator.push(
+                                final imageUrl = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => ProfileScreen(authService: widget.authService),
+                                    builder: (context) => ProfileScreen(
+                                      authService: widget.authService,
+                                      onProfileImageUpdated: _updateProfileImage,
+                                    ),
                                   ),
                                 );
+                                if (imageUrl != null) {
+                                  _updateProfileImage(imageUrl);
+                                }
                               } else {
                                 Navigator.push(
                                   context,
