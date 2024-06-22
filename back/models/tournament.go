@@ -2,6 +2,7 @@ package models
 
 import (
 	"challenge/services"
+	"math"
 	"time"
 )
 
@@ -102,24 +103,43 @@ func FindTournamentsByUserID(userID int) ([]Tournament, error) {
 	return tournaments, err
 }
 
-func (t *Tournament) GenerateBraket() ([]Match, error) {
-	var matches []Match
+func (t *Tournament) GenerateBraketTree() error {
+	channel := make(chan error)
+	nbTeam := len(t.Teams)
+	depth := int(math.Log2(float64(nbTeam)))
+	nbMatch := 2<<uint(depth) - 1 // 2^depth - 1
 
-	if len(t.Teams) < 2 {
-		return matches, nil
-	}
+	go t.createBinaryTree(nil, depth, channel)
 
-	for i := 0; i < len(t.Teams); i += 2 {
-		match := NewMatch(t.ID, t.Teams[i].ID, t.Teams[i+1].ID)
-
-		if err := match.Save(); err != nil {
-			return matches, err
+	for i := 0; i < nbMatch; i++ {
+		if err := <-channel; err != nil {
+			return err
 		}
-
-		matches = append(matches, match)
 	}
 
-	return matches, nil
+	return nil
+}
+
+func (t *Tournament) createBinaryTree(matchId *int, depth int, ch chan<- error) {
+	match := NewEmptyMatch(t.ID)
+
+	match.NextMatchID = matchId
+	match.Depth = depth
+
+	if err := match.Save(); err != nil {
+		ch <- err
+		return
+	}
+
+	if depth == 0 {
+		ch <- nil
+		return
+	}
+
+	go t.createBinaryTree(&match.ID, depth-1, ch)
+	go t.createBinaryTree(&match.ID, depth-1, ch)
+
+	ch <- nil
 }
 
 func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {

@@ -212,12 +212,12 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsTournamentOwner(),
 				TogglePrivateTournament,
 			)
-			// tournaments.POST("/:tournament/bracket",
-			// 	middlewares.IsLoggedIn(true),
-			// 	middlewares.Get[*models.Tournament]("tournament"),
-			// 	middlewares.IsTournamentOwner(),
-			// 	GenerateTournamentBracket,
-			// )
+			tournaments.POST("/:tournament/bracket",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.IsTournamentOwner(),
+				GenerateTournamentBracket,
+			)
 		}
 
 		teams := api.Group("/teams")

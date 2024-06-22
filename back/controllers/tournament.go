@@ -5,6 +5,7 @@ import (
 	"challenge/services"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -473,14 +474,33 @@ func RejectTournamentInvitation(c *gin.Context) {
 //	@Failure		401	{object}	utils.HttpError
 //	@Failure		404	{object}	utils.HttpError
 //	@Failure		500	{object}	utils.HttpError
-//	@Router			/tournaments/{id}/generate [post]
-// func GenerateTournamentBracket(c *gin.Context) {
-// 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+//	@Router			/tournaments/{id}/bracket [post]
+func GenerateTournamentBracket(c *gin.Context) {
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
-// 	if err := tournament.GenerateBracket(); err != nil {
-// 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-// 		return
-// 	}
+	countMatchs, err := models.CountMatchsByTournamentID(tournament.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	} else if countMatchs > 0 {
+		c.JSON(http.StatusConflict, gin.H{"error": "Bracket already generated"})
+		return
+	}
 
-// 	c.JSON(http.StatusNoContent, nil)
-// }
+	if err := tournament.GenerateBraketTree(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	query, _ := services.NewQueryFilter(map[string][]string{
+		"where[tournament_id]": {strconv.Itoa(tournament.ID)},
+	})
+
+	matches, err := models.FindAllMatchs(query)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, matches)
+}

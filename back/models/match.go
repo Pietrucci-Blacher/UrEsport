@@ -17,6 +17,7 @@ type Match struct {
 	Score1       int        `json:"score1"`
 	Score2       int        `json:"score2"`
 	NextMatchID  *int       `json:"next_match_id"`
+	Depth        int        `json:"depth"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at"`
 }
@@ -41,6 +42,7 @@ func NewEmptyMatch(tournamentID int) Match {
 		Team2ID:      nil,
 		WinnerID:     nil,
 		NextMatchID:  nil,
+		Depth:        0,
 		Score1:       0,
 		Score2:       0,
 	}
@@ -53,6 +55,7 @@ func NewMatch(tournamentID, team1ID, team2ID int) Match {
 		Team2ID:      &team2ID,
 		WinnerID:     nil,
 		NextMatchID:  nil,
+		Depth:        0,
 		Score1:       0,
 		Score2:       0,
 	}
@@ -72,6 +75,20 @@ func FindAllMatchs(query services.QueryFilter) ([]Match, error) {
 		Find(&matches).Error
 
 	return matches, err
+}
+
+func DeleteByTournamentID(tournamentID int) error {
+	return DB.Where("tournament_id", tournamentID).Delete(&Match{}).Error
+}
+
+func CountMatchsByTournamentID(tournamentID int) (int64, error) {
+	var count int64
+
+	err := DB.Model(&Match{}).
+		Where("tournament_id", tournamentID).
+		Count(&count).Error
+
+	return count, err
 }
 
 func (m *Match) SetScore(team Team, score int) {
