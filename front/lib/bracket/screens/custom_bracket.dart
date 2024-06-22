@@ -46,13 +46,12 @@ class BracketContent extends StatefulWidget {
   final List<List<Team>> teams;
   final List<String> roundNames;
 
-  const BracketContent({required this.teams, required this.roundNames});
+  const BracketContent({required this.teams, required this.roundNames, super.key});
 
-  @override
-  _BracketContentState createState() => _BracketContentState();
+  @override BracketContentState createState() => BracketContentState();
 }
 
-class _BracketContentState extends State<BracketContent> {
+class BracketContentState extends State<BracketContent> {
   int selectedLevel = 0;
   final ScrollController _scrollController = ScrollController();
 

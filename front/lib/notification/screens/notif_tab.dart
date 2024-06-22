@@ -47,7 +47,7 @@ class NotificationsTab extends StatelessWidget {
   }
 
   void showNotificationToast(BuildContext context, String message, {Color? backgroundColor, Color? textColor}) {
-    final overlay = Overlay.of(context)!;
+    final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
     overlayEntry = OverlayEntry(

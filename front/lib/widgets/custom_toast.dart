@@ -51,7 +51,7 @@ class CustomToast extends StatelessWidget {
                 onPressed: onClose,
                 iconSize: 16.0,
                 padding: EdgeInsets.zero,
-                constraints: BoxConstraints(),
+                constraints: const BoxConstraints(),
               ),
             ],
           ),
