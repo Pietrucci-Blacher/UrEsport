@@ -14,13 +14,15 @@ import 'package:uresport/friends/bloc/friends_state.dart';
 class FriendsTab extends StatefulWidget {
   final int userId;
 
-  const FriendsTab({Key? key, required this.userId}) : super(key: key);
+  const FriendsTab({
+    super.key,
+    required this.userId,
+  });
 
-  @override
-  _FriendsTabState createState() => _FriendsTabState();
+  @override FriendsTabState createState() => FriendsTabState();
 }
 
-class _FriendsTabState extends State<FriendsTab> {
+class FriendsTabState extends State<FriendsTab> {
   late FriendsBloc _friendsBloc;
 
   @override
