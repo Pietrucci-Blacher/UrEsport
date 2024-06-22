@@ -47,7 +47,7 @@ class MatchDetailsPage extends StatelessWidget {
                       _buildStatColumn('Date', match.date),
                       _buildStatColumn('Time', match.time),
                       const Divider(thickness: 2),
-                      _buildStatColumn('Score', '0 - 0'),
+                      _buildCustomScoreRow('Score', '0', '0'), // Ligne personnalisée
                       _buildVerticalDivider(),
                       _buildStatRow('Goals', '0', '0'),
                       _buildVerticalDivider(),
@@ -203,6 +203,76 @@ class MatchDetailsPage extends StatelessWidget {
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // Méthode pour créer la ligne personnalisée du score
+  Widget _buildCustomScoreRow(String statName, String statValue1, String statValue2) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Column(
+              children: [
+                const Icon(Icons.sports_soccer, color: Colors.blue),
+                const SizedBox(height: 5),
+                Text(
+                  statValue1,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.blue,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 40,
+            color: Colors.grey,
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                Text(
+                  statName,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+          Container(
+            width: 1,
+            height: 40,
+            color: Colors.grey,
+          ),
+          Expanded(
+            child: Column(
+              children: [
+                const Icon(Icons.sports_soccer, color: Colors.red),
+                const SizedBox(height: 5),
+                Text(
+                  statValue2,
+                  style: const TextStyle(
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                  textAlign: TextAlign.center,
+                ),
+              ],
             ),
           ),
         ],
