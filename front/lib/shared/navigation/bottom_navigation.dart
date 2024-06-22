@@ -17,20 +17,24 @@ class CustomBottomNavigation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBar(
-      items: <BottomNavigationBarItem>[
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.home),
-          label: AppLocalizations.of(context).homeScreenTitle,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.games),
-          label: AppLocalizations.of(context).gameScreenTitle,
-        ),
-        BottomNavigationBarItem(
-          icon: const Icon(Icons.sports_esports),
-          label: AppLocalizations.of(context).tournamentScreenTitle,
-        ),
+    List<BottomNavigationBarItem> items = [
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.home),
+        label: AppLocalizations.of(context).homeScreenTitle,
+      ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.games),
+        label: AppLocalizations.of(context).gameScreenTitle,
+      ),
+      BottomNavigationBarItem(
+        icon: const Icon(Icons.sports_esports),
+        label: AppLocalizations.of(context).tournamentScreenTitle,
+      ),
+    ];
+
+    // Add notification item only if the user is logged in
+    if (isLoggedIn) {
+      items.add(
         BottomNavigationBarItem(
           icon: Stack(
             clipBehavior: Clip.none,
@@ -64,7 +68,11 @@ class CustomBottomNavigation extends StatelessWidget {
           ),
           label: AppLocalizations.of(context).notificationScreenTitle,
         ),
-      ],
+      );
+    }
+
+    return BottomNavigationBar(
+      items: items,
       currentIndex: selectedIndex,
       selectedItemColor: Colors.blue[800],
       unselectedItemColor: Colors.grey[600],
