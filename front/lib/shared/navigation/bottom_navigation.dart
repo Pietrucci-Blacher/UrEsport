@@ -29,7 +29,7 @@ class CustomBottomNavigation extends StatelessWidget {
     );
 
     overlay.insert(overlayEntry);
-    Future.delayed(Duration(seconds: 3), () {
+    Future.delayed(const Duration(seconds: 3), () {
       overlayEntry?.remove();
     });
   }
@@ -164,7 +164,7 @@ class CustomToast extends StatelessWidget {
                 onPressed: onClose,
                 iconSize: 16.0,
                 padding: EdgeInsets.zero,
-                constraints: BoxConstraints(),
+                constraints: const BoxConstraints(),
               ),
             ],
           ),
