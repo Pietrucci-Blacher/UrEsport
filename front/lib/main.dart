@@ -8,7 +8,9 @@ import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/shared/provider/NotificationProvider.dart';
 import 'package:uresport/shared/websocket/websocket.dart';
 import 'package:uresport/shared/routing/routing.dart';
-import 'package:uresport/core/services/notification_service.dart'; // Import the NotificationProvider
+import 'package:uresport/core/services/notification_service.dart';
+import 'package:uresport/core/services/map_service.dart';
+import 'package:geolocator/geolocator.dart';
 import 'app.dart';
 import 'package:uresport/core/services/friends_services.dart';
 
@@ -21,6 +23,13 @@ void main() async {
   final gameService = GameService(dio);
   final routeGenerator = RouteGenerator(authService);
   final friendService = FriendService(dio);
+  final googleApiKey = dotenv.env['GOOGLE_MAPS_API_KEY']!;
+  final geolocatorPlatform = GeolocatorPlatform.instance;
+  final mapService = MapService(
+    dio: dio,
+    googleApiKey: googleApiKey,
+    geolocatorPlatform: geolocatorPlatform,
+  );
 
   connectWebsocket();
 
@@ -33,11 +42,13 @@ void main() async {
         Provider<IFriendService>.value(value: friendService),
         ChangeNotifierProvider<NotificationService>(create: (_) => NotificationService()),
         ChangeNotifierProvider<NotificationProvider>(create: (_) => NotificationProvider()),
+        Provider<MapService>.value(value: mapService),
       ],
       child: MyApp(
         authService: authService,
         tournamentService: tournamentService,
         gameService: gameService,
+        mapService: mapService,
         routeGenerator: routeGenerator,
       ),
     ),
