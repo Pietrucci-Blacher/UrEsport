@@ -35,27 +35,14 @@ type ScoreMatchDto struct {
 	Score int `json:"score" validate:"required"`
 }
 
-func NewEmptyMatch(tournamentID int) Match {
+func NewMatch(tournamentID int, next *int, depth int) Match {
 	return Match{
 		TournamentID: tournamentID,
 		Team1ID:      nil,
 		Team2ID:      nil,
 		WinnerID:     nil,
-		NextMatchID:  nil,
-		Depth:        0,
-		Score1:       0,
-		Score2:       0,
-	}
-}
-
-func NewMatch(tournamentID, team1ID, team2ID int) Match {
-	return Match{
-		TournamentID: tournamentID,
-		Team1ID:      &team1ID,
-		Team2ID:      &team2ID,
-		WinnerID:     nil,
-		NextMatchID:  nil,
-		Depth:        0,
+		NextMatchID:  next,
+		Depth:        depth,
 		Score1:       0,
 		Score2:       0,
 	}
@@ -79,6 +66,24 @@ func FindAllMatchs(query services.QueryFilter) ([]Match, error) {
 
 func DeleteByTournamentID(tournamentID int) error {
 	return DB.Where("tournament_id", tournamentID).Delete(&Match{}).Error
+}
+
+func CreateBinaryTree(tournamentId int, matchId *int, depth int, chMatch chan<- Match, chErr chan<- error) {
+	match := NewMatch(tournamentId, matchId, depth)
+
+	if err := match.Save(); err != nil {
+		chErr <- err
+		chMatch <- match
+		return
+	}
+
+	if depth > 0 {
+		go CreateBinaryTree(tournamentId, &match.ID, depth-1, chMatch, chErr)
+		go CreateBinaryTree(tournamentId, &match.ID, depth-1, chMatch, chErr)
+	}
+
+	chErr <- nil
+	chMatch <- match
 }
 
 func CountMatchsByTournamentID(tournamentID int) (int64, error) {
