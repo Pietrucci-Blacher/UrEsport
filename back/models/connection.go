@@ -65,6 +65,7 @@ func Migration() error {
 		&Game{},
 		&Invit{},
 		&Match{},
+		&Friend{},
 	)
 }
 
@@ -79,6 +80,7 @@ func DropTables() error {
 		&Invit{},
 		&Game{},
 		&Match{},
+		&Friend{},
 		"tournament_teams",
 		"team_members",
 	)
