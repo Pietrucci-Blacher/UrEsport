@@ -103,6 +103,15 @@ func FindTournamentsByUserID(userID int) ([]Tournament, error) {
 	return tournaments, err
 }
 
+func InTournamentArray(array []Tournament, value Tournament) bool {
+	for _, v := range array {
+		if v.ID == value.ID {
+			return true
+		}
+	}
+	return false
+}
+
 func (t *Tournament) GenerateBraketTree() ([]Match, error) {
 	var matches []Match
 

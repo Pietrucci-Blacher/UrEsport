@@ -128,7 +128,7 @@ func ScoreMatch(c *gin.Context) {
 	}
 
 	roomName := fmt.Sprintf("tournament:%d", match.TournamentID)
-	_ = ws.Room(roomName).Emit("match:score", match)
+	_ = ws.Room(roomName).Emit("match:update", match)
 
 	c.JSON(http.StatusOK, match)
 }
