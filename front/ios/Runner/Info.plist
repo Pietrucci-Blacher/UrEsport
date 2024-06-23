@@ -69,5 +69,7 @@
     <string>Allow access to microphone to record videos</string>
     <key>NSLocationWhenInUseUsageDescription</key>
     <string>Allow access to location</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Allow access to speech recognition</string>
 </dict>
 </plist>
