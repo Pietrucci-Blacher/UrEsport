@@ -103,43 +103,57 @@ func FindTournamentsByUserID(userID int) ([]Tournament, error) {
 	return tournaments, err
 }
 
-func (t *Tournament) GenerateBraketTree() error {
-	channel := make(chan error)
-	nbTeam := len(t.Teams)
-	depth := int(math.Log2(float64(nbTeam)))
-	nbMatch := 2<<uint(depth) - 1 // 2^depth - 1
+func (t *Tournament) GenerateBraketTree() ([]Match, error) {
+	var matches []Match
 
-	go t.createBinaryTree(nil, depth, channel)
+	chErr := make(chan error)
+	chMatch := make(chan Match)
+	nbTeam := len(t.Teams)
+
+	if nbTeam%2 != 0 {
+		nbTeam++
+	}
+
+	depth := int(math.Round(math.Log2(float64(nbTeam / 2))))
+	nbMatch := (2 << uint(depth)) - 1 // 2^depth - 1
+
+	go createBinaryTree(t.ID, nil, depth, chMatch, chErr)
 
 	for i := 0; i < nbMatch; i++ {
-		if err := <-channel; err != nil {
-			return err
+		if err := <-chErr; err != nil {
+			return nil, err
+		} else {
+			match := <-chMatch
+			matches = append(matches, match)
 		}
 	}
 
-	return nil
+	return matches, nil
 }
 
-func (t *Tournament) createBinaryTree(matchId *int, depth int, ch chan<- error) {
-	match := NewEmptyMatch(t.ID)
+func createBinaryTree(tournamentId int, matchId *int, depth int, chMatch chan<- Match, chErr chan<- error) {
+	match := NewEmptyMatch(tournamentId)
 
 	match.NextMatchID = matchId
 	match.Depth = depth
 
 	if err := match.Save(); err != nil {
-		ch <- err
+		chErr <- err
+		chMatch <- match
 		return
 	}
 
 	if depth == 0 {
-		ch <- nil
+		chErr <- nil
+		chMatch <- match
 		return
 	}
 
-	go t.createBinaryTree(&match.ID, depth-1, ch)
-	go t.createBinaryTree(&match.ID, depth-1, ch)
+	go createBinaryTree(tournamentId, &match.ID, depth-1, chMatch, chErr)
+	go createBinaryTree(tournamentId, &match.ID, depth-1, chMatch, chErr)
 
-	ch <- nil
+	chErr <- nil
+	chMatch <- match
 }
 
 func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {

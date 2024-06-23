@@ -5,7 +5,6 @@ import (
 	"challenge/services"
 	"fmt"
 	"net/http"
-	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -478,6 +477,11 @@ func RejectTournamentInvitation(c *gin.Context) {
 func GenerateTournamentBracket(c *gin.Context) {
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
+	if len(tournament.Teams) < 2 {
+		c.JSON(http.StatusConflict, gin.H{"error": "Not enough teams to generate bracket"})
+		return
+	}
+
 	countMatchs, err := models.CountMatchsByTournamentID(tournament.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -487,16 +491,7 @@ func GenerateTournamentBracket(c *gin.Context) {
 		return
 	}
 
-	if err := tournament.GenerateBraketTree(); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
-
-	query, _ := services.NewQueryFilter(map[string][]string{
-		"where[tournament_id]": {strconv.Itoa(tournament.ID)},
-	})
-
-	matches, err := models.FindAllMatchs(query)
+	matches, err := tournament.GenerateBraketTree()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
