@@ -18,9 +18,6 @@ class TournamentScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => TournamentBloc(context.read<ITournamentService>())..add(const LoadTournaments()),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Tournaments'),
-        ),
         body: RefreshIndicator(
           onRefresh: () async {
             context.read<TournamentBloc>().add(const LoadTournaments());
