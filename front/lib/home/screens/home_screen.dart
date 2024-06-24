@@ -58,7 +58,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/tournaments');
+                          Navigator.pushNamedAndRemoveUntil(context, '/tournaments', (Route<dynamic> route) => false);
                         },
                         child: Row(
                           children: [
@@ -85,7 +85,7 @@ class HomeScreen extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushNamed(context, '/games');
+                          Navigator.pushNamedAndRemoveUntil(context, '/games', (Route<dynamic> route) => false);
                         },
                         child: Row(
                           children: [

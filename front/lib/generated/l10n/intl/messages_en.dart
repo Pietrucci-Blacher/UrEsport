@@ -27,8 +27,14 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
+        "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "cancelEditing": MessageLookupByLibrary.simpleMessage("Cancel Editing"),
         "closeButton": MessageLookupByLibrary.simpleMessage("Close"),
+        "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
+        "dangerZone": MessageLookupByLibrary.simpleMessage("Danger Zone"),
+        "deleteAccount": MessageLookupByLibrary.simpleMessage("Delete Account"),
         "deleteGameButton": MessageLookupByLibrary.simpleMessage("Delete Game"),
+        "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "firstName": MessageLookupByLibrary.simpleMessage("First Name"),
         "forgotPassword":
@@ -49,6 +55,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "lastName": MessageLookupByLibrary.simpleMessage("Last Name"),
         "logIn": MessageLookupByLibrary.simpleMessage("Log In"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
+        "logout": MessageLookupByLibrary.simpleMessage("Logout"),
         "modifyGameButton": MessageLookupByLibrary.simpleMessage("Modify Game"),
         "notificationScreenTitle":
             MessageLookupByLibrary.simpleMessage("Notifications"),
@@ -67,6 +74,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "register": MessageLookupByLibrary.simpleMessage("Register"),
         "resendCode": MessageLookupByLibrary.simpleMessage("Resend code"),
         "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
+        "save": MessageLookupByLibrary.simpleMessage("Save"),
         "sendResetEmail":
             MessageLookupByLibrary.simpleMessage("Send Reset Email"),
         "tournamentScreenTitle":

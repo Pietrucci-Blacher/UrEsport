@@ -8,11 +8,10 @@ class PouleBracketView extends StatefulWidget {
 
   const PouleBracketView({super.key, required this.poules});
 
-  @override
-  _PouleBracketViewState createState() => _PouleBracketViewState();
+  @override PouleBracketViewState createState() => PouleBracketViewState();
 }
 
-class _PouleBracketViewState extends State<PouleBracketView> {
+class PouleBracketViewState extends State<PouleBracketView> {
   final Map<String, Map<String, String>> matchResults = {};
 
   @override

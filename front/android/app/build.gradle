@@ -2,6 +2,7 @@ plugins {
     id "com.android.application"
     id "kotlin-android"
     id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.android.libraries.mapsplatform.secrets-gradle-plugin"
 }
 
 def localProperties = new Properties()
@@ -25,15 +26,16 @@ if (flutterVersionName == null) {
 android {
     namespace "com.example.uresport"
     compileSdk flutter.compileSdkVersion
-    ndkVersion "26.1.10909125"
+    ndkVersion flutter.ndkVersion
 
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_17
-        targetCompatibility JavaVersion.VERSION_17
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
     }
 
     kotlinOptions {
-        jvmTarget = '17'
+        jvmTarget = '21'
     }
 
     sourceSets {
@@ -46,6 +48,11 @@ android {
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+
+        multiDexEnabled true
+
+        def mapsApiKey = System.env.MAPS_API_KEY ?: findDartDefineValue("MAPS_API_KEY") ?: ""
+        manifestPlaceholders = [MAPS_API_KEY: mapsApiKey]
     }
 
     buildTypes {
@@ -60,5 +67,24 @@ flutter {
 }
 
 dependencies {
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.0.4"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+}
+
+secrets {
+    defaultPropertiesFileName = "local.properties"
+
+    // Ignore all keys matching the regexp "sdk.*"
+    ignoreList.add("sdk.*")
+    // Ignore all keys matching the regexp "flutter.*"
+    ignoreList.add("flutter.*")
+}
+
+def findDartDefineValue(key) {
+    def encodedDartDefines = project.hasProperty('dart-defines') ? project.property('dart-defines') : ""
+    def defines = encodedDartDefines.split(",").collectEntries { String it ->
+        def define = new String(it.decodeBase64(), 'UTF-8').split('=')
+        return [(define.first()): define.last()]
+    }
+    return defines.containsKey(key) ? defines[key] : null
 }
