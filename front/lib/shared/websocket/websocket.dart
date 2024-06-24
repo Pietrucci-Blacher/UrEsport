@@ -7,6 +7,11 @@ void connectWebsocket() {
   ws.on('connected', connected);
   ws.on('error', error);
   ws.on('pong', pong);
+  ws.on('match:update', (data) {
+    if (kDebugMode) {
+      print('Match update: ${data.score1}');
+    }
+  });
 
   ws.emit('ping', 'Hello from client!');
 }

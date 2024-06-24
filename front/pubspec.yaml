@@ -32,7 +32,7 @@ dependencies:
   flutter_svg: ^2.0.10+1
   speech_to_text: ^6.6.0
   tournament_bracket: ^0.0.4
-  flutter_local_notifications: ^9.1.5
+  flutter_local_notifications: ^17.1.2
   overlay_support: ^2.0.0
   url_launcher: ^6.3.0
   flutter_polyline_points: ^2.0.0

@@ -102,6 +102,28 @@ func CountUsersByUsername(username string) (int64, error) {
 	return count, err
 }
 
+// FindTeamsByUserID returns all tournaments that the user is part of
+func (u *User) FindTournaments() ([]Tournament, error) {
+	var tournaments []Tournament
+
+	teams, err := FindTeamsByUserID(u.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	for _, team := range teams {
+		for _, tournament := range team.Tournaments {
+			if InTournamentArray(tournaments, tournament) {
+				continue
+			}
+
+			tournaments = append(tournaments, tournament)
+		}
+	}
+
+	return tournaments, nil
+}
+
 func (u *User) Sanitize(getTeam bool) SanitizedUser {
 	var teams []SanitizedTeam
 
