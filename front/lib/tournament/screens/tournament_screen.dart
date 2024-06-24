@@ -9,7 +9,8 @@ import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/bracket/screens/custom_poules_page.dart';
 import 'package:uresport/bracket/screens/custom_bracket.dart';
-import 'package:uresport/bracket/screens/custom_schedule.dart'; // Importation de CustomSchedulePage
+import 'package:uresport/bracket/screens/custom_schedule.dart';
+import 'package:uresport/tournament/screens/tournament_details_screen.dart'; // Importation de CustomSchedulePage
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
@@ -161,10 +162,15 @@ class TournamentScreen extends StatelessWidget {
               'Participants:',
               style: TextStyle(fontSize: 16),
             ),
-            const SizedBox(height: 15),
+            const SizedBox(height: 10),
             ElevatedButton(
               onPressed: () {
-                // Handle view details action
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => TournamentDetailsScreen(tournament: tournament),
+                  ),
+                );
               },
               child: const Text('View Details'),
             ),

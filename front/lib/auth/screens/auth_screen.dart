@@ -16,20 +16,18 @@ class AuthScreen extends StatelessWidget {
   final bool showLogin;
   final bool showRegister;
 
-  const AuthScreen(
-      {super.key,
-      required this.authService,
-      this.showLogin = true,
-      this.showRegister = true});
+  const AuthScreen({
+    super.key,
+    required this.authService,
+    this.showLogin = true,
+    this.showRegister = true,
+  });
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AuthBloc(authService)..add(AuthCheckRequested()),
       child: Scaffold(
-        appBar: AppBar(
-          leading: const BackButton(),
-        ),
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
@@ -39,28 +37,59 @@ class AuthScreen extends StatelessWidget {
             } else if (state is PasswordResetEmailSent) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                    content: Text(
-                        AppLocalizations.of(context).passwordResetEmailSent)),
+                  content: Text(AppLocalizations.of(context).passwordResetEmailSent),
+                ),
               );
             } else if (state is PasswordResetConfirmed) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                    content: Text(
-                        AppLocalizations.of(context).passwordResetSuccessful)),
+                  content: Text(AppLocalizations.of(context).passwordResetSuccessful),
+                ),
               );
             }
           },
           child: BlocBuilder<AuthBloc, AuthState>(
             builder: (context, state) {
-              if (state is AuthLoading) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (state is AuthAuthenticated) {
-                return _buildProfileScreen(context, state);
-              } else {
-                return _buildLoginRegisterButtons(context);
-              }
+              return Stack(
+                children: [
+                  _buildBackgroundImage(),
+                  SafeArea(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        children: [
+                          const Align(
+                            alignment: Alignment.topLeft,
+                            child: BackButton(color: Colors.white),
+                          ),
+                          Expanded(
+                            child: state is AuthLoading
+                                ? const Center(child: CircularProgressIndicator())
+                                : state is AuthAuthenticated
+                                ? _buildProfileScreen(context, state)
+                                : _buildLoginRegisterButtons(context),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              );
             },
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBackgroundImage() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF2D005B), Color(0xFF000000)],
+          stops: [0.1, 1.0],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
       ),
     );
@@ -85,13 +114,11 @@ class AuthScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => LoginScreen(authService: authService),
                   ),
-                ).then(
-                    (_) => context.read<AuthBloc>().add(AuthCheckRequested()));
+                ).then((_) => context.read<AuthBloc>().add(AuthCheckRequested()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -105,16 +132,13 @@ class AuthScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        RegisterScreen(authService: authService),
+                    builder: (context) => RegisterScreen(authService: authService),
                   ),
-                ).then(
-                    (_) => context.read<AuthBloc>().add(AuthCheckRequested()));
+                ).then((_) => context.read<AuthBloc>().add(AuthCheckRequested()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -123,24 +147,22 @@ class AuthScreen extends StatelessWidget {
             ),
           const SizedBox(height: 20),
           if (showLogin)
-            Text(AppLocalizations.of(context).orLoginWith,
-                style: const TextStyle(fontSize: 16)),
+            Text(
+              AppLocalizations.of(context).orLoginWith,
+              style: const TextStyle(fontSize: 16),
+            ),
           const SizedBox(height: 20),
           if (showLogin)
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                _buildOAuthButton(context, FontAwesomeIcons.google,
-                    const Color(0xFFDB4437), 'Google'),
+                _buildOAuthButton(context, FontAwesomeIcons.google, const Color(0xFFDB4437), 'Google'),
                 const SizedBox(width: 10),
-                _buildOAuthButton(context, FontAwesomeIcons.apple,
-                    const Color(0xFF000000), 'Apple'),
+                _buildOAuthButton(context, FontAwesomeIcons.apple, const Color(0xFF000000), 'Apple'),
                 const SizedBox(width: 10),
-                _buildOAuthButton(context, FontAwesomeIcons.discord,
-                    const Color(0xFF5865F2), 'Discord'),
+                _buildOAuthButton(context, FontAwesomeIcons.discord, const Color(0xFF5865F2), 'Discord'),
                 const SizedBox(width: 10),
-                _buildOAuthButton(context, FontAwesomeIcons.twitch,
-                    const Color(0xFF9146FF), 'Twitch'),
+                _buildOAuthButton(context, FontAwesomeIcons.twitch, const Color(0xFF9146FF), 'Twitch'),
               ],
             ),
           const SizedBox(height: 20),
@@ -150,8 +172,7 @@ class AuthScreen extends StatelessWidget {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) =>
-                        ResetPasswordScreen(authService: authService),
+                    builder: (context) => ResetPasswordScreen(authService: authService),
                   ),
                 );
               },
@@ -162,8 +183,7 @@ class AuthScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildOAuthButton(
-      BuildContext context, IconData icon, Color color, String provider) {
+  Widget _buildOAuthButton(BuildContext context, IconData icon, Color color, String provider) {
     return GestureDetector(
       onTap: () => context.read<AuthBloc>().add(OAuthLoginRequested(provider)),
       child: Container(
@@ -187,8 +207,7 @@ class AuthScreen extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           Text(
-            AppLocalizations.of(context)
-                .profileScreenWelcome(state.user.username),
+            AppLocalizations.of(context).profileScreenWelcome(state.user.username),
             style: const TextStyle(fontSize: 24),
           ),
           const SizedBox(height: 20),

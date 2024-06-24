@@ -5,7 +5,6 @@ import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class LoginScreen extends StatefulWidget {
   final IAuthService authService;
@@ -40,11 +39,11 @@ class LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text.trim();
 
     context.read<AuthBloc>().add(
-          LoginButtonPressed(
-            email: email,
-            password: password,
-          ),
-        );
+      LoginButtonPressed(
+        email: email,
+        password: password,
+      ),
+    );
   }
 
   @override
@@ -52,7 +51,7 @@ class LoginScreenState extends State<LoginScreen> {
     return BlocProvider(
       create: (context) => AuthBloc(widget.authService),
       child: Scaffold(
-        appBar: AppBar(title: Text(AppLocalizations.of(context).login)),
+        resizeToAvoidBottomInset: false,
         body: BlocListener<AuthBloc, AuthState>(
           listener: (context, state) {
             if (state is AuthFailure) {
@@ -63,78 +62,83 @@ class LoginScreenState extends State<LoginScreen> {
               Navigator.pushReplacementNamed(context, '/home');
             }
           },
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child:
-                  kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
-            ),
+          child: Stack(
+            children: [
+              _buildBackgroundImage(),
+              SafeArea(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 40), // Ajoutez un espace pour le bouton de retour
+                        const Align(
+                          alignment: Alignment.topLeft,
+                          child: BackButton(color: Colors.white),
+                        ),
+                        const SizedBox(height: 60), // Ajustez cet espace pour centrer le reste du contenu
+                        _buildTitle(),
+                        const SizedBox(height: 20),
+                        _buildTextField(
+                          controller: _emailController,
+                          label: AppLocalizations.of(context).email,
+                          hint: AutofillHints.email,
+                          keyboardType: TextInputType.emailAddress,
+                        ),
+                        _buildPasswordField(),
+                        const SizedBox(height: 10),
+                        _buildForgotPassword(context),
+                        const SizedBox(height: 20),
+                        BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            if (state is AuthLoading) {
+                              return const CircularProgressIndicator();
+                            }
+                            return _buildLoginButton(context);
+                          },
+                        ),
+                        const SizedBox(height: 20),
+                        _buildRegisterLink(context),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Widget _buildWebLogin(BuildContext context) {
-    return Center(
-      child: Container(
-        constraints: const BoxConstraints(maxWidth: 400),
-        padding: const EdgeInsets.all(16.0),
-        decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            _buildTextField(
-              controller: _emailController,
-              label: AppLocalizations.of(context).email,
-              hint: AutofillHints.email,
-              keyboardType: TextInputType.emailAddress,
-            ),
-            _buildPasswordField(),
-            const SizedBox(height: 20),
-            BlocBuilder<AuthBloc, AuthState>(
-              builder: (context, state) {
-                if (state is AuthLoading) {
-                  return const CircularProgressIndicator();
-                }
-                return ElevatedButton(
-                  onPressed: () => _onLoginButtonPressed(context),
-                  child: Text(AppLocalizations.of(context).login),
-                );
-              },
-            ),
-          ],
+  Widget _buildBackgroundImage() {
+    return Container(
+      decoration: const BoxDecoration(
+        gradient: LinearGradient(
+          colors: [Color(0xFF2D005B), Color(0xFF000000)],
+          stops: [0.1, 1.0],
+          begin: Alignment.topCenter,
+          end: Alignment.bottomCenter,
         ),
       ),
     );
   }
 
-  Widget _buildMobileLogin(BuildContext context) {
-    return Column(
-      mainAxisSize: MainAxisSize.min,
+  Widget _buildTitle() {
+    return const Column(
       children: [
-        _buildTextField(
-          controller: _emailController,
-          label: AppLocalizations.of(context).email,
-          hint: AutofillHints.email,
-          keyboardType: TextInputType.emailAddress,
+        SizedBox(height: 20),
+        Text(
+          'Login to your account',
+          style: TextStyle(
+            fontSize: 24,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          textAlign: TextAlign.center,
         ),
-        _buildPasswordField(),
-        const SizedBox(height: 20),
-        BlocBuilder<AuthBloc, AuthState>(
-          builder: (context, state) {
-            if (state is AuthLoading) {
-              return const CircularProgressIndicator();
-            }
-            return ElevatedButton(
-              onPressed: () => _onLoginButtonPressed(context),
-              child: Text(AppLocalizations.of(context).login),
-            );
-          },
-        ),
+        SizedBox(height: 10),
       ],
     );
   }
@@ -149,9 +153,16 @@ class LoginScreenState extends State<LoginScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(
         controller: controller,
+        style: TextStyle(color: Colors.white),
         decoration: InputDecoration(
           labelText: label,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          labelStyle: TextStyle(color: Colors.white),
+          filled: true,
+          fillColor: Colors.white24,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
         ),
         keyboardType: keyboardType,
         autofillHints: hint != null ? [hint] : null,
@@ -164,18 +175,78 @@ class LoginScreenState extends State<LoginScreen> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: TextField(
         controller: _passwordController,
+        style: const TextStyle(color: Colors.white),
         decoration: InputDecoration(
           labelText: AppLocalizations.of(context).password,
-          border: OutlineInputBorder(borderRadius: BorderRadius.circular(8)),
+          labelStyle: const TextStyle(color: Colors.white),
+          filled: true,
+          fillColor: Colors.white24,
+          border: OutlineInputBorder(
+            borderRadius: BorderRadius.circular(12),
+            borderSide: BorderSide.none,
+          ),
           suffixIcon: IconButton(
             icon: Icon(
               _obscureText ? Icons.visibility : Icons.visibility_off,
+              color: Colors.white,
             ),
             onPressed: _togglePasswordVisibility,
           ),
         ),
         obscureText: _obscureText,
         autofillHints: const [AutofillHints.password],
+      ),
+    );
+  }
+
+  Widget _buildForgotPassword(BuildContext context) {
+    return Align(
+      alignment: Alignment.centerRight,
+      child: TextButton(
+        onPressed: () {
+          // Implement forgot password navigation
+        },
+        child: Text(
+          'Forgot password?',
+          style: TextStyle(color: Colors.white),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLoginButton(BuildContext context) {
+    return ElevatedButton(
+      onPressed: () => _onLoginButtonPressed(context),
+      style: ElevatedButton.styleFrom(
+        padding: EdgeInsets.symmetric(horizontal: 80, vertical: 16),
+        backgroundColor: Colors.purple,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+        ),
+      ),
+      child: Text(
+        AppLocalizations.of(context).login,
+        style: TextStyle(fontSize: 18, color: Colors.white),
+      ),
+    );
+  }
+
+  Widget _buildRegisterLink(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        // Implement navigation to register screen
+      },
+      child: RichText(
+        text: TextSpan(
+          text: "Don't have an account? ",
+          style: TextStyle(color: Colors.white70),
+          children: [
+            TextSpan(
+              text: 'Create new account',
+              style: TextStyle(color: Colors.pinkAccent),
+            ),
+          ],
+        ),
       ),
     );
   }
