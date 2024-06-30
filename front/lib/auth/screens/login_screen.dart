@@ -7,6 +7,7 @@ import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:uresport/main_screen.dart';
+import 'package:uresport/dashboard/screens/dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   final IAuthService authService;
@@ -61,20 +62,36 @@ class LoginScreenState extends State<LoginScreen> {
                 SnackBar(content: Text(state.error)),
               );
             } else if (state is AuthAuthenticated) {
-              Navigator.of(context).pushAndRemoveUntil(
-                MaterialPageRoute(
-                  builder: (context) =>
-                      MainScreen(authService: widget.authService),
-                ),
-                    (Route<dynamic> route) => false,
-              );
+              if (state.user.roles.contains('admin')) {
+                if (kIsWeb) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (context) => const Dashboard(),
+                    ),
+                        (Route<dynamic> route) => false,
+                  );
+                } else {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (context) => MainScreen(authService: widget.authService),
+                    ),
+                        (Route<dynamic> route) => false,
+                  );
+                }
+              } else {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) => MainScreen(authService: widget.authService),
+                  ),
+                      (Route<dynamic> route) => false,
+                );
+              }
             }
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
-              child:
-              kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
+              child: kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
             ),
           ),
         ),

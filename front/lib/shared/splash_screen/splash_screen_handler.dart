@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:uresport/shared/splash_screen/splash_screen.dart';
 import 'package:uresport/main_screen.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/auth/screens/login_screen.dart';
 
 class SplashScreenHandler extends StatefulWidget {
   final IAuthService authService;
@@ -37,7 +39,9 @@ class SplashScreenHandlerState extends State<SplashScreenHandler> {
           return FadeTransition(opacity: animation, child: child);
         },
         child: _isInitialized
-            ? MainScreen(authService: widget.authService)
+            ? kIsWeb
+            ? LoginScreen(authService: widget.authService)
+            : MainScreen(authService: widget.authService)
             : const SplashScreen(),
       ),
     );
