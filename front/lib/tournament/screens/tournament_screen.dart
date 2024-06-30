@@ -16,7 +16,8 @@ class TournamentScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => TournamentBloc(context.read<ITournamentService>())..add(const LoadTournaments()),
+      create: (context) => TournamentBloc(context.read<ITournamentService>())
+        ..add(const LoadTournaments()),
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
@@ -58,7 +59,9 @@ class TournamentScreen extends StatelessWidget {
                 child: BlocBuilder<TournamentBloc, TournamentState>(
                   builder: (context, state) {
                     if (state is TournamentInitial) {
-                      context.read<TournamentBloc>().add(const LoadTournaments());
+                      context
+                          .read<TournamentBloc>()
+                          .add(const LoadTournaments());
                       return const Center(child: CircularProgressIndicator());
                     } else if (state is TournamentLoadInProgress) {
                       return const Center(child: CircularProgressIndicator());
@@ -81,8 +84,8 @@ class TournamentScreen extends StatelessWidget {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) =>
-                                        MapWidget(tournaments: state.tournaments),
+                                    builder: (context) => MapWidget(
+                                        tournaments: state.tournaments),
                                   ),
                                 );
                               },
@@ -92,7 +95,8 @@ class TournamentScreen extends StatelessWidget {
                         ],
                       );
                     } else if (state is TournamentLoadFailure) {
-                      return const Center(child: Text('Failed to load tournaments'));
+                      return const Center(
+                          child: Text('Failed to load tournaments'));
                     }
                     return const Center(child: Text('Unknown state'));
                   },
@@ -107,7 +111,7 @@ class TournamentScreen extends StatelessWidget {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-    DateFormat.yMMMd(Localizations.localeOf(context).toString());
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),

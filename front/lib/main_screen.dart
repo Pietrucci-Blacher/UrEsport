@@ -69,7 +69,8 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      create: (context) =>
+          AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: Consumer<NotificationProvider>(
         builder: (context, notificationProvider, child) {
           return BlocBuilder<AuthBloc, AuthState>(
@@ -91,37 +92,40 @@ class MainScreenState extends State<MainScreen> {
                           IconButton(
                             icon: isLoggedIn && _profileImageUrl != null
                                 ? Stack(
-                              children: [
-                                CachedImageWidget(
-                                  url: _profileImageUrl!,
-                                  size: 40,
-                                ),
-                                if (notificationProvider.notificationCount > 0)
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        borderRadius: BorderRadius.circular(6),
+                                    children: [
+                                      CachedImageWidget(
+                                        url: _profileImageUrl!,
+                                        size: 40,
                                       ),
-                                      constraints: const BoxConstraints(
-                                        minWidth: 18,
-                                        minHeight: 18,
-                                      ),
-                                      child: Text(
-                                        '${notificationProvider.notificationCount}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
+                                      if (notificationProvider
+                                              .notificationCount >
+                                          0)
+                                        Positioned(
+                                          right: 0,
+                                          top: 0,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            constraints: const BoxConstraints(
+                                              minWidth: 18,
+                                              minHeight: 18,
+                                            ),
+                                            child: Text(
+                                              '${notificationProvider.notificationCount}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
                                         ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            )
+                                    ],
+                                  )
                                 : const Icon(Icons.person),
                             onPressed: () async {
                               if (isLoggedIn) {
@@ -130,7 +134,8 @@ class MainScreenState extends State<MainScreen> {
                                   MaterialPageRoute(
                                     builder: (context) => ProfileScreen(
                                       authService: widget.authService,
-                                      onProfileImageUpdated: _updateProfileImage,
+                                      onProfileImageUpdated:
+                                          _updateProfileImage,
                                     ),
                                   ),
                                 );
@@ -173,11 +178,12 @@ class MainScreenState extends State<MainScreen> {
                   bottomNavigationBar: kIsWeb
                       ? null
                       : CustomBottomNavigation(
-                    isLoggedIn: isLoggedIn,
-                    selectedIndex: _selectedIndex,
-                    onTap: _onItemTapped,
-                    notificationCount: notificationProvider.notificationCount,
-                  ),
+                          isLoggedIn: isLoggedIn,
+                          selectedIndex: _selectedIndex,
+                          onTap: _onItemTapped,
+                          notificationCount:
+                              notificationProvider.notificationCount,
+                        ),
                 );
               }
             },

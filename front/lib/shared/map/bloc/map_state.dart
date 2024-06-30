@@ -17,7 +17,10 @@ class MapLoaded extends MapState {
   final List<Tournament> tournaments;
   final Set<Marker> mapMarkers;
 
-  const MapLoaded({required this.position, required this.tournaments, required this.mapMarkers});
+  const MapLoaded(
+      {required this.position,
+      required this.tournaments,
+      required this.mapMarkers});
 
   @override
   List<Object?> get props => [position, tournaments, mapMarkers];
@@ -27,7 +30,8 @@ class DirectionsLoaded extends MapState {
   final List<LatLng> polylinePoints;
   final Set<Marker> mapMarkers;
 
-  const DirectionsLoaded({required this.polylinePoints, required this.mapMarkers});
+  const DirectionsLoaded(
+      {required this.polylinePoints, required this.mapMarkers});
 
   @override
   List<Object?> get props => [polylinePoints, mapMarkers];

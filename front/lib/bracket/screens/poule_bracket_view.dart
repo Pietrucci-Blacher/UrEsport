@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:uresport/bracket/models/poule.dart';
 import 'package:uresport/bracket/models/team.dart';
 
-
 class PouleBracketView extends StatefulWidget {
   final List<Poule> poules;
 
   const PouleBracketView({super.key, required this.poules});
 
-  @override PouleBracketViewState createState() => PouleBracketViewState();
+  @override
+  PouleBracketViewState createState() => PouleBracketViewState();
 }
 
 class PouleBracketViewState extends State<PouleBracketView> {
@@ -35,7 +35,8 @@ class PouleBracketViewState extends State<PouleBracketView> {
               child: ExpansionTile(
                 title: Text(
                   poule.name,
-                  style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                  style: const TextStyle(
+                      fontSize: 18, fontWeight: FontWeight.bold),
                 ),
                 children: [
                   SingleChildScrollView(
@@ -67,15 +68,15 @@ class PouleBracketViewState extends State<PouleBracketView> {
         children: [
           TableCell(child: Container()),
           ...teams.map((team) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                team.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          )),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    team.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )),
         ],
       ),
     );
@@ -114,7 +115,8 @@ class PouleBracketViewState extends State<PouleBracketView> {
                 child: Text(
                   matchResults[teams[i].name]?[teams[j].name] ?? 'VS',
                   textAlign: TextAlign.center,
-                  style: const TextStyle(color: Colors.blue, decoration: TextDecoration.underline),
+                  style: const TextStyle(
+                      color: Colors.blue, decoration: TextDecoration.underline),
                 ),
               ),
             ),
@@ -169,8 +171,10 @@ class PouleBracketViewState extends State<PouleBracketView> {
                 setState(() {
                   matchResults[team1.name] = matchResults[team1.name] ?? {};
                   matchResults[team2.name] = matchResults[team2.name] ?? {};
-                  matchResults[team1.name]![team2.name] = '${scoreController1.text} - ${scoreController2.text}';
-                  matchResults[team2.name]![team1.name] = '${scoreController2.text} - ${scoreController1.text}';
+                  matchResults[team1.name]![team2.name] =
+                      '${scoreController1.text} - ${scoreController2.text}';
+                  matchResults[team2.name]![team1.name] =
+                      '${scoreController2.text} - ${scoreController1.text}';
                 });
                 Navigator.of(context).pop();
               },

@@ -40,8 +40,10 @@ void main() async {
         Provider<ITournamentService>.value(value: tournamentService),
         Provider<IGameService>.value(value: gameService),
         Provider<IFriendService>.value(value: friendService),
-        ChangeNotifierProvider<NotificationService>(create: (_) => NotificationService()),
-        ChangeNotifierProvider<NotificationProvider>(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider<NotificationService>(
+            create: (_) => NotificationService()),
+        ChangeNotifierProvider<NotificationProvider>(
+            create: (_) => NotificationProvider()),
         Provider<MapService>.value(value: mapService),
       ],
       child: MyApp(

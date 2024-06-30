@@ -14,5 +14,4 @@ class NotificationService extends ChangeNotifier {
     _notifications.removeAt(index);
     notifyListeners();
   }
-
 }

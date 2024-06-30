@@ -317,7 +317,8 @@ class AuthService implements IAuthService {
   }
 
   @override
-  Future<void> updateUserInfo(int userId, Map<String, dynamic> updatedFields) async {
+  Future<void> updateUserInfo(
+      int userId, Map<String, dynamic> updatedFields) async {
     try {
       final token = await _cacheService.getString('token');
       if (token == null) throw Exception('No token found');

@@ -44,7 +44,8 @@ class TournamentScreen extends StatelessWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const TournamentBracketPage(),
+                                      builder: (context) =>
+                                          const TournamentBracketPage(),
                                     ),
                                   );
                                 },
@@ -55,7 +56,8 @@ class TournamentScreen extends StatelessWidget {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const CustomPoulesPage(),
+                                      builder: (context) =>
+                                          const CustomPoulesPage(),
                                     ),
                                   );
                                 },
@@ -100,7 +102,7 @@ class TournamentScreen extends StatelessWidget {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-    DateFormat.yMMMd(Localizations.localeOf(context).toString());
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),

@@ -10,9 +10,11 @@ class AddFriendPage extends StatefulWidget {
   final int userId;
   final String currentUser;
 
-  const AddFriendPage({super.key, required this.userId, required this.currentUser});
+  const AddFriendPage(
+      {super.key, required this.userId, required this.currentUser});
 
-  @override AddFriendPageState createState() => AddFriendPageState();
+  @override
+  AddFriendPageState createState() => AddFriendPageState();
 }
 
 class AddFriendPageState extends State<AddFriendPage> {
@@ -45,14 +47,21 @@ class AddFriendPageState extends State<AddFriendPage> {
   void filterUsers(String query) {
     setState(() {
       if (query.isNotEmpty) {
-        filteredUsers = allUsers.where((user) => user['firstname']?.toLowerCase().contains(query.toLowerCase()) ?? false).toList();
+        filteredUsers = allUsers
+            .where((user) =>
+                user['firstname']
+                    ?.toLowerCase()
+                    .contains(query.toLowerCase()) ??
+                false)
+            .toList();
       } else {
         filteredUsers = List.from(allUsers);
       }
     });
   }
 
-  void showNotificationToast(BuildContext context, String message, {Color? backgroundColor, Color? textColor}) {
+  void showNotificationToast(BuildContext context, String message,
+      {Color? backgroundColor, Color? textColor}) {
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
@@ -115,7 +124,8 @@ class AddFriendPageState extends State<AddFriendPage> {
                       );
                       showNotificationToast(context, 'Ami ajouté avec succès');
                       Provider.of<NotificationProvider>(context, listen: false)
-                          .addNotification('$currentUser vous a ajouté en ami: ${user['firstname']}');
+                          .addNotification(
+                              '$currentUser vous a ajouté en ami: ${user['firstname']}');
                     } catch (e) {
                       String errorMessage;
                       if (e is DioException) {

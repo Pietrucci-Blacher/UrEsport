@@ -36,7 +36,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           ),
         );
       }).toSet();
-      emit(MapLoaded(position: currentPosition, tournaments: event.tournaments, mapMarkers: markers));
+      emit(MapLoaded(
+          position: currentPosition,
+          tournaments: event.tournaments,
+          mapMarkers: markers));
     } catch (e) {
       emit(MapError(e.toString()));
     }
@@ -58,8 +61,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
   }
 
   void _onShowDirections(ShowDirections event, Emitter<MapState> emit) async {
-    final polylinePoints = await mapService.getDirections(event.origin, event.destination);
-    emit(DirectionsLoaded(polylinePoints: polylinePoints, mapMarkers: const {}));
+    final polylinePoints =
+        await mapService.getDirections(event.origin, event.destination);
+    emit(
+        DirectionsLoaded(polylinePoints: polylinePoints, mapMarkers: const {}));
   }
 
   void _onZoomIn(ZoomIn event, Emitter<MapState> emit) {
@@ -70,7 +75,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     _mapController?.animateCamera(CameraUpdate.zoomOut());
   }
 
-  void _onCenterOnCurrentLocation(CenterOnCurrentLocation event, Emitter<MapState> emit) async {
+  void _onCenterOnCurrentLocation(
+      CenterOnCurrentLocation event, Emitter<MapState> emit) async {
     final currentPosition = await mapService.getCurrentLocation();
     _mapController?.animateCamera(
       CameraUpdate.newCameraPosition(
@@ -92,11 +98,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     const double size = 100.0;
     final Paint paint = Paint()..color = Colors.white;
 
-
     canvas.drawCircle(const Offset(size / 2, size / 2), size / 2, paint);
 
-
-    final TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
+    final TextPainter textPainter =
+        TextPainter(textDirection: TextDirection.ltr);
     const IconData iconData = Icons.emoji_events;
     textPainter.text = TextSpan(
       text: String.fromCharCode(iconData.codePoint),
@@ -114,7 +119,9 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           (size - textPainter.height) / 2,
         ));
 
-    final img = await pictureRecorder.endRecording().toImage(size.toInt(), size.toInt());
+    final img = await pictureRecorder
+        .endRecording()
+        .toImage(size.toInt(), size.toInt());
     final data = await img.toByteData(format: ui.ImageByteFormat.png);
     trophyIcon = BitmapDescriptor.bytes(data!.buffer.asUint8List());
   }
