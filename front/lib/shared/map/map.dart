@@ -207,7 +207,7 @@ class MapWidgetState extends State<MapWidget> {
           destination: PointLatLng(tournament.latitude, tournament.longitude),
           mode: TravelMode.driving,
         ),
-        googleApiKey: dotenv.env['GOOGLE_MAPS_API_KEY']!,
+        googleApiKey: dotenv.env['MAPS_API_KEY']!,
       );
 
       if (polylineResult.points.isNotEmpty) {

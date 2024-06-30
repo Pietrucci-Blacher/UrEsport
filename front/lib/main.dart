@@ -23,7 +23,7 @@ void main() async {
   final gameService = GameService(dio);
   final routeGenerator = RouteGenerator(authService);
   final friendService = FriendService(dio);
-  final googleApiKey = dotenv.env['GOOGLE_MAPS_API_KEY']!;
+  final googleApiKey = dotenv.env['MAPS_API_KEY']!;
   final geolocatorPlatform = GeolocatorPlatform.instance;
   final mapService = MapService(
     dio: dio,
