@@ -24,9 +24,10 @@ if (flutterVersionName == null) {
 }
 
 android {
-    namespace "com.example.uresport"
+    ndkVersion "26.1.10909125"
+    namespace 'fr.uresport'
     compileSdk flutter.compileSdkVersion
-    ndkVersion = "26.1.10909125"
+    ndkVersion "26.1.10909125"
 
     compileOptions {
         coreLibraryDesugaringEnabled true
@@ -35,7 +36,7 @@ android {
     }
 
     kotlinOptions {
-        jvmTarget = '21'
+        jvmTarget = JavaVersion.VERSION_21
     }
 
     sourceSets {
@@ -52,7 +53,10 @@ android {
         multiDexEnabled true
 
         def mapsApiKey = System.env.MAPS_API_KEY ?: findDartDefineValue("MAPS_API_KEY") ?: ""
-        manifestPlaceholders = [MAPS_API_KEY: mapsApiKey]
+        manifestPlaceholders = [
+                MAPS_API_KEY: mapsApiKey,
+                applicationName: "fr.uresport"
+        ]
     }
 
     buildTypes {

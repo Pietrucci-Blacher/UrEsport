@@ -202,9 +202,12 @@ class MapWidgetState extends State<MapWidget> {
       ));
 
       final polylineResult = await _polylinePoints.getRouteBetweenCoordinates(
-        dotenv.env['GOOGLE_MAPS_API_KEY']!,
-        PointLatLng(state.position.latitude, state.position.longitude),
-        PointLatLng(tournament.latitude, tournament.longitude),
+        request: PolylineRequest(
+          origin: PointLatLng(state.position.latitude, state.position.longitude),
+          destination: PointLatLng(tournament.latitude, tournament.longitude),
+          mode: TravelMode.driving,
+        ),
+        googleApiKey: dotenv.env['GOOGLE_MAPS_API_KEY']!,
       );
 
       if (polylineResult.points.isNotEmpty) {
@@ -222,6 +225,7 @@ class MapWidgetState extends State<MapWidget> {
       }
     }
   }
+
 
   void _exportDirections(Tournament tournament) async {
     final String googleMapsUrl = "https://www.google.com/maps/dir/?api=1&destination=${tournament.latitude},${tournament.longitude}";
