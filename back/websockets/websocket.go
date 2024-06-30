@@ -24,16 +24,20 @@ func RegisterWebsocket(r *gin.Engine) {
 
 func connect(client *services.Client, c *gin.Context) error {
 	user, ok := c.Get("connectedUser")
-	if ok {
-		client.Set("user", user.(models.User))
-	}
 
 	client.Set("logged", ok)
 
 	if ok {
+		user := user.(models.User)
+		client.Set("user", user)
+
+		if err := addClientToTournamentRoom(client, user); err != nil {
+			return err
+		}
+
 		fmt.Printf("Client %s connected, name %s, len %d\n",
 			client.ID,
-			user.(models.User).Username,
+			user.Username,
 			len(client.Ws.GetClients()),
 		)
 	} else {
@@ -54,11 +58,9 @@ func disconnect(client *services.Client) error {
 	var user models.User
 
 	logged := client.Get("logged").(bool)
-	if logged {
-		user = client.Get("user").(models.User)
-	}
 
 	if logged {
+		user = client.Get("user").(models.User)
 		fmt.Printf("Client %s disconnected, name %s, len %d\n",
 			client.ID,
 			user.Username,
@@ -94,4 +96,25 @@ func PingTest(client *services.Client, msg any) error {
 	}
 
 	return client.Emit("pong", msg)
+}
+
+func addClientToTournamentRoom(client *services.Client, user models.User) error {
+	OwnerTournaments, err := models.FindTournamentsByUserID(user.ID)
+	if err != nil {
+		return err
+	}
+
+	userTeamInTournament, err := user.FindTournaments()
+	if err != nil {
+		return err
+	}
+
+	tournaments := append(OwnerTournaments, userTeamInTournament...)
+
+	for _, tournament := range tournaments {
+		roomName := fmt.Sprintf("tournament:%d", tournament.ID)
+		client.Ws.Room(roomName).AddClient(client)
+	}
+
+	return nil
 }
