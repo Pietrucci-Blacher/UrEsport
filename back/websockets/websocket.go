@@ -23,29 +23,29 @@ func RegisterWebsocket(r *gin.Engine) {
 }
 
 func connect(client *services.Client, c *gin.Context) error {
-	user, ok := c.Get("connectedUser")
-
+	connectedUser, ok := c.Get("connectedUser")
 	client.Set("logged", ok)
 
-	if ok {
-		user := user.(models.User)
-		client.Set("user", user)
-
-		if err := addClientToTournamentRoom(client, user); err != nil {
-			return err
-		}
-
-		fmt.Printf("Client %s connected, name %s, len %d\n",
-			client.ID,
-			user.Username,
-			len(client.Ws.GetClients()),
-		)
-	} else {
+	if !ok {
 		fmt.Printf("Client %s connected, len %d\n",
 			client.ID,
 			len(client.Ws.GetClients()),
 		)
+		return nil
 	}
+
+	user := connectedUser.(models.User)
+	client.Set("user", user)
+
+	if err := addClientToTournamentRoom(client); err != nil {
+		return err
+	}
+
+	fmt.Printf("Client %s connected, name %s, len %d\n",
+		client.ID,
+		user.Username,
+		len(client.Ws.GetClients()),
+	)
 
 	if err := client.Emit("connected", nil); err != nil {
 		return err
@@ -55,23 +55,22 @@ func connect(client *services.Client, c *gin.Context) error {
 }
 
 func disconnect(client *services.Client) error {
-	var user models.User
-
 	logged := client.Get("logged").(bool)
 
-	if logged {
-		user = client.Get("user").(models.User)
-		fmt.Printf("Client %s disconnected, name %s, len %d\n",
-			client.ID,
-			user.Username,
-			len(client.Ws.GetClients()),
-		)
-	} else {
+	if !logged {
 		fmt.Printf("Client %s disconnected, len %d\n",
 			client.ID,
 			len(client.Ws.GetClients()),
 		)
+		return nil
 	}
+
+	user := client.Get("user").(models.User)
+	fmt.Printf("Client %s disconnected, name %s, len %d\n",
+		client.ID,
+		user.Username,
+		len(client.Ws.GetClients()),
+	)
 
 	return nil
 }
@@ -98,7 +97,8 @@ func PingTest(client *services.Client, msg any) error {
 	return client.Emit("pong", msg)
 }
 
-func addClientToTournamentRoom(client *services.Client, user models.User) error {
+func addClientToTournamentRoom(client *services.Client) error {
+	user := client.Get("user").(models.User)
 	OwnerTournaments, err := models.FindTournamentsByUserID(user.ID)
 	if err != nil {
 		return err
