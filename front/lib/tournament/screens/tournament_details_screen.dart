@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -199,31 +200,43 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
 
     try {
-      // Vérifiez d'abord si l'utilisateur a déjà rejoint le tournoi
-      final hasJoined = await tournamentService.hasJoinedTournament(tournamentId, 'username'); // Remplacez 'username' par l'ID ou le nom d'utilisateur réel
-
-      if (hasJoined) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Vous avez déjà rejoint le tournoi')),
-        );
-        setState(() {
-          _hasJoined = true;
-        });
-      } else {
-        await tournamentService.joinTournament(tournamentId, teamId);
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Vous avez bien rejoint le tournoi')),
-        );
-        setState(() {
-          _hasJoined = true;
-        });
-      }
-    } catch (e) {
+      // Appelez la méthode joinTournament du service
+      await tournamentService.joinTournament(tournamentId, teamId);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Erreur lors du join')),
+        const SnackBar(content: Text('Vous avez bien rejoint le tournoi')),
       );
+      setState(() {
+        _hasJoined = true;
+      });
+    } catch (e) {
+      if (e is DioException) {
+        if (e.response != null && e.response?.data != null) {
+          final errorMessage = e.response?.data['error'];
+          if (errorMessage == 'Team already in this tournament') {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Vous avez déjà rejoint le tournoi')),
+            );
+            setState(() {
+              _hasJoined = true;
+            });
+          } else {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Erreur lors du join: $errorMessage')),
+            );
+          }
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Erreur lors du join: ${e.message}')),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Erreur pour rejoindre le tournoi')),
+        );
+      }
     }
   }
+
 
 
   Future<void> _sendJoinRequest(BuildContext context, int tournamentId, int teamId) async {
