@@ -134,9 +134,24 @@ class TournamentScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  tournament.name,
-                  style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      tournament.name,
+                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    if (tournament.isPrivate)
+                      const Icon(
+                        Icons.lock,
+                        color: Colors.red,
+                      )
+                    else
+                      const Icon(
+                        Icons.lock_open,
+                        color: Colors.green,
+                      ),
+                  ],
                 ),
                 const SizedBox(height: 10),
                 Text(
@@ -203,7 +218,6 @@ class TournamentScreen extends StatelessWidget {
                                 end: Alignment.bottomRight,
                               ),
                             ),
-
                             const SizedBox(width: 5),
                             Text(
                               '${tournament.upvotes}',

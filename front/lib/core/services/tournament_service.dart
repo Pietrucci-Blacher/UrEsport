@@ -9,6 +9,8 @@ abstract class ITournamentService {
   Future<void> inviteUserToTournament(String tournamentId, String username);
   Future<void> upvoteTournament(int tournamentId, String username);
   Future<bool> hasUpvoted(int tournamentId, String username);
+  Future<void> joinTournament(int tournamentId, int teamId);
+  Future<bool> hasJoinedTournament(int tournamentId, String username);
 }
 
 class TournamentService implements ITournamentService {
@@ -169,4 +171,98 @@ class TournamentService implements ITournamentService {
       }
     }
   }
+  @override
+  Future<void> joinTournament(int tournamentId, int teamId) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    final url = "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
+
+    try {
+      final response = await _dio.post(
+        url,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500; // Accepter les codes de statut < 500
+          },
+        ),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        // Requête réussie
+      } else if (response.statusCode == 401) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Unauthorized',
+          type: DioExceptionType.badResponse,
+        );
+      } else if (response.statusCode == 404) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Tournament not found',
+          type: DioExceptionType.badResponse,
+        );
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to join tournament',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
+  @override
+  Future<bool> hasJoinedTournament(int tournamentId, String username) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    final url = "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/joined/$username";
+
+    try {
+      final response = await _dio.get(
+        url,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500; // Accepter les codes de statut < 500
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return response.data['joined'] as bool;
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to check if joined tournament',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
 }

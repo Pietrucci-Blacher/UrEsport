@@ -171,6 +171,13 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsTeamOwner(),
 				JoinTournament,
 			)
+			tournaments.GET("/:tournament/team/:team/join",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				HasJoinTournament,
+			)
 			tournaments.POST("/:tournament/invite",
 				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.Tournament]("tournament"),

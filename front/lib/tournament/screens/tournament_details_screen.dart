@@ -4,75 +4,232 @@ import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 
-class TournamentDetailsScreen extends StatelessWidget {
+class TournamentDetailsScreen extends StatefulWidget {
   final Tournament tournament;
 
   const TournamentDetailsScreen({super.key, required this.tournament});
 
   @override
+  _TournamentDetailsScreenState createState() => _TournamentDetailsScreenState();
+}
+
+class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
+  bool _hasJoined = false;
+  bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkIfJoined();
+  }
+
+  Future<void> _checkIfJoined() async {
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    try {
+      final hasJoined = await tournamentService.hasJoinedTournament(widget.tournament.id, 'username'); // Remplacez 'username' par l'ID ou le nom d'utilisateur réel
+      setState(() {
+        _hasJoined = hasJoined;
+        _isLoading = false;
+      });
+    } catch (e) {
+      print('Error checking if joined: $e');
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
     final DateFormat dateFormat = DateFormat.yMMMd();
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(tournament.name),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Hero(
-                tag: 'tournamentHero${tournament.id}',
-                child: Image.network(
-                  tournament.image,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                  height: 200,
+    return WillPopScope(
+      onWillPop: () async {
+        await _checkIfJoined();
+        return true;
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.tournament.name),
+        ),
+        body: _isLoading
+            ? Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Hero(
+                  tag: 'tournamentHero${widget.tournament.id}',
+                  child: Image.network(
+                    widget.tournament.image,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 200,
+                  ),
                 ),
-              ),
-              const SizedBox(height: 16),
-              Text(
-                tournament.name,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Description:',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                tournament.description,
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Location: ${tournament.location}',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Start Date: ${dateFormat.format(tournament.startDate)}',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'End Date: ${dateFormat.format(tournament.endDate)}',
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const SizedBox(height: 8),
-              Text(
-                'Participants:',
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
-              const SizedBox(height: 4),
-              UpvoteButton(tournament: tournament), // Utiliser le widget personnalisé
-            ],
+                const SizedBox(height: 16),
+                Text(
+                  widget.tournament.name,
+                  style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Description:',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  widget.tournament.description,
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 8),
+                Text(
+                  'Location: ${widget.tournament.location}',
+                  style: Theme.of(context).textTheme.titleMedium,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'Start Date: ${dateFormat.format(widget.tournament.startDate)}',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  'End Date: ${dateFormat.format(widget.tournament.endDate)}',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+                const SizedBox(height: 8),
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Upvotes:',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          UpvoteButton(tournament: widget.tournament), // Utiliser le widget personnalisé
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'Participants:',
+                            style: Theme.of(context).textTheme.titleMedium,
+                          ),
+                          const SizedBox(height: 4),
+                          Column(
+                            children: widget.tournament.teams
+                                .take(4) // Limitez à 3-4 équipes
+                                .map((team) => Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    backgroundImage: NetworkImage(team.owner.username), // Assuming owner's username is URL for the logo
+                                    radius: 20,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    team.name,
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ],
+                              ),
+                            ))
+                                .toList(),
+                          ),
+                          const SizedBox(height: 8),
+                          GestureDetector(
+                            onTap: () {
+                              // Action à réaliser lors du clic sur le texte
+                            },
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Text(
+                                  'Voir tous les participants',
+                                  style: TextStyle(
+                                    color: Theme.of(context).primaryColor, // Couleur du texte cliquable
+                                    decoration: TextDecoration.underline, // Souligner le texte
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Icon(
+                                  Icons.arrow_forward,
+                                  color: Theme.of(context).primaryColor, // Couleur de l'icône
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                if (!_hasJoined)
+                  ElevatedButton(
+                    onPressed: () {
+                      if (widget.tournament.isPrivate) {
+                        _sendJoinRequest(context, widget.tournament.id, 1); // Remplacez 1 par l'ID de l'équipe réelle
+                      } else {
+                        _joinTournament(context, widget.tournament.id, 1); // Remplacez 1 par l'ID de l'équipe réelle
+                      }
+                    },
+                    child: Text(widget.tournament.isPrivate ? 'Envoyer demande pour rejoindre' : 'Rejoindre le tournoi'),
+                  ),
+              ],
+            ),
           ),
         ),
       ),
+    );
+  }
+
+  Future<void> _joinTournament(BuildContext context, int tournamentId, int teamId) async {
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+
+    try {
+      // Vérifiez d'abord si l'utilisateur a déjà rejoint le tournoi
+      final hasJoined = await tournamentService.hasJoinedTournament(tournamentId, 'username'); // Remplacez 'username' par l'ID ou le nom d'utilisateur réel
+
+      if (hasJoined) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Vous avez déjà rejoint le tournoi')),
+        );
+        setState(() {
+          _hasJoined = true;
+        });
+      } else {
+        await tournamentService.joinTournament(tournamentId, teamId);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Vous avez bien rejoint le tournoi')),
+        );
+        setState(() {
+          _hasJoined = true;
+        });
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Erreur lors du join')),
+      );
+    }
+  }
+
+
+  Future<void> _sendJoinRequest(BuildContext context, int tournamentId, int teamId) async {
+    // Implémentez la logique pour envoyer une demande de rejoindre le tournoi
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text('Demande pour rejoindre envoyée')),
     );
   }
 }

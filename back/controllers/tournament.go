@@ -242,6 +242,47 @@ func JoinTournament(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+// HasJoinTournament godoc
+//
+//	@Summary		join team you own to a tournament
+//	@Description	join team you own to a tournament
+//	@Tags			tournament
+//	@Param			tournament	path	int	true	"Tournament ID"
+//	@Param			team	path	int	true	"Team ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{tournament}/team/{team}/join [post]
+func HasJoinTournament(c *gin.Context) {
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+	team, _ := c.MustGet("team").(*models.Team)
+
+	if tournament.Private {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "This tournament is private"})
+		return
+	}
+
+	if len(team.Members) != tournament.NbPlayer {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": fmt.Sprintf("Team must contain %d members", tournament.NbPlayer),
+		})
+		return
+	}
+
+	if tournament.HasTeam(*team) {
+		c.JSON(http.StatusConflict, gin.H{"error": "Team already in this tournament"})
+		return
+	}
+
+	if err := tournament.AddTeam(*team); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusNoContent, nil)
+}
+
 // LeaveTournament godoc
 //
 //	@Summary		leave team you own from a tournament
