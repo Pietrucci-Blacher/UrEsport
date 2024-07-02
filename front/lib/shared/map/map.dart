@@ -1,16 +1,16 @@
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/shared/map/bloc/map_bloc.dart';
 import 'package:uresport/shared/map/bloc/map_event.dart';
 import 'package:uresport/shared/map/bloc/map_state.dart';
-import 'package:uresport/core/services/map_service.dart';
-import 'dart:ui' as ui;
-import 'package:speech_to_text/speech_to_text.dart' as stt;
-import 'package:url_launcher/url_launcher.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class MapWidget extends StatefulWidget {
   final List<Tournament> tournaments;
@@ -60,7 +60,8 @@ class MapWidgetState extends State<MapWidget> {
 
     canvas.drawCircle(const Offset(size / 2, size / 2), size / 2, paint);
 
-    final TextPainter textPainter = TextPainter(textDirection: TextDirection.ltr);
+    final TextPainter textPainter =
+        TextPainter(textDirection: TextDirection.ltr);
     const IconData iconData = Icons.emoji_events;
     textPainter.text = TextSpan(
       text: String.fromCharCode(iconData.codePoint),
@@ -78,7 +79,9 @@ class MapWidgetState extends State<MapWidget> {
           (size - textPainter.height) / 2,
         ));
 
-    final img = await pictureRecorder.endRecording().toImage(size.toInt(), size.toInt());
+    final img = await pictureRecorder
+        .endRecording()
+        .toImage(size.toInt(), size.toInt());
     final data = await img.toByteData(format: ui.ImageByteFormat.png);
     return BitmapDescriptor.bytes(data!.buffer.asUint8List());
   }
@@ -120,7 +123,8 @@ class MapWidgetState extends State<MapWidget> {
                         top: 16,
                         left: 16,
                         child: IconButton(
-                          icon: const Icon(Icons.arrow_back, color: Colors.white),
+                          icon:
+                              const Icon(Icons.arrow_back, color: Colors.white),
                           onPressed: () {
                             Navigator.pop(context);
                           },
@@ -168,7 +172,7 @@ class MapWidgetState extends State<MapWidget> {
                                 foregroundColor: Colors.white,
                               ),
                             ),
-                            ElevatedButton.icon(
+/*                            ElevatedButton.icon(
                               onPressed: () {
                                 _exportDirections(tournament);
                               },
@@ -178,7 +182,7 @@ class MapWidgetState extends State<MapWidget> {
                                 backgroundColor: Colors.green,
                                 foregroundColor: Colors.white,
                               ),
-                            ),
+                            ),*/
                           ],
                         ),
                       ],
@@ -197,13 +201,14 @@ class MapWidgetState extends State<MapWidget> {
     final state = context.read<MapBloc>().state;
     if (state is MapLoaded) {
       context.read<MapBloc>().add(ShowDirections(
-        LatLng(state.position.latitude, state.position.longitude),
-        LatLng(tournament.latitude, tournament.longitude),
-      ));
+            LatLng(state.position.latitude, state.position.longitude),
+            LatLng(tournament.latitude, tournament.longitude),
+          ));
 
       final polylineResult = await _polylinePoints.getRouteBetweenCoordinates(
         request: PolylineRequest(
-          origin: PointLatLng(state.position.latitude, state.position.longitude),
+          origin:
+              PointLatLng(state.position.latitude, state.position.longitude),
           destination: PointLatLng(tournament.latitude, tournament.longitude),
           mode: TravelMode.driving,
         ),
@@ -226,15 +231,16 @@ class MapWidgetState extends State<MapWidget> {
     }
   }
 
-
-  void _exportDirections(Tournament tournament) async {
-    final String googleMapsUrl = "https://www.google.com/maps/dir/?api=1&destination=${tournament.latitude},${tournament.longitude}";
-    if (await canLaunchUrl(Uri.parse(googleMapsUrl))) {
-      await launchUrl(Uri.parse(googleMapsUrl));
+/*  void _exportDirections(Tournament tournament) async {
+    final String googleMapsUrl =
+        "https://www.google.com/maps/dir/?api=1&destination=${tournament.latitude},${tournament.longitude}";
+    final uri = Uri.parse(googleMapsUrl);
+    if (await canLaunch(uri.toString())) {
+      await launch(uri.toString());
     } else {
       throw 'Could not launch $googleMapsUrl';
     }
-  }
+  }*/
 
   void _startListening() async {
     bool available = await _speechToText.initialize(
@@ -299,14 +305,14 @@ class MapWidgetState extends State<MapWidget> {
           ),
           leading: _searching
               ? IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              setState(() {
-                _searching = false;
-                _searchController.clear();
-              });
-            },
-          )
+                  icon: const Icon(Icons.arrow_back),
+                  onPressed: () {
+                    setState(() {
+                      _searching = false;
+                      _searchController.clear();
+                    });
+                  },
+                )
               : null,
         ),
         body: BlocConsumer<MapBloc, MapState>(
@@ -315,13 +321,15 @@ class MapWidgetState extends State<MapWidget> {
               _mapController?.animateCamera(
                 CameraUpdate.newCameraPosition(
                   CameraPosition(
-                    target: LatLng(state.position.latitude, state.position.longitude),
+                    target: LatLng(
+                        state.position.latitude, state.position.longitude),
                     zoom: 14.0,
                   ),
                 ),
               );
             } else if (state is DirectionsLoaded) {
-              context.read<MapBloc>().add(UpdateMarkers(widget.tournaments, _showTournamentDetails));
+              context.read<MapBloc>().add(
+                  UpdateMarkers(widget.tournaments, _showTournamentDetails));
             }
           },
           builder: (context, state) {
@@ -331,15 +339,17 @@ class MapWidgetState extends State<MapWidget> {
                   GoogleMap(
                     markers: state is MapLoaded
                         ? state.mapMarkers.map((marker) {
-                      return marker.copyWith(
-                        iconParam: _customMarker ?? BitmapDescriptor.defaultMarker,
-                      );
-                    }).toSet()
+                            return marker.copyWith(
+                              iconParam: _customMarker ??
+                                  BitmapDescriptor.defaultMarker,
+                            );
+                          }).toSet()
                         : (state as DirectionsLoaded).mapMarkers.map((marker) {
-                      return marker.copyWith(
-                        iconParam: _customMarker ?? BitmapDescriptor.defaultMarker,
-                      );
-                    }).toSet(),
+                            return marker.copyWith(
+                              iconParam: _customMarker ??
+                                  BitmapDescriptor.defaultMarker,
+                            );
+                          }).toSet(),
                     polylines: _polyline != null ? {_polyline!} : {},
                     initialCameraPosition: const CameraPosition(
                       target: LatLng(0, 0),
@@ -352,7 +362,8 @@ class MapWidgetState extends State<MapWidget> {
                         _mapController?.animateCamera(
                           CameraUpdate.newCameraPosition(
                             CameraPosition(
-                              target: LatLng(state.position.latitude, state.position.longitude),
+                              target: LatLng(state.position.latitude,
+                                  state.position.longitude),
                               zoom: 14.0,
                             ),
                           ),
@@ -372,34 +383,44 @@ class MapWidgetState extends State<MapWidget> {
                             padding: const EdgeInsets.all(8.0),
                             child: Card(
                               child: Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 8.0),
                                 child: Column(
                                   children: [
                                     Expanded(
                                       child: ListView.builder(
                                         shrinkWrap: true,
-                                        itemCount: _searchController.text.isEmpty
-                                            ? _recentSearches.length
-                                            : _filteredTournaments.length,
+                                        itemCount:
+                                            _searchController.text.isEmpty
+                                                ? _recentSearches.length
+                                                : _filteredTournaments.length,
                                         itemBuilder: (context, index) {
                                           if (_searchController.text.isEmpty) {
                                             return ListTile(
-                                              leading: const Icon(Icons.history),
-                                              title: Text(_recentSearches[index]),
+                                              leading:
+                                                  const Icon(Icons.history),
+                                              title:
+                                                  Text(_recentSearches[index]),
                                               onTap: () {
-                                                _searchController.text = _recentSearches[index];
-                                                _filterTournaments(_recentSearches[index]);
+                                                _searchController.text =
+                                                    _recentSearches[index];
+                                                _filterTournaments(
+                                                    _recentSearches[index]);
                                               },
                                             );
                                           } else {
-                                            final tournament = _filteredTournaments[index];
+                                            final tournament =
+                                                _filteredTournaments[index];
                                             return ListTile(
                                               title: Text(tournament.name),
                                               onTap: () {
                                                 _mapController?.animateCamera(
-                                                  CameraUpdate.newCameraPosition(
+                                                  CameraUpdate
+                                                      .newCameraPosition(
                                                     CameraPosition(
-                                                      target: LatLng(tournament.latitude, tournament.longitude),
+                                                      target: LatLng(
+                                                          tournament.latitude,
+                                                          tournament.longitude),
                                                       zoom: 14.0,
                                                     ),
                                                   ),
@@ -407,7 +428,8 @@ class MapWidgetState extends State<MapWidget> {
                                                 setState(() {
                                                   _searching = false;
                                                 });
-                                                _showTournamentDetails(tournament);
+                                                _showTournamentDetails(
+                                                    tournament);
                                               },
                                             );
                                           }
@@ -433,22 +455,29 @@ class MapWidgetState extends State<MapWidget> {
                           children: [
                             FloatingActionButton(
                               heroTag: 'zoomInButton',
-                              onPressed: () => context.read<MapBloc>().add(ZoomIn()),
-                              materialTapTargetSize: MaterialTapTargetSize.padded,
+                              onPressed: () =>
+                                  context.read<MapBloc>().add(ZoomIn()),
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.padded,
                               child: const Icon(Icons.zoom_in),
                             ),
                             const SizedBox(height: 10),
                             FloatingActionButton(
                               heroTag: 'zoomOutButton',
-                              onPressed: () => context.read<MapBloc>().add(ZoomOut()),
-                              materialTapTargetSize: MaterialTapTargetSize.padded,
+                              onPressed: () =>
+                                  context.read<MapBloc>().add(ZoomOut()),
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.padded,
                               child: const Icon(Icons.zoom_out),
                             ),
                             const SizedBox(height: 10),
                             FloatingActionButton(
                               heroTag: 'locationButton',
-                              onPressed: () => context.read<MapBloc>().add(CenterOnCurrentLocation()),
-                              materialTapTargetSize: MaterialTapTargetSize.padded,
+                              onPressed: () => context
+                                  .read<MapBloc>()
+                                  .add(CenterOnCurrentLocation()),
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.padded,
                               child: const Icon(Icons.my_location),
                             ),
                           ],
