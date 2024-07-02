@@ -63,11 +63,14 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
               children: [
                 Hero(
                   tag: 'tournamentHero${widget.tournament.id}',
-                  child: Image.network(
-                    widget.tournament.image,
-                    fit: BoxFit.cover,
-                    width: double.infinity,
-                    height: 200,
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(12.0),
+                    child: Image.network(
+                      widget.tournament.image,
+                      fit: BoxFit.cover,
+                      width: double.infinity,
+                      height: 200,
+                    ),
                   ),
                 ),
                 const SizedBox(height: 16),
@@ -100,7 +103,9 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                   'End Date: ${dateFormat.format(widget.tournament.endDate)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
-                const SizedBox(height: 8),
+                const SizedBox(height: 16),
+                Divider(),
+                const SizedBox(height: 16),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -128,25 +133,49 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                           ),
                           const SizedBox(height: 4),
                           Column(
-                            children: widget.tournament.teams
-                                .take(4) // Limitez à 3-4 équipes
-                                .map((team) => Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4.0),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    backgroundImage: NetworkImage(team.owner.username), // Assuming owner's username is URL for the logo
-                                    radius: 20,
+                            children: List.generate(5, (index) {
+                              if (index < widget.tournament.teams.length) {
+                                final team = widget.tournament.teams[index];
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 16,
+                                        backgroundColor: Colors.blueAccent,
+                                        child: Text(
+                                          team.name[0],
+                                          style: TextStyle(color: Colors.white),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        team.name,
+                                        style: Theme.of(context).textTheme.bodyLarge,
+                                      ),
+                                    ],
                                   ),
-                                  const SizedBox(width: 8),
-                                  Text(
-                                    team.name,
-                                    style: Theme.of(context).textTheme.bodyLarge,
+                                );
+                              } else {
+                                return Padding(
+                                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                                  child: Row(
+                                    children: [
+                                      CircleAvatar(
+                                        radius: 16,
+                                        backgroundColor: Colors.grey,
+                                        child: Icon(Icons.person, color: Colors.white),
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Text(
+                                        'Participant ${index + 1}',
+                                        style: Theme.of(context).textTheme.bodyLarge,
+                                      ),
+                                    ],
                                   ),
-                                ],
-                              ),
-                            ))
-                                .toList(),
+                                );
+                              }
+                            }),
                           ),
                           const SizedBox(height: 8),
                           GestureDetector(
@@ -178,15 +207,23 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                 ),
                 const SizedBox(height: 16),
                 if (!_hasJoined)
-                  ElevatedButton(
-                    onPressed: () {
-                      if (widget.tournament.isPrivate) {
-                        _sendJoinRequest(context, widget.tournament.id, 1); // Remplacez 1 par l'ID de l'équipe réelle
-                      } else {
-                        _joinTournament(context, widget.tournament.id, 1); // Remplacez 1 par l'ID de l'équipe réelle
-                      }
-                    },
-                    child: Text(widget.tournament.isPrivate ? 'Envoyer demande pour rejoindre' : 'Rejoindre le tournoi'),
+                  Center(
+                    child: ElevatedButton(
+                      onPressed: () {
+                        if (widget.tournament.isPrivate) {
+                          _sendJoinRequest(context, widget.tournament.id, 1); // Remplacez 1 par l'ID de l'équipe réelle
+                        } else {
+                          _joinTournament(context, widget.tournament.id, 1); // Remplacez 1 par l'ID de l'équipe réelle
+                        }
+                      },
+                      style: ElevatedButton.styleFrom(
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                      ),
+                      child: Text(widget.tournament.isPrivate ? 'Envoyer demande pour rejoindre' : 'Rejoindre le tournoi'),
+                    ),
                   ),
               ],
             ),
@@ -236,8 +273,6 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
       }
     }
   }
-
-
 
   Future<void> _sendJoinRequest(BuildContext context, int tournamentId, int teamId) async {
     // Implémentez la logique pour envoyer une demande de rejoindre le tournoi
