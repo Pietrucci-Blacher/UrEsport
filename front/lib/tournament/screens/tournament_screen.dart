@@ -213,7 +213,7 @@ class TournamentScreen extends StatelessWidget {
                                   Colors.orange,
                                   Colors.yellow,
                                 ],
-                                stops: [0.0, 0.3, 0.6, 1.0],
+                                stops: const [0.0, 0.3, 0.6, 1.0],
                                 begin: Alignment.topLeft,
                                 end: Alignment.bottomRight,
                               ),

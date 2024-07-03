@@ -46,7 +46,7 @@ class BracketContent extends StatefulWidget {
   final List<List<Team>> teams;
   final List<String> roundNames;
 
-  const BracketContent({required this.teams, required this.roundNames});
+  const BracketContent({super.key, required this.teams, required this.roundNames});
 
   @override
   _BracketContentState createState() => _BracketContentState();

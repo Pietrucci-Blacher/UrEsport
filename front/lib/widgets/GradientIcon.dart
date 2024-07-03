@@ -6,11 +6,11 @@ class GradientIcon extends StatelessWidget {
   final Gradient gradient;
 
   const GradientIcon({
-    Key? key,
+    super.key,
     required this.icon,
     required this.size,
     required this.gradient,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

@@ -45,7 +45,7 @@ class CustomPoulesPage extends StatelessWidget {
 class TournamentPoules extends StatelessWidget {
   final List<Poule> poules;
 
-  const TournamentPoules({required this.poules});
+  const TournamentPoules({super.key, required this.poules});
 
   @override
   Widget build(BuildContext context) {
