@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-  class NotificationProvider with ChangeNotifier {
+class NotificationProvider with ChangeNotifier {
   final List<String> _notifications = [];
 
   List<String> get notifications => _notifications;

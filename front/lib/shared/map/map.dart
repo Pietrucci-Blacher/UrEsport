@@ -1,10 +1,6 @@
-import 'dart:ui' as ui;
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/map_service.dart';
@@ -12,33 +8,28 @@ import 'package:uresport/shared/map/bloc/map_bloc.dart';
 import 'package:uresport/shared/map/bloc/map_event.dart';
 import 'package:uresport/shared/map/bloc/map_state.dart';
 
-class MapWidget extends StatefulWidget {
+class TournamentMapWidget extends StatefulWidget {
   final List<Tournament> tournaments;
 
-  const MapWidget({super.key, required this.tournaments});
+  const TournamentMapWidget({super.key, required this.tournaments});
 
   @override
-  MapWidgetState createState() => MapWidgetState();
+  TournamentMapWidgetState createState() => TournamentMapWidgetState();
 }
 
-class MapWidgetState extends State<MapWidget> {
-  GoogleMapController? _mapController;
+class TournamentMapWidgetState extends State<TournamentMapWidget> {
+  late MapboxMap _mapboxMap;
   bool _searching = false;
   final TextEditingController _searchController = TextEditingController();
   List<Tournament> _filteredTournaments = [];
-  BitmapDescriptor? _customMarker;
   final stt.SpeechToText _speechToText = stt.SpeechToText();
   bool _isListening = false;
   final List<String> _recentSearches = ["La Trésor", "Gymnase René Rousseau"];
-  final PolylinePoints _polylinePoints = PolylinePoints();
-  List<LatLng> _polylineCoordinates = [];
-  Polyline? _polyline;
 
   @override
   void initState() {
     super.initState();
     _filteredTournaments = widget.tournaments;
-    _loadCustomMarker();
   }
 
   @override
@@ -47,43 +38,13 @@ class MapWidgetState extends State<MapWidget> {
     super.dispose();
   }
 
-  void _loadCustomMarker() async {
-    _customMarker = await _createCustomMarkerBitmap();
-    setState(() {});
-  }
-
-  Future<BitmapDescriptor> _createCustomMarkerBitmap() async {
-    final ui.PictureRecorder pictureRecorder = ui.PictureRecorder();
-    final Canvas canvas = Canvas(pictureRecorder);
-    const double size = 100.0;
-    final Paint paint = Paint()..color = Colors.white;
-
-    canvas.drawCircle(const Offset(size / 2, size / 2), size / 2, paint);
-
-    final TextPainter textPainter =
-        TextPainter(textDirection: TextDirection.ltr);
-    const IconData iconData = Icons.emoji_events;
-    textPainter.text = TextSpan(
-      text: String.fromCharCode(iconData.codePoint),
-      style: TextStyle(
-        fontSize: size / 2,
-        fontFamily: iconData.fontFamily,
-        color: Colors.yellow,
-      ),
-    );
-    textPainter.layout();
-    textPainter.paint(
-        canvas,
-        Offset(
-          (size - textPainter.width) / 2,
-          (size - textPainter.height) / 2,
-        ));
-
-    final img = await pictureRecorder
-        .endRecording()
-        .toImage(size.toInt(), size.toInt());
-    final data = await img.toByteData(format: ui.ImageByteFormat.png);
-    return BitmapDescriptor.bytes(data!.buffer.asUint8List());
+  bool _isMapInitialized() {
+    try {
+      _mapboxMap.toString();
+      return true;
+    } catch (_) {
+      return false;
+    }
   }
 
   void _filterTournaments(String query) {
@@ -172,17 +133,6 @@ class MapWidgetState extends State<MapWidget> {
                                 foregroundColor: Colors.white,
                               ),
                             ),
-/*                            ElevatedButton.icon(
-                              onPressed: () {
-                                _exportDirections(tournament);
-                              },
-                              icon: const Icon(Icons.share),
-                              label: const Text('Exporter'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.green,
-                                foregroundColor: Colors.white,
-                              ),
-                            ),*/
                           ],
                         ),
                       ],
@@ -199,48 +149,15 @@ class MapWidgetState extends State<MapWidget> {
 
   void _startDirections(Tournament tournament) async {
     final state = context.read<MapBloc>().state;
-    if (state is MapLoaded) {
+    if (state is MapLoaded && _isMapInitialized()) {
       context.read<MapBloc>().add(ShowDirections(
-            LatLng(state.position.latitude, state.position.longitude),
-            LatLng(tournament.latitude, tournament.longitude),
+            state.position,
+            Point(
+              coordinates: Position(tournament.longitude, tournament.latitude),
+            ),
           ));
-
-      final polylineResult = await _polylinePoints.getRouteBetweenCoordinates(
-        request: PolylineRequest(
-          origin:
-              PointLatLng(state.position.latitude, state.position.longitude),
-          destination: PointLatLng(tournament.latitude, tournament.longitude),
-          mode: TravelMode.driving,
-        ),
-        googleApiKey: dotenv.env['MAPS_API_KEY']!,
-      );
-
-      if (polylineResult.points.isNotEmpty) {
-        setState(() {
-          _polylineCoordinates = polylineResult.points
-              .map((point) => LatLng(point.latitude, point.longitude))
-              .toList();
-          _polyline = Polyline(
-            polylineId: const PolylineId('directions'),
-            points: _polylineCoordinates,
-            color: Colors.blue,
-            width: 5,
-          );
-        });
-      }
     }
   }
-
-/*  void _exportDirections(Tournament tournament) async {
-    final String googleMapsUrl =
-        "https://www.google.com/maps/dir/?api=1&destination=${tournament.latitude},${tournament.longitude}";
-    final uri = Uri.parse(googleMapsUrl);
-    if (await canLaunch(uri.toString())) {
-      await launch(uri.toString());
-    } else {
-      throw 'Could not launch $googleMapsUrl';
-    }
-  }*/
 
   void _startListening() async {
     bool available = await _speechToText.initialize(
@@ -318,15 +235,15 @@ class MapWidgetState extends State<MapWidget> {
         body: BlocConsumer<MapBloc, MapState>(
           listener: (context, state) {
             if (state is MapLoaded) {
-              _mapController?.animateCamera(
-                CameraUpdate.newCameraPosition(
-                  CameraPosition(
-                    target: LatLng(
-                        state.position.latitude, state.position.longitude),
+              if (_isMapInitialized()) {
+                _mapboxMap.flyTo(
+                  CameraOptions(
+                    center: state.position,
                     zoom: 14.0,
                   ),
-                ),
-              );
+                  MapAnimationOptions(duration: 2000, startDelay: 0),
+                );
+              }
             } else if (state is DirectionsLoaded) {
               context.read<MapBloc>().add(
                   UpdateMarkers(widget.tournaments, _showTournamentDetails));
@@ -336,42 +253,25 @@ class MapWidgetState extends State<MapWidget> {
             if (state is MapLoaded || state is DirectionsLoaded) {
               return Stack(
                 children: [
-                  GoogleMap(
-                    markers: state is MapLoaded
-                        ? state.mapMarkers.map((marker) {
-                            return marker.copyWith(
-                              iconParam: _customMarker ??
-                                  BitmapDescriptor.defaultMarker,
-                            );
-                          }).toSet()
-                        : (state as DirectionsLoaded).mapMarkers.map((marker) {
-                            return marker.copyWith(
-                              iconParam: _customMarker ??
-                                  BitmapDescriptor.defaultMarker,
-                            );
-                          }).toSet(),
-                    polylines: _polyline != null ? {_polyline!} : {},
-                    initialCameraPosition: const CameraPosition(
-                      target: LatLng(0, 0),
-                      zoom: 2,
+                  MapWidget(
+                    cameraOptions: CameraOptions(
+                      center: Point(coordinates: Position(0.0, 0.0)),
+                      zoom: 2.0,
                     ),
-                    onMapCreated: (GoogleMapController controller) {
-                      _mapController = controller;
+                    styleUri: MapboxStyles.MAPBOX_STREETS,
+                    onMapCreated: (MapboxMap controller) {
+                      _mapboxMap = controller;
                       context.read<MapBloc>().add(SetMapController(controller));
                       if (state is MapLoaded) {
-                        _mapController?.animateCamera(
-                          CameraUpdate.newCameraPosition(
-                            CameraPosition(
-                              target: LatLng(state.position.latitude,
-                                  state.position.longitude),
-                              zoom: 14.0,
-                            ),
+                        controller.flyTo(
+                          CameraOptions(
+                            center: state.position,
+                            zoom: 14.0,
                           ),
+                          MapAnimationOptions(duration: 2000, startDelay: 0),
                         );
                       }
                     },
-                    myLocationEnabled: true,
-                    myLocationButtonEnabled: false,
                   ),
                   if (_searching)
                     Positioned.fill(
@@ -414,22 +314,27 @@ class MapWidgetState extends State<MapWidget> {
                                             return ListTile(
                                               title: Text(tournament.name),
                                               onTap: () {
-                                                _mapController?.animateCamera(
-                                                  CameraUpdate
-                                                      .newCameraPosition(
-                                                    CameraPosition(
-                                                      target: LatLng(
+                                                if (_isMapInitialized()) {
+                                                  _mapboxMap.flyTo(
+                                                    CameraOptions(
+                                                      center: Point(
+                                                        coordinates: Position(
+                                                          tournament.longitude,
                                                           tournament.latitude,
-                                                          tournament.longitude),
+                                                        ),
+                                                      ),
                                                       zoom: 14.0,
                                                     ),
-                                                  ),
-                                                );
-                                                setState(() {
-                                                  _searching = false;
-                                                });
-                                                _showTournamentDetails(
-                                                    tournament);
+                                                    MapAnimationOptions(
+                                                        duration: 2000,
+                                                        startDelay: 0),
+                                                  );
+                                                  setState(() {
+                                                    _searching = false;
+                                                  });
+                                                  _showTournamentDetails(
+                                                      tournament);
+                                                }
                                               },
                                             );
                                           }
