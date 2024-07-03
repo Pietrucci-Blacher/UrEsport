@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/tournament/screens/tournament_particip.dart';
+import 'package:uresport/widgets/custom_toast.dart'; // Assurez-vous que le chemin est correct
 
 class TournamentDetailsScreen extends StatefulWidget {
   final Tournament tournament;
@@ -42,6 +43,27 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
         _isLoading = false;
       });
     }
+  }
+
+  void showNotificationToast(BuildContext context, String message, {Color? backgroundColor, Color? textColor}) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => CustomToast(
+        message: message,
+        backgroundColor: backgroundColor ?? Colors.blue,
+        textColor: textColor ?? Colors.white,
+        onClose: () {
+          overlayEntry.remove();
+        },
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
   }
 
   @override
@@ -117,7 +139,10 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 4),
-                        UpvoteButton(tournament: widget.tournament), // Utiliser le widget personnalisé
+                        UpvoteButton(
+                          tournament: widget.tournament,
+                          showCustomToast: showNotificationToast,
+                        ), // Utiliser le widget personnalisé
                       ],
                     ),
                   ),
@@ -240,11 +265,8 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
 
     try {
-      // Appelez la méthode joinTournament du service
       await tournamentService.joinTournament(tournamentId, teamId);
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vous avez bien rejoint le tournoi')),
-      );
+      showNotificationToast(context, 'Vous avez bien rejoint le tournoi', backgroundColor: Colors.green);
       setState(() {
         _hasJoined = true;
       });
@@ -253,42 +275,36 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
         if (e.response != null && e.response?.data != null) {
           final errorMessage = e.response?.data['error'];
           if (errorMessage == 'Team already in this tournament') {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Vous avez déjà rejoint le tournoi')),
-            );
+            showNotificationToast(context, 'Vous avez déjà rejoint le tournoi', backgroundColor: Colors.red);
             setState(() {
               _hasJoined = true;
             });
           } else {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Erreur lors du join: $errorMessage')),
-            );
+            showNotificationToast(context, 'Erreur lors du join: $errorMessage', backgroundColor: Colors.red);
           }
         } else {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Erreur lors du join: ${e.message}')),
-          );
+          showNotificationToast(context, 'Erreur lors du join: ${e.message}', backgroundColor: Colors.red);
         }
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Erreur pour rejoindre le tournoi')),
-        );
+        showNotificationToast(context, 'Erreur pour rejoindre le tournoi', backgroundColor: Colors.red);
       }
     }
   }
 
   Future<void> _sendJoinRequest(BuildContext context, int tournamentId, int teamId) async {
-    // Implémentez la logique pour envoyer une demande de rejoindre le tournoi
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Demande pour rejoindre envoyée')),
-    );
+    showNotificationToast(context, 'Demande pour rejoindre envoyée', backgroundColor: Colors.orange);
   }
 }
 
 class UpvoteButton extends StatefulWidget {
   final Tournament tournament;
+  final void Function(BuildContext, String, {Color? backgroundColor, Color? textColor}) showCustomToast;
 
-  const UpvoteButton({super.key, required this.tournament});
+  const UpvoteButton({
+    super.key,
+    required this.tournament,
+    required this.showCustomToast,
+  });
 
   @override
   _UpvoteButtonState createState() => _UpvoteButtonState();
@@ -328,9 +344,7 @@ class _UpvoteButtonState extends State<UpvoteButton> with SingleTickerProviderSt
         _controller.reverse();
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error checking if upvoted: $e');
-      }
+      print('Error checking if upvoted: $e');
     }
   }
 
@@ -371,16 +385,10 @@ class _UpvoteButtonState extends State<UpvoteButton> with SingleTickerProviderSt
       } else {
         _controller.reverse();
       }
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Upvote status changed successfully')),
-      );
+      widget.showCustomToast(context, 'Upvote status changed successfully', backgroundColor: Colors.green);
     } catch (e) {
-      if (kDebugMode) {
-        print('Upvote failed: $e');
-      }
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to change upvote status: $e')),
-      );
+      print('Upvote failed: $e');
+      widget.showCustomToast(context, 'Failed to change upvote status: $e', backgroundColor: Colors.red);
     }
   }
 
