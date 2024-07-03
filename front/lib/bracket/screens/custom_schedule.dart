@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:uresport/bracket/screens/match_details_page.dart';
 
 class Match {
@@ -32,10 +33,26 @@ class CustomSchedulePage extends StatelessWidget {
       team2Image: 'assets/team_b.png',
     ),
     Match(
+      team1: 'TEAM 1',
+      team2: 'TEAM 2',
+      date: '10/03',
+      time: '10:00',
+      team1Image: 'assets/team_a.png',
+      team2Image: 'assets/team_b.png',
+    ),
+    Match(
       team1: 'TEAM C',
       team2: 'TEAM D',
       date: '10/05',
       time: '06:30',
+      team1Image: 'assets/team_c.png',
+      team2Image: 'assets/team_d.png',
+    ),
+    Match(
+      team1: 'TEAM 3',
+      team2: 'TEAM 4',
+      date: '10/05',
+      time: '03:00',
       team1Image: 'assets/team_c.png',
       team2Image: 'assets/team_d.png',
     ),
@@ -65,164 +82,191 @@ class CustomSchedulePage extends StatelessWidget {
     ),
   ];
 
+  DateTime _parseDateTime(String date, String time) {
+    final dateFormat = DateFormat('MM/dd');
+    final timeFormat = DateFormat('HH:mm');
+    DateTime parsedDate = dateFormat.parse(date);
+    DateTime parsedTime = timeFormat.parse(time);
+    return DateTime(parsedDate.year, parsedDate.month, parsedDate.day, parsedTime.hour, parsedTime.minute);
+  }
+
   @override
   Widget build(BuildContext context) {
+    // Créer une copie mutable de la liste des matchs
+    List<Match> sortedMatches = List.from(matches);
+
+    // Convertir les dates et trier les matchs par date et heure
+    sortedMatches.sort((a, b) {
+      DateTime dateTimeA = _parseDateTime(a.date, a.time);
+      DateTime dateTimeB = _parseDateTime(b.date, b.time);
+      return dateTimeA.compareTo(dateTimeB);
+    });
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Custom Schedule'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
       ),
       body: ListView.builder(
-        itemCount: matches.length,
+        itemCount: sortedMatches.length,
         itemBuilder: (context, index) {
-          final match = matches[index];
-          return Padding(
-            padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
-            child: GestureDetector(
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MatchDetailsPage(match: match),
-                  ),
-                );
-              },
-              child: MouseRegion(
-                cursor: SystemMouseCursors.click,
-                child: AnimatedContainer(
-                  duration: const Duration(milliseconds: 300),
-                  curve: Curves.easeInOut,
-                  decoration: BoxDecoration(
-                    gradient: const LinearGradient(
-                      colors: [Color(0xFF2D005B), Color(0xFF000000), Color(0xFFD31D1D)],
-                      stops: [0.2, 0.6, 1.0],
-                      begin: Alignment.centerLeft,
-                      end: Alignment.centerRight,
+          final match = sortedMatches[index];
+          bool isNewDate = index == 0 || _parseDateTime(match.date, match.time).day != _parseDateTime(sortedMatches[index - 1].date, sortedMatches[index - 1].time).day;
+
+          // Formatter la date dans le format souhaité
+          final DateTime matchDate = _parseDateTime(match.date, match.time);
+          final String formattedDate = DateFormat('EEEE - d MMMM', 'fr_FR').format(matchDate).toUpperCase();
+
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              if (isNewDate)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                  child: Text(
+                    formattedDate,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
                     ),
-                    borderRadius: BorderRadius.circular(10),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.5),
-                        spreadRadius: 1,
-                        blurRadius: 5,
-                        offset: Offset(0, 3),
-                      ),
-                    ],
                   ),
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  backgroundImage: match.team1Image != null
-                                      ? AssetImage(match.team1Image!)
-                                      : null,
-                                  radius: 20,
-                                  backgroundColor: Colors.grey,
-                                  child: match.team1Image == null
-                                      ? const Icon(Icons.sports_soccer, color: Colors.white)
-                                      : null,
-                                ),
-                                const SizedBox(width: 10),
-                                Text(
-                                  match.team1,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                          const Expanded(
-                            child: Text(
-                              '0 - 0',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.white,
-                              ),
-                              textAlign: TextAlign.center,
-                            ),
-                          ),
-                          Expanded(
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                Text(
-                                  match.team2,
-                                  style: const TextStyle(
-                                    fontSize: 20,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.white,
-                                  ),
-                                ),
-                                const SizedBox(width: 10),
-                                CircleAvatar(
-                                  backgroundImage: match.team2Image != null
-                                      ? AssetImage(match.team2Image!)
-                                      : null,
-                                  radius: 20,
-                                  backgroundColor: Colors.grey,
-                                  child: match.team2Image == null
-                                      ? const Icon(Icons.sports_soccer, color: Colors.white)
-                                      : null,
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
+                ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => MatchDetailsPage(match: match),
                       ),
-                      const SizedBox(height: 10),
-                      const Divider(
+                    );
+                  },
+                  child: MouseRegion(
+                    cursor: SystemMouseCursors.click,
+                    child: AnimatedContainer(
+                      duration: const Duration(milliseconds: 300),
+                      curve: Curves.easeInOut,
+                      decoration: BoxDecoration(
                         color: Colors.white,
-                        thickness: 1,
+                        borderRadius: BorderRadius.circular(10),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            spreadRadius: 2,
+                            blurRadius: 5,
+                            offset: const Offset(0, 3),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 10),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Row(
                             children: [
-                              const Icon(Icons.calendar_today, color: Colors.white, size: 16),
-                              const SizedBox(width: 5),
-                              Text(
-                                match.date,
-                                style: const TextStyle(
-                                  fontSize: 16,
+                              Expanded(
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: match.team1Image != null
+                                          ? AssetImage(match.team1Image!)
+                                          : null,
+                                      radius: 20,
+                                      backgroundColor: Colors.grey.shade200,
+                                      child: match.team1Image == null
+                                          ? const Icon(Icons.sports_soccer, color: Colors.black)
+                                          : null,
+                                    ),
+                                    const SizedBox(width: 10),
+                                    Text(
+                                      match.team1,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              const Text(
+                                'VS',
+                                style: TextStyle(
+                                  fontSize: 18,
                                   fontWeight: FontWeight.bold,
-                                  color: Colors.white,
+                                  color: Colors.black,
+                                ),
+                              ),
+                              Expanded(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    Text(
+                                      match.team2,
+                                      style: const TextStyle(
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 10),
+                                    CircleAvatar(
+                                      backgroundImage: match.team2Image != null
+                                          ? AssetImage(match.team2Image!)
+                                          : null,
+                                      radius: 20,
+                                      backgroundColor: Colors.grey.shade200,
+                                      child: match.team2Image == null
+                                          ? const Icon(Icons.sports_soccer, color: Colors.black)
+                                          : null,
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
+                          const SizedBox(height: 10),
+                          const Divider(
+                            color: Colors.grey,
+                            thickness: 1,
+                          ),
+                          const SizedBox(height: 10),
                           Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              const Icon(Icons.access_time, color: Colors.white, size: 16),
-                              const SizedBox(width: 5),
-                              Text(
-                                match.time,
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.white,
-                                ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.access_time, color: Colors.black, size: 16),
+                                  const SizedBox(width: 5),
+                                  Text(
+                                    match.time,
+                                    style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      color: Colors.black,
+                                    ),
+                                  ),
+                                ],
                               ),
                             ],
                           ),
                         ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
-            ),
+              // Ajouter une barre de séparation uniquement si le prochain match a une date différente
+              if (index < sortedMatches.length - 1 && _parseDateTime(sortedMatches[index].date, sortedMatches[index].time).day != _parseDateTime(sortedMatches[index + 1].date, sortedMatches[index + 1].time).day)
+                const Divider(thickness: 1, color: Colors.grey),
+            ],
           );
         },
       ),
