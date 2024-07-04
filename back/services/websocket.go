@@ -92,10 +92,15 @@ func (w *Websocket) listen(client *Client) error {
 func (w *Websocket) dispatchCommand(client *Client, msg Message) error {
 	callback, ok := w.events[msg.Command]
 	if !ok {
-		return client.EmitError("Invalid command")
+		msgErr := fmt.Sprintf("Command \"%s\" not found", msg.Command)
+		return client.EmitError(msgErr)
 	}
 
-	return callback(client, msg.Message)
+	if err := callback(client, msg.Message); err != nil {
+		return client.EmitError(err.Error())
+	}
+
+	return nil
 }
 
 // GinWsHandler is the handler for the websocket connection
