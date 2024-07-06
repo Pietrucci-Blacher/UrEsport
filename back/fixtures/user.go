@@ -19,13 +19,13 @@ func LoadUsers() error {
 		defaultAvatarUrl := fmt.Sprintf("https://api.dicebear.com/9.x/initials/svg?seed=%s%s", firstName, lastName)
 
 		user := models.User{
-			Firstname:      firstName,
-			Lastname:       lastName,
-			Username:       fake.Person().FirstName(),
-			Email:          fake.Internet().Email(),
+			Firstname:       firstName,
+			Lastname:        lastName,
+			Username:        fake.Person().FirstName(),
+			Email:           fake.Internet().Email(),
 			ProfileImageUrl: defaultAvatarUrl,
-			Roles:          []string{role},
-			Verified:       true,
+			Roles:           []string{role},
+			Verified:        true,
 		}
 
 		if err := user.HashPassword(USER_PASSWORD); err != nil {

@@ -121,7 +121,6 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, sanitized)
 }
 
-
 // UpdateUserImage godoc
 //
 //	@Summary		update user image
