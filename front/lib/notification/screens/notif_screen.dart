@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uresport/shared/provider/NotificationProvider.dart';
-import 'package:uresport/notification/screens/notif_tab.dart';
 import 'package:uresport/friends/screens/friends_tab.dart';
+import 'package:uresport/notification/screens/notif_tab.dart';
+import 'package:uresport/shared/provider/notification_provider.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -55,7 +55,9 @@ class NotificationScreen extends StatelessWidget {
         body: const TabBarView(
           children: [
             NotificationsTab(),
-            FriendsTab( userId: 21,),
+            FriendsTab(
+              userId: 21,
+            ),
           ],
         ),
       ),

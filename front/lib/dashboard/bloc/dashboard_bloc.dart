@@ -12,7 +12,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<WebSocketMessageReceived>(_onWebSocketMessageReceived);
   }
 
-  void _onConnectWebSocket(ConnectWebSocket event, Emitter<DashboardState> emit) {
+  void _onConnectWebSocket(
+      ConnectWebSocket event, Emitter<DashboardState> emit) {
     emit(DashboardLoading());
     _ws.on('connected', (socket, message) {
       add(const WebSocketMessageReceived('Connected to WebSocket'));
@@ -29,11 +30,13 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     _ws.emit('ping', 'Hello from client!');
   }
 
-  void _onDisconnectWebSocket(DisconnectWebSocket event, Emitter<DashboardState> emit) {
+  void _onDisconnectWebSocket(
+      DisconnectWebSocket event, Emitter<DashboardState> emit) {
     emit(DashboardInitial());
   }
 
-  void _onWebSocketMessageReceived(WebSocketMessageReceived event, Emitter<DashboardState> emit) {
+  void _onWebSocketMessageReceived(
+      WebSocketMessageReceived event, Emitter<DashboardState> emit) {
     emit(DashboardLoaded(event.message));
   }
 }

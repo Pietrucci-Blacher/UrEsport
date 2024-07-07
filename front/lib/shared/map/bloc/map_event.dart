@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:uresport/core/models/tournament.dart';
 
 abstract class MapEvent extends Equatable {
@@ -30,8 +30,8 @@ class UpdateMarkers extends MapEvent {
 }
 
 class ShowDirections extends MapEvent {
-  final LatLng origin;
-  final LatLng destination;
+  final Point origin;
+  final Point destination;
 
   const ShowDirections(this.origin, this.destination);
 
@@ -46,7 +46,7 @@ class ZoomOut extends MapEvent {}
 class CenterOnCurrentLocation extends MapEvent {}
 
 class SetMapController extends MapEvent {
-  final GoogleMapController controller;
+  final MapboxMap controller;
 
   const SetMapController(this.controller);
 

@@ -5,7 +5,7 @@ class User {
   final String username;
   final String email;
   final String? profileImageUrl;
-  final List<dynamic > roles;
+  final List<dynamic> roles;
 
   User({
     required this.id,

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
@@ -5,19 +6,18 @@ import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/auth/screens/auth_screen.dart';
-import 'package:uresport/home/screens/home_screen.dart';
-import 'package:uresport/notification/screens/notif_screen.dart';
-import 'package:uresport/shared/navigation/bottom_navigation.dart';
-import 'package:uresport/tournament/screens/tournament_screen.dart';
-import 'package:uresport/game/screens/game_screen.dart';
-import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/core/services/auth_service.dart';
-import 'package:uresport/shared/provider/NotificationProvider.dart';
-import 'package:uresport/l10n/app_localizations.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:uresport/cubit/locale_cubit.dart';
+import 'package:uresport/game/screens/game_screen.dart';
+import 'package:uresport/home/screens/home_screen.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/notification/screens/notif_screen.dart';
+import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
+import 'package:uresport/shared/navigation/bottom_navigation.dart';
+import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/shared/utils/image_util.dart';
+import 'package:uresport/tournament/screens/tournament_screen.dart';
 
 class MainScreen extends StatefulWidget {
   final IAuthService authService;
@@ -69,7 +69,8 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      create: (context) =>
+          AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: Consumer<NotificationProvider>(
         builder: (context, notificationProvider, child) {
           return BlocBuilder<AuthBloc, AuthState>(
@@ -91,37 +92,40 @@ class MainScreenState extends State<MainScreen> {
                           IconButton(
                             icon: isLoggedIn && _profileImageUrl != null
                                 ? Stack(
-                              children: [
-                                CachedImageWidget(
-                                  url: _profileImageUrl!,
-                                  size: 40,
-                                ),
-                                if (notificationProvider.notificationCount > 0)
-                                  Positioned(
-                                    right: 0,
-                                    top: 0,
-                                    child: Container(
-                                      padding: const EdgeInsets.all(2),
-                                      decoration: BoxDecoration(
-                                        color: Colors.red,
-                                        borderRadius: BorderRadius.circular(6),
+                                    children: [
+                                      CachedImageWidget(
+                                        url: _profileImageUrl!,
+                                        size: 40,
                                       ),
-                                      constraints: const BoxConstraints(
-                                        minWidth: 18,
-                                        minHeight: 18,
-                                      ),
-                                      child: Text(
-                                        '${notificationProvider.notificationCount}',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 12,
+                                      if (notificationProvider
+                                              .notificationCount >
+                                          0)
+                                        Positioned(
+                                          right: 0,
+                                          top: 0,
+                                          child: Container(
+                                            padding: const EdgeInsets.all(2),
+                                            decoration: BoxDecoration(
+                                              color: Colors.red,
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
+                                            ),
+                                            constraints: const BoxConstraints(
+                                              minWidth: 18,
+                                              minHeight: 18,
+                                            ),
+                                            child: Text(
+                                              '${notificationProvider.notificationCount}',
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 12,
+                                              ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ),
                                         ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                    ),
-                                  ),
-                              ],
-                            )
+                                    ],
+                                  )
                                 : const Icon(Icons.person),
                             onPressed: () async {
                               if (isLoggedIn) {
@@ -130,7 +134,8 @@ class MainScreenState extends State<MainScreen> {
                                   MaterialPageRoute(
                                     builder: (context) => ProfileScreen(
                                       authService: widget.authService,
-                                      onProfileImageUpdated: _updateProfileImage,
+                                      onProfileImageUpdated:
+                                          _updateProfileImage,
                                     ),
                                   ),
                                 );
@@ -173,11 +178,12 @@ class MainScreenState extends State<MainScreen> {
                   bottomNavigationBar: kIsWeb
                       ? null
                       : CustomBottomNavigation(
-                    isLoggedIn: isLoggedIn,
-                    selectedIndex: _selectedIndex,
-                    onTap: _onItemTapped,
-                    notificationCount: notificationProvider.notificationCount,
-                  ),
+                          isLoggedIn: isLoggedIn,
+                          selectedIndex: _selectedIndex,
+                          onTap: _onItemTapped,
+                          notificationCount:
+                              notificationProvider.notificationCount,
+                        ),
                 );
               }
             },

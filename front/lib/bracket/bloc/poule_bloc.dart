@@ -10,9 +10,9 @@ class PouleBloc extends Bloc<PouleEvent, PouleState> {
   }
 
   void _onLoadPoules(
-      LoadPoules event,
-      Emitter<PouleState> emit,
-      ) async {
+    LoadPoules event,
+    Emitter<PouleState> emit,
+  ) async {
     emit(PouleLoading());
     try {
       List<Poule> poules = _initializePoules();

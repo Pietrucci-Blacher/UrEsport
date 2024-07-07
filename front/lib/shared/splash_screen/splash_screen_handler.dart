@@ -40,8 +40,8 @@ class SplashScreenHandlerState extends State<SplashScreenHandler> {
         },
         child: _isInitialized
             ? kIsWeb
-            ? LoginScreen(authService: widget.authService)
-            : MainScreen(authService: widget.authService)
+                ? LoginScreen(authService: widget.authService)
+                : MainScreen(authService: widget.authService)
             : const SplashScreen(),
       ),
     );
