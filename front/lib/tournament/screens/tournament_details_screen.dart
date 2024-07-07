@@ -4,10 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/rating.dart';
+
+import '../../core/models/user.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
   final Tournament tournament;
@@ -21,11 +24,13 @@ class TournamentDetailsScreen extends StatefulWidget {
 class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
   bool _hasJoined = false;
   bool _isLoading = true;
+  User? _currentUser;
 
   @override
   void initState() {
     super.initState();
     _checkIfJoined();
+    _loadCurrentUser();
   }
 
   Future<void> _checkIfJoined() async {
@@ -43,6 +48,21 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
       setState(() {
         _isLoading = false;
       });
+    }
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final authService = Provider.of<IAuthService>(context, listen: false);
+    try {
+      final user = await authService.getUser();
+      setState(() {
+        _currentUser = user;
+        print('User loaded: $_currentUser'); // Ajoutez ce log
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error loading current user: $e');
+      }
     }
   }
 
@@ -75,7 +95,7 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
       appBar: AppBar(
         title: Text(widget.tournament.name),
       ),
-      body: _isLoading
+      body: _isLoading || _currentUser == null // Ajoutez cette condition
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
         child: Padding(
@@ -140,10 +160,7 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 4),
-                        /*UpvoteButton(
-                                tournament: widget.tournament,
-                                showCustomToast: showNotificationToast,
-                              ),*/ // Utiliser le widget personnalisé
+                        // Utiliser le widget personnalisé
                       ],
                     ),
                   ),
@@ -259,6 +276,7 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
               RatingWidget(
                 tournamentId: widget.tournament.id, // Utilisation correcte de l'ID de tournoi
                 showCustomToast: showNotificationToast,
+                userId: _currentUser?.id ?? 0, // Utilisation correcte de l'ID de l'utilisateur
               ),
             ],
           ),

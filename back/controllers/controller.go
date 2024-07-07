@@ -229,6 +229,10 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Get[*models.Tournament]("tournament"),
 				GetRatings,
 			)
+			tournaments.POST("/:tournament/rating",
+				middlewares.Get[*models.Tournament]("tournament"),
+				GetRating,
+			)
 			tournaments.GET("/:tournament/ratings/:rating",
 				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.GetRating("rating"),

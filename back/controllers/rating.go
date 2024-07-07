@@ -4,11 +4,10 @@ package controllers
 import (
 	"challenge/models"
 	"challenge/services"
+	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 	"log"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
 )
 
 // GetRatings godoc
@@ -31,6 +30,47 @@ func GetRatings(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, ratings)
+}
+
+// GetRating godoc
+//
+//	@Summary		get rating by tournament ID and user ID
+//	@Description	get rating by tournament ID and user ID
+//	@Tags			rating
+//	@Accept			json
+//	@Produce		json
+//	@Param			rating	body		models.CreateRatingDto	true	"Rating object"
+//	@Success		200		{object}	models.Rating
+//	@Failure		400		{object}	utils.HttpError	"Bad request"
+//	@Failure		404		{object}	utils.HttpError	"Not found"
+//	@Failure		500		{object}	utils.HttpError	"Internal server error"
+//	@Router			/rating/ [post]
+func GetRating(c *gin.Context) {
+	var input models.CreateRatingDto
+
+	// Bind JSON input to the input struct
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+		return
+	}
+
+	if input.TournamentID == 0 || input.UserID == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "tournamentId and userId are required"})
+		return
+	}
+
+	// Find rating by tournamentId and userId
+	var rating models.Rating
+	if err := models.FindRatingByTournamentAndUser(input.TournamentID, input.UserID, &rating); err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Rating not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, rating)
 }
 
 // GetRatingById godoc

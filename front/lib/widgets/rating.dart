@@ -5,11 +5,13 @@ import 'package:uresport/core/services/rating_service.dart';
 
 class RatingWidget extends StatefulWidget {
   final int tournamentId;
+  final int userId;
   final Function(BuildContext, String, {Color? backgroundColor, Color? textColor}) showCustomToast;
 
   const RatingWidget({
     super.key,
     required this.tournamentId,
+    required this.userId,
     required this.showCustomToast,
   });
 
@@ -19,6 +21,7 @@ class RatingWidget extends StatefulWidget {
 
 class _RatingWidgetState extends State<RatingWidget> {
   double _currentRating = 0.0;
+  bool _isLoading = true;
 
   @override
   void initState() {
@@ -29,31 +32,46 @@ class _RatingWidgetState extends State<RatingWidget> {
   Future<void> _fetchRating() async {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
     try {
-      final rating = await ratingService.getRating(widget.tournamentId); // Remplacez 'username' par l'ID ou le nom d'utilisateur réel
+      print('Fetching rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}');
+      final rating = await ratingService.getRating(widget.tournamentId, widget.userId);
       setState(() {
         _currentRating = rating;
+        _isLoading = false;
       });
+      if (_currentRating == 0.0) {
+        widget.showCustomToast(context, 'Aucune note n\'a été récupérée', backgroundColor: Colors.orange);
+      } else {
+        widget.showCustomToast(context, 'Note récupérée avec succès', backgroundColor: Colors.green);
+      }
     } catch (e) {
+      print('Error while fetching rating: $e');
       widget.showCustomToast(context, 'Erreur lors de la récupération de la note', backgroundColor: Colors.red);
+      setState(() {
+        _isLoading = false;
+      });
     }
   }
 
   Future<void> _submitRating(double rating) async {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
     try {
-      await ratingService.submitRating(widget.tournamentId, 1, rating); // Remplacez 'username' par l'ID ou le nom d'utilisateur réel
+      print('Submitting rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}, rating=$rating');
+      await ratingService.submitRating(widget.tournamentId, widget.userId, rating);
       widget.showCustomToast(context, 'Note enregistrée avec succès', backgroundColor: Colors.green);
       setState(() {
         _currentRating = rating;
       });
     } catch (e) {
+      print('Error while submitting rating: $e');
       widget.showCustomToast(context, 'Erreur lors de l\'enregistrement de la note', backgroundColor: Colors.red);
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Column(
+    return _isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text('Votre note:', style: Theme.of(context).textTheme.titleMedium),

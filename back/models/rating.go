@@ -37,6 +37,10 @@ func FindAllRatings(query services.QueryFilter) ([]Rating, error) {
 	return ratings, err
 }
 
+func FindRatingByTournamentAndUser(tournamentID, userID uint, rating *Rating) error {
+	return DB.Where("tournament_id = ? AND user_id = ?", tournamentID, userID).First(rating).Error
+}
+
 func CountRatingByUserAndTournament(userID, tournamentID uint) (int64, error) {
 	var count int64
 
