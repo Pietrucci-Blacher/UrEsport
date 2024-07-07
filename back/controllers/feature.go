@@ -8,7 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetUsers godoc
+// GetFeatures godoc
 //
 //	@Summary		get all features
 //	@Description	get all features
@@ -28,7 +28,7 @@ func GetFeatures(c *gin.Context) {
 	c.JSON(http.StatusOK, feature)
 }
 
-// GetUsers godoc
+// GetFeature godoc
 //
 //	@Summary		get features by id
 //	@Description	get features by id
@@ -41,7 +41,7 @@ func GetFeatures(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/features/{id} [get]
 func GetFeature(c *gin.Context) {
-	feature, _ := c.MustGet("feature").(models.Feature)
+	feature, _ := c.MustGet("feature").(*models.Feature)
 	c.JSON(http.StatusOK, feature)
 }
 
@@ -97,7 +97,7 @@ func CreateFeature(c *gin.Context) {
 //	@Router			/features/{id} [patch]
 func UpdateFeature(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.UpdateFeatureDto)
-	feature, _ := c.MustGet("feature").(models.Feature)
+	feature, _ := c.MustGet("feature").(*models.Feature)
 
 	if count, err := models.CountFeatureByName(body.Name); err != nil || count > 0 {
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Feature already exists"})
@@ -133,7 +133,7 @@ func UpdateFeature(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/features/{id} [delete]
 func DeleteFeature(c *gin.Context) {
-	feature, _ := c.MustGet("feature").(models.Feature)
+	feature, _ := c.MustGet("feature").(*models.Feature)
 
 	if err := feature.Delete(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -157,7 +157,7 @@ func DeleteFeature(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/features/{id}/toggle [get]
 func ToggleFeature(c *gin.Context) {
-	feature, _ := c.MustGet("feature").(models.Feature)
+	feature, _ := c.MustGet("feature").(*models.Feature)
 
 	feature.Toggle()
 

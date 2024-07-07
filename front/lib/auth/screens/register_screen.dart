@@ -22,7 +22,6 @@ class RegisterScreenState extends State<RegisterScreen> {
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final GlobalKey<NavigatorState> _navigatorKey = GlobalKey<NavigatorState>();
   bool _obscureText = true;
 
   @override
@@ -41,22 +40,10 @@ class RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
-  void _showSuccessDialog() {
+  void _showSuccessDialog(BuildContext context) {
     showDialog(
-      context: _navigatorKey.currentContext!,
+      context: context,
       builder: (BuildContext context) {
-        Future.delayed(const Duration(seconds: 2), () {
-          Navigator.of(context).pop(true);
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => VerificationScreen(
-                email: _emailController.text,
-                authService: widget.authService,
-              ),
-            ),
-          );
-        });
         return AlertDialog(
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -69,81 +56,89 @@ class RegisterScreenState extends State<RegisterScreen> {
         );
       },
     );
+
+    Future.delayed(const Duration(seconds: 2), () {
+      Navigator.of(context).pop(true);
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => VerificationScreen(
+            email: _emailController.text,
+            authService: widget.authService,
+          ),
+        ),
+      );
+    });
   }
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => AuthBloc(widget.authService),
-      child: Navigator(
-        key: _navigatorKey,
-        onGenerateRoute: (_) => MaterialPageRoute(
-          builder: (context) => Scaffold(
-            appBar: AppBar(title: Text(AppLocalizations.of(context).register)),
-            body: BlocListener<AuthBloc, AuthState>(
-              listener: (context, state) {
-                if (state is AuthFailure) {
-                  ScaffoldMessenger.of(context)
-                      .showSnackBar(SnackBar(content: Text(state.error)));
-                } else if (state is AuthRegistrationSuccess) {
-                  _showSuccessDialog();
-                }
-              },
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      _buildTextField(
-                        controller: _firstnameController,
-                        label: AppLocalizations.of(context).firstName,
-                        hint: AutofillHints.givenName,
-                        keyboardType: TextInputType.name,
-                      ),
-                      _buildTextField(
-                        controller: _lastnameController,
-                        label: AppLocalizations.of(context).lastName,
-                        hint: AutofillHints.familyName,
-                        keyboardType: TextInputType.name,
-                      ),
-                      _buildTextField(
-                        controller: _usernameController,
-                        label: AppLocalizations.of(context).username,
-                        hint: AutofillHints.username,
-                      ),
-                      _buildTextField(
-                        controller: _emailController,
-                        label: AppLocalizations.of(context).email,
-                        hint: AutofillHints.email,
-                        keyboardType: TextInputType.emailAddress,
-                      ),
-                      _buildPasswordField(),
-                      const SizedBox(height: 20),
-                      BlocBuilder<AuthBloc, AuthState>(
-                        builder: (context, state) {
-                          if (state is AuthLoading) {
-                            return const CircularProgressIndicator();
-                          }
-                          return ElevatedButton(
-                            onPressed: () {
-                              context.read<AuthBloc>().add(
-                                    RegisterSubmitted(
-                                      firstName: _firstnameController.text,
-                                      lastName: _lastnameController.text,
-                                      username: _usernameController.text,
-                                      email: _emailController.text,
-                                      password: _passwordController.text,
-                                    ),
-                                  );
-                            },
-                            child: Text(AppLocalizations.of(context).register),
-                          );
-                        },
-                      ),
-                    ],
+      child: Scaffold(
+        appBar: AppBar(title: Text(AppLocalizations.of(context).register)),
+        body: BlocListener<AuthBloc, AuthState>(
+          listener: (context, state) {
+            if (state is AuthFailure) {
+              ScaffoldMessenger.of(context)
+                  .showSnackBar(SnackBar(content: Text(state.error)));
+            } else if (state is AuthRegistrationSuccess) {
+              _showSuccessDialog(context);
+            }
+          },
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  _buildTextField(
+                    controller: _firstnameController,
+                    label: AppLocalizations.of(context).firstName,
+                    hint: AutofillHints.givenName,
+                    keyboardType: TextInputType.name,
                   ),
-                ),
+                  _buildTextField(
+                    controller: _lastnameController,
+                    label: AppLocalizations.of(context).lastName,
+                    hint: AutofillHints.familyName,
+                    keyboardType: TextInputType.name,
+                  ),
+                  _buildTextField(
+                    controller: _usernameController,
+                    label: AppLocalizations.of(context).username,
+                    hint: AutofillHints.username,
+                  ),
+                  _buildTextField(
+                    controller: _emailController,
+                    label: AppLocalizations.of(context).email,
+                    hint: AutofillHints.email,
+                    keyboardType: TextInputType.emailAddress,
+                  ),
+                  _buildPasswordField(),
+                  const SizedBox(height: 20),
+                  BlocBuilder<AuthBloc, AuthState>(
+                    builder: (context, state) {
+                      if (state is AuthLoading) {
+                        return const CircularProgressIndicator();
+                      }
+                      return ElevatedButton(
+                        onPressed: () {
+                          context.read<AuthBloc>().add(
+                                RegisterSubmitted(
+                                  firstName: _firstnameController.text,
+                                  lastName: _lastnameController.text,
+                                  username: _usernameController.text,
+                                  email: _emailController.text,
+                                  password: _passwordController.text,
+                                ),
+                              );
+                        },
+                        child: Text(AppLocalizations.of(context).register),
+                      );
+                    },
+                  ),
+                ],
               ),
             ),
           ),

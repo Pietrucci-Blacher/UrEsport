@@ -27,39 +27,66 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
+        "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+        "cancelEditing": MessageLookupByLibrary.simpleMessage("Cancel Editing"),
+        "closeButton": MessageLookupByLibrary.simpleMessage("Close"),
+        "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
+        "dangerZone": MessageLookupByLibrary.simpleMessage("Danger Zone"),
+        "deleteAccount": MessageLookupByLibrary.simpleMessage("Delete Account"),
+        "deleteGameButton": MessageLookupByLibrary.simpleMessage("Delete Game"),
+        "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "firstName": MessageLookupByLibrary.simpleMessage("First Name"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("Forgot Password?"),
+        "gameButton": MessageLookupByLibrary.simpleMessage("All Games"),
+        "gameScreenTitle": MessageLookupByLibrary.simpleMessage("Games"),
+        "gameScreenWelcome":
+            MessageLookupByLibrary.simpleMessage("Welcome to the Game Screen!"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home"),
         "homeScreenWelcome":
             MessageLookupByLibrary.simpleMessage("Welcome to the Home Screen!"),
+        "inviteButton": MessageLookupByLibrary.simpleMessage("Invite"),
+        "inviteError": MessageLookupByLibrary.simpleMessage(
+            "An error occurred while sending the invitation"),
+        "inviteSuccess": MessageLookupByLibrary.simpleMessage(
+            "You have been invited successfully"),
+        "joinButton": MessageLookupByLibrary.simpleMessage("Join"),
         "lastName": MessageLookupByLibrary.simpleMessage("Last Name"),
         "logIn": MessageLookupByLibrary.simpleMessage("Log In"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
+        "logout": MessageLookupByLibrary.simpleMessage("Logout"),
+        "modifyGameButton": MessageLookupByLibrary.simpleMessage("Modify Game"),
         "notificationScreenTitle":
             MessageLookupByLibrary.simpleMessage("Notifications"),
         "notificationScreenWelcome": MessageLookupByLibrary.simpleMessage(
-            "Welcome to the Notification screen!"),
+            "Welcome to the Notification screens!"),
         "orLoginWith": MessageLookupByLibrary.simpleMessage("Or login with"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordResetEmailSent":
             MessageLookupByLibrary.simpleMessage("Password reset email sent"),
         "passwordResetSuccessful":
             MessageLookupByLibrary.simpleMessage("Password reset successful"),
+        "popularGamesTitle":
+            MessageLookupByLibrary.simpleMessage("Popular Games"),
         "profileScreenTitle": MessageLookupByLibrary.simpleMessage("Profile"),
         "profileScreenWelcome": m0,
         "register": MessageLookupByLibrary.simpleMessage("Register"),
+        "resendCode": MessageLookupByLibrary.simpleMessage("Resend code"),
         "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
+        "save": MessageLookupByLibrary.simpleMessage("Save"),
         "sendResetEmail":
             MessageLookupByLibrary.simpleMessage("Send Reset Email"),
         "tournamentScreenTitle":
             MessageLookupByLibrary.simpleMessage("Tournaments"),
         "tournamentScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Welcome to the Tournament Screen!"),
+        "trendingTournamentsTitle":
+            MessageLookupByLibrary.simpleMessage("Trending Tournaments"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
         "verificationCodeSent": m1,
         "verify": MessageLookupByLibrary.simpleMessage("Verify"),
+        "viewAll": MessageLookupByLibrary.simpleMessage("View All"),
         "welcome": MessageLookupByLibrary.simpleMessage("Welcome to UrEsport"),
         "youAreNotLoggedIn":
             MessageLookupByLibrary.simpleMessage("You are not logged in")

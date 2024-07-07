@@ -20,8 +20,17 @@ var (
 	USER_NB       = 20
 	USER_ROLES    = []string{models.ROLE_USER, models.ROLE_ADMIN}
 
-	TOURNAMENT_NB              = 10
-	TOURNAMENT_PARTICIPANTS_NB = 5
+	GAME_TAGS = []string{"RPG", "Aventure", "Action", "FPS", "MMORPG", "Survival", "Horror", "Simulation", "Sport", "Battle Royale"}
+
+	TOURNAMENT_NB      = 10
+	TOURNAMENT_TEAM_NB = 5
+
+	TEAM_NB = 10
+
+	GAME_NB         = 40
+	TEAM_MEMBERS_NB = 4
+
+	FRIEND_NB = 10
 )
 
 func ImportFixtures() error {
@@ -30,6 +39,18 @@ func ImportFixtures() error {
 	}
 
 	if err := LoadUsers(); err != nil {
+		return err
+	}
+
+	if err := LoadTeams(); err != nil {
+		return err
+	}
+
+	if err := LoadGames(); err != nil {
+		return err
+	}
+
+	if err := LoadFriends(); err != nil {
 		return err
 	}
 

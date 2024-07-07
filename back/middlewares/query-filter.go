@@ -1,27 +1,23 @@
 package middlewares
 
 import (
-	"challenge/utils"
-	"strconv"
+	"challenge/services"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 func QueryFilter() gin.HandlerFunc {
 	return func(c *gin.Context) {
-		page, err := strconv.Atoi(c.DefaultQuery("page", "1"))
+		query := c.Request.URL.Query()
+
+		queryFilter, err := services.NewQueryFilter(query)
 		if err != nil {
-			page = 1
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error parsing query"})
+			c.Abort()
+			return
 		}
 
-		limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
-		if err != nil {
-			limit = 10
-		}
-
-		where := c.DefaultQuery("where", "")
-		query := utils.NewQueryFilter(page, limit, where)
-
-		c.Set("query", query)
+		c.Set("query", queryFilter)
 	}
 }

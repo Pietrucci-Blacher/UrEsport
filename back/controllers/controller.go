@@ -4,6 +4,7 @@ import (
 	"challenge/docs"
 	"challenge/middlewares"
 	"challenge/models"
+	"challenge/utils"
 
 	"github.com/gin-gonic/gin"
 	swaggerFiles "github.com/swaggo/files"
@@ -29,27 +30,67 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.QueryFilter(),
 				GetUsers,
 			)
-			users.GET("/:id",
+			users.GET("/:user",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetUser(),
+				middlewares.Get[*models.User]("user"),
 				GetUser,
 			)
-			users.PATCH("/:id",
+			users.POST("/:user/image",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetUser(),
+				middlewares.Get[*models.User]("user"),
+				middlewares.IsMe(),
+				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
+				UploadUserImage,
+			)
+			users.PATCH("/:user",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
 				middlewares.IsMe(),
 				middlewares.Validate[models.UpdateUserDto](),
 				UpdateUser,
 			)
-			users.DELETE("/:id",
+			users.DELETE("/:user",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetUser(),
+				middlewares.Get[*models.User]("user"),
 				middlewares.IsMe(),
 				DeleteUser,
 			)
 			users.GET("/me",
 				middlewares.IsLoggedIn(true),
 				GetUserMe,
+			)
+			users.GET("/:user/friends/",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.IsMe(),
+				GetFriends,
+			)
+			users.GET("/:user/friends/:friend",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.Get[*models.User]("friend"),
+				GetFriend,
+			)
+			users.POST("/:user/friends/:friend",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.Get[*models.User]("friend"),
+				middlewares.IsMe(),
+				AddFriend,
+			)
+			users.PATCH("/:user/friends/:friend",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.Get[*models.User]("friend"),
+				middlewares.IsMe(),
+				UpdateFriend,
+			)
+			users.DELETE("/:user/friends/:friend",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.User]("user"),
+				middlewares.Get[*models.User]("friend"),
+				middlewares.IsMe(),
+				DeleteFriend,
 			)
 		}
 
@@ -62,27 +103,27 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Validate[models.CreateFeatureDto](),
 				CreateFeature,
 			)
-			features.GET("/:id",
-				middlewares.GetFeature(),
+			features.GET("/:feature",
+				middlewares.Get[*models.Feature]("feature"),
 				GetFeature,
 			)
-			features.GET("/:id/toggle",
+			features.GET("/:feature/toggle",
 				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
-				middlewares.GetFeature(),
+				middlewares.Get[*models.Feature]("feature"),
 				ToggleFeature,
 			)
-			features.PATCH("/:id",
+			features.PATCH("/:feature",
 				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
-				middlewares.GetFeature(),
+				middlewares.Get[*models.Feature]("feature"),
 				middlewares.Validate[models.UpdateFeatureDto](),
 				UpdateFeature,
 			)
-			features.DELETE("/:id",
+			features.DELETE("/:feature",
 				middlewares.IsLoggedIn(true),
 				middlewares.IsAdmin(),
-				middlewares.GetFeature(),
+				middlewares.Get[*models.Feature]("feature"),
 				DeleteFeature,
 			)
 		}
@@ -102,9 +143,22 @@ func RegisterRoutes(r *gin.Engine) {
 				Logout,
 			)
 			auth.POST("/refresh", Refresh)
-			auth.POST("/verify", middlewares.Validate[models.VerifyUserDto](), Verify)
-			auth.POST("/request-password-reset", middlewares.Validate[models.RequestPasswordResetDto](), RequestPasswordReset)
-			auth.POST("/reset-password", middlewares.Validate[models.ResetPasswordDto](), ResetPassword)
+			auth.POST("/verify",
+				middlewares.Validate[models.VerifyUserDto](),
+				Verify,
+			)
+			auth.POST("/request-verify",
+				middlewares.Validate[models.RequestCodeDto](),
+				RequestVerification,
+			)
+			auth.POST("/request-password-reset",
+				middlewares.Validate[models.RequestCodeDto](),
+				RequestPasswordReset,
+			)
+			auth.POST("/reset-password",
+				middlewares.Validate[models.ResetPasswordDto](),
+				ResetPassword,
+			)
 			auth.GET("/:provider/callback", OAuth2Callback)
 		}
 
@@ -119,52 +173,231 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Validate[models.CreateTournamentDto](),
 				CreateTournament,
 			)
-			tournaments.GET("/:id",
-				middlewares.GetTournament(),
+			tournaments.POST("/:tournament/image",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.IsTournamentOwner(),
+				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
+				UploadTournamentImage,
+			)
+			tournaments.GET("/:tournament",
+				middlewares.Get[*models.Tournament]("tournament"),
 				GetTournament,
 			)
-			tournaments.PATCH("/:id",
+			tournaments.PATCH("/:tournament",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.IsTournamentOwner(),
 				middlewares.Validate[models.UpdateTournamentDto](),
 				UpdateTournament,
 			)
-			tournaments.DELETE("/:id",
+			tournaments.DELETE("/:tournament",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.IsTournamentOwner(),
 				DeleteTournament,
 			)
-			tournaments.POST("/:id/join",
+			tournaments.POST("/:tournament/team/:team/join",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
 				JoinTournament,
 			)
-			tournaments.POST("/:id/invite",
+			tournaments.POST("/:tournament/invite",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.IsTournamentOwner(),
-				middlewares.Validate[models.InviteUserDto](),
-				InviteUserToTournament,
+				middlewares.Validate[models.InviteTeamDto](),
+				InviteTeamToTournament,
 			)
-			tournaments.DELETE("/:id/leave",
+			tournaments.GET("/:tournament/team/:team/accept",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				AcceptTournamentInvitation,
+			)
+			tournaments.GET("/:tournament/team/:team/reject",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				RejectTournamentInvitation,
+			)
+			tournaments.DELETE("/:tournament/team/:team/leave",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
 				LeaveTournament,
 			)
-			tournaments.DELETE("/:id/kick",
+			tournaments.DELETE("/:tournament/kick",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.IsTournamentOwner(),
-				middlewares.Validate[models.InviteUserDto](),
+				middlewares.Validate[models.InviteTeamDto](),
 				KickUserFromTournament,
 			)
-			tournaments.PATCH("/:id/toggle-private",
+			tournaments.PATCH("/:tournament/toggle-private",
 				middlewares.IsLoggedIn(true),
-				middlewares.GetTournament(),
+				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.IsTournamentOwner(),
 				TogglePrivateTournament,
+			)
+			tournaments.POST("/:tournament/bracket",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.IsTournamentOwner(),
+				GenerateTournamentBracket,
+			)
+		}
+
+		teams := api.Group("/teams")
+		{
+			teams.GET("/",
+				middlewares.QueryFilter(),
+				GetTeams,
+			)
+			teams.POST("/",
+				middlewares.IsLoggedIn(true),
+				middlewares.Validate[models.CreateTeamDto](),
+				CreateTeam,
+			)
+			teams.GET("/:team",
+				middlewares.Get[*models.Team]("team"),
+				GetTeam,
+			)
+			teams.PATCH("/:team",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				middlewares.Validate[models.UpdateTeamDto](),
+				UpdateTeam,
+			)
+			teams.DELETE("/:team",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				DeleteTeam,
+			)
+			teams.POST("/:team/join",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				JoinTeam,
+			)
+			teams.DELETE("/:team/leave",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				LeaveTeam,
+			)
+			teams.POST("/:team/invite",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				middlewares.Validate[models.InviteUserDto](),
+				InviteUserToTeam,
+			)
+			teams.GET("/:team/accept",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				AcceptTeamInvitation,
+			)
+			teams.GET("/:team/reject",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				RejectTeamInvitation,
+			)
+			teams.DELETE("/:team/kick",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				middlewares.Validate[models.InviteUserDto](),
+				KickUserFromTeam,
+			)
+			teams.PATCH("/:team/toggle-private",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				TogglePrivateTeam,
+			)
+		}
+
+		games := api.Group("/games")
+		{
+			games.GET("/",
+				middlewares.QueryFilter(),
+				GetGames,
+			)
+			games.POST("/",
+				middlewares.IsLoggedIn(true),
+				middlewares.IsAdmin(),
+				middlewares.Validate[models.CreateGameDto](),
+				CreateGame,
+			)
+			games.GET("/:game",
+				middlewares.Get[*models.Game]("game"),
+				GetGame,
+			)
+			games.PATCH("/:game",
+				middlewares.IsLoggedIn(true),
+				middlewares.IsAdmin(),
+				middlewares.Get[*models.Game]("game"),
+				middlewares.Validate[models.UpdateGameDto](),
+				UpdateGame,
+			)
+			games.DELETE("/:game",
+				middlewares.IsLoggedIn(true),
+				middlewares.IsAdmin(),
+				middlewares.Get[*models.Game]("game"),
+				DeleteGame,
+			)
+			games.POST("/:game/image",
+				middlewares.IsLoggedIn(true),
+				middlewares.IsAdmin(),
+				middlewares.Get[*models.Game]("game"),
+				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
+				UploadGameImage,
+			)
+		}
+
+		matches := api.Group("/matches")
+		{
+			matches.GET("/",
+				middlewares.QueryFilter(),
+				GetMatchs,
+			)
+			matches.GET("/:match",
+				middlewares.Get[*models.Match]("match"),
+				GetMatch,
+			)
+			matches.PATCH("/:match",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Match]("match"),
+				middlewares.IsMatchTournmanentOwner(),
+				middlewares.Validate[models.UpdateMatchDto](),
+				UpdateMatch,
+			)
+			matches.PATCH("/:match/team/:team/score",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Match]("match"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				middlewares.IsTeamInMatch(),
+				middlewares.Validate[models.ScoreMatchDto](),
+				ScoreMatch,
+			)
+		}
+
+		invit := api.Group("/invit")
+		{
+			invit.GET("/tournaments/:inout",
+				middlewares.IsLoggedIn(true),
+				GetInvitTournament,
+			)
+			invit.GET("/teams/:inout",
+				middlewares.IsLoggedIn(true),
+				GetInvitTeam,
 			)
 		}
 	}

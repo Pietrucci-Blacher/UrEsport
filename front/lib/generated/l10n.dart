@@ -319,6 +319,226 @@ class S {
       args: [email],
     );
   }
+
+  /// `Resend code`
+  String get resendCode {
+    return Intl.message(
+      'Resend code',
+      name: 'resendCode',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invite`
+  String get inviteButton {
+    return Intl.message(
+      'Invite',
+      name: 'inviteButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have been invited successfully`
+  String get inviteSuccess {
+    return Intl.message(
+      'You have been invited successfully',
+      name: 'inviteSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An error occurred while sending the invitation`
+  String get inviteError {
+    return Intl.message(
+      'An error occurred while sending the invitation',
+      name: 'inviteError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close`
+  String get closeButton {
+    return Intl.message(
+      'Close',
+      name: 'closeButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join`
+  String get joinButton {
+    return Intl.message(
+      'Join',
+      name: 'joinButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Games`
+  String get gameButton {
+    return Intl.message(
+      'All Games',
+      name: 'gameButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Welcome to the Game Screen!`
+  String get gameScreenWelcome {
+    return Intl.message(
+      'Welcome to the Game Screen!',
+      name: 'gameScreenWelcome',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Games`
+  String get gameScreenTitle {
+    return Intl.message(
+      'Games',
+      name: 'gameScreenTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Modify Game`
+  String get modifyGameButton {
+    return Intl.message(
+      'Modify Game',
+      name: 'modifyGameButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Game`
+  String get deleteGameButton {
+    return Intl.message(
+      'Delete Game',
+      name: 'deleteGameButton',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Trending Tournaments`
+  String get trendingTournamentsTitle {
+    return Intl.message(
+      'Trending Tournaments',
+      name: 'trendingTournamentsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Popular Games`
+  String get popularGamesTitle {
+    return Intl.message(
+      'Popular Games',
+      name: 'popularGamesTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View All`
+  String get viewAll {
+    return Intl.message(
+      'View All',
+      name: 'viewAll',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Profile`
+  String get editProfile {
+    return Intl.message(
+      'Edit Profile',
+      name: 'editProfile',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save`
+  String get save {
+    return Intl.message(
+      'Save',
+      name: 'save',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel`
+  String get cancel {
+    return Intl.message(
+      'Cancel',
+      name: 'cancel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Danger Zone`
+  String get dangerZone {
+    return Intl.message(
+      'Danger Zone',
+      name: 'dangerZone',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Logout`
+  String get logout {
+    return Intl.message(
+      'Logout',
+      name: 'logout',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Account`
+  String get deleteAccount {
+    return Intl.message(
+      'Delete Account',
+      name: 'deleteAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Confirm`
+  String get confirm {
+    return Intl.message(
+      'Confirm',
+      name: 'confirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Cancel Editing`
+  String get cancelEditing {
+    return Intl.message(
+      'Cancel Editing',
+      name: 'cancelEditing',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -1,0 +1,58 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  desc "Submit a new Beta Build to Crashlytics Beta"
+  lane :beta do
+    gradle(
+      task: "clean",
+      build_type: "release"
+    )
+    gradle(
+      task: "assembleRelease"
+    )
+    crashlytics(
+      api_key: "YOUR_CRASHLYTICS_API_KEY",
+      build_type: "release",
+      build_number: "1.0.0",
+      build_name: "Beta Build",
+      groups: ["Crashlytics Beta"]
+    )
+  end
+
+  desc "Deploy a new version to the Google Play Store"
+  lane :deploy_to_play_store do
+    gradle(
+      task: "clean",
+      build_type: "release"
+    )
+    gradle(
+      task: "assembleRelease"
+    )
+    upload_to_play_store(
+      track: "production",
+      apk: "path/to/your/signed/production.apk",
+      keystore_path: "path/to/your/keystore.jks",
+      keystore_alias: "your_keystore_alias",
+      keystore_password: "your_keystore_password",
+      key_alias: "your_key_alias",
+      key_password: "your_key_password"
+    )
+  end
+end
+
+default_platform(:android) do
+  flutter_sdk_path "path/to/your/flutter/sdk"
+end
