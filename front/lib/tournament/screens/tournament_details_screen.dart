@@ -6,7 +6,8 @@ import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/tournament/screens/tournament_particip.dart';
-import 'package:uresport/widgets/custom_toast.dart'; // Assurez-vous que le chemin est correct
+import 'package:uresport/widgets/custom_toast.dart';
+import 'package:uresport/widgets/rating.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
   final Tournament tournament;
@@ -139,10 +140,10 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 4),
-                        UpvoteButton(
-                          tournament: widget.tournament,
-                          showCustomToast: showNotificationToast,
-                        ), // Utiliser le widget personnalisé
+                        /*UpvoteButton(
+                                tournament: widget.tournament,
+                                showCustomToast: showNotificationToast,
+                              ),*/ // Utiliser le widget personnalisé
                       ],
                     ),
                   ),
@@ -254,6 +255,11 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                     child: Text(widget.tournament.isPrivate ? 'Envoyer demande pour rejoindre' : 'Rejoindre le tournoi'),
                   ),
                 ),
+              const SizedBox(height: 16),
+              RatingWidget(
+                tournamentId: widget.tournament.id, // Utilisation correcte de l'ID de tournoi
+                showCustomToast: showNotificationToast,
+              ),
             ],
           ),
         ),
@@ -293,128 +299,5 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
 
   Future<void> _sendJoinRequest(BuildContext context, int tournamentId, int teamId) async {
     showNotificationToast(context, 'Demande pour rejoindre envoyée', backgroundColor: Colors.orange);
-  }
-}
-
-class UpvoteButton extends StatefulWidget {
-  final Tournament tournament;
-  final void Function(BuildContext, String, {Color? backgroundColor, Color? textColor}) showCustomToast;
-
-  const UpvoteButton({
-    super.key,
-    required this.tournament,
-    required this.showCustomToast,
-  });
-
-  @override
-  _UpvoteButtonState createState() => _UpvoteButtonState();
-}
-
-class _UpvoteButtonState extends State<UpvoteButton> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-  late Animation<Color?> _colorAnimation;
-  bool _isUpvoted = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _controller = AnimationController(
-      duration: const Duration(milliseconds: 500),
-      vsync: this,
-    );
-    _colorAnimation = ColorTween(
-      begin: Colors.grey,
-      end: Colors.deepOrange,
-    ).animate(_controller);
-
-    _checkIfUpvoted();
-  }
-
-  Future<void> _checkIfUpvoted() async {
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
-
-    try {
-      bool hasUpvoted = await tournamentService.hasUpvoted(widget.tournament.id, 'username');
-      setState(() {
-        _isUpvoted = hasUpvoted;
-      });
-      if (_isUpvoted) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-    } catch (e) {
-      print('Error checking if upvoted: $e');
-    }
-  }
-
-  Future<void> _toggleUpvote() async {
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
-
-    if (_isUpvoted) {
-      final shouldRemove = await showDialog<bool>(
-        context: context,
-        builder: (context) => AlertDialog(
-          title: const Text('Remove Upvote'),
-          content: const Text('Are you sure you want to remove your upvote?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(false),
-              child: const Text('No'),
-            ),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(true),
-              child: const Text('Yes'),
-            ),
-          ],
-        ),
-      );
-
-      if (shouldRemove != true) {
-        return;
-      }
-    }
-
-    try {
-      await tournamentService.upvoteTournament(widget.tournament.id, 'username');
-      setState(() {
-        _isUpvoted = !_isUpvoted;
-      });
-      if (_isUpvoted) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
-      widget.showCustomToast(context, 'Upvote status changed successfully', backgroundColor: Colors.green);
-    } catch (e) {
-      print('Upvote failed: $e');
-      widget.showCustomToast(context, 'Failed to change upvote status: $e', backgroundColor: Colors.red);
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: _toggleUpvote,
-      child: Row(
-        children: [
-          AnimatedBuilder(
-            animation: _controller,
-            builder: (context, child) => Icon(
-              Icons.local_fire_department,
-              color: _colorAnimation.value,
-            ),
-          ),
-          const SizedBox(width: 4),
-          Text('${widget.tournament.upvotes + (_isUpvoted ? 1 : 0)}'), // Affiche le nombre de upvotes
-        ],
-      ),
-    );
   }
 }

@@ -224,6 +224,37 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Get[*models.Tournament]("tournament"),
 				AddUpvote,
 			)
+			tournaments.GET("/:tournament/ratings",
+				middlewares.QueryFilter(),
+				middlewares.Get[*models.Tournament]("tournament"),
+				GetRatings,
+			)
+			tournaments.GET("/:tournament/ratings/:rating",
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.GetRating("rating"),
+				GetRatingById,
+			)
+			tournaments.POST("/:tournament/ratings",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Validate[models.CreateRatingDto](),
+				CreateRating,
+			)
+			tournaments.PATCH("/:tournament/ratings/:rating",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.GetRating("rating"),
+				middlewares.IsRatingOwner(),
+				middlewares.Validate[models.UpdateRatingDto](),
+				UpdateRating,
+			)
+			tournaments.DELETE("/:tournament/ratings/:rating",
+				middlewares.IsLoggedIn(true),
+				//middlewares.GetRating("rating"),
+				middlewares.IsRatingOwner(),
+				DeleteRating,
+			)
+
 		}
 
 		teams := api.Group("/teams")
