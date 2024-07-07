@@ -27,6 +27,9 @@ class MatchService implements IMatchService {
         queryParameters: queryParameters,
       );
 
+      print('status code: ${response.statusCode}');
+      print('response: ${response.data}');
+
       if (response.statusCode != 200) {
         throw DioException(
           requestOptions: response.requestOptions,
@@ -36,9 +39,19 @@ class MatchService implements IMatchService {
         );
       }
 
-      return (response.data as List)
+      print('test');
+
+      final List<Match> test = response.data
           .map((json) => Match.fromJson(json))
           .toList();
+
+      print('test: $test');
+
+      return test;
+
+      // return (response.data as List)
+      //     .map((json) => Match.fromJson(json))
+      //     .toList();
     } catch (e) {
       if (e is DioException) {
         rethrow;

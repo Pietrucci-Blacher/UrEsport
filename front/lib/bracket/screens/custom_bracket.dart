@@ -6,6 +6,10 @@ import 'package:uresport/bracket/bloc/custom_bracket/custom_bracket_bloc.dart';
 import 'package:uresport/bracket/bloc/custom_bracket/custom_bracket_event.dart';
 import 'package:uresport/bracket/bloc/custom_bracket/custom_bracket_state.dart';
 import 'package:uresport/bracket/models/team.dart';
+import 'package:uresport/core/models/match.dart';
+import 'package:uresport/core/services/match_service.dart';
+import 'package:dio/dio.dart';
+import 'package:uresport/core/services/bracket_service.dart';
 
 class TournamentBracketPage extends StatelessWidget {
   const TournamentBracketPage({super.key});
@@ -13,7 +17,7 @@ class TournamentBracketPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => CustomBracketBloc()..add(LoadCustomBracket()),
+      create: (_) => BracketBloc(MatchService(Dio()))..add(const LoadBracket()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Tournament Bracket'),
@@ -24,13 +28,14 @@ class TournamentBracketPage extends StatelessWidget {
             },
           ),
         ),
-        body: BlocBuilder<CustomBracketBloc, CustomBracketState>(
+        body: BlocBuilder<BracketBloc, BracketState>(
           builder: (context, state) {
-            if (state is CustomBracketLoading) {
+            if (state is BracketLoading) {
               return const Center(child: CircularProgressIndicator());
-            } else if (state is CustomBracketLoaded) {
-              return BracketContent(teams: state.teams, roundNames: state.roundNames);
-            } else if (state is CustomBracketError) {
+            } else if (state is BracketLoaded) {
+              BracketService bracket = BracketService(state.matches);
+              return BracketContent(bracket: bracket, roundNames: state.roundNames);
+            } else if (state is BracketError) {
               return Center(child: Text(state.message));
             } else {
               return const Center(child: Text('Unknown state'));
@@ -43,10 +48,11 @@ class TournamentBracketPage extends StatelessWidget {
 }
 
 class BracketContent extends StatefulWidget {
-  final List<List<Team>> teams;
+  // final List<Match> matches;
+  final BracketService bracket;
   final List<String> roundNames;
 
-  const BracketContent({required this.teams, required this.roundNames, super.key});
+  const BracketContent({required this.bracket, required this.roundNames, super.key});
 
   @override BracketContentState createState() => BracketContentState();
 }
@@ -152,7 +158,8 @@ class BracketContentState extends State<BracketContent> {
                   primaryColor: const Color.fromARGB(255, 236, 236, 236),
                   secondaryColor: const Color.fromARGB(15, 194, 236, 147),
                 ),
-                containt: widget.teams,
+                // containt: widget.teams,
+                containt: [],
                 teamNameBuilder: (Team t) => BracketText(
                   text: '${t.name} (${t.score})',
                   textStyle: const TextStyle(
@@ -192,7 +199,8 @@ class BracketContentState extends State<BracketContent> {
   }
 
   Widget _buildRoundButton(int index) {
-    int numMatches = widget.teams[index].length ~/ 2;
+    // int numMatches = widget.teams[index].length ~/ 2;
+    int numMatches = 0;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(numMatches, (i) => const Divider(thickness: 2)),

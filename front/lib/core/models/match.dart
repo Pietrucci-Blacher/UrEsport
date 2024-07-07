@@ -22,6 +22,7 @@ class Match {
   });
 
   factory Match.fromJson(Map<String, dynamic> json) {
+    print('json: $json'); 
     return Match(
       id: json['id'],
       tournamentId: json['tournament_id'],
