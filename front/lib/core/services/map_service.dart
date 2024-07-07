@@ -20,22 +20,33 @@ class MapService implements IMapService {
 
   @override
   Future<void> initializeMap(MapboxMap map) async {
+    print('initializeMap called');
     _mapboxMap = map;
-    await _mapboxMap!.location.updateSettings(
-      LocationComponentSettings(
-        enabled: true,
-        pulsingEnabled: true,
-      ),
-    );
+    print('Map initialized: $_mapboxMap');
+
+    try {
+      await _mapboxMap!.location.updateSettings(
+        LocationComponentSettings(
+          enabled: true,
+          pulsingEnabled: true,
+        ),
+      );
+      print('Location settings updated');
+    } catch (e) {
+      print('Failed to update location settings: $e');
+      throw Exception('Failed to update location settings');
+    }
   }
 
   @override
   bool isMapInitialized() {
+    print('isMapInitialized called, _mapboxMap: $_mapboxMap');
     return _mapboxMap != null;
   }
 
   @override
   Future<Map<String, double>> getCurrentLocation() async {
+    print('getCurrentLocation called');
     if (!isMapInitialized()) {
       throw Exception('Map is not initialized');
     }
@@ -44,6 +55,8 @@ class MapService implements IMapService {
     if (locationSettings.enabled ?? false) {
       final cameraState = await _mapboxMap!.getCameraState();
       final center = cameraState.center;
+      print(
+          'Current location: latitude=${center.coordinates[1]}, longitude=${center.coordinates[0]}');
       return {
         'latitude': center.coordinates[1]!.toDouble(),
         'longitude': center.coordinates[0]!.toDouble(),
@@ -56,6 +69,7 @@ class MapService implements IMapService {
   @override
   Future<List<List<double>>> getDirections(
       Point origin, Point destination) async {
+    print('getDirections called');
     final originPosition = origin.coordinates;
     final destinationPosition = destination.coordinates;
 
@@ -70,11 +84,13 @@ class MapService implements IMapService {
     if (response.statusCode == 200) {
       final data = response.data;
       final coordinates = data['routes'][0]['geometry']['coordinates'];
+      print('Directions retrieved successfully');
       return coordinates
           .map<List<double>>(
               (coord) => [coord[1] as double, coord[0] as double])
           .toList();
     } else {
+      print('Failed to load directions, status code: ${response.statusCode}');
       throw Exception('Failed to load directions');
     }
   }

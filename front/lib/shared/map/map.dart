@@ -193,212 +193,203 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     return BlocProvider(
       create: (context) => MapBloc(
         mapService: RepositoryProvider.of<MapService>(context),
-      )..add(LoadMap(widget.tournaments, _showTournamentDetails)),
-      child: Scaffold(
-        appBar: AppBar(
-          title: TextField(
-            controller: _searchController,
-            decoration: InputDecoration(
-              hintText: 'Search for a tournament',
-              border: InputBorder.none,
-              prefixIcon: const Icon(Icons.search),
-              suffixIcon: IconButton(
-                icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
-                onPressed: () {
-                  if (_isListening) {
-                    _stopListening();
-                  } else {
-                    _startListening();
-                  }
-                },
-              ),
-            ),
-            onChanged: (query) => _filterTournaments(query),
-            onTap: () {
-              setState(() {
-                _searching = true;
-              });
-            },
-          ),
-          leading: _searching
-              ? IconButton(
-                  icon: const Icon(Icons.arrow_back),
-                  onPressed: () {
-                    setState(() {
-                      _searching = false;
-                      _searchController.clear();
-                    });
-                  },
-                )
-              : null,
-        ),
-        body: BlocConsumer<MapBloc, MapState>(
-          listener: (context, state) {
-            if (state is MapLoaded) {
-              if (_isMapInitialized()) {
-                _mapboxMap.flyTo(
-                  CameraOptions(
-                    center: state.position,
-                    zoom: 14.0,
-                  ),
-                  MapAnimationOptions(duration: 2000, startDelay: 0),
-                );
-              }
-            } else if (state is DirectionsLoaded) {
-              context.read<MapBloc>().add(
-                  UpdateMarkers(widget.tournaments, _showTournamentDetails));
+      ),
+      child: BlocConsumer<MapBloc, MapState>(
+        listener: (context, state) {
+          if (state is MapLoaded) {
+            print('Map is loaded with position: ${state.position}');
+            if (_isMapInitialized()) {
+              _mapboxMap.flyTo(
+                CameraOptions(
+                  center: state.position,
+                  zoom: 14.0,
+                ),
+                MapAnimationOptions(duration: 2000, startDelay: 0),
+              );
             }
-          },
-          builder: (context, state) {
-            if (state is MapLoaded || state is DirectionsLoaded) {
-              return Stack(
-                children: [
-                  MapWidget(
-                    cameraOptions: CameraOptions(
-                      center: Point(coordinates: Position(0.0, 0.0)),
-                      zoom: 2.0,
-                    ),
-                    styleUri: MapboxStyles.MAPBOX_STREETS,
-                    onMapCreated: (MapboxMap controller) {
-                      _mapboxMap = controller;
-                      context.read<MapBloc>().add(SetMapController(controller));
-                      if (state is MapLoaded) {
-                        controller.flyTo(
-                          CameraOptions(
-                            center: state.position,
-                            zoom: 14.0,
-                          ),
-                          MapAnimationOptions(duration: 2000, startDelay: 0),
-                        );
+          } else if (state is DirectionsLoaded) {
+            context
+                .read<MapBloc>()
+                .add(UpdateMarkers(widget.tournaments, _showTournamentDetails));
+          } else if (state is MapInitialized) {
+            print('Map initialized successfully');
+            context
+                .read<MapBloc>()
+                .add(LoadMap(widget.tournaments, _showTournamentDetails));
+          } else if (state is MapError) {
+            print('Error: ${state.error}');
+          }
+        },
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search for a tournament',
+                  border: InputBorder.none,
+                  prefixIcon: const Icon(Icons.search),
+                  suffixIcon: IconButton(
+                    icon: Icon(_isListening ? Icons.mic : Icons.mic_none),
+                    onPressed: () {
+                      if (_isListening) {
+                        _stopListening();
+                      } else {
+                        _startListening();
                       }
                     },
                   ),
-                  if (_searching)
-                    Positioned.fill(
-                      child: GestureDetector(
-                        onTap: () => setState(() => _searching = false),
-                        child: Container(
-                          color: Colors.black54,
-                          child: Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Card(
-                              child: Padding(
-                                padding:
-                                    const EdgeInsets.symmetric(horizontal: 8.0),
-                                child: Column(
-                                  children: [
-                                    Expanded(
-                                      child: ListView.builder(
-                                        shrinkWrap: true,
-                                        itemCount:
-                                            _searchController.text.isEmpty
-                                                ? _recentSearches.length
-                                                : _filteredTournaments.length,
-                                        itemBuilder: (context, index) {
-                                          if (_searchController.text.isEmpty) {
-                                            return ListTile(
-                                              leading:
-                                                  const Icon(Icons.history),
-                                              title:
-                                                  Text(_recentSearches[index]),
-                                              onTap: () {
-                                                _searchController.text =
-                                                    _recentSearches[index];
-                                                _filterTournaments(
-                                                    _recentSearches[index]);
-                                              },
-                                            );
-                                          } else {
-                                            final tournament =
-                                                _filteredTournaments[index];
-                                            return ListTile(
-                                              title: Text(tournament.name),
-                                              onTap: () {
-                                                if (_isMapInitialized()) {
-                                                  _mapboxMap.flyTo(
-                                                    CameraOptions(
-                                                      center: Point(
-                                                        coordinates: Position(
-                                                          tournament.longitude,
-                                                          tournament.latitude,
-                                                        ),
+                ),
+                onChanged: (query) => _filterTournaments(query),
+                onTap: () {
+                  setState(() {
+                    _searching = true;
+                  });
+                },
+              ),
+              leading: _searching
+                  ? IconButton(
+                      icon: const Icon(Icons.arrow_back),
+                      onPressed: () {
+                        setState(() {
+                          _searching = false;
+                          _searchController.clear();
+                        });
+                      },
+                    )
+                  : null,
+            ),
+            body: Stack(
+              children: [
+                MapWidget(
+                  cameraOptions: CameraOptions(
+                    center: Point(coordinates: Position(0.0, 0.0)),
+                    zoom: 2.0,
+                  ),
+                  styleUri: MapboxStyles.MAPBOX_STREETS,
+                  onMapCreated: (MapboxMap controller) {
+                    print('Map created, calling SetMapController...');
+                    _mapboxMap = controller;
+                    context.read<MapBloc>().add(SetMapController(controller));
+                  },
+                  logoViewMargins: const Point(
+                      10, -100), // This will move the Mapbox logo off-screen
+                ),
+                if (_searching)
+                  Positioned.fill(
+                    child: GestureDetector(
+                      onTap: () => setState(() => _searching = false),
+                      child: Container(
+                        color: Colors.black54,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Card(
+                            child: Padding(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              child: Column(
+                                children: [
+                                  Expanded(
+                                    child: ListView.builder(
+                                      shrinkWrap: true,
+                                      itemCount: _searchController.text.isEmpty
+                                          ? _recentSearches.length
+                                          : _filteredTournaments.length,
+                                      itemBuilder: (context, index) {
+                                        if (_searchController.text.isEmpty) {
+                                          return ListTile(
+                                            leading: const Icon(Icons.history),
+                                            title: Text(_recentSearches[index]),
+                                            onTap: () {
+                                              _searchController.text =
+                                                  _recentSearches[index];
+                                              _filterTournaments(
+                                                  _recentSearches[index]);
+                                            },
+                                          );
+                                        } else {
+                                          final tournament =
+                                              _filteredTournaments[index];
+                                          return ListTile(
+                                            title: Text(tournament.name),
+                                            onTap: () {
+                                              if (_isMapInitialized()) {
+                                                _mapboxMap.flyTo(
+                                                  CameraOptions(
+                                                    center: Point(
+                                                      coordinates: Position(
+                                                        tournament.longitude,
+                                                        tournament.latitude,
                                                       ),
-                                                      zoom: 14.0,
                                                     ),
-                                                    MapAnimationOptions(
-                                                        duration: 2000,
-                                                        startDelay: 0),
-                                                  );
-                                                  setState(() {
-                                                    _searching = false;
-                                                  });
-                                                  _showTournamentDetails(
-                                                      tournament);
-                                                }
-                                              },
-                                            );
-                                          }
-                                        },
-                                      ),
+                                                    zoom: 14.0,
+                                                  ),
+                                                  MapAnimationOptions(
+                                                      duration: 2000,
+                                                      startDelay: 0),
+                                                );
+                                                setState(() {
+                                                  _searching = false;
+                                                });
+                                                _showTournamentDetails(
+                                                    tournament);
+                                              }
+                                            },
+                                          );
+                                        }
+                                      },
                                     ),
-                                  ],
-                                ),
+                                  ),
+                                ],
                               ),
                             ),
                           ),
                         ),
                       ),
                     ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: IgnorePointer(
-                      ignoring: _searching,
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            FloatingActionButton(
-                              heroTag: 'zoomInButton',
-                              onPressed: () =>
-                                  context.read<MapBloc>().add(ZoomIn()),
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.padded,
-                              child: const Icon(Icons.zoom_in),
-                            ),
-                            const SizedBox(height: 10),
-                            FloatingActionButton(
-                              heroTag: 'zoomOutButton',
-                              onPressed: () =>
-                                  context.read<MapBloc>().add(ZoomOut()),
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.padded,
-                              child: const Icon(Icons.zoom_out),
-                            ),
-                            const SizedBox(height: 10),
-                            FloatingActionButton(
-                              heroTag: 'locationButton',
-                              onPressed: () => context
-                                  .read<MapBloc>()
-                                  .add(CenterOnCurrentLocation()),
-                              materialTapTargetSize:
-                                  MaterialTapTargetSize.padded,
-                              child: const Icon(Icons.my_location),
-                            ),
-                          ],
-                        ),
+                  ),
+                Align(
+                  alignment: Alignment.bottomRight,
+                  child: IgnorePointer(
+                    ignoring: _searching,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          FloatingActionButton(
+                            heroTag: 'zoomInButton',
+                            onPressed: () =>
+                                context.read<MapBloc>().add(ZoomIn()),
+                            materialTapTargetSize: MaterialTapTargetSize.padded,
+                            child: const Icon(Icons.zoom_in),
+                          ),
+                          const SizedBox(height: 10),
+                          FloatingActionButton(
+                            heroTag: 'zoomOutButton',
+                            onPressed: () =>
+                                context.read<MapBloc>().add(ZoomOut()),
+                            materialTapTargetSize: MaterialTapTargetSize.padded,
+                            child: const Icon(Icons.zoom_out),
+                          ),
+                          const SizedBox(height: 10),
+                          FloatingActionButton(
+                            heroTag: 'locationButton',
+                            onPressed: () => context
+                                .read<MapBloc>()
+                                .add(CenterOnCurrentLocation()),
+                            materialTapTargetSize: MaterialTapTargetSize.padded,
+                            child: const Icon(Icons.my_location),
+                          ),
+                        ],
                       ),
                     ),
                   ),
-                ],
-              );
-            } else if (state is MapError) {
-              return Center(child: Text(state.error));
-            } else {
-              return const Center(child: CircularProgressIndicator());
-            }
-          },
-        ),
+                ),
+              ],
+            ),
+          );
+        },
       ),
     );
   }
