@@ -77,6 +77,8 @@ func main() {
 	gin.SetMode(ginMode)
 
 	r := gin.Default()
+	r.Use(gin.Logger())
+    r.Use(gin.Recovery())
 
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 
@@ -88,9 +90,6 @@ func main() {
 		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
-
-	r.Use(gin.Logger())
-	r.Use(gin.Recovery())
 
 	controllers.RegisterRoutes(r)
 	websockets.RegisterWebsocket(r)
