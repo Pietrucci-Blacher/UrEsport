@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:uresport/core/models/game.dart';
-import 'package:uresport/shared/utils/filter_button.dart';
 
 class GameDetailPage extends StatelessWidget {
   final Game game;
@@ -89,12 +88,6 @@ class GameDetailPage extends StatelessWidget {
           ],
         ),
       ),
-      floatingActionButton: FilterButton(
-        onFilterChanged: (selectedTags) {
-          // Implement filter logic here
-        },
-      ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
     );
   }
 }

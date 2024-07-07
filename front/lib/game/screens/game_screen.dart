@@ -9,8 +9,14 @@ import 'package:uresport/game/bloc/game_state.dart';
 import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/shared/utils/filter_button.dart';
 
-class GamesScreen extends StatelessWidget {
+class GamesScreen extends StatefulWidget {
   const GamesScreen({super.key});
+
+  @override GamesScreenState createState() => GamesScreenState();
+}
+
+class GamesScreenState extends State<GamesScreen> {
+  final Set<String> _selectedTags = {};
 
   @override
   Widget build(BuildContext context) {
@@ -31,7 +37,23 @@ class GamesScreen extends StatelessWidget {
                   itemCount: state.games.length,
                   itemBuilder: (context, index) {
                     final game = state.games[index];
-                    return GameCard(game: game);
+                    return GameCard(
+                      game: game,
+                      onTagSelected: (tag) {
+                        setState(() {
+                          if (_selectedTags.contains(tag)) {
+                            _selectedTags.remove(tag);
+                          } else {
+                            _selectedTags.add(tag);
+                          }
+                        });
+                        if (_selectedTags.isEmpty) {
+                          context.read<GameBloc>().add(const LoadGames());
+                        } else {
+                          context.read<GameBloc>().add(FilterGames(_selectedTags.toList()));
+                        }
+                      },
+                    );
                   },
                 ),
               );
@@ -44,7 +66,15 @@ class GamesScreen extends StatelessWidget {
         ),
         floatingActionButton: FilterButton(
           onFilterChanged: (selectedTags) {
-            // Implement filter logic here
+            setState(() {
+              _selectedTags.clear();
+              _selectedTags.addAll(selectedTags);
+            });
+            if (_selectedTags.isEmpty) {
+              context.read<GameBloc>().add(const LoadGames());
+            } else {
+              context.read<GameBloc>().add(FilterGames(_selectedTags.toList()));
+            }
           },
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
@@ -55,8 +85,9 @@ class GamesScreen extends StatelessWidget {
 
 class GameCard extends StatelessWidget {
   final Game game;
+  final void Function(String tag) onTagSelected;
 
-  const GameCard({super.key, required this.game});
+  const GameCard({super.key, required this.game, required this.onTagSelected});
 
   @override
   Widget build(BuildContext context) {
@@ -106,8 +137,11 @@ class GameCard extends StatelessWidget {
                       spacing: 8.0,
                       runSpacing: 4.0,
                       children: game.tags.map((tag) {
-                        return Chip(
-                          label: Text(tag),
+                        return InkWell(
+                          onTap: () => onTagSelected(tag),
+                          child: Chip(
+                            label: Text(tag),
+                          ),
                         );
                       }).toList(),
                     ),
