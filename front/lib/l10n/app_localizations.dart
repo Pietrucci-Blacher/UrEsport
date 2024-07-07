@@ -21,7 +21,7 @@ class AppLocalizations {
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
-  AppLocalizationsDelegate();
+      AppLocalizationsDelegate();
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = [
     delegate,
     GlobalMaterialLocalizations.delegate,

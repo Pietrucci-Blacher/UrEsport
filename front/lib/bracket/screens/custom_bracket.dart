@@ -29,7 +29,8 @@ class TournamentBracketPage extends StatelessWidget {
             if (state is CustomBracketLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is CustomBracketLoaded) {
-              return BracketContent(teams: state.teams, roundNames: state.roundNames);
+              return BracketContent(
+                  teams: state.teams, roundNames: state.roundNames);
             } else if (state is CustomBracketError) {
               return Center(child: Text(state.message));
             } else {
@@ -46,9 +47,11 @@ class BracketContent extends StatefulWidget {
   final List<List<Team>> teams;
   final List<String> roundNames;
 
-  const BracketContent({required this.teams, required this.roundNames, super.key});
+  const BracketContent(
+      {required this.teams, required this.roundNames, super.key});
 
-  @override BracketContentState createState() => BracketContentState();
+  @override
+  BracketContentState createState() => BracketContentState();
 }
 
 class BracketContentState extends State<BracketContent> {
@@ -86,7 +89,9 @@ class BracketContentState extends State<BracketContent> {
                     Text(
                       widget.roundNames[index],
                       style: TextStyle(
-                        fontWeight: selectedLevel == index ? FontWeight.bold : FontWeight.normal,
+                        fontWeight: selectedLevel == index
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                     const SizedBox(height: 8),
@@ -160,7 +165,8 @@ class BracketContentState extends State<BracketContent> {
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                onContainerTapDown: (Team? model, TapDownDetails tapDownDetails) {
+                onContainerTapDown:
+                    (Team? model, TapDownDetails tapDownDetails) {
                   if (model == null) {
                     if (kDebugMode) {
                       print(null);
@@ -202,7 +208,8 @@ class BracketContentState extends State<BracketContent> {
   void _scrollToLevel(int index) {
     final double screenWidth = MediaQuery.of(context).size.width;
     const double itemWidth = 250; // La largeur de chaque stage
-    final double position = index * itemWidth - (screenWidth / 2) + (itemWidth / 2);
+    final double position =
+        index * itemWidth - (screenWidth / 2) + (itemWidth / 2);
 
     _scrollController.animateTo(
       position > 0 ? position : 0,

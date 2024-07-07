@@ -11,7 +11,8 @@ class Dashboard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => DashboardBloc(Websocket.getInstance())..add(ConnectWebSocket()),
+      create: (context) =>
+          DashboardBloc(Websocket.getInstance())..add(ConnectWebSocket()),
       child: Scaffold(
         body: Row(
           children: [

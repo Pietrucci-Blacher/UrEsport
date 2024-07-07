@@ -28,7 +28,7 @@ class HomeScreen extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) =>
-          GameBloc(GameService(Dio()))..add(const LoadGames(limit: 10)),
+              GameBloc(GameService(Dio()))..add(const LoadGames(limit: 10)),
         ),
       ],
       child: Scaffold(
@@ -58,7 +58,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushNamedAndRemoveUntil(context, '/tournaments', (Route<dynamic> route) => false);
+                          Navigator.pushNamedAndRemoveUntil(context,
+                              '/tournaments', (Route<dynamic> route) => false);
                         },
                         child: Row(
                           children: [
@@ -85,7 +86,8 @@ class HomeScreen extends StatelessWidget {
                       ),
                       TextButton(
                         onPressed: () {
-                          Navigator.pushNamedAndRemoveUntil(context, '/games', (Route<dynamic> route) => false);
+                          Navigator.pushNamedAndRemoveUntil(context, '/games',
+                              (Route<dynamic> route) => false);
                         },
                         child: Row(
                           children: [
@@ -139,7 +141,7 @@ class HomeScreen extends StatelessWidget {
 
     final mainTournament = tournaments.first;
     final otherTournaments =
-    tournaments.length > 1 ? tournaments.sublist(1) : [];
+        tournaments.length > 1 ? tournaments.sublist(1) : [];
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,

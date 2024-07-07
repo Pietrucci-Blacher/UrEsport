@@ -85,12 +85,12 @@ class AuthScreen extends StatelessWidget {
                     builder: (context) => LoginScreen(authService: authService),
                   ),
                 ).then(
-                        (_) => context.read<AuthBloc>().add(AuthCheckRequested()));
+                    (_) => context.read<AuthBloc>().add(AuthCheckRequested()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
                 padding:
-                const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),
@@ -108,12 +108,12 @@ class AuthScreen extends StatelessWidget {
                         RegisterScreen(authService: authService),
                   ),
                 ).then(
-                        (_) => context.read<AuthBloc>().add(AuthCheckRequested()));
+                    (_) => context.read<AuthBloc>().add(AuthCheckRequested()));
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
                 padding:
-                const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(20),
                 ),

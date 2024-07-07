@@ -42,11 +42,11 @@ class LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text.trim();
 
     context.read<AuthBloc>().add(
-      LoginButtonPressed(
-        email: email,
-        password: password,
-      ),
-    );
+          LoginButtonPressed(
+            email: email,
+            password: password,
+          ),
+        );
   }
 
   @override
@@ -68,22 +68,24 @@ class LoginScreenState extends State<LoginScreen> {
                     MaterialPageRoute(
                       builder: (context) => const Dashboard(),
                     ),
-                        (Route<dynamic> route) => false,
+                    (Route<dynamic> route) => false,
                   );
                 } else {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
-                      builder: (context) => MainScreen(authService: widget.authService),
+                      builder: (context) =>
+                          MainScreen(authService: widget.authService),
                     ),
-                        (Route<dynamic> route) => false,
+                    (Route<dynamic> route) => false,
                   );
                 }
               } else {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
-                    builder: (context) => MainScreen(authService: widget.authService),
+                    builder: (context) =>
+                        MainScreen(authService: widget.authService),
                   ),
-                      (Route<dynamic> route) => false,
+                  (Route<dynamic> route) => false,
                 );
               }
             }
@@ -91,7 +93,8 @@ class LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
-              child: kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
+              child:
+                  kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
             ),
           ),
         ),

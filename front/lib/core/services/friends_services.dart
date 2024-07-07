@@ -67,7 +67,8 @@ class FriendService implements IFriendService {
   }
 
   @override
-  Future<void> updateFavoriteStatus(int userId, int friendId, bool isFavorite) async {
+  Future<void> updateFavoriteStatus(
+      int userId, int friendId, bool isFavorite) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 

@@ -67,8 +67,8 @@ class CachedImageWidget extends StatelessWidget {
 
   Future<Widget> _buildSvgOrDefaultAvatar(String url, double size) async {
     try {
-      final response = await Dio().get(url,
-          options: Options(responseType: ResponseType.bytes));
+      final response = await Dio()
+          .get(url, options: Options(responseType: ResponseType.bytes));
 
       final Uint8List bytes = Uint8List.fromList(response.data);
 
