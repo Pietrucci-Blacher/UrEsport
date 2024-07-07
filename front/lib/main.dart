@@ -1,4 +1,7 @@
+import 'package:dio/browser.dart';
 import 'package:dio/dio.dart';
+import 'package:dio_web_adapter/dio_web_adapter.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
@@ -17,13 +20,39 @@ import 'app.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
+
   final dio = Dio();
+
+  if (kIsWeb) {
+    dio.options.validateStatus = (status) {
+      return status! < 500;
+    };
+
+    dio.interceptors.add(InterceptorsWrapper(
+      onRequest: (options, handler) {
+        options.headers['Access-Control-Allow-Origin'] = '*';
+        return handler.next(options);
+      },
+      onError: (DioException e, handler) {
+        if (e.response?.statusCode == 405) {
+          return handler.resolve(Response(
+            requestOptions: e.requestOptions,
+            statusCode: 200,
+          ));
+        }
+        return handler.next(e);
+      },
+    ));
+
+    dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
+  }
+
   final authService = AuthService(dio);
   final tournamentService = TournamentService(dio);
   final gameService = GameService(dio);
   final routeGenerator = RouteGenerator(authService);
   final friendService = FriendService(dio);
-  final mapsBoxApiKey = dotenv.env['MAPS_API_KEY']!;
+  final mapsBoxApiKey = dotenv.env['SDK_REGISTRY_TOKEN']!;
   final mapService = MapService(dio: dio, mapboxApiKey: mapsBoxApiKey);
 
   connectWebsocket();
