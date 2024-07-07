@@ -1,6 +1,4 @@
-import 'package:dio/browser.dart';
 import 'package:dio/dio.dart';
-import 'package:dio_web_adapter/dio_web_adapter.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -44,7 +42,7 @@ void main() async {
       },
     ));
 
-    dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
+    // dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
   }
 
   final authService = AuthService(dio);

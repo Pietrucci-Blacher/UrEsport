@@ -16,11 +16,7 @@ def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '
 def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
 
 android {
-<<<<<<< Updated upstream
-    ndkVersion "26.1.10909125"
-=======
     ndkVersion "26.3.11579264"
->>>>>>> Stashed changes
     namespace 'com.example.uresport'
     compileSdk flutter.compileSdkVersion
 
@@ -46,15 +42,6 @@ android {
         versionName flutterVersionName
 
         multiDexEnabled true
-
-<<<<<<< Updated upstream
-        def mapsApiKey = System.env.MAPS_API_KEY ?: findDartDefineValue("MAPS_API_KEY") ?: ""
-        manifestPlaceholders = [
-                MAPS_API_KEY: mapsApiKey,
-                applicationName: "com.example.uresport"
-        ]
-=======
->>>>>>> Stashed changes
     }
 
     buildTypes {
