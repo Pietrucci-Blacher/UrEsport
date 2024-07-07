@@ -60,7 +60,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "notificationScreenTitle":
             MessageLookupByLibrary.simpleMessage("Notifications"),
         "notificationScreenWelcome": MessageLookupByLibrary.simpleMessage(
-            "Welcome to the Notification screens!"),
+            "Welcome to the Notification screen!"),
         "orLoginWith": MessageLookupByLibrary.simpleMessage("Or login with"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordResetEmailSent":
