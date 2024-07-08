@@ -66,3 +66,5 @@ class MarkerTappedState extends MapState {
 }
 
 class DirectionsExported extends MapState {}
+
+class MapCentered extends MapState {}

@@ -134,20 +134,91 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   void _onCenterOnCurrentLocation(
       CenterOnCurrentLocation event, Emitter<MapState> emit) async {
-    if (mapService.isMapInitialized()) {
-      try {
-        final currentLocation = await mapService.getCurrentLocation();
-        final point = createPoint(
-            currentLocation['longitude'], currentLocation['latitude']);
-        if (point == null) {
-          emit(const MapError('Invalid current location'));
-          return;
-        }
-        mapService.flyTo(CameraOptions(center: point, zoom: 14.0),
-            MapAnimationOptions(duration: 2000, startDelay: 0));
-      } catch (e) {
-        emit(MapError(e.toString()));
+    print('Début de _onCenterOnCurrentLocation');
+
+    if (!mapService.isMapInitialized() || _mapboxMap == null) {
+      print('La carte n\'est pas initialisée');
+      emit(const MapError('La carte n\'est pas initialisée'));
+      return;
+    }
+
+    try {
+      print('Mise à jour des paramètres de localisation');
+      await _mapboxMap!.location.updateSettings(
+        LocationComponentSettings(
+            enabled: true, pulsingEnabled: true, puckBearingEnabled: true),
+      );
+
+      print('Récupération de la couche de localisation');
+      Layer? layer;
+      if (Platform.isAndroid) {
+        layer =
+            await _mapboxMap!.style.getLayer("mapbox-location-indicator-layer");
+      } else {
+        layer = await _mapboxMap!.style.getLayer("puck");
       }
+
+      if (layer is LocationIndicatorLayer) {
+        var location = layer.location;
+        if (location != null && location.length >= 2) {
+          final lat = location[1];
+          final lng = location[0];
+
+          print('Coordonnées obtenues : lat=$lat, lng=$lng');
+
+          if (lat != null &&
+              lng != null &&
+              lat >= -90 &&
+              lat <= 90 &&
+              lng >= -180 &&
+              lng <= 180) {
+            final currentPoint = Point(coordinates: Position(lng, lat));
+
+            print('Centrage de la carte dans 500ms');
+            Future.delayed(const Duration(milliseconds: 500), () {
+              if (mapService.isMapInitialized()) {
+                try {
+                  print('Tentative de flyTo');
+                  _mapboxMap!.flyTo(
+                    CameraOptions(center: currentPoint, zoom: 14.0),
+                    MapAnimationOptions(duration: 2000, startDelay: 0),
+                  );
+                  print('flyTo réussi');
+                  emit(MapCentered());
+                } catch (e) {
+                  print('Erreur lors de flyTo : $e');
+                  try {
+                    print('Tentative de setCamera');
+                    _mapboxMap!.setCamera(
+                      CameraOptions(center: currentPoint, zoom: 14.0),
+                    );
+                    print('setCamera réussi');
+                    emit(MapCentered());
+                  } catch (e) {
+                    print('Erreur lors de setCamera : $e');
+                    emit(MapError('Impossible de centrer la carte : $e'));
+                  }
+                }
+              } else {
+                print('La carte n\'est pas prête après le délai');
+                emit(const MapError('La carte n\'est pas prête'));
+              }
+            });
+          } else {
+            print('Coordonnées invalides : lat=$lat, lng=$lng');
+            emit(const MapError('Coordonnées invalides'));
+          }
+        } else {
+          print('Données de localisation invalides');
+          emit(const MapError('Données de localisation invalides'));
+        }
+      } else {
+        print('Impossible d\'obtenir la couche de localisation');
+        emit(const MapError('Impossible d\'obtenir la couche de localisation'));
+      }
+    } catch (e) {
+      print('Erreur lors du centrage de la carte : $e');
+      emit(MapError('Erreur lors du centrage de la carte: ${e.toString()}'));
     }
   }
 

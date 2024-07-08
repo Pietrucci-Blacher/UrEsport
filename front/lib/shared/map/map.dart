@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
+import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/map_service.dart';
@@ -23,10 +24,10 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   bool _searching = false;
   final TextEditingController _searchController = TextEditingController();
   List<Tournament> _filteredTournaments = [];
-  final stt.SpeechToText _speechToText = stt.SpeechToText();
-  bool _isListening = false;
-  final List<String> _recentSearches = ["La Trésor", "Gymnase René Rousseau"];
   late MapService mapService;
+  final List<String> _recentSearches = ["La Trésor", "Gymnase René Rousseau"];
+  bool _isListening = false;
+  final stt.SpeechToText _speechToText = stt.SpeechToText();
 
   @override
   void initState() {
@@ -34,12 +35,26 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     _initializeMap();
     _filteredTournaments = widget.tournaments;
     mapService = RepositoryProvider.of<MapService>(context);
+    _initializeSpeechToText();
   }
 
   @override
   void dispose() {
     _speechToText.stop();
     super.dispose();
+  }
+
+  void _initializeSpeechToText() async {
+    bool available = await _speechToText.initialize(
+      onStatus: (status) => print('Speech recognition status: $status'),
+      onError: (errorNotification) =>
+          print('Speech recognition error: $errorNotification'),
+    );
+    if (available) {
+      print('Speech recognition initialized successfully');
+    } else {
+      print('Speech recognition not available');
+    }
   }
 
   bool _isMapInitialized() {
@@ -207,31 +222,47 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   }
 
   void _startListening() async {
-    bool available = await _speechToText.initialize(
-      onStatus: (val) => setState(() {
-        _isListening = val == 'listening';
-      }),
-      onError: (val) => setState(() {
-        _isListening = false;
-      }),
-    );
-    if (available) {
-      setState(() => _isListening = true);
-      _speechToText.listen(
-        onResult: (val) {
+    try {
+      bool available = await _speechToText.initialize(
+        onStatus: (val) {
+          print('Speech recognition status: $val');
           if (mounted) {
             setState(() {
-              _searchController.text = val.recognizedWords;
-              _filterTournaments(val.recognizedWords);
+              _isListening = val == 'listening';
             });
           }
         },
+        onError: (val) => print('Speech recognition error: $val'),
       );
+      if (available) {
+        if (mounted) {
+          setState(() => _isListening = true);
+        }
+        await _speechToText.listen(
+          onResult: (SpeechRecognitionResult result) {
+            if (mounted) {
+              setState(() {
+                _searchController.text = result.recognizedWords;
+                _filterTournaments(result.recognizedWords);
+              });
+            }
+          },
+          listenFor: const Duration(seconds: 30),
+          pauseFor: const Duration(seconds: 5),
+          partialResults: true,
+        );
+      } else {
+        print('Speech recognition not available');
+      }
+    } catch (e) {
+      print('Error starting speech recognition: $e');
     }
   }
 
   void _stopListening() {
-    setState(() => _isListening = false);
+    if (mounted) {
+      setState(() => _isListening = false);
+    }
     _speechToText.stop();
   }
 
