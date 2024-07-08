@@ -18,7 +18,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (isLoggedIn && isLoggedIn != ws.isLogged()) {
         final token = await CacheService.instance.getString('token');
         ws.reconnect(token: token);
-      } else if (!isLoggedIn && isLoggedIn != ws.isLogged()){
+      } else if (!isLoggedIn && isLoggedIn != ws.isLogged()) {
         ws.reconnect();
       }
 
@@ -130,8 +130,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<ProfileImageUpdated>((event, emit) async {
       if (state is AuthAuthenticated) {
-        final updatedUser = (state as AuthAuthenticated).user.copyWith(profileImageUrl: event.imageUrl);
-        await authService.updateUserInfo(updatedUser.id, {'profile_image_url': event.imageUrl});
+        final updatedUser = (state as AuthAuthenticated)
+            .user
+            .copyWith(profileImageUrl: event.imageUrl);
+        await authService.updateUserInfo(
+            updatedUser.id, {'profile_image_url': event.imageUrl});
         emit(AuthAuthenticated(updatedUser));
       }
     });
@@ -140,11 +143,11 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       if (state is AuthAuthenticated) {
         final updatedFields = event.updatedFields;
         final updatedUser = (state as AuthAuthenticated).user.copyWith(
-          firstname: updatedFields['firstname'],
-          lastname: updatedFields['lastname'],
-          username: updatedFields['username'],
-          email: updatedFields['email'],
-        );
+              firstname: updatedFields['firstname'],
+              lastname: updatedFields['lastname'],
+              username: updatedFields['username'],
+              email: updatedFields['email'],
+            );
         await authService.updateUserInfo(updatedUser.id, updatedFields);
         emit(AuthAuthenticated(updatedUser));
       }

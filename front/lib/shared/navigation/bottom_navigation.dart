@@ -103,7 +103,8 @@ class CustomBottomNavigation extends StatelessWidget {
       showUnselectedLabels: true,
       onTap: (index) {
         if (index == 3 && !isLoggedIn) {
-          _showErrorToast(context, 'Vous devez être connecté pour accéder aux notifications.');
+          _showErrorToast(context,
+              'Vous devez être connecté pour accéder aux notifications.');
         } else {
           onTap(index);
         }

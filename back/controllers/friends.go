@@ -2,8 +2,9 @@ package controllers
 
 import (
 	"challenge/models"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // GetFriends godoc

@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:uresport/widgets/custom_toast.dart'; // Importer le widget personnalisé
-
-import 'package:uresport/shared/provider/NotificationProvider.dart';
+import 'package:uresport/shared/provider/notification_provider.dart';
+import 'package:uresport/widgets/custom_toast.dart'; // Importer le widget personnalisé;
 import 'package:uresport/widgets/notification_card.dart';
 
 class NotificationsTab extends StatelessWidget {
@@ -46,15 +45,18 @@ class NotificationsTab extends StatelessWidget {
     );
   }
 
-  void showNotificationToast(BuildContext context, String message, {Color? backgroundColor, Color? textColor}) {
+  void showNotificationToast(BuildContext context, String message,
+      {Color? backgroundColor, Color? textColor}) {
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
     overlayEntry = OverlayEntry(
       builder: (context) => CustomToast(
         message: message,
-        backgroundColor: backgroundColor ?? Colors.grey, // Valeur par défaut pour la couleur de fond
-        textColor: textColor ?? Colors.white, // Valeur par défaut pour la couleur du texte
+        backgroundColor: backgroundColor ??
+            Colors.grey, // Valeur par défaut pour la couleur de fond
+        textColor: textColor ??
+            Colors.white, // Valeur par défaut pour la couleur du texte
         onClose: () {
           overlayEntry.remove();
         },
@@ -66,5 +68,4 @@ class NotificationsTab extends StatelessWidget {
       overlayEntry.remove();
     });
   }
-
 }

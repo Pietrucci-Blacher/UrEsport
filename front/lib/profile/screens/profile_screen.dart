@@ -18,13 +18,15 @@ class ProfileScreen extends StatefulWidget {
   final IAuthService authService;
   final ValueChanged<String>? onProfileImageUpdated;
 
-  const ProfileScreen({super.key, required this.authService, this.onProfileImageUpdated});
+  const ProfileScreen(
+      {super.key, required this.authService, this.onProfileImageUpdated});
 
   @override
   ProfileScreenState createState() => ProfileScreenState();
 }
 
-class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveClientMixin {
+class ProfileScreenState extends State<ProfileScreen>
+    with AutomaticKeepAliveClientMixin {
   bool _isEditing = false;
   bool _isModified = false;
   final Map<String, dynamic> _updatedFields = {};
@@ -50,7 +52,8 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
   Widget build(BuildContext context) {
     super.build(context);
     return BlocProvider(
-      create: (context) => AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      create: (context) =>
+          AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context).profileScreenTitle),
@@ -70,11 +73,15 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
               );
             } else if (state is PasswordResetEmailSent) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context).passwordResetEmailSent)),
+                SnackBar(
+                    content: Text(
+                        AppLocalizations.of(context).passwordResetEmailSent)),
               );
             } else if (state is PasswordResetConfirmed) {
               ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(AppLocalizations.of(context).passwordResetSuccessful)),
+                SnackBar(
+                    content: Text(
+                        AppLocalizations.of(context).passwordResetSuccessful)),
               );
             } else if (state is AuthAuthenticated) {
               _initializeControllers(state.user);
@@ -220,13 +227,17 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
           ],
         ),
         const SizedBox(height: 10),
-        _buildEditableField(_firstNameController, AppLocalizations.of(context).firstName, 'firstname'),
+        _buildEditableField(_firstNameController,
+            AppLocalizations.of(context).firstName, 'firstname'),
         const SizedBox(height: 10),
-        _buildEditableField(_lastNameController, AppLocalizations.of(context).lastName, 'lastname'),
+        _buildEditableField(_lastNameController,
+            AppLocalizations.of(context).lastName, 'lastname'),
         const SizedBox(height: 10),
-        _buildEditableField(_usernameController, AppLocalizations.of(context).username, 'username'),
+        _buildEditableField(_usernameController,
+            AppLocalizations.of(context).username, 'username'),
         const SizedBox(height: 10),
-        _buildEditableField(_emailController, AppLocalizations.of(context).email, 'email'),
+        _buildEditableField(
+            _emailController, AppLocalizations.of(context).email, 'email'),
         const SizedBox(height: 20),
         if (_isEditing)
           Row(
@@ -246,7 +257,8 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
     );
   }
 
-  Widget _buildEditableField(TextEditingController controller, String label, String fieldName) {
+  Widget _buildEditableField(
+      TextEditingController controller, String label, String fieldName) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(labelText: label),
@@ -276,7 +288,8 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
       debugPrint('Error saving profile: $e');
       if (!mounted) return; // Ajout de cette ligne
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).errorSavingProfile)),
+        SnackBar(
+            content: Text(AppLocalizations.of(context).errorSavingProfile)),
       );
     }
   }
@@ -304,7 +317,8 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
       children: [
         Text(
           AppLocalizations.of(context).dangerZone,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+          style: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
         ),
         const SizedBox(height: 10),
         _buildDangerZoneTile(
@@ -337,7 +351,9 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
                 debugPrint('Error deleting account: $e');
                 if (!mounted) return;
                 scaffoldMessenger.showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context).errorDeletingAccount)),
+                  SnackBar(
+                      content: Text(
+                          AppLocalizations.of(context).errorDeletingAccount)),
                 );
               }
             },
@@ -348,11 +364,11 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
   }
 
   Widget _buildDangerZoneTile(
-      BuildContext context, {
-        required IconData icon,
-        required String label,
-        required VoidCallback onTap,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
     return ListTile(
       leading: Icon(icon, color: Colors.red),
       title: Text(
@@ -364,11 +380,11 @@ class ProfileScreenState extends State<ProfileScreen> with AutomaticKeepAliveCli
   }
 
   Future<void> _showConfirmationDialog(
-      BuildContext context, {
-        required String title,
-        required String content,
-        required VoidCallback confirmAction,
-      }) {
+    BuildContext context, {
+    required String title,
+    required String content,
+    required VoidCallback confirmAction,
+  }) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -431,14 +447,14 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
           ClipOval(
             child: _isUpdatingImage
                 ? const CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.grey,
-              child: CircularProgressIndicator(),
-            )
+                    radius: 50,
+                    backgroundColor: Colors.grey,
+                    child: CircularProgressIndicator(),
+                  )
                 : CachedImageWidget(
-              url: _profileImageUrl ?? '',
-              size: 100,
-            ),
+                    url: _profileImageUrl ?? '',
+                    size: 100,
+                  ),
           ),
           Positioned(
             bottom: 0,
@@ -513,7 +529,8 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
     }
   }
 
-  Future<void> _updateProfileImage(ScaffoldMessengerState scaffoldMessenger) async {
+  Future<void> _updateProfileImage(
+      ScaffoldMessengerState scaffoldMessenger) async {
     setState(() {
       _isUpdatingImage = true;
     });
@@ -521,10 +538,12 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
     final authBloc = context.read<AuthBloc>();
     final userId = widget.user!.id;
     try {
-      final imageUrl = await authBloc.authService.uploadProfileImage(userId, _imageFile!);
+      final imageUrl =
+          await authBloc.authService.uploadProfileImage(userId, _imageFile!);
       if (!mounted) return;
       setState(() {
-        _profileImageUrl = '$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}';
+        _profileImageUrl =
+            '$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}';
         _isUpdatingImage = false;
       });
       widget.onImageUpdated(_profileImageUrl!);
@@ -535,7 +554,9 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
         _isUpdatingImage = false;
       });
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).errorUploadingProfileImage)),
+        SnackBar(
+            content:
+                Text(AppLocalizations.of(context).errorUploadingProfileImage)),
       );
     }
   }
