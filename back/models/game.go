@@ -36,6 +36,7 @@ func FindAllGames(query services.QueryFilter) ([]Game, error) {
 		Offset(query.GetSkip()).
 		Limit(query.GetLimit()).
 		Where(query.GetWhere()).
+		Where(query.GetSearch()).
 		Order(query.GetSort()).
 		Find(&games)
 
