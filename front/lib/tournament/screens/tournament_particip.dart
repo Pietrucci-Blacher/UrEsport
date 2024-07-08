@@ -27,7 +27,8 @@ class TournamentParticipantsScreen extends StatelessWidget {
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
-              title: Text(team.name, style: Theme.of(context).textTheme.bodyLarge),
+              title:
+                  Text(team.name, style: Theme.of(context).textTheme.bodyLarge),
             ),
           );
         },
