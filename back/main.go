@@ -78,7 +78,7 @@ func main() {
 
 	r := gin.Default()
 	r.Use(gin.Logger())
-    r.Use(gin.Recovery())
+	r.Use(gin.Recovery())
 
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 
