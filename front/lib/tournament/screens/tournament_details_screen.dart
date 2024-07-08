@@ -116,12 +116,27 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                 ),
               ),
               const SizedBox(height: 16),
-              Text(
-                widget.tournament.name,
-                style: Theme.of(context)
-                    .textTheme
-                    .headlineMedium
-                    ?.copyWith(fontWeight: FontWeight.bold),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.tournament.name,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  if (widget.tournament.isPrivate)
+                    const Icon(
+                      Icons.lock,
+                      color: Colors.red,
+                    )
+                  else
+                    const Icon(
+                      Icons.lock_open,
+                      color: Colors.green,
+                    ),
+                ],
               ),
               const SizedBox(height: 8),
               Text(
