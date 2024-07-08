@@ -1,22 +1,62 @@
 buildscript {
     ext.kotlin_version = '2.0.0'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath "com.android.tools.build:gradle:8.5.0"
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
 }
 
 allprojects {
     repositories {
         google()
         mavenCentral()
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/releases/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                username = "mapbox"
+                password = System.getenv("SDK_REGISTRY_TOKEN") ?: findDartDefineValue('SDK_REGISTRY_TOKEN') ?: System.getenv("MAPBOX_DOWNLOADS_TOKEN") ?: findDartDefineValue('MAPBOX_DOWNLOADS_TOKEN')
+            }
+        }
+        maven {
+            url 'https://api.mapbox.com/downloads/v2/snapshots/maven'
+            authentication {
+                basic(BasicAuthentication)
+            }
+            credentials {
+                username = "mapbox"
+                password = System.getenv("SDK_REGISTRY_TOKEN") ?: findDartDefineValue('SDK_REGISTRY_TOKEN') ?: System.getenv("MAPBOX_DOWNLOADS_TOKEN") ?: findDartDefineValue('MAPBOX_DOWNLOADS_TOKEN')
+            }
+        }
     }
 }
 
 rootProject.buildDir = '../build'
+
 subprojects {
     project.buildDir = "${rootProject.buildDir}/${project.name}"
 }
+
 subprojects {
     project.evaluationDependsOn(':app')
 }
 
 tasks.register("clean", Delete) {
     delete rootProject.buildDir
+}
+
+def findDartDefineValue(key) {
+    def encodedDartDefines = project.hasProperty('dart-defines') ? project.property('dart-defines') : ""
+    def defines = encodedDartDefines.split(",").collectEntries { String it ->
+        def define = new String(it.decodeBase64(), 'UTF-8').split('=')
+        return [(define.first()): define.last()]
+    }
+    return defines.containsKey(key) ? defines[key] : null
 }

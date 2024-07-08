@@ -21,7 +21,7 @@ class AppLocalizations {
   }
 
   static const LocalizationsDelegate<AppLocalizations> delegate =
-  AppLocalizationsDelegate();
+      AppLocalizationsDelegate();
   static const List<LocalizationsDelegate<dynamic>> localizationsDelegates = [
     delegate,
     GlobalMaterialLocalizations.delegate,
@@ -369,6 +369,142 @@ class AppLocalizations {
       'View All',
       name: 'viewAll',
       desc: 'Title for the View All button',
+    );
+  }
+
+  String get editProfile {
+    return Intl.message(
+      'Edit Profile',
+      name: 'editProfile',
+      desc: 'Title for editing the profile',
+    );
+  }
+
+  String get save {
+    return Intl.message(
+      'Save',
+      name: 'save',
+      desc: 'Button text to save changes',
+    );
+  }
+
+  String get cancel {
+    return Intl.message(
+      'Cancel',
+      name: 'cancel',
+      desc: 'Button text to cancel changes',
+    );
+  }
+
+  String get dangerZone {
+    return Intl.message(
+      'Danger Zone',
+      name: 'dangerZone',
+      desc: 'Title for the danger zone section',
+    );
+  }
+
+  String get logout {
+    return Intl.message(
+      'Logout',
+      name: 'logout',
+      desc: 'Button text to logout',
+    );
+  }
+
+  String get deleteAccount {
+    return Intl.message(
+      'Delete Account',
+      name: 'deleteAccount',
+      desc: 'Button text to delete account',
+    );
+  }
+
+  String get confirm {
+    return Intl.message(
+      'Confirm',
+      name: 'confirm',
+      desc: 'Button text to confirm action',
+    );
+  }
+
+  String get cancelEditing {
+    return Intl.message(
+      'Cancel Editing',
+      name: 'cancelEditing',
+      desc: 'Button text to cancel editing',
+    );
+  }
+
+  String get logoutConfirmation {
+    return Intl.message(
+      'Are you sure you want to logout?',
+      name: 'logoutConfirmation',
+      desc: 'Confirmation message for logout',
+    );
+  }
+
+  String get deleteAccountConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      name: 'deleteAccountConfirmation',
+      desc: 'Confirmation message for account deletion',
+    );
+  }
+
+  String get profileUpdated {
+    return Intl.message(
+      'Profile updated successfully',
+      name: 'profileUpdated',
+      desc: 'Profile updated success message',
+    );
+  }
+
+  String get errorSavingProfile {
+    return Intl.message(
+      'Error saving profile',
+      name: 'errorSavingProfile',
+      desc: 'Error message when saving profile fails',
+    );
+  }
+
+  String get photoLibrary {
+    return Intl.message(
+      'Photo Library',
+      name: 'photoLibrary',
+      desc: 'Option text for selecting photo library',
+    );
+  }
+
+  String get camera {
+    return Intl.message(
+      'Camera',
+      name: 'camera',
+      desc: 'Option text for selecting camera',
+    );
+  }
+
+  String get errorPickingImage {
+    return Intl.message(
+      'Error picking image',
+      name: 'errorPickingImage',
+      desc: 'Error message when picking image fails',
+    );
+  }
+
+  String get errorUploadingProfileImage {
+    return Intl.message(
+      'Error uploading profile image',
+      name: 'errorUploadingProfileImage',
+      desc: 'Error message when uploading profile image fails',
+    );
+  }
+
+  String get errorDeletingAccount {
+    return Intl.message(
+      'Error deleting account',
+      name: 'errorDeletingAccount',
+      desc: 'Error message when deleting account fails',
     );
   }
 }

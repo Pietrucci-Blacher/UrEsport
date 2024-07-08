@@ -6,7 +6,6 @@ import 'package:uresport/bracket/bloc/states.dart';
 import 'package:uresport/bracket/models/poule.dart';
 import 'package:uresport/bracket/screens/poule_bracket_view.dart';
 
-
 class CustomPoulesPage extends StatelessWidget {
   const CustomPoulesPage({super.key});
 
@@ -45,7 +44,7 @@ class CustomPoulesPage extends StatelessWidget {
 class TournamentPoules extends StatelessWidget {
   final List<Poule> poules;
 
-  const TournamentPoules({required this.poules});
+  const TournamentPoules({required this.poules, super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -56,13 +55,15 @@ class TournamentPoules extends StatelessWidget {
             itemCount: poules.length,
             itemBuilder: (context, index) {
               final poule = poules[index];
-              poule.teams.sort((a, b) => int.parse(b.score).compareTo(int.parse(a.score)));
+              poule.teams.sort(
+                  (a, b) => int.parse(b.score).compareTo(int.parse(a.score)));
               return Card(
                 margin: const EdgeInsets.all(10),
                 child: ExpansionTile(
                   title: Text(
                     poule.name,
-                    style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   children: [
                     _buildPouleTable(poule),
@@ -124,7 +125,7 @@ class TournamentPoules extends StatelessWidget {
             ],
           ),
           ...poule.teams.map(
-                (team) => TableRow(
+            (team) => TableRow(
               children: [
                 TableCell(
                   child: Padding(

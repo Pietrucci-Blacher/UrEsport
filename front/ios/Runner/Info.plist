@@ -61,5 +61,15 @@
     <key>GIDClientID</key>
     <!-- Replace this value with your actual CLIENT_ID from Google Console -->
     <string>307019153799-78o70iqpndvp6njek8b2lh06mgnmuvin.apps.googleusercontent.com</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>Allow access to photo library</string>
+    <key>NSCameraUsageDescription</key>
+    <string>Allow access to camera to take photos</string>
+    <key>NSMicrophoneUsageDescription</key>
+    <string>Allow access to microphone to record videos</string>
+    <key>NSLocationWhenInUseUsageDescription</key>
+    <string>Allow access to location</string>
+    <key>NSSpeechRecognitionUsageDescription</key>
+    <string>Allow access to speech recognition</string>
 </dict>
 </plist>

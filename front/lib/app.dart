@@ -12,17 +12,21 @@ import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/game/bloc/game_bloc.dart';
 import 'package:uresport/core/services/game_service.dart';
+import 'package:uresport/shared/map/bloc/map_bloc.dart';
+import 'package:uresport/core/services/map_service.dart';
 
 class MyApp extends StatelessWidget {
   final IAuthService authService;
   final ITournamentService tournamentService;
   final IGameService gameService;
   final RouteGenerator routeGenerator;
+  final MapService mapService;
 
   const MyApp({
     required this.authService,
     required this.tournamentService,
     required this.gameService,
+    required this.mapService,
     required this.routeGenerator,
     super.key,
   });
@@ -46,6 +50,9 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => GameBloc(gameService),
+        ),
+        BlocProvider(
+          create: (context) => MapBloc(mapService: mapService),
         ),
       ],
       child: BlocBuilder<LocaleCubit, LocaleState>(

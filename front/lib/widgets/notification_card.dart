@@ -4,7 +4,8 @@ class NotificationCard extends StatelessWidget {
   final String imageUrl;
   final String message;
 
-  const NotificationCard({super.key, required this.imageUrl, required this.message});
+  const NotificationCard(
+      {super.key, required this.imageUrl, required this.message});
 
   @override
   Widget build(BuildContext context) {

@@ -7,7 +7,7 @@ class FilterButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FloatingActionButton(
+    return ElevatedButton.icon(
       onPressed: () {
         showModalBottomSheet(
           context: context,
@@ -16,7 +16,17 @@ class FilterButton extends StatelessWidget {
           },
         );
       },
-      child: const Icon(Icons.filter_list),
+      icon: const Icon(Icons.filter_list),
+      label: const Text('Filtrer et trier'),
+      style: ElevatedButton.styleFrom(
+        backgroundColor: Colors.white,
+        foregroundColor: Colors.black,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(10),
+        ),
+        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+        elevation: 2,
+      ),
     );
   }
 }
