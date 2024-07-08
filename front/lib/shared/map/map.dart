@@ -68,7 +68,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: Colors.transparent, // Change background to transparent
+      backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.4,
@@ -97,7 +97,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           top: 16,
                           left: 16,
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back,
+                            icon: const Icon(Icons.arrow_back_ios_new,
                                 color: Colors.white),
                             onPressed: () {
                               Navigator.pop(context);
@@ -235,6 +235,23 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     _speechToText.stop();
   }
 
+  void _centerOnCurrentLocation() async {
+    final currentLocation = await mapService.getCurrentLocation();
+    final currentPoint = Point(
+      coordinates: Position(
+        currentLocation['longitude']!,
+        currentLocation['latitude']!,
+      ),
+    );
+
+    if (_isMapInitialized()) {
+      _mapboxMap.flyTo(
+        CameraOptions(center: currentPoint, zoom: 14.0),
+        MapAnimationOptions(duration: 2000, startDelay: 0),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -261,6 +278,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
             context
                 .read<MapBloc>()
                 .add(LoadMap(widget.tournaments, _showTournamentDetails));
+            _centerOnCurrentLocation();
           }
         },
         builder: (context, state) {
@@ -292,7 +310,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
               ),
               leading: _searching
                   ? IconButton(
-                      icon: const Icon(Icons.arrow_back),
+                      icon: const Icon(Icons.arrow_back_ios_new),
                       onPressed: () {
                         setState(() {
                           _searching = false;

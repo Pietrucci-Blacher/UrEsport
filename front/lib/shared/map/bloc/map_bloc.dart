@@ -17,6 +17,7 @@ extension PointExtension on MapBloc {
 
 class MapBloc extends Bloc<MapEvent, MapState> {
   final MapService mapService;
+  MapboxMap? _mapboxMap;
 
   MapBloc({required this.mapService}) : super(MapInitial()) {
     on<LoadMap>(_onLoadMap);
@@ -27,8 +28,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     on<CenterOnCurrentLocation>(_onCenterOnCurrentLocation);
     on<SetMapController>(_onSetMapController);
     on<Toggle3DView>(_onToggle3DView);
-    on<MarkerTapped>(_onMarkerTapped); // Added for marker tap handling
-    on<ExportDirections>(_onExportDirections); // Added for export directions
+    on<MarkerTapped>(_onMarkerTapped);
+    on<ExportDirections>(_onExportDirections);
   }
 
   void _onLoadMap(LoadMap event, Emitter<MapState> emit) async {
@@ -71,6 +72,15 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         CameraOptions(center: currentPoint, zoom: 14.0),
         MapAnimationOptions(duration: 2000, startDelay: 0),
       );
+      if (_mapboxMap != null) {
+        final pointAnnotationManager =
+            await _mapboxMap!.annotations.createPointAnnotationManager();
+        for (var marker in markers) {
+          if (marker != null) {
+            await pointAnnotationManager.create(marker);
+          }
+        }
+      }
     } catch (e) {
       emit(MapError(e.toString()));
     }
@@ -99,7 +109,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         return Point(coordinates: Position(coords[1], coords[0]));
       }).toList();
 
-      mapService.addPolyline(points); // Add polyline to map
+      mapService.addPolyline(points);
 
       emit(DirectionsLoaded(
           polylinePoints: polylinePoints, mapMarkers: const []));
@@ -157,6 +167,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   void _onSetMapController(
       SetMapController event, Emitter<MapState> emit) async {
+    _mapboxMap = event.controller;
     await mapService.initializeMap(event.controller);
     emit(MapInitialized());
   }
@@ -170,7 +181,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       final File gpxFile = File('$tempPath/itineraire.gpx');
       await gpxFile.writeAsString(gpxData);
 
-      // Utiliser Share.shareXFiles au lieu de Share.shareFiles
       await Share.shareXFiles([XFile(gpxFile.path)],
           text: 'Voici l\'itinéraire');
       emit(DirectionsExported());
