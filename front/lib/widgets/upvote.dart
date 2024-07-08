@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
@@ -76,7 +77,7 @@ class TournamentScreen extends StatelessWidget {
                               return _buildTournamentCard(context, tournament);
                             },
                           ),
-                          Positioned(
+                          /*Positioned(
                             bottom: 16,
                             right: 16,
                             child: FloatingActionButton(
@@ -92,7 +93,7 @@ class TournamentScreen extends StatelessWidget {
                               },
                               child: const Icon(Icons.map),
                             ),
-                          ),
+                          ),*/
                         ],
                       );
                     } else if (state is TournamentLoadFailure) {

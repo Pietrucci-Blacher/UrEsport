@@ -4,6 +4,7 @@ import (
 	"challenge/services"
 	"errors"
 	"gorm.io/gorm"
+	"math"
 	"time"
 )
 
@@ -104,6 +105,65 @@ func FindTournamentsByUserID(userID int) ([]Tournament, error) {
 		Find(&tournaments).Error
 
 	return tournaments, err
+}
+
+func InTournamentArray(array []Tournament, value Tournament) bool {
+	for _, v := range array {
+		if v.ID == value.ID {
+			return true
+		}
+	}
+	return false
+}
+
+func (t *Tournament) GenerateBraketTree() ([]Match, error) {
+	var matches []Match
+
+	chErr := make(chan error)
+	chMatch := make(chan Match)
+	nbTeam := len(t.Teams)
+
+	if nbTeam%2 != 0 {
+		nbTeam++
+	}
+
+	depth := int(math.Round(math.Log2(float64(nbTeam / 2))))
+	nbMatch := (2 << uint(depth)) - 1 // 2^depth - 1
+
+	go CreateBinaryTree(t.ID, nil, depth, chMatch, chErr)
+
+	for i := 0; i < nbMatch; i++ {
+		if err := <-chErr; err != nil {
+			return nil, err
+		}
+
+		match := <-chMatch
+		matches = append(matches, match)
+	}
+
+	var i int
+	for _, match := range matches {
+		if match.Depth != 0 {
+			continue
+		}
+
+		if i < len(t.Teams) {
+			match.Team1ID = &t.Teams[i].ID
+			match.Team1 = t.Teams[i]
+		}
+		if i+1 < len(t.Teams) {
+			match.Team2ID = &t.Teams[i+1].ID
+			match.Team2 = t.Teams[i+1]
+		}
+
+		if err := match.Save(); err != nil {
+			return nil, err
+		}
+
+		i += 2
+	}
+
+	return matches, nil
 }
 
 func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {

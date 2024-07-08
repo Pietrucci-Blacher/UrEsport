@@ -3,6 +3,7 @@ package controllers
 import (
 	"challenge/models"
 	"challenge/services"
+	"fmt"
 	"net/http"
 	"os"
 	"strconv"
@@ -123,12 +124,15 @@ func Register(c *gin.Context) {
 		return
 	}
 
+	defaultAvatarUrl := fmt.Sprintf("https://api.dicebear.com/9.x/initials/svg?seed=%s", body.Firstname+body.Lastname)
+
 	user := models.User{
-		Firstname: body.Firstname,
-		Lastname:  body.Lastname,
-		Username:  body.Username,
-		Email:     body.Email,
-		Roles:     []string{models.ROLE_USER},
+		Firstname:       body.Firstname,
+		Lastname:        body.Lastname,
+		Username:        body.Username,
+		Email:           body.Email,
+		ProfileImageUrl: defaultAvatarUrl,
+		Roles:           []string{models.ROLE_USER},
 	}
 
 	if err := user.HashPassword(body.Password); err != nil {

@@ -118,7 +118,10 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
               const SizedBox(height: 16),
               Text(
                 widget.tournament.name,
-                style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                style: Theme.of(context)
+                    .textTheme
+                    .headlineMedium
+                    ?.copyWith(fontWeight: FontWeight.bold),
               ),
               const SizedBox(height: 8),
               Text(

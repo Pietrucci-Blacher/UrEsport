@@ -32,14 +32,15 @@ type UpdateGameDto struct {
 func FindAllGames(query services.QueryFilter) ([]Game, error) {
 	var games []Game
 
-	err := DB.Model(&Game{}).
+	value := DB.Model(&Game{}).
 		Offset(query.GetSkip()).
 		Limit(query.GetLimit()).
 		Where(query.GetWhere()).
+		Where(query.GetSearch()).
 		Order(query.GetSort()).
-		Find(&games).Error
+		Find(&games)
 
-	return games, err
+	return games, value.Error
 }
 
 func CountGameByName(name string) (int64, error) {

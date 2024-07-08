@@ -9,9 +9,9 @@ class CustomBracketBloc extends Bloc<CustomBracketEvent, CustomBracketState> {
   }
 
   void _onLoadCustomBracket(
-      LoadCustomBracket event,
-      Emitter<CustomBracketState> emit,
-      ) async {
+    LoadCustomBracket event,
+    Emitter<CustomBracketState> emit,
+  ) async {
     emit(CustomBracketLoading());
     try {
       List<List<Team>> teams = _initializeTeams();

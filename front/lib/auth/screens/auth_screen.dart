@@ -16,11 +16,12 @@ class AuthScreen extends StatelessWidget {
   final bool showLogin;
   final bool showRegister;
 
-  const AuthScreen(
-      {super.key,
-      required this.authService,
-      this.showLogin = true,
-      this.showRegister = true});
+  const AuthScreen({
+    super.key,
+    required this.authService,
+    this.showLogin = true,
+    this.showRegister = true,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -54,8 +55,6 @@ class AuthScreen extends StatelessWidget {
             builder: (context, state) {
               if (state is AuthLoading) {
                 return const Center(child: CircularProgressIndicator());
-              } else if (state is AuthAuthenticated) {
-                return _buildProfileScreen(context, state);
               } else {
                 return _buildLoginRegisterButtons(context);
               }
@@ -176,54 +175,6 @@ class AuthScreen extends StatelessWidget {
         child: Center(
           child: FaIcon(icon, color: Colors.white, size: 24),
         ),
-      ),
-    );
-  }
-
-  Widget _buildProfileScreen(BuildContext context, AuthAuthenticated state) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            AppLocalizations.of(context)
-                .profileScreenWelcome(state.user.username),
-            style: const TextStyle(fontSize: 24),
-          ),
-          const SizedBox(height: 20),
-          _buildProfileAvatar(context, state.user.profileImageUrl),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () => context.read<AuthBloc>().add(AuthLoggedOut()),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.red,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            child: const Text("Logout"),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildProfileAvatar(BuildContext context, String? avatarUrl) {
-    return GestureDetector(
-      onTap: () async {
-        //final picker = ImagePicker();
-        //final pickedFile = await picker.pickImage(source: ImageSource.gallery);
-        //if (pickedFile != null) {
-        // Update the user's avatar in the state or database
-        // Example: context.read<AuthBloc>().add(UpdateAvatarRequested(pickedFile.path));
-        //}
-      },
-      child: CircleAvatar(
-        radius: 50,
-        backgroundImage: avatarUrl != null ? NetworkImage(avatarUrl) : null,
-        child: avatarUrl == null ? const Icon(Icons.person, size: 50) : null,
       ),
     );
   }

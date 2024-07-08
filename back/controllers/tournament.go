@@ -504,6 +504,43 @@ func RejectTournamentInvitation(c *gin.Context) {
 	c.JSON(http.StatusNoContent, nil)
 }
 
+// GenerateTournamentBracket godoc
+//
+//	@Summary		generate tournament bracket
+//	@Description	generate tournament bracket
+//	@Tags			tournament
+//	@Param			id	path	int	true	"Tournament ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/bracket [post]
+func GenerateTournamentBracket(c *gin.Context) {
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+
+	if len(tournament.Teams) < 2 {
+		c.JSON(http.StatusConflict, gin.H{"error": "Not enough teams to generate bracket"})
+		return
+	}
+
+	countMatchs, err := models.CountMatchsByTournamentID(tournament.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	} else if countMatchs > 0 {
+		c.JSON(http.StatusConflict, gin.H{"error": "Bracket already generated"})
+		return
+	}
+
+	matches, err := tournament.GenerateBraketTree()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, matches)
+}
+
 // AddUpvote godoc
 //
 //	@Summary		add upvote to tournament

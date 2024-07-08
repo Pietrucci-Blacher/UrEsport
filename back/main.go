@@ -8,7 +8,10 @@ import (
 	"challenge/websockets"
 	"fmt"
 	"os"
+	"strings"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
 )
@@ -76,6 +79,18 @@ func main() {
 	r := gin.Default()
 	r.Use(gin.Logger())
 	r.Use(gin.Recovery())
+
+	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
+
+	r.Use(cors.New(cors.Config{
+		AllowOrigins:     strings.Split(allowedOrigins, ","),
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}))
+
 	controllers.RegisterRoutes(r)
 	websockets.RegisterWebsocket(r)
 
