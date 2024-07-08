@@ -178,7 +178,7 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                           style: Theme.of(context).textTheme.titleMedium,
                         ),
                         const SizedBox(height: 4),
-                        // Utiliser le widget personnalisé
+                        UpvoteButton(tournament: widget.tournament), // Utiliser le widget personnalisé
                       ],
                     ),
                   ),
@@ -335,5 +335,145 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
 
   Future<void> _sendJoinRequest(BuildContext context, int tournamentId, int teamId) async {
     showNotificationToast(context, 'Demande pour rejoindre envoyée', backgroundColor: Colors.orange);
+  }
+}
+
+class UpvoteButton extends StatefulWidget {
+  final Tournament tournament;
+
+  const UpvoteButton({Key? key, required this.tournament}) : super(key: key);
+
+  @override
+  _UpvoteButtonState createState() => _UpvoteButtonState();
+}
+
+class _UpvoteButtonState extends State<UpvoteButton> with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<Color?> _colorAnimation;
+  bool _isUpvoted = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+    _colorAnimation = ColorTween(
+      begin: Colors.grey,
+      end: Colors.deepOrange,
+    ).animate(_controller);
+
+    _checkIfUpvoted();
+  }
+
+  Future<void> _checkIfUpvoted() async {
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+
+    try {
+      bool hasUpvoted = await tournamentService.hasUpvoted(widget.tournament.id, 'username');
+      setState(() {
+        _isUpvoted = hasUpvoted;
+      });
+      if (_isUpvoted) {
+        _controller.forward();
+      } else {
+        _controller.reverse();
+      }
+    } catch (e) {
+      print('Error checking if upvoted: $e');
+    }
+  }
+
+  Future<void> _toggleUpvote() async {
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+
+    if (_isUpvoted) {
+      final shouldRemove = await showDialog<bool>(
+        context: context,
+        builder: (context) => AlertDialog(
+          title: const Text('Remove Upvote'),
+          content: const Text('Are you sure you want to remove your upvote?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(false),
+              child: const Text('No'),
+            ),
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(true),
+              child: const Text('Yes'),
+            ),
+          ],
+        ),
+      );
+
+      if (shouldRemove != true) {
+        return;
+      }
+    }
+
+    try {
+      await tournamentService.upvoteTournament(widget.tournament.id, 'username');
+      setState(() {
+        _isUpvoted = !_isUpvoted;
+      });
+      if (_isUpvoted) {
+        _controller.forward();
+        showNotificationToast(context, 'Upvote ajouté', backgroundColor: Colors.green);
+      } else {
+        _controller.reverse();
+        showNotificationToast(context, 'Upvote retiré', backgroundColor: Colors.red);
+      }
+    } catch (e) {
+      print('Upvote failed: $e');
+      showNotificationToast(context, 'Failed to change upvote status: $e', backgroundColor: Colors.red);
+    }
+  }
+
+  void showNotificationToast(BuildContext context, String message, {Color? backgroundColor, Color? textColor}) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => CustomToast(
+        message: message,
+        backgroundColor: backgroundColor ?? Colors.blue,
+        textColor: textColor ?? Colors.white,
+        onClose: () {
+          overlayEntry.remove();
+        },
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: _toggleUpvote,
+      child: Row(
+        children: [
+          AnimatedBuilder(
+            animation: _controller,
+            builder: (context, child) => Icon(
+              Icons.local_fire_department,
+              color: _colorAnimation.value,
+            ),
+          ),
+          const SizedBox(width: 4),
+          Text('${widget.tournament.upvotes + (_isUpvoted ? 1 : 0)}'), // Affiche le nombre de upvotes
+        ],
+      ),
+    );
   }
 }
