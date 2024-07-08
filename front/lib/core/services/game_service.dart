@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/game.dart';
-import 'package:flutter/foundation.dart';
 
 abstract class IGameService {
   Future<List<Game>> fetchGames({int? limit, List<String>? tags});
@@ -17,7 +17,7 @@ class GameService implements IGameService {
     try {
       final queryParams = {
         if (limit != null) 'limit': limit,
-        if (tags != null && tags.isNotEmpty) 'tags': tags.join(','),
+        if (tags != null && tags.isNotEmpty) 'search[tags]': tags.join(','),
       };
 
       final response = await _dio.get(
