@@ -22,6 +22,7 @@ class RatingWidget extends StatefulWidget {
 class _RatingWidgetState extends State<RatingWidget> {
   double _currentRating = 0.0;
   bool _isLoading = true;
+  int? _ratingId; // Ajouter une variable pour stocker l'ID de la note
 
   @override
   void initState() {
@@ -33,9 +34,10 @@ class _RatingWidgetState extends State<RatingWidget> {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
     try {
       print('Fetching rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}');
-      final rating = await ratingService.getRating(widget.tournamentId, widget.userId);
+      final ratingData = await ratingService.fetchRatingDetails(widget.tournamentId, widget.userId);
       setState(() {
-        _currentRating = rating;
+        _currentRating = ratingData['rating'];
+        _ratingId = ratingData['ratingId'];
         _isLoading = false;
       });
       if (_currentRating == 0.0) {
@@ -52,17 +54,23 @@ class _RatingWidgetState extends State<RatingWidget> {
     }
   }
 
-  Future<void> _submitRating(double rating) async {
+  Future<void> _submitOrUpdateRating(double rating) async {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
     try {
-      print('Submitting rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}, rating=$rating');
-      await ratingService.submitRating(widget.tournamentId, widget.userId, rating);
+      print('Submitting or updating rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}, rating=$rating');
+      if (_ratingId != null) {
+        // Si une note existe déjà, mettre à jour la note
+        await ratingService.updateRating(widget.tournamentId, _ratingId!, widget.userId, rating);
+      } else {
+        // Sinon, soumettre une nouvelle note
+        await ratingService.submitRating(widget.tournamentId, widget.userId, rating);
+      }
       widget.showCustomToast(context, 'Note enregistrée avec succès', backgroundColor: Colors.green);
       setState(() {
         _currentRating = rating;
       });
     } catch (e) {
-      print('Error while submitting rating: $e');
+      print('Error while submitting or updating rating: $e');
       widget.showCustomToast(context, 'Erreur lors de l\'enregistrement de la note', backgroundColor: Colors.red);
     }
   }
@@ -85,7 +93,7 @@ class _RatingWidgetState extends State<RatingWidget> {
           itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
           itemBuilder: (context, _) => const Icon(Icons.star, color: Colors.amber),
           onRatingUpdate: (rating) {
-            _submitRating(rating);
+            _submitOrUpdateRating(rating);
           },
         ),
       ],
