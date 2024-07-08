@@ -5,7 +5,7 @@ import 'package:uresport/bracket/screens/custom_bracket.dart';
 import 'package:uresport/bracket/screens/custom_poules_page.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/shared/map/map.dart'; // Ensure this import points to the correct file where TournamentMapWidget is defined
+import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:uresport/core/models/tournament.dart';
@@ -25,11 +26,14 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   final stt.SpeechToText _speechToText = stt.SpeechToText();
   bool _isListening = false;
   final List<String> _recentSearches = ["La Trésor", "Gymnase René Rousseau"];
+  late MapService mapService;
 
   @override
   void initState() {
     super.initState();
+    _initializeMap();
     _filteredTournaments = widget.tournaments;
+    mapService = RepositoryProvider.of<MapService>(context);
   }
 
   @override
@@ -47,6 +51,10 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     }
   }
 
+  void _initializeMap() {
+    MapboxOptions.setAccessToken(dotenv.env['SDK_REGISTRY_TOKEN']!);
+  }
+
   void _filterTournaments(String query) {
     final filteredTournaments = widget.tournaments.where((tournament) {
       return tournament.name.toLowerCase().contains(query.toLowerCase());
@@ -60,85 +68,102 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: Colors.transparent, // Change background to transparent
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
           initialChildSize: 0.4,
           maxChildSize: 0.9,
           minChildSize: 0.3,
           builder: (BuildContext context, ScrollController scrollController) {
-            return SingleChildScrollView(
-              controller: scrollController,
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Stack(
-                    children: [
-                      Image.network(
-                        tournament.image,
-                        width: double.infinity,
-                        height: 200,
-                        fit: BoxFit.cover,
-                      ),
-                      Positioned(
-                        top: 16,
-                        left: 16,
-                        child: IconButton(
-                          icon:
-                              const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+            return Container(
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              child: SingleChildScrollView(
+                controller: scrollController,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Stack(
                       children: [
-                        Text(
-                          tournament.name,
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
+                        Image.network(
+                          tournament.image,
+                          width: double.infinity,
+                          height: 200,
+                          fit: BoxFit.cover,
+                        ),
+                        Positioned(
+                          top: 16,
+                          left: 16,
+                          child: IconButton(
+                            icon: const Icon(Icons.arrow_back,
+                                color: Colors.white),
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
                           ),
-                        ),
-                        const SizedBox(height: 8),
-                        Text(
-                          '${tournament.location}\n${tournament.startDate} - ${tournament.endDate}',
-                          style: const TextStyle(
-                            fontSize: 16,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          tournament.description,
-                          style: const TextStyle(fontSize: 16),
-                        ),
-                        const SizedBox(height: 16),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: <Widget>[
-                            ElevatedButton.icon(
-                              onPressed: () {
-                                _startDirections(tournament);
-                              },
-                              icon: const Icon(Icons.directions),
-                              label: const Text('Itinéraire'),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.blue,
-                                foregroundColor: Colors.white,
-                              ),
-                            ),
-                          ],
                         ),
                       ],
                     ),
-                  ),
-                ],
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            tournament.name,
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            '${tournament.location}\n${tournament.startDate} - ${tournament.endDate}',
+                            style: const TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            tournament.description,
+                            style: const TextStyle(fontSize: 16),
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: <Widget>[
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  _startDirections(tournament);
+                                },
+                                icon: const Icon(Icons.directions),
+                                label: const Text('Itinéraire'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.blue,
+                                  foregroundColor: Colors.white,
+                                ),
+                              ),
+                              ElevatedButton.icon(
+                                onPressed: () {
+                                  _exportDirections(tournament);
+                                },
+                                icon: const Icon(Icons.file_download),
+                                label: const Text('Exporter'),
+                                style: ElevatedButton.styleFrom(
+                                  backgroundColor: Colors.green,
+                                  foregroundColor: Colors.white,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             );
           },
@@ -156,6 +181,28 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
               coordinates: Position(tournament.longitude, tournament.latitude),
             ),
           ));
+    }
+  }
+
+  void _exportDirections(Tournament tournament) async {
+    final mapBloc = context.read<MapBloc>();
+    final state = mapBloc.state;
+
+    if (state is DirectionsLoaded) {
+      mapBloc.add(ExportDirections(state.polylinePoints));
+    } else {
+      final userLocation = await mapService.getCurrentLocation();
+      final origin = Point(
+          coordinates:
+              Position(userLocation['longitude']!, userLocation['latitude']!));
+      final destination = Point(
+          coordinates: Position(tournament.longitude, tournament.latitude));
+      final polylinePoints =
+          await mapService.getDirections(origin, destination);
+
+      if (!mounted) return;
+
+      mapBloc.add(ExportDirections(polylinePoints));
     }
   }
 
@@ -197,7 +244,6 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
       child: BlocConsumer<MapBloc, MapState>(
         listener: (context, state) {
           if (state is MapLoaded) {
-            print('Map is loaded with position: ${state.position}');
             if (_isMapInitialized()) {
               _mapboxMap.flyTo(
                 CameraOptions(
@@ -212,12 +258,9 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                 .read<MapBloc>()
                 .add(UpdateMarkers(widget.tournaments, _showTournamentDetails));
           } else if (state is MapInitialized) {
-            print('Map initialized successfully');
             context
                 .read<MapBloc>()
                 .add(LoadMap(widget.tournaments, _showTournamentDetails));
-          } else if (state is MapError) {
-            print('Error: ${state.error}');
           }
         },
         builder: (context, state) {
@@ -268,12 +311,9 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                   ),
                   styleUri: MapboxStyles.MAPBOX_STREETS,
                   onMapCreated: (MapboxMap controller) {
-                    print('Map created, calling SetMapController...');
                     _mapboxMap = controller;
                     context.read<MapBloc>().add(SetMapController(controller));
                   },
-                  logoViewMargins: const Point(
-                      10, -100), // This will move the Mapbox logo off-screen
                 ),
                 if (_searching)
                   Positioned.fill(
@@ -380,6 +420,14 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                                 .add(CenterOnCurrentLocation()),
                             materialTapTargetSize: MaterialTapTargetSize.padded,
                             child: const Icon(Icons.my_location),
+                          ),
+                          const SizedBox(height: 10),
+                          FloatingActionButton(
+                            heroTag: 'toggle3DButton',
+                            onPressed: () =>
+                                context.read<MapBloc>().add(Toggle3DView()),
+                            materialTapTargetSize: MaterialTapTargetSize.padded,
+                            child: const Icon(Icons.threed_rotation),
                           ),
                         ],
                       ),
