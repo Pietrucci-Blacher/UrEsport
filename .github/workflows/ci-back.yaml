@@ -42,7 +42,7 @@
           uses: golangci/golangci-lint-action@v6
           with:
             args: --timeout=5m
-            version: v1.58
+            version: v1.59
             working-directory: back
 
         - name: Install Dependencies
