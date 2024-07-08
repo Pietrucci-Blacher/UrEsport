@@ -11,7 +11,6 @@ type QueryFilter struct {
 	Limit    int            `json:"limit"`
 	Skip     int            `json:"skip"`
 	Where    map[string]any `json:"where"`
-	Search   []string       `json:"search"`
 	Sort     string         `json:"sort"`
 	Populate []string       `json:"populate"`
 }
@@ -22,7 +21,6 @@ func NewQueryFilter(query map[string][]string) (QueryFilter, error) {
 		Limit:    10,
 		Skip:     0,
 		Where:    make(map[string]any),
-		Search:   []string{},
 		Sort:     "id asc",
 		Populate: []string{},
 	}
@@ -38,7 +36,6 @@ func (q *QueryFilter) initQuery(query map[string][]string) error {
 	var err error
 
 	matchWhere, _ := regexp.Compile(`where\[(.*)\]`)
-	matchSearch, _ := regexp.Compile(`search\[(.*)\]`)
 
 	for key, value := range query {
 		if key == "page" {
@@ -52,11 +49,6 @@ func (q *QueryFilter) initQuery(query map[string][]string) error {
 		} else if matchWhere.MatchString(key) {
 			matchKey := matchWhere.ReplaceAllString(key, "$1")
 			q.Where[matchKey] = strings.Split(value[0], ",")
-		} else if matchSearch.MatchString(key) {
-			inKey := matchSearch.ReplaceAllString(key, "$1")
-			// q.Where[inKey+" LIKE ?"] = "%" + value[0] + "%"
-			expre := inKey + " LIKE '%" + value[0] + "%'"
-			q.Search = append(q.Search, expre)
 		}
 
 		if err != nil {
@@ -67,10 +59,6 @@ func (q *QueryFilter) initQuery(query map[string][]string) error {
 	q.Skip = (q.Page - 1) * q.Limit
 
 	return nil
-}
-
-func (q *QueryFilter) GetSearch() []string {
-	return q.Search
 }
 
 func (q *QueryFilter) GetPage() int {
