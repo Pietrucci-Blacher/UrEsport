@@ -1,14 +1,71 @@
 <mjml>
-    <mj-body>
-        <mj-section>
-            <mj-column>
-                <mj-text>
-                    Bienvenue sur notre plateforme !
-                </mj-text>
-                <mj-text>
-                    Nous sommes ravis de vous accueillir. Commencez dès maintenant à explorer nos fonctionnalités.
-                </mj-text>
-            </mj-column>
-        </mj-section>
-    </mj-body>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif"></mj-all>
+      <mj-text font-size="16px" color="#333333" line-height="24px"></mj-text>
+      <mj-section padding="20px" background-color="#FFFFFF"></mj-section>
+      <mj-column padding="0 10px"></mj-column>
+    </mj-attributes>
+    <mj-style inline="inline">.feature-icon { font-size: 24px; }
+      @media only screen and (max-width: 480px) {
+      .mobile-full-width { width: 100% !important; }
+      .mobile-padding { padding: 10px 20px !important; }
+      }</mj-style>
+  </mj-head>
+  <mj-body background-color="#F4F4F4">
+    <mj-wrapper padding="40px 0">
+      <mj-section background-color="#FFFFFF" padding-top="20px">
+        <mj-column width="100%">
+          <mj-image width="120px" src="[URL_DU_LOGO_FOURNI]" alt="UrEsport Logo" align="center"></mj-image>
+        </mj-column>
+      </mj-section>
+      <mj-section background-color="#FFFFFF">
+        <mj-column>
+          <mj-text font-size="32px" font-weight="bold" color="#333333" align="center">Bienvenue sur UrEsport</mj-text>
+          <mj-text color="#666666" align="center" font-size="18px" padding-bottom="20px">L'avenir du gaming compétitif commence ici</mj-text>
+          <mj-divider border-color="#E0E0E0" padding-bottom="20px"></mj-divider>
+          <mj-text>Découvrez une nouvelle ère de compétition et de communauté dans l'eSport. UrEsport vous offre :</mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section background-color="#FFFFFF" css-class="mobile-padding">
+        <mj-column width="50%" css-class="mobile-full-width">
+          <mj-text><span class="feature-icon">🎮</span><br />
+            <strong>Compétitions de classe mondiale</strong><br />
+            Des tournois pour tous les niveaux
+          </mj-text>
+        </mj-column>
+        <mj-column width="50%" css-class="mobile-full-width">
+          <mj-text><span class="feature-icon">🏆</span><br />
+            <strong>Récompenses exclusives</strong><br />
+            Des prix incroyables à gagner
+          </mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section background-color="#FFFFFF" padding-bottom="0px" css-class="mobile-padding">
+        <mj-column width="50%" css-class="mobile-full-width">
+          <mj-text><span class="feature-icon">👥</span><br />
+            <strong>Communauté vibrante</strong><br />
+            Connectez-vous avec des passionnés
+          </mj-text>
+        </mj-column>
+        <mj-column width="50%" css-class="mobile-full-width">
+          <mj-text><span class="feature-icon">📊</span><br />
+            <strong>Analyses avancées</strong><br />
+            Améliorez vos performances
+          </mj-text>
+        </mj-column>
+      </mj-section>
+      <mj-section background-color="#FFFFFF">
+        <mj-column>
+          <mj-button background-color="#FF4081" border-radius="25px" href="#" font-weight="bold">Rejoignez UrEsport maintenant</mj-button>
+          <mj-text color="#666666" font-size="14px" align="center" padding-top="20px">Préparez-vous à vivre une expérience gaming unique !</mj-text>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <mj-section background-color="#333333" padding="20px">
+      <mj-column>
+        <mj-text color="#FFFFFF" font-size="12px" align="center">© 2024 UrEsport. Tous droits réservés.</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
 </mjml>
