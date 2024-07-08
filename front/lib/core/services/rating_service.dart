@@ -71,6 +71,10 @@ class RatingService implements IRatingService {
 
   @override
   Future<void> submitRating(int tournamentId, int userId, double rating) async {
+    if (rating == 0.0) {
+      throw Exception('La note ne peut pas être zéro');
+    }
+
     final token = await _cacheService.getString('token');
     if (token == null) {
       throw Exception('No token found');
@@ -108,6 +112,10 @@ class RatingService implements IRatingService {
 
   @override
   Future<void> updateRating(int tournamentId, int ratingId, int userId, double rating) async {
+    if (rating == 0.0) {
+      throw Exception('La note ne peut pas être zéro');
+    }
+
     final token = await _cacheService.getString('token');
     if (token == null) {
       throw Exception('No token found');
@@ -142,6 +150,7 @@ class RatingService implements IRatingService {
       }
     }
   }
+
 
   @override
   Future<Map<String, dynamic>> fetchRatingDetails(int tournamentId, int userId) async {

@@ -56,6 +56,13 @@ class _RatingWidgetState extends State<RatingWidget> {
 
   Future<void> _submitOrUpdateRating(double rating) async {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
+
+    // Vérifier si la note est égale à zéro
+    if (rating == 0.0) {
+      widget.showCustomToast(context, 'La note ne peut pas être zéro', backgroundColor: Colors.red);
+      return;
+    }
+
     try {
       print('Submitting or updating rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}, rating=$rating');
       if (_ratingId != null) {
@@ -74,6 +81,7 @@ class _RatingWidgetState extends State<RatingWidget> {
       widget.showCustomToast(context, 'Erreur lors de l\'enregistrement de la note', backgroundColor: Colors.red);
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
