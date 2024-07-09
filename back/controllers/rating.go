@@ -47,18 +47,7 @@ func GetRatings(c *gin.Context) {
 //	@Failure		500		{object}	utils.HttpError	"Internal server error"
 //	@Router			/rating/ [post]
 func GetRating(c *gin.Context) {
-	var input models.CreateRatingDto
-
-	// Bind JSON input to the input struct
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
-		return
-	}
-
-	if input.TournamentID == 0 || input.UserID == 0 {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "tournamentId and userId are required"})
-		return
-	}
+	input, _ := c.MustGet("body").(models.CreateRatingDto)
 
 	// Find rating by tournamentId and userId
 	var rating models.Rating

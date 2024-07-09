@@ -263,15 +263,6 @@ func ClearTournaments() error {
 	return DB.Exec("DELETE FROM tournaments").Error
 }
 
-/*func (t *Tournament) AddUpvote(userID int) error {
-	upvote := Upvote{
-		UserID:       userID,
-		TournamentID: t.ID,
-	}
-
-	return DB.Save(&upvote).Error
-}*/
-
 func (t *Tournament) AddUpvote(userID int) error {
 	return DB.Transaction(func(tx *gorm.DB) error {
 		var upvote Upvote

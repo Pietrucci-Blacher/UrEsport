@@ -2,7 +2,6 @@ package middlewares
 
 import (
 	"challenge/models"
-	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -19,25 +18,6 @@ func IsRatingOwner() gin.HandlerFunc {
 			return
 		}
 
-		c.Next()
-	}
-}
-
-func GetRating(key string) gin.HandlerFunc {
-	return func(c *gin.Context) {
-		var rating models.Rating
-		id := c.Param(key)
-
-		// Ajout de logs pour vérifier la valeur de id
-		log.Printf("Rating ID from route: %s", id)
-
-		if err := models.DB.First(&rating, id).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Rating not found"})
-			c.Abort()
-			return
-		}
-
-		c.Set("rating", &rating)
 		c.Next()
 	}
 }

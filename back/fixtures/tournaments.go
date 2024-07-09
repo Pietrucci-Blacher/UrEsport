@@ -81,7 +81,7 @@ func addUpvotesToTournament(tournamentID int) error {
 		return err
 	}
 
-	for i := 0; i < rand.Intn(4)+1; i++ { // 1 to 4 upvotes
+	for i := 0; i < rand.Intn(20)+1; i++ { // 1 to 4 upvotes
 		userID := rand.Intn(USER_NB-1) + 1
 		if err := tournament.AddUpvote(userID); err != nil {
 			if err.Error() == "User has already upvoted this tournament" {

@@ -204,13 +204,6 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsTeamOwner(),
 				JoinTournament,
 			)
-			tournaments.GET("/:tournament/team/:team/join",
-				middlewares.IsLoggedIn(true),
-				middlewares.Get[*models.Tournament]("tournament"),
-				middlewares.Get[*models.Team]("team"),
-				middlewares.IsTeamOwner(),
-				HasJoinTournament,
-			)
 			tournaments.POST("/:tournament/invite",
 				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.Tournament]("tournament"),
@@ -270,11 +263,12 @@ func RegisterRoutes(r *gin.Engine) {
 			)
 			tournaments.POST("/:tournament/rating",
 				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Validate[models.CreateRatingDto](),
 				GetRating,
 			)
 			tournaments.GET("/:tournament/ratings/:rating",
 				middlewares.Get[*models.Tournament]("tournament"),
-				middlewares.GetRating("rating"),
+				middlewares.Get[*models.Rating]("rating"),
 				GetRatingById,
 			)
 			tournaments.POST("/:tournament/ratings",
@@ -286,14 +280,14 @@ func RegisterRoutes(r *gin.Engine) {
 			tournaments.PATCH("/:tournament/ratings/:rating",
 				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.Tournament]("tournament"),
-				middlewares.GetRating("rating"),
+				middlewares.Get[*models.Rating]("rating"),
 				middlewares.IsRatingOwner(),
 				middlewares.Validate[models.UpdateRatingDto](),
 				UpdateRating,
 			)
 			tournaments.DELETE("/:tournament/ratings/:rating",
 				middlewares.IsLoggedIn(true),
-				//middlewares.GetRating("rating"),
+				middlewares.Get[*models.Rating]("rating"),
 				middlewares.IsRatingOwner(),
 				DeleteRating,
 			)
