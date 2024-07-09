@@ -9,6 +9,7 @@ import 'package:uresport/core/models/match.dart';
 import 'package:uresport/core/services/match_service.dart';
 import 'package:dio/dio.dart';
 import 'package:uresport/core/services/bracket_service.dart';
+import 'package:uresport/core/websocket/websocket.dart';
 
 class TournamentBracketPage extends StatelessWidget {
   const TournamentBracketPage({super.key});
@@ -16,7 +17,8 @@ class TournamentBracketPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BracketBloc(MatchService(Dio()))..add(const LoadBracket())..add(WebsocketBracket()),
+      // create: (_) => BracketBloc(MatchService(Dio()))..add(const LoadBracket())..add(WebsocketBracket()),
+      create: (_) => BracketBloc(MatchService(Dio()))..add(const LoadBracket()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Tournament Bracket'),
@@ -34,6 +36,8 @@ class TournamentBracketPage extends StatelessWidget {
             } else if (state is BracketLoaded) {
               BracketService bracket = BracketService(state.matches);
               return BracketContent(bracket: bracket, roundNames: state.roundNames);
+            } else if (state is BracketUpdate) {
+              return const Center(child: Text('Bracket updated'));
             } else if (state is BracketError) {
               return Center(child: Text(state.message));
             } else {
@@ -58,6 +62,7 @@ class BracketContent extends StatefulWidget {
 class BracketContentState extends State<BracketContent> {
   int selectedLevel = 0;
   final ScrollController _scrollController = ScrollController();
+  final Websocket ws = Websocket.getInstance();
 
   @override
   void dispose() {
@@ -65,8 +70,25 @@ class BracketContentState extends State<BracketContent> {
     super.dispose();
   }
 
+  void websocket() {
+    ws.on('match:update', (socket, data) async {
+      final match = Match.fromJson(data);
+      widget.bracket.updateMatch(match);
+    });
+
+    // ws.on('info', (socket, message) {
+    //   print('Info: $message');
+    // });
+
+    // TODO : Add tournament real id
+    ws.emit('tournament:add-to-room', {
+      'tournament_id': 1,
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    websocket();
     return Column(
       children: [
         SizedBox(
@@ -156,11 +178,11 @@ class BracketContentState extends State<BracketContent> {
                   primaryColor: const Color.fromARGB(255, 236, 236, 236),
                   secondaryColor: const Color.fromARGB(15, 194, 236, 147),
                 ),
-                // containt: widget.teams,
                 containt: widget.bracket.getBracket(),
-                // containt: [],
                 teamNameBuilder: (Match m) => BracketText(
-                  text: '${m.id} (${m.score1} - ${m.score2})',
+                  // text: '${m.id} (${m.score1} - ${m.score2})',
+                  // text: '${m.team1?.name} (${m.score1} - ${m.score2}) ${m.team2?.name}',
+                  text: '${m.team1?.name} (${m.score1}) \n ${m.team2?.name} (${m.score2})',
                   textStyle: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
