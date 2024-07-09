@@ -58,5 +58,10 @@ func ImportFixtures() error {
 		return err
 	}
 
+	// Load the ratings fixtures
+	if err := LoadRatings(); err != nil {
+		return err
+	}
+
 	return nil
 }

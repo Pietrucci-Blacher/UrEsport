@@ -4,6 +4,7 @@ import (
 	"challenge/models"
 	"challenge/services"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -498,4 +499,34 @@ func GenerateTournamentBracket(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, matches)
+}
+
+// AddUpvote godoc
+//
+//	@Summary		add upvote to tournament
+//	@Description	add upvote to tournament
+//	@Tags			tournament
+//	@Param			id	path	int	true	"Tournament ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/upvote [post]
+func AddUpvote(c *gin.Context) {
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+
+	// Log the user ID
+	log.Printf("User ID: %d", connectedUser.ID)
+
+	// Log the tournament ID
+	log.Printf("Tournament ID: %d", tournament.ID)
+
+	// Perform the upvote
+	if err := tournament.AddUpvote(connectedUser.ID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Upvote toggled"})
 }
