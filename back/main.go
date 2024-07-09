@@ -82,14 +82,28 @@ func main() {
 
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     strings.Split(allowedOrigins, ","),
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true,
-		MaxAge:           12 * time.Hour,
-	}))
+	if gin.Mode() == gin.DebugMode {
+		r.Use(cors.New(cors.Config{
+			AllowOrigins:     []string{"http://localhost:*"},
+			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			AllowOriginFunc: func(origin string) bool {
+				return strings.HasPrefix(origin, "http://localhost:")
+			},
+			MaxAge: 12 * time.Hour,
+		}))
+	} else {
+		r.Use(cors.New(cors.Config{
+			AllowOrigins:     strings.Split(allowedOrigins, ","),
+			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+			AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
+			ExposeHeaders:    []string{"Content-Length"},
+			AllowCredentials: true,
+			MaxAge:           12 * time.Hour,
+		}))
+	}
 
 	controllers.RegisterRoutes(r)
 	websockets.RegisterWebsocket(r)
