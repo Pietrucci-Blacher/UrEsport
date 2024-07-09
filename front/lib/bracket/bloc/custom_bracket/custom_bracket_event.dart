@@ -16,4 +16,6 @@ class LoadBracket extends BracketEvent {
   List<Object?> get props => [limit];
 }
 
+class WebsocketBracket extends BracketEvent {}
+
 class BracketWebsocket extends BracketEvent {}

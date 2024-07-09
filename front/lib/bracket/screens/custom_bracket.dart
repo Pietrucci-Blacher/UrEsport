@@ -5,7 +5,6 @@ import 'package:tournament_bracket/tournament_bracket.dart';
 import 'package:uresport/bracket/bloc/custom_bracket/custom_bracket_bloc.dart';
 import 'package:uresport/bracket/bloc/custom_bracket/custom_bracket_event.dart';
 import 'package:uresport/bracket/bloc/custom_bracket/custom_bracket_state.dart';
-import 'package:uresport/bracket/models/team.dart';
 import 'package:uresport/core/models/match.dart';
 import 'package:uresport/core/services/match_service.dart';
 import 'package:dio/dio.dart';
@@ -17,7 +16,7 @@ class TournamentBracketPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BracketBloc(MatchService(Dio()))..add(const LoadBracket()),
+      create: (_) => BracketBloc(MatchService(Dio()))..add(const LoadBracket())..add(WebsocketBracket()),
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Tournament Bracket'),
@@ -48,7 +47,6 @@ class TournamentBracketPage extends StatelessWidget {
 }
 
 class BracketContent extends StatefulWidget {
-  // final List<Match> matches;
   final BracketService bracket;
   final List<String> roundNames;
 
@@ -122,13 +120,13 @@ class BracketContentState extends State<BracketContent> {
             controller: _scrollController,
             scrollDirection: Axis.horizontal,
             child: Center(
-              child: TBracket<Team>(
+              child: TBracket<Match>(
                 space: _getSpace(selectedLevel),
                 separation: _getSeparation(selectedLevel),
                 stageWidth: 200,
-                onSameTeam: (team1, team2) {
-                  if (team1 != null && team2 != null) {
-                    return team1.name == team2.name;
+                onSameTeam: (match1, match2) {
+                  if (match1 != null && match2 != null) {
+                    return match1.id == match2.id;
                   }
                   return false;
                 },
@@ -159,29 +157,30 @@ class BracketContentState extends State<BracketContent> {
                   secondaryColor: const Color.fromARGB(15, 194, 236, 147),
                 ),
                 // containt: widget.teams,
-                containt: [],
-                teamNameBuilder: (Team t) => BracketText(
-                  text: '${t.name} (${t.score})',
+                containt: widget.bracket.getBracket(),
+                // containt: [],
+                teamNameBuilder: (Match m) => BracketText(
+                  text: '${m.id} (${m.score1} - ${m.score2})',
                   textStyle: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
-                onContainerTapDown: (Team? model, TapDownDetails tapDownDetails) {
+                onContainerTapDown: (Match? model, TapDownDetails tapDownDetails) {
                   if (model == null) {
                     if (kDebugMode) {
                       print(null);
                     }
                   } else {
                     if (kDebugMode) {
-                      print(model.name);
+                      print(model.id);
                     }
                   }
                 },
-                onLineIconPress: (team1, team2, tapDownDetails) {
-                  if (team1 != null && team2 != null) {
+                onLineIconPress: (match1, match2, tapDownDetails) {
+                  if (match1 != null && match2 != null) {
                     if (kDebugMode) {
-                      print("${team1.name} and ${team2.name}");
+                      print("${match1.id} and ${match2.id}");
                     }
                   } else {
                     if (kDebugMode) {
@@ -199,8 +198,8 @@ class BracketContentState extends State<BracketContent> {
   }
 
   Widget _buildRoundButton(int index) {
-    // int numMatches = widget.teams[index].length ~/ 2;
-    int numMatches = 0;
+    int numMatches = widget.bracket.getBracket().length ~/ 2;
+    // int numMatches = 0;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(numMatches, (i) => const Divider(thickness: 2)),

@@ -11,57 +11,36 @@ class BracketBloc extends Bloc<BracketEvent, BracketState> {
 
   BracketBloc(this.matchService) : super(BracketInitial()) {
     on<LoadBracket>((event, emit) async {
-      _initWebsocketEvent(emit);
       emit(BracketLoading());
       try {
         List<String> roundNames = _initializeRoundNames();
-
-        print('Fetching matches');
         final matches = await matchService.fetchMatches();
-        print('Matches: $matches');
         emit(BracketLoaded(matches, roundNames));
       } catch (e) {
         emit(const BracketError("Failed to load custom brackets"));
       }
     });
-  }
 
-  void _initWebsocketEvent(emit) {
-    ws.on('match:update', (socket, data) {
-      print('Match updated');
-      final match = Match.fromJson(data);
-      emit(BracketUpdate(match));
+    on<WebsocketBracket>((event, emit) async {
+      ws.on('match:update', (socket, data) {
+        final match = Match.fromJson(data);
+        print('Match updated: ${match.toJson()}');
+        emit(BracketUpdate(match));
+      });
+
+      ws.on('error', (socket, message) {
+        emit(BracketError(message));
+      });
+
+      ws.on('info', (socket, message) {
+        print('Info: $message');
+      });
+
+      ws.emit('tournament:add-to-room', {
+        'tournament_id': 1,
+      });
     });
-
-    ws.on('error', (socket, message) {
-      emit(BracketError(message));
-    });
   }
-
-  // List<List<Team>> _initializeTeams() {
-  //   List<List<Team>> all = [];
-
-  //   // Ajout des équipes qualifiées des poules
-  //   all.add([
-  //     Team(name: 'Team 1', score: '3'),
-  //     Team(name: 'Team 6', score: '3'),
-  //     Team(name: 'Team 3', score: '2'),
-  //     Team(name: 'Team 5', score: '2'),
-  //     Team(name: 'Team 2', score: '1'),
-  //     Team(name: 'Team 8', score: '1'),
-  //     Team(name: 'Team 9', score: '1'),
-  //     Team(name: 'Team 10', score: '1'),
-  //   ]);
-
-  //   // Initialize other rounds as empty lists
-  //   for (int i = 0; i < 3; i++) {
-  //     all.add([]);
-  //   }
-
-  //   _initializeRounds(all);
-
-  //   return all;
-  // }
 
   List<String> _initializeRoundNames() {
     return ["8ème", "Quart de final", "Demi-final", "Final"];

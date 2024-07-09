@@ -3,20 +3,31 @@ package websockets
 import (
 	"challenge/models"
 	"challenge/services"
+	"encoding/json"
 	"fmt"
 )
 
 type RoomMsg struct {
-	tournamentID int
+	TournamentID int `json:"tournament_id"`
 }
 
 func AddAnonClientToTournamentRoom(client *services.Client, msg any) error {
-	roomMsg := msg.(RoomMsg)
-	if roomMsg.tournamentID <= 0 {
+	var roomMsg RoomMsg
+
+	jsonMsg, err := json.Marshal(msg)
+	if err != nil {
+		return err
+	}
+
+	if err := json.Unmarshal(jsonMsg, &roomMsg); err != nil {
+		return err
+	}
+
+	if roomMsg.TournamentID <= 0 {
 		return fmt.Errorf("tournamentID is required")
 	}
 
-	roomName := fmt.Sprintf("tournament:%d", roomMsg.tournamentID)
+	roomName := fmt.Sprintf("tournament:%d", roomMsg.TournamentID)
 	client.Ws.Room(roomName).AddClient(client)
 
 	if err := client.Emit("info", "You have been added to the room"); err != nil {

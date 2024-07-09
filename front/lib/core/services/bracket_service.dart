@@ -12,8 +12,12 @@ class BracketService {
 
   void generateBracket(List<Match> matches) {
     bracket = [];
+    matches.sort((a, b) => a.depth - b.depth);
     for (var i = 0; i < matches.length; i++) {
       var depth = matches[i].depth;
+      if (bracket.length <= depth) {
+        bracket.add([]);
+      }
       bracket[depth].add(matches[i]);
     }
   }

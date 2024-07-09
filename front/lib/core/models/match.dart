@@ -1,12 +1,12 @@
 class Match {
   final int id;
   final int tournamentId;
-  final int team1Id;
-  final int team2Id;
-  final int winnerId;
+  final int? team1Id;
+  final int? team2Id;
+  final int? winnerId;
   final int score1;
   final int score2;
-  final int nextMatchId;
+  final int? nextMatchId;
   final int depth;
 
   Match({
@@ -22,7 +22,6 @@ class Match {
   });
 
   factory Match.fromJson(Map<String, dynamic> json) {
-    print('json: $json'); 
     return Match(
       id: json['id'],
       tournamentId: json['tournament_id'],
