@@ -47,7 +47,8 @@ class MatchDetailsPage extends StatelessWidget {
                       _buildStatColumn('Date', match.date),
                       _buildStatColumn('Time', match.time),
                       const Divider(thickness: 2),
-                      _buildCustomScoreRow('Score', '0', '0'), // Ligne personnalisée
+                      _buildCustomScoreRow(
+                          'Score', '0', '0'), // Ligne personnalisée
                       _buildVerticalDivider(),
                       _buildStatRow('Goals', '0', '0'),
                       _buildVerticalDivider(),
@@ -211,7 +212,8 @@ class MatchDetailsPage extends StatelessWidget {
   }
 
   // Méthode pour créer la ligne personnalisée du score
-  Widget _buildCustomScoreRow(String statName, String statValue1, String statValue2) {
+  Widget _buildCustomScoreRow(
+      String statName, String statValue1, String statValue2) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Row(

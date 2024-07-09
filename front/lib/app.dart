@@ -93,7 +93,7 @@ class MyApp extends StatelessWidget {
               return Container(
                 decoration: const BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [ Color(0xFF2D005B), Color(0xFF000000)],
+                    colors: [Color(0xFF2D005B), Color(0xFF000000)],
                     stops: [0.1, 1.0],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,

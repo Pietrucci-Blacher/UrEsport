@@ -87,7 +87,8 @@ class CustomSchedulePage extends StatelessWidget {
     final timeFormat = DateFormat('HH:mm');
     DateTime parsedDate = dateFormat.parse(date);
     DateTime parsedTime = timeFormat.parse(time);
-    return DateTime(parsedDate.year, parsedDate.month, parsedDate.day, parsedTime.hour, parsedTime.minute);
+    return DateTime(parsedDate.year, parsedDate.month, parsedDate.day,
+        parsedTime.hour, parsedTime.minute);
   }
 
   @override
@@ -116,18 +117,25 @@ class CustomSchedulePage extends StatelessWidget {
         itemCount: sortedMatches.length,
         itemBuilder: (context, index) {
           final match = sortedMatches[index];
-          bool isNewDate = index == 0 || _parseDateTime(match.date, match.time).day != _parseDateTime(sortedMatches[index - 1].date, sortedMatches[index - 1].time).day;
+          bool isNewDate = index == 0 ||
+              _parseDateTime(match.date, match.time).day !=
+                  _parseDateTime(sortedMatches[index - 1].date,
+                          sortedMatches[index - 1].time)
+                      .day;
 
           // Formatter la date dans le format souhaité
           final DateTime matchDate = _parseDateTime(match.date, match.time);
-          final String formattedDate = DateFormat('EEEE - d MMMM', 'fr_FR').format(matchDate).toUpperCase();
+          final String formattedDate = DateFormat('EEEE - d MMMM', 'fr_FR')
+              .format(matchDate)
+              .toUpperCase();
 
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (isNewDate)
                 Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                  padding: const EdgeInsets.symmetric(
+                      vertical: 10.0, horizontal: 15.0),
                   child: Text(
                     formattedDate,
                     style: const TextStyle(
@@ -138,7 +146,8 @@ class CustomSchedulePage extends StatelessWidget {
                   ),
                 ),
               Padding(
-                padding: const EdgeInsets.symmetric(vertical: 10.0, horizontal: 15.0),
+                padding: const EdgeInsets.symmetric(
+                    vertical: 10.0, horizontal: 15.0),
                 child: GestureDetector(
                   onTap: () {
                     Navigator.push(
@@ -181,7 +190,8 @@ class CustomSchedulePage extends StatelessWidget {
                                       radius: 20,
                                       backgroundColor: Colors.grey.shade200,
                                       child: match.team1Image == null
-                                          ? const Icon(Icons.sports_soccer, color: Colors.black)
+                                          ? const Icon(Icons.sports_soccer,
+                                              color: Colors.black)
                                           : null,
                                     ),
                                     const SizedBox(width: 10),
@@ -224,7 +234,8 @@ class CustomSchedulePage extends StatelessWidget {
                                       radius: 20,
                                       backgroundColor: Colors.grey.shade200,
                                       child: match.team2Image == null
-                                          ? const Icon(Icons.sports_soccer, color: Colors.black)
+                                          ? const Icon(Icons.sports_soccer,
+                                              color: Colors.black)
                                           : null,
                                     ),
                                   ],
@@ -243,7 +254,8 @@ class CustomSchedulePage extends StatelessWidget {
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.access_time, color: Colors.black, size: 16),
+                                  const Icon(Icons.access_time,
+                                      color: Colors.black, size: 16),
                                   const SizedBox(width: 5),
                                   Text(
                                     match.time,
@@ -264,7 +276,13 @@ class CustomSchedulePage extends StatelessWidget {
                 ),
               ),
               // Ajouter une barre de séparation uniquement si le prochain match a une date différente
-              if (index < sortedMatches.length - 1 && _parseDateTime(sortedMatches[index].date, sortedMatches[index].time).day != _parseDateTime(sortedMatches[index + 1].date, sortedMatches[index + 1].time).day)
+              if (index < sortedMatches.length - 1 &&
+                  _parseDateTime(sortedMatches[index].date,
+                              sortedMatches[index].time)
+                          .day !=
+                      _parseDateTime(sortedMatches[index + 1].date,
+                              sortedMatches[index + 1].time)
+                          .day)
                 const Divider(thickness: 1, color: Colors.grey),
             ],
           );
