@@ -48,5 +48,17 @@
   "logout": "Cerrar sesión",
   "deleteAccount": "Eliminar cuenta",
   "confirm": "Confirmar",
-  "cancelEditing": "Cancelar edición"
+  "cancelEditing": "Cancelar edición",
+  "filters": "Filtros ({count})",
+  "filterAndSort": "Filtrar y ordenar",
+  "reset": "Restablecer",
+  "searchTags": "Buscar etiquetas",
+  "filterByTags": "FILTRAR POR ETIQUETAS",
+  "sort": "ORDENAR",
+  "applyFilters": "Aplicar filtros",
+  "alphabeticalAZ": "Alfabético (A-Z)",
+  "alphabeticalZA": "Alfabético (Z-A)",
+  "anErrorOccurred": "¡Se produjo un error!",
+  "noGamesAvailable": "No hay juegos disponibles.",
+  "moreTagsCount": "+{count} más"
 }

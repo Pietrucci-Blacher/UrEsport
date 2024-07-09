@@ -507,6 +507,104 @@ class AppLocalizations {
       desc: 'Error message when deleting account fails',
     );
   }
+
+  String filters(int count) {
+    return Intl.message(
+      'Filters ($count)',
+      name: 'filters',
+      desc: 'Filter button text with count',
+      args: [count],
+    );
+  }
+
+  String get filterAndSort {
+    return Intl.message(
+      'Filter and Sort',
+      name: 'filterAndSort',
+      desc: 'Filter and sort title',
+    );
+  }
+
+  String get reset {
+    return Intl.message(
+      'Reset',
+      name: 'reset',
+      desc: 'Reset button text',
+    );
+  }
+
+  String get searchTags {
+    return Intl.message(
+      'Search tags',
+      name: 'searchTags',
+      desc: 'Search tags placeholder',
+    );
+  }
+
+  String get filterByTags {
+    return Intl.message(
+      'FILTER BY TAGS',
+      name: 'filterByTags',
+      desc: 'Filter by tags title',
+    );
+  }
+
+  String get sort {
+    return Intl.message(
+      'SORT',
+      name: 'sort',
+      desc: 'Sort title',
+    );
+  }
+
+  String get applyFilters {
+    return Intl.message(
+      'Apply Filters',
+      name: 'applyFilters',
+      desc: 'Apply filters button text',
+    );
+  }
+
+  String get alphabeticalAZ {
+    return Intl.message(
+      'Alphabetical (A-Z)',
+      name: 'alphabeticalAZ',
+      desc: 'Sort option for A-Z',
+    );
+  }
+
+  String get alphabeticalZA {
+    return Intl.message(
+      'Alphabetical (Z-A)',
+      name: 'alphabeticalZA',
+      desc: 'Sort option for Z-A',
+    );
+  }
+
+  String get anErrorOccurred {
+    return Intl.message(
+      'An error occurred!',
+      name: 'anErrorOccurred',
+      desc: 'Error message',
+    );
+  }
+
+  String get noGamesAvailable {
+    return Intl.message(
+      'No games available.',
+      name: 'noGamesAvailable',
+      desc: 'Message when no games are available',
+    );
+  }
+
+  String moreTagsCount(int count) {
+    return Intl.message(
+      '+$count more',
+      name: 'moreTagsCount',
+      desc: 'More tags count',
+      args: [count],
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

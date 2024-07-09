@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'l10n/intl/messages_all.dart';
 
 // **************************************************************************
@@ -537,6 +538,126 @@ class S {
       name: 'cancelEditing',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `Filters ({count})`
+  String filters(Object count) {
+    return Intl.message(
+      'Filters ($count)',
+      name: 'filters',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Filter and Sort`
+  String get filterAndSort {
+    return Intl.message(
+      'Filter and Sort',
+      name: 'filterAndSort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset`
+  String get reset {
+    return Intl.message(
+      'Reset',
+      name: 'reset',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search tags`
+  String get searchTags {
+    return Intl.message(
+      'Search tags',
+      name: 'searchTags',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `FILTER BY TAGS`
+  String get filterByTags {
+    return Intl.message(
+      'FILTER BY TAGS',
+      name: 'filterByTags',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SORT`
+  String get sort {
+    return Intl.message(
+      'SORT',
+      name: 'sort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Apply Filters`
+  String get applyFilters {
+    return Intl.message(
+      'Apply Filters',
+      name: 'applyFilters',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Alphabetical (A-Z)`
+  String get alphabeticalAZ {
+    return Intl.message(
+      'Alphabetical (A-Z)',
+      name: 'alphabeticalAZ',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Alphabetical (Z-A)`
+  String get alphabeticalZA {
+    return Intl.message(
+      'Alphabetical (Z-A)',
+      name: 'alphabeticalZA',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An error occurred!`
+  String get anErrorOccurred {
+    return Intl.message(
+      'An error occurred!',
+      name: 'anErrorOccurred',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No games available.`
+  String get noGamesAvailable {
+    return Intl.message(
+      'No games available.',
+      name: 'noGamesAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `+{count} more`
+  String moreTagsCount(Object count) {
+    return Intl.message(
+      '+$count more',
+      name: 'moreTagsCount',
+      desc: '',
+      args: [count],
     );
   }
 }

@@ -48,5 +48,17 @@
   "logout": "Logout",
   "deleteAccount": "Delete Account",
   "confirm": "Confirm",
-  "cancelEditing": "Cancel Editing"
+  "cancelEditing": "Cancel Editing",
+  "filters": "Filters ({count})",
+  "filterAndSort": "Filter and Sort",
+  "reset": "Reset",
+  "searchTags": "Search tags",
+  "filterByTags": "FILTER BY TAGS",
+  "sort": "SORT",
+  "applyFilters": "Apply Filters",
+  "alphabeticalAZ": "Alphabetical (A-Z)",
+  "alphabeticalZA": "Alphabetical (Z-A)",
+  "anErrorOccurred": "An error occurred!",
+  "noGamesAvailable": "No games available.",
+  "moreTagsCount": "+{count} more"
 }

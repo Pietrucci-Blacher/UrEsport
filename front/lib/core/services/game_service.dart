@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/game.dart';
-import 'package:flutter/foundation.dart';
 
 abstract class IGameService {
-  Future<List<Game>> fetchGames({int? limit});
+  Future<List<Game>> fetchGames({int? limit, List<String>? tags});
 }
 
 class GameService implements IGameService {
@@ -13,11 +13,16 @@ class GameService implements IGameService {
   GameService(this._dio);
 
   @override
-  Future<List<Game>> fetchGames({int? limit}) async {
+  Future<List<Game>> fetchGames({int? limit, List<String>? tags}) async {
     try {
+      final queryParams = {
+        if (limit != null) 'limit': limit,
+        if (tags != null && tags.isNotEmpty) 'search[tags]': tags.join(','),
+      };
+
       final response = await _dio.get(
         "${dotenv.env['API_ENDPOINT']}/games",
-        queryParameters: limit != null ? {'limit': limit} : null,
+        queryParameters: queryParams,
       );
 
       if (response.statusCode == 200) {
