@@ -11,6 +11,9 @@ import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/GradientIcon.dart';
+import 'package:uresport/tournament/screens/tournament_details_screen.dart';
+
+import '../../bracket/screens/custom_schedule.dart';
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
