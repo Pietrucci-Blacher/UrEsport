@@ -5,8 +5,15 @@ import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 
-class Dashboard extends StatelessWidget {
-  const Dashboard({super.key});
+class Dashboard extends StatefulWidget {
+  const Dashboard({Key? key}) : super(key: key);
+
+  @override
+  _DashboardState createState() => _DashboardState();
+}
+
+class _DashboardState extends State<Dashboard> {
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +24,11 @@ class Dashboard extends StatelessWidget {
         body: Row(
           children: [
             NavigationRail(
-              selectedIndex: 0,
+              selectedIndex: _selectedIndex,
               onDestinationSelected: (int index) {
-                // Handle destination changes
+                setState(() {
+                  _selectedIndex = index;
+                });
               },
               labelType: NavigationRailLabelType.selected,
               destinations: const <NavigationRailDestination>[
@@ -29,9 +38,24 @@ class Dashboard extends StatelessWidget {
                   label: Text('Dashboard'),
                 ),
                 NavigationRailDestination(
-                  icon: Icon(Icons.settings),
-                  selectedIcon: Icon(Icons.settings),
-                  label: Text('Settings'),
+                  icon: Icon(Icons.list),
+                  selectedIcon: Icon(Icons.list),
+                  label: Text('Logs'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.emoji_events),
+                  selectedIcon: Icon(Icons.emoji_events),
+                  label: Text('Tournaments'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.games),
+                  selectedIcon: Icon(Icons.games),
+                  label: Text('Games'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.people),
+                  selectedIcon: Icon(Icons.people),
+                  label: Text('Users'),
                 ),
               ],
             ),
@@ -42,7 +66,20 @@ class Dashboard extends StatelessWidget {
                   if (state is DashboardLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is DashboardLoaded) {
-                    return Center(child: Text(state.message));
+                    switch (_selectedIndex) {
+                      case 0:
+                        return _buildDashboardContent(state);
+                      case 1:
+                        return _buildLogsContent(state);
+                      case 2:
+                        return _buildTournamentsContent(state);
+                      case 3:
+                        return _buildGamesContent(state);
+                      case 4:
+                        return _buildUsersContent(state);
+                      default:
+                        return const Center(child: Text('Unknown page'));
+                    }
                   } else if (state is DashboardError) {
                     return Center(child: Text('Error: ${state.error}'));
                   }
@@ -54,5 +91,45 @@ class Dashboard extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Widget _buildDashboardContent(DashboardLoaded state) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Text('Active Users: ${state.activeUsers}'),
+          Text('Active Tournaments: ${state.activeTournaments}'),
+          Text('Total Games: ${state.totalGames}'),
+          Text('Latest Message: ${state.message}'),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLogsContent(DashboardLoaded state) {
+    return ListView.builder(
+      itemCount: state.recentLogs.length,
+      itemBuilder: (context, index) {
+        return ListTile(
+          title: Text(state.recentLogs[index]),
+        );
+      },
+    );
+  }
+
+  Widget _buildTournamentsContent(DashboardLoaded state) {
+    // Placeholder for tournaments content
+    return const Center(child: Text('Tournaments Content'));
+  }
+
+  Widget _buildGamesContent(DashboardLoaded state) {
+    // Placeholder for games content
+    return const Center(child: Text('Games Content'));
+  }
+
+  Widget _buildUsersContent(DashboardLoaded state) {
+    // Placeholder for users content
+    return const Center(child: Text('Users Content'));
   }
 }
