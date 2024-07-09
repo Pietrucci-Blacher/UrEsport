@@ -3,9 +3,10 @@ package models
 import (
 	"challenge/services"
 	"errors"
-	"gorm.io/gorm"
 	"math"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Tournament struct {

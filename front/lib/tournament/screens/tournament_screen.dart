@@ -125,7 +125,8 @@ class TournamentScreen extends StatelessWidget {
                   children: [
                     Text(
                       tournament.name,
-                      style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      style: const TextStyle(
+                          fontSize: 22, fontWeight: FontWeight.bold),
                     ),
                     if (tournament.isPrivate)
                       const Icon(
@@ -164,7 +165,8 @@ class TournamentScreen extends StatelessWidget {
                         const SizedBox(height: 5),
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today, color: Colors.grey),
+                            const Icon(Icons.calendar_today,
+                                color: Colors.grey),
                             const SizedBox(width: 5),
                             Text(
                               'Start: ${dateFormat.format(tournament.startDate)}',
@@ -175,7 +177,8 @@ class TournamentScreen extends StatelessWidget {
                         const SizedBox(height: 5),
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today, color: Colors.grey),
+                            const Icon(Icons.calendar_today,
+                                color: Colors.grey),
                             const SizedBox(width: 5),
                             Text(
                               'End: ${dateFormat.format(tournament.endDate)}',
@@ -217,7 +220,8 @@ class TournamentScreen extends StatelessWidget {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) => TournamentDetailsScreen(tournament: tournament),
+                                builder: (context) => TournamentDetailsScreen(
+                                    tournament: tournament),
                               ),
                             );
                           },

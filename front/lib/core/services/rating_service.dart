@@ -5,7 +5,8 @@ import 'package:uresport/core/services/cache_service.dart';
 abstract class IRatingService {
   Future<Map<String, dynamic>> getRating(int tournamentId, int userId);
   Future<void> submitRating(int tournamentId, int userId, double rating);
-  Future<void> updateRating(int tournamentId, int ratingId, int userId, double rating);
+  Future<void> updateRating(
+      int tournamentId, int ratingId, int userId, double rating);
   Future<Map<String, dynamic>> fetchRatingDetails(int tournamentId, int userId);
 }
 
@@ -33,7 +34,8 @@ class RatingService implements IRatingService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null && status < 500; // Accepter les codes de statut < 500
+            return status != null &&
+                status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
@@ -41,7 +43,8 @@ class RatingService implements IRatingService {
       if (response.statusCode == 200) {
         return {
           'rating': (response.data['rating'] as num).toDouble(),
-          'ratingId': response.data['rating_id'], // Assuming the API returns rating_id
+          'ratingId':
+              response.data['rating_id'], // Assuming the API returns rating_id
         };
       } else if (response.statusCode == 404) {
         return {
@@ -94,7 +97,8 @@ class RatingService implements IRatingService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null && status < 500; // Accepter les codes de statut < 500
+            return status != null &&
+                status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
@@ -111,7 +115,8 @@ class RatingService implements IRatingService {
   }
 
   @override
-  Future<void> updateRating(int tournamentId, int ratingId, int userId, double rating) async {
+  Future<void> updateRating(
+      int tournamentId, int ratingId, int userId, double rating) async {
     if (rating == 0.0) {
       throw Exception('La note ne peut pas être zéro');
     }
@@ -135,7 +140,8 @@ class RatingService implements IRatingService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null && status < 500; // Accepter les codes de statut < 500
+            return status != null &&
+                status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
@@ -151,9 +157,9 @@ class RatingService implements IRatingService {
     }
   }
 
-
   @override
-  Future<Map<String, dynamic>> fetchRatingDetails(int tournamentId, int userId) async {
+  Future<Map<String, dynamic>> fetchRatingDetails(
+      int tournamentId, int userId) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
@@ -170,7 +176,8 @@ class RatingService implements IRatingService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null && status < 500; // Accepter les codes de statut < 500
+            return status != null &&
+                status < 500; // Accepter les codes de statut < 500
           },
         ),
       );

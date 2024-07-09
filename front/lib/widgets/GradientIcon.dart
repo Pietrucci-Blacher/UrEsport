@@ -22,7 +22,8 @@ class GradientIcon extends StatelessWidget {
       child: Icon(
         icon,
         size: size,
-        color: Colors.white, // The color doesn't matter because it will be masked by the gradient
+        color: Colors
+            .white, // The color doesn't matter because it will be masked by the gradient
       ),
     );
   }

@@ -45,7 +45,8 @@ class Tournament {
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams: (json['teams'] as List).map((team) => Team.fromJson(team)).toList(),
+      teams:
+          (json['teams'] as List).map((team) => Team.fromJson(team)).toList(),
       upvotes: json['upvotes'] ?? 0, // Ajoutez ce champ
     );
   }

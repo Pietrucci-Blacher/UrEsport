@@ -4,10 +4,11 @@ package controllers
 import (
 	"challenge/models"
 	"challenge/services"
-	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 // GetRatings godoc
