@@ -20,13 +20,25 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'fr';
 
-  static String m0(username) => "Bienvenue sur votre profil, ${username} !";
+  static String m0(count) => "Filtres (${count})";
 
-  static String m1(email) => "Un code de vérification a été envoyé à ${email}.";
+  static String m1(count) => "+${count} de plus";
+
+  static String m2(username) => "Bienvenue sur votre profil, ${username} !";
+
+  static String m3(email) => "Un code de vérification a été envoyé à ${email}.";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "alphabeticalAZ":
+            MessageLookupByLibrary.simpleMessage("Alphabétique (A-Z)"),
+        "alphabeticalZA":
+            MessageLookupByLibrary.simpleMessage("Alphabétique (Z-A)"),
+        "anErrorOccurred": MessageLookupByLibrary.simpleMessage(
+            "Une erreur s\'est produite !"),
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
+        "applyFilters":
+            MessageLookupByLibrary.simpleMessage("Appliquer les filtres"),
         "cancel": MessageLookupByLibrary.simpleMessage("Annuler"),
         "cancelEditing":
             MessageLookupByLibrary.simpleMessage("Annuler l\'édition"),
@@ -40,6 +52,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "editProfile":
             MessageLookupByLibrary.simpleMessage("Modifier le profil"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
+        "filterAndSort":
+            MessageLookupByLibrary.simpleMessage("Filtrer et trier"),
+        "filterByTags":
+            MessageLookupByLibrary.simpleMessage("FILTRER PAR TAGS"),
+        "filters": m0,
         "firstName": MessageLookupByLibrary.simpleMessage("Prénom"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("Mot de passe oublié ?"),
@@ -63,6 +80,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "logout": MessageLookupByLibrary.simpleMessage("Déconnexion"),
         "modifyGameButton":
             MessageLookupByLibrary.simpleMessage("Modifier le jeux"),
+        "moreTagsCount": m1,
+        "noGamesAvailable":
+            MessageLookupByLibrary.simpleMessage("Aucun jeu disponible."),
         "notificationScreenTitle":
             MessageLookupByLibrary.simpleMessage("Notifications"),
         "notificationScreenWelcome": MessageLookupByLibrary.simpleMessage(
@@ -77,15 +97,19 @@ class MessageLookup extends MessageLookupByLibrary {
         "popularGamesTitle":
             MessageLookupByLibrary.simpleMessage("Jeux populaires"),
         "profileScreenTitle": MessageLookupByLibrary.simpleMessage("Profil"),
-        "profileScreenWelcome": m0,
+        "profileScreenWelcome": m2,
         "register": MessageLookupByLibrary.simpleMessage("Inscription"),
         "resendCode":
             MessageLookupByLibrary.simpleMessage("Ré-envoyer le code"),
+        "reset": MessageLookupByLibrary.simpleMessage("Réinitialiser"),
         "resetPassword": MessageLookupByLibrary.simpleMessage(
             "Réinitialiser le mot de passe"),
         "save": MessageLookupByLibrary.simpleMessage("Enregistrer"),
+        "searchTags":
+            MessageLookupByLibrary.simpleMessage("Rechercher des tags"),
         "sendResetEmail": MessageLookupByLibrary.simpleMessage(
             "Envoyer l\'email de réinitialisation"),
+        "sort": MessageLookupByLibrary.simpleMessage("TRIER"),
         "tournamentScreenTitle":
             MessageLookupByLibrary.simpleMessage("Tournois"),
         "tournamentScreenWelcome": MessageLookupByLibrary.simpleMessage(
@@ -93,7 +117,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "trendingTournamentsTitle":
             MessageLookupByLibrary.simpleMessage("Tournois en tendance"),
         "username": MessageLookupByLibrary.simpleMessage("Nom d\'utilisateur"),
-        "verificationCodeSent": m1,
+        "verificationCodeSent": m3,
         "verify": MessageLookupByLibrary.simpleMessage("Vérifier"),
         "viewAll": MessageLookupByLibrary.simpleMessage("Afficher tout"),
         "welcome":

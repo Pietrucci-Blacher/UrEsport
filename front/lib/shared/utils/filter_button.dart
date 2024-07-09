@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class FilterButton extends StatelessWidget {
   final List<String> availableTags;
@@ -23,14 +24,13 @@ class FilterButton extends StatelessWidget {
       child: FloatingActionButton.extended(
         onPressed: () => _showFilterBottomSheet(context),
         label: Text(
-          'Filtres (${selectedTags.length})',
-          style: TextStyle(
+          AppLocalizations.of(context).filters(selectedTags.length),
+          style: const TextStyle(
             color: Colors.black87,
-            fontSize: 13, // Taille de police réduite
+            fontSize: 13,
           ),
         ),
-        icon: Icon(Icons.filter_list,
-            color: Colors.black87, size: 18), // Taille d'icône réduite
+        icon: const Icon(Icons.filter_list, color: Colors.black87, size: 18),
         backgroundColor: Colors.white,
         elevation: 2,
       ),
@@ -137,11 +137,12 @@ class FilterBottomSheetState extends State<FilterBottomSheet> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Text('Filtrer et trier', style: Theme.of(context).textTheme.titleLarge),
+        Text(AppLocalizations.of(context).filterAndSort,
+            style: Theme.of(context).textTheme.titleLarge),
         TextButton.icon(
           onPressed: _resetFilters,
           icon: const Icon(Icons.refresh),
-          label: const Text('Réinitialiser'),
+          label: Text(AppLocalizations.of(context).reset),
         ),
       ],
     );
@@ -150,7 +151,7 @@ class FilterBottomSheetState extends State<FilterBottomSheet> {
   Widget _buildSearchBar() {
     return TextField(
       decoration: InputDecoration(
-        hintText: 'Rechercher des tags',
+        hintText: AppLocalizations.of(context).searchTags,
         prefixIcon: const Icon(Icons.search),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(30),
@@ -170,7 +171,7 @@ class FilterBottomSheetState extends State<FilterBottomSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('FILTRER PAR TAGS',
+        Text(AppLocalizations.of(context).filterByTags,
             style: Theme.of(context).textTheme.titleMedium),
         const SizedBox(height: 8),
         Wrap(
@@ -205,7 +206,8 @@ class FilterBottomSheetState extends State<FilterBottomSheet> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text('TRIER', style: Theme.of(context).textTheme.titleMedium),
+        Text(AppLocalizations.of(context).sort,
+            style: Theme.of(context).textTheme.titleMedium),
         ...widget.sortOptions.map((option) => RadioListTile<String>(
               title: Text(option),
               value: option,
@@ -233,7 +235,7 @@ class FilterBottomSheetState extends State<FilterBottomSheet> {
           borderRadius: BorderRadius.circular(30),
         ),
       ),
-      child: const Text('Appliquer les filtres'),
+      child: Text(AppLocalizations.of(context).applyFilters),
     );
   }
 

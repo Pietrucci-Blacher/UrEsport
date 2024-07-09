@@ -7,6 +7,7 @@ import 'package:uresport/game/bloc/game_bloc.dart';
 import 'package:uresport/game/bloc/game_event.dart';
 import 'package:uresport/game/bloc/game_state.dart';
 import 'package:uresport/game/screens/game_detail.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/utils/filter_button.dart';
 
 class GamesScreen extends StatefulWidget {
@@ -19,11 +20,34 @@ class GamesScreen extends StatefulWidget {
 class GamesScreenState extends State<GamesScreen> {
   final List<String> _selectedTags = [];
   final List<String> _availableTags = [];
-  String _sortOption = 'Alphabétique (A-Z)';
-  final List<String> _sortOptions = [
-    'Alphabétique (A-Z)',
-    'Alphabétique (Z-A)'
-  ];
+  late String _sortOption;
+  late List<String> _sortOptions;
+
+  bool _isInitialized = false;
+  int _currentSortIndex = 0;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateSortOptions();
+  }
+
+  void _updateSortOptions() {
+    final newSortOptions = [
+      AppLocalizations.of(context).alphabeticalAZ,
+      AppLocalizations.of(context).alphabeticalZA
+    ];
+
+    if (!_isInitialized) {
+      _sortOptions = newSortOptions;
+      _sortOption = _sortOptions[_currentSortIndex];
+      _isInitialized = true;
+    } else {
+      _currentSortIndex = _sortOptions.indexOf(_sortOption);
+      _sortOptions = newSortOptions;
+      _sortOption = _sortOptions[_currentSortIndex];
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,9 +97,11 @@ class GamesScreenState extends State<GamesScreen> {
                   ),
                 );
               } else if (state is GameError) {
-                return const Center(child: Text('An error occurred!'));
+                return Center(
+                    child: Text(AppLocalizations.of(context).anErrorOccurred));
               } else {
-                return const Center(child: Text('No games available.'));
+                return Center(
+                    child: Text(AppLocalizations.of(context).noGamesAvailable));
               }
             },
           ),
@@ -90,6 +116,7 @@ class GamesScreenState extends State<GamesScreen> {
               _selectedTags.clear();
               _selectedTags.addAll(selectedTags);
               _sortOption = sortOption;
+              _currentSortIndex = _sortOptions.indexOf(sortOption);
             });
             _filterGames(context);
           },
@@ -119,7 +146,7 @@ class GamesScreenState extends State<GamesScreen> {
             .toList();
 
     filteredGames.sort((a, b) {
-      if (_sortOption == 'Alphabétique (A-Z)') {
+      if (_sortOption == AppLocalizations.of(context).alphabeticalAZ) {
         return a.name.compareTo(b.name);
       } else {
         return b.name.compareTo(a.name);
@@ -190,7 +217,7 @@ class GameCard extends StatelessWidget {
                     const SizedBox(height: 8),
                     LayoutBuilder(
                       builder: (context, constraints) {
-                        return _buildLimitedTags(constraints.maxWidth);
+                        return _buildLimitedTags(context, constraints.maxWidth);
                       },
                     ),
                   ],
@@ -203,7 +230,7 @@ class GameCard extends StatelessWidget {
     );
   }
 
-  Widget _buildLimitedTags(double maxWidth) {
+  Widget _buildLimitedTags(BuildContext context, double maxWidth) {
     const double tagSpacing = 8.0;
     const double moreTagWidth = 80.0;
 
@@ -240,7 +267,8 @@ class GameCard extends StatelessWidget {
     if (hiddenTagsCount > 0) {
       visibleTags.add(
         Chip(
-          label: Text('+$hiddenTagsCount more'),
+          label:
+              Text(AppLocalizations.of(context).moreTagsCount(hiddenTagsCount)),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       );
