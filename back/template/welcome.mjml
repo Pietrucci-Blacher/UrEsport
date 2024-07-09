@@ -16,7 +16,7 @@
     <mj-wrapper padding="40px 0">
       <mj-section background-color="#FFFFFF" padding-top="20px">
         <mj-column width="100%">
-          <mj-image width="120px" src="[URL_DU_LOGO_FOURNI]" alt="UrEsport Logo" align="center"></mj-image>
+          <mj-image width="120px" src="https://i.ibb.co/448CNZf/ic-launcher.png" alt="UrEsport Logo" align="center"></mj-image>
         </mj-column>
       </mj-section>
       <mj-section background-color="#FFFFFF">

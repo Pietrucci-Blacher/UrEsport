@@ -16,7 +16,7 @@
     <mj-wrapper padding="20px 0" background-color="#f8f8f8">
       <mj-section background-color="#ffffff" css-class="shadow">
         <mj-column width="600px">
-          <mj-image width="120px" src="[URL_DU_LOGO_FOURNI]" alt="UrEsport Logo" align="center" padding="30px 0 20px"></mj-image>
+          <mj-image width="120px" src="https://i.ibb.co/448CNZf/ic-launcher.png" alt="UrEsport Logo" align="center" padding="30px 0 20px"></mj-image>
           <mj-text font-size="26px" font-weight="bold" color="#333333">Vérifiez votre compte UrEsport</mj-text>
           <mj-text color="#666666" font-size="18px" padding-top="10px">Voici votre code de vérification :</mj-text>
           <mj-text css-class="verification-code" padding="20px 0">{{.Code}}</mj-text>
