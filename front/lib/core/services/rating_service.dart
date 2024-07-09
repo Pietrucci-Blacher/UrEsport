@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/services/cache_service.dart';
 
@@ -61,12 +62,16 @@ class RatingService implements IRatingService {
       }
     } catch (e) {
       if (e is DioException) {
-        print('DioException: ${e.message}');
-        print('DioException type: ${e.type}');
-        print('DioException response: ${e.response?.data}');
+        if (kDebugMode) {
+          print('DioException: ${e.message}');
+          print('DioException type: ${e.type}');
+          print('DioException response: ${e.response?.data}');
+        }
         rethrow;
       } else {
-        print('Unexpected error: $e');
+        if (kDebugMode) {
+          print('Unexpected error: $e');
+        }
         throw Exception('Unexpected error occurred');
       }
     }
@@ -104,9 +109,11 @@ class RatingService implements IRatingService {
       );
     } catch (e) {
       if (e is DioException) {
-        print('DioException: ${e.message}');
-        print('DioException type: ${e.type}');
-        print('DioException response: ${e.response?.data}');
+        if (kDebugMode) {
+          print('DioException: ${e.message}');
+          print('DioException type: ${e.type}');
+          print('DioException response: ${e.response?.data}');
+        }
         rethrow;
       } else {
         throw Exception('Unexpected error occurred');
@@ -147,9 +154,11 @@ class RatingService implements IRatingService {
       );
     } catch (e) {
       if (e is DioException) {
-        print('DioException: ${e.message}');
-        print('DioException type: ${e.type}');
-        print('DioException response: ${e.response?.data}');
+        if (kDebugMode) {
+          print('DioException: ${e.message}');
+          print('DioException type: ${e.type}');
+          print('DioException response: ${e.response?.data}');
+        }
         rethrow;
       } else {
         throw Exception('Unexpected error occurred');
@@ -202,12 +211,16 @@ class RatingService implements IRatingService {
       }
     } catch (e) {
       if (e is DioException) {
-        print('DioException: ${e.message}');
-        print('DioException type: ${e.type}');
-        print('DioException response: ${e.response?.data}');
+        if (kDebugMode) {
+          print('DioException: ${e.message}');
+          print('DioException type: ${e.type}');
+          print('DioException response: ${e.response?.data}');
+        }
         rethrow;
       } else {
-        print('Unexpected error: $e');
+        if (kDebugMode) {
+          print('Unexpected error: $e');
+        }
         throw Exception('Unexpected error occurred');
       }
     }
