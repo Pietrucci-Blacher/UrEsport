@@ -14,6 +14,17 @@ type Rating struct {
 	UpdatedAt    time.Time `json:"updated_at"`
 }
 
+func (r *Rating) FindOne(key string, value any) error {
+	return DB.Model(&Rating{}).
+		Where(key, value).
+		First(&r).Error
+}
+
+func (r *Rating) FindOneById(id int) error {
+	return DB.Model(&Rating{}).
+		First(&r, id).Error
+}
+
 type CreateRatingDto struct {
 	TournamentID uint    `json:"tournament_id" validate:"required"`
 	UserID       uint    `json:"user_id" validate:"required"`

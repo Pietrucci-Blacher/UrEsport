@@ -11,4 +11,5 @@ type Upvote struct {
 	TournamentID int        `json:"tournament_id"`
 	Tournament   Tournament `json:"tournament" gorm:"foreignKey:TournamentID"`
 	CreatedAt    time.Time  `json:"created_at"`
+	UpdatedAt    time.Time  `json:"updated_at"`
 }

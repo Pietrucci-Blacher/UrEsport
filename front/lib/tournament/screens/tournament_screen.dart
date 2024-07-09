@@ -9,13 +9,6 @@ import 'package:uresport/shared/map/map.dart'; // Ensure this import points to t
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
-import 'package:uresport/tournament/bloc/tournament_event.dart';
-import 'package:uresport/core/models/tournament.dart';
-import 'package:intl/intl.dart';
-import 'package:uresport/shared/map/map.dart';
-import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/bracket/screens/custom_poules_page.dart';
-import 'package:uresport/bracket/screens/custom_bracket.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/GradientIcon.dart';
 
@@ -27,44 +20,25 @@ class TournamentScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => TournamentBloc(context.read<ITournamentService>())
         ..add(const LoadTournaments()),
-      child: Scaffold(
-        body: RefreshIndicator(
-          onRefresh: () async {
-            context.read<TournamentBloc>().add(const LoadTournaments());
-          },
-          child: Column(
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+            title: const Text('Tournaments'),
+            bottom: const TabBar(
+              tabs: [
+                Tab(text: 'Liste Tournois'),
+                Tab(text: 'Custom Bracket'),
+                Tab(text: 'Custom Poules'),
+              ],
+            ),
+          ),
+          body: TabBarView(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const TournamentBracketPage(),
-                          ),
-                        );
-                      },
-                      child: const Text('Custom Bracket'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CustomPoulesPage(),
-                          ),
-                        );
-                      },
-                      child: const Text('Custom Poules'),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
+              RefreshIndicator(
+                onRefresh: () async {
+                  context.read<TournamentBloc>().add(const LoadTournaments());
+                },
                 child: BlocBuilder<TournamentBloc, TournamentState>(
                   builder: (context, state) {
                     if (state is TournamentInitial) {
@@ -111,6 +85,8 @@ class TournamentScreen extends StatelessWidget {
                   },
                 ),
               ),
+              const TournamentBracketPage(),
+              const CustomPoulesPage(),
             ],
           ),
         ),
@@ -120,7 +96,7 @@ class TournamentScreen extends StatelessWidget {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-        DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),

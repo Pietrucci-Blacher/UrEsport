@@ -16,12 +16,6 @@ class CustomPoulesPage extends StatelessWidget {
       child: Scaffold(
         appBar: AppBar(
           title: const Text('Poules de Tournois'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
         ),
         body: BlocBuilder<PouleBloc, PouleState>(
           builder: (context, state) {
