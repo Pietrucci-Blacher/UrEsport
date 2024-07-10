@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'dart:developer' as developer;
 import 'dart:io';
+import 'dart:ui' as ui;
 
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geolocator/geolocator.dart' as geo;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
@@ -70,38 +73,80 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     }
   }
 
+  Future<String> _createMaterialIconAsBase64() async {
+    final pictureRecorder = ui.PictureRecorder();
+    final canvas = Canvas(pictureRecorder);
+    const size = ui.Size(48, 48);
+    const iconData = Icons.location_on;
+    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+
+    textPainter.text = TextSpan(
+      text: String.fromCharCode(iconData.codePoint),
+      style: TextStyle(
+        fontSize: 48,
+        fontFamily: iconData.fontFamily,
+        color: Colors.red,
+      ),
+    );
+
+    textPainter.layout();
+    final xCenter = (size.width - textPainter.width) / 2;
+    final yCenter = (size.height - textPainter.height) / 2;
+    textPainter.paint(canvas, Offset(xCenter, yCenter));
+
+    final picture = pictureRecorder.endRecording();
+    final image =
+        await picture.toImage(size.width.toInt(), size.height.toInt());
+    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
+    final buffer = byteData!.buffer.asUint8List();
+
+    return base64Encode(buffer);
+  }
+
   void _onUpdateMarkers(UpdateMarkers event, Emitter<MapState> emit) async {
     if (_mapboxMap != null) {
-      final pointAnnotationManager =
-          await _mapboxMap!.annotations.createPointAnnotationManager();
-      await pointAnnotationManager.deleteAll();
+      try {
+        final pointAnnotationManager =
+            await _mapboxMap!.annotations.createPointAnnotationManager();
+        await pointAnnotationManager.deleteAll();
 
-      final markers = event.tournaments
-          .map((tournament) {
-            final point =
-                createPoint(tournament.longitude, tournament.latitude);
-            if (point == null) return null;
-            return PointAnnotationOptions(
-              geometry: point,
-              textField: tournament.name,
-              iconImage:
-                  "default_marker", // Assurez-vous que cette image est définie dans votre Mapbox style
-            );
-          })
-          .where((marker) => marker != null)
-          .toList();
+        final iconImage = await _createMaterialIconAsBase64();
 
-      pointAnnotationManager.addOnPointAnnotationClickListener(
-        PointAnnotationClickListener(event.tournaments, this),
-      );
-
-      for (var marker in markers) {
-        if (marker != null) {
-          await pointAnnotationManager.create(marker);
+        var options = <PointAnnotationOptions>[];
+        for (var tournament in event.tournaments) {
+          final point = Point(
+              coordinates: Position(tournament.longitude, tournament.latitude));
+          const iconSize = 1.5;
+          options.add(PointAnnotationOptions(
+            geometry: point,
+            iconImage: 'data:image/png;base64,$iconImage',
+            iconSize: iconSize,
+            iconOffset: [0, -20],
+            textField: tournament.name,
+            textOffset: [0, 2],
+            textColor: Colors.black.value,
+            textSize: 12,
+          ));
         }
-      }
 
-      emit(MarkersUpdated(mapMarkers: markers.cast<PointAnnotationOptions>()));
+        if (options.isNotEmpty) {
+          final createdAnnotations =
+              await pointAnnotationManager.createMulti(options);
+          developer.log("Created ${createdAnnotations.length} annotations");
+        }
+
+        pointAnnotationManager.addOnPointAnnotationClickListener(
+          PointAnnotationClickListener(event.tournaments, this),
+        );
+
+        emit(MarkersUpdated(mapMarkers: options));
+      } catch (e) {
+        developer.log("Error updating markers: $e");
+        emit(MapError("Failed to update markers: $e"));
+      }
+    } else {
+      developer.log("MapboxMap is null");
+      emit(const MapError("MapboxMap is not initialized"));
     }
   }
 
@@ -150,22 +195,18 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       bool serviceEnabled;
       geo.LocationPermission permission;
 
-      // Vérifiez si les services de localisation sont activés
       serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        // Les services de localisation ne sont pas activés, ne pas continuer
         developer.log('Les services de localisation ne sont pas activés.');
         emit(const MapError(
             'Les services de localisation ne sont pas activés.'));
         return;
       }
 
-      // Vérifiez les permissions de localisation
       permission = await geo.Geolocator.checkPermission();
       if (permission == geo.LocationPermission.denied) {
         permission = await geo.Geolocator.requestPermission();
         if (permission == geo.LocationPermission.denied) {
-          // Les permissions sont refusées, ne pas continuer
           developer.log('Les permissions de localisation sont refusées.');
           emit(
               const MapError('Les permissions de localisation sont refusées.'));
@@ -174,7 +215,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       }
 
       if (permission == geo.LocationPermission.deniedForever) {
-        // Les permissions sont refusées à jamais, ne pas continuer
         developer
             .log('Les permissions de localisation sont refusées à jamais.');
         emit(const MapError(
@@ -182,7 +222,6 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         return;
       }
 
-      // Obtenez la position actuelle
       geo.Position position = await geo.Geolocator.getCurrentPosition(
           desiredAccuracy: geo.LocationAccuracy.high);
 
@@ -225,14 +264,14 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     _mapboxMap = event.controller;
     await mapService.initializeMap(event.controller);
     emit(MapInitialized());
-    // Appeler l'événement pour centrer sur la position actuelle ici
     add(CenterOnCurrentLocation());
-    // Vérifiez d'abord si l'état est MapLoaded avant de recharger les marqueurs
     if (state is MapLoaded) {
       add(LoadMap(
         (state as MapLoaded).tournaments,
         (tournament) => add(MarkerTapped(tournament)),
       ));
+      add(UpdateMarkers((state as MapLoaded).tournaments,
+          (tournament) => add(MarkerTapped(tournament))));
     }
   }
 

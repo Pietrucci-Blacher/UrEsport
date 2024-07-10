@@ -1,4 +1,6 @@
 import 'dart:developer' as developer;
+import 'dart:ui' as ui;
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -88,99 +90,166 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
       backgroundColor: Colors.transparent,
       builder: (BuildContext context) {
         return DraggableScrollableSheet(
-          initialChildSize: 0.4,
-          maxChildSize: 0.9,
-          minChildSize: 0.3,
-          builder: (BuildContext context, ScrollController scrollController) {
+          initialChildSize: 0.7,
+          minChildSize: 0.6,
+          maxChildSize: 0.95,
+          builder: (context, scrollController) {
             return Container(
               decoration: const BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
               ),
-              child: SingleChildScrollView(
+              child: CustomScrollView(
                 controller: scrollController,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Stack(
+                slivers: [
+                  SliverToBoxAdapter(
+                    child: Stack(
                       children: [
-                        Image.network(
-                          tournament.image,
-                          width: double.infinity,
-                          height: 200,
-                          fit: BoxFit.cover,
+                        Hero(
+                          tag: 'tournament_image_${tournament.id}',
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: Image.network(
+                              tournament.image,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Container(
+                                  color: Colors.grey[300],
+                                  child: const Icon(Icons.error),
+                                );
+                              },
+                            ),
+                          ),
                         ),
                         Positioned(
-                          top: 16,
-                          left: 16,
+                          top: 40,
+                          left: 20,
                           child: IconButton(
-                            icon: const Icon(Icons.arrow_back_ios_new,
+                            icon: const Icon(Icons.arrow_back_ios,
                                 color: Colors.white),
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
+                            onPressed: () => Navigator.pop(context),
+                          ),
+                        ),
+                        Positioned(
+                          bottom: 0,
+                          left: 0,
+                          right: 0,
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10, horizontal: 20),
+                            decoration: const BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.bottomCenter,
+                                end: Alignment.topCenter,
+                                colors: [Colors.black54, Colors.transparent],
+                              ),
+                            ),
+                            child: Text(
+                              tournament.name,
+                              style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold),
+                            ),
                           ),
                         ),
                       ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            tournament.name,
-                            style: const TextStyle(
-                              fontSize: 24,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '${tournament.location}\n${tournament.startDate} - ${tournament.endDate}',
-                            style: const TextStyle(
-                              fontSize: 16,
-                              color: Colors.grey,
-                            ),
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            tournament.description,
-                            style: const TextStyle(fontSize: 16),
-                          ),
-                          const SizedBox(height: 16),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: <Widget>[
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  _startDirections(tournament);
-                                },
-                                icon: const Icon(Icons.directions),
-                                label: const Text('Itinéraire'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue,
-                                  foregroundColor: Colors.white,
-                                ),
-                              ),
-                              ElevatedButton.icon(
-                                onPressed: () {
-                                  _exportDirections(tournament);
-                                },
-                                icon: const Icon(Icons.file_download),
-                                label: const Text('Exporter'),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.green,
-                                  foregroundColor: Colors.white,
-                                ),
-                              ),
+                  ),
+                  SliverList(
+                    delegate: SliverChildListDelegate([
+                      // Informations générales
+                      Card(
+                        margin: const EdgeInsets.all(16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Informations générales',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 10),
+                              _buildInfoRow(Icons.calendar_today,
+                                  '${_formatDate(tournament.startDate)} - ${_formatDate(tournament.endDate)}'),
+                              _buildInfoRow(
+                                  Icons.location_on, tournament.location),
+                              _buildInfoRow(Icons.person,
+                                  'Organisateur: ${tournament.owner.firstname} ${tournament.owner.lastname}'),
                             ],
                           ),
-                        ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
+                      // Description
+                      Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Description',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 10),
+                              Text(tournament.description),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Équipes participantes
+                      Card(
+                        margin: const EdgeInsets.all(16),
+                        child: Padding(
+                          padding: const EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const Text('Équipes participantes',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold)),
+                              const SizedBox(height: 10),
+                              ...tournament.teams
+                                  .map((team) => _buildTeamItem(team)),
+                            ],
+                          ),
+                        ),
+                      ),
+                      // Boutons d'action
+                      Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.directions),
+                              label: const Text('Obtenir l\'itinéraire'),
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.blue,
+                                minimumSize: const ui.Size(double.infinity, 50),
+                              ),
+                              onPressed: () => _startDirections(tournament),
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton.icon(
+                              icon: const Icon(Icons.share),
+                              label: const Text('Exporter l\'itinéraire'),
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.green,
+                                minimumSize: const ui.Size(double.infinity, 50),
+                              ),
+                              onPressed: () => _exportDirections(tournament),
+                            )
+                          ],
+                        ),
+                      ),
+                    ]),
+                  ),
+                ],
               ),
             );
           },
@@ -189,15 +258,42 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     );
   }
 
+  Widget _buildInfoRow(IconData icon, String text) {
+    return Row(
+      children: [
+        Icon(icon, color: Colors.blue, size: 20),
+        const SizedBox(width: 10),
+        Expanded(child: Text(text, style: const TextStyle(fontSize: 16))),
+      ],
+    );
+  }
+
+  Widget _buildTeamItem(Team team) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 5),
+      child: Row(
+        children: [
+          const Icon(Icons.group, color: Colors.grey, size: 18),
+          const SizedBox(width: 10),
+          Text(team.name, style: const TextStyle(fontSize: 16)),
+        ],
+      ),
+    );
+  }
+
+  String _formatDate(DateTime date) {
+    return '${date.day}/${date.month}/${date.year}';
+  }
+
   void _startDirections(Tournament tournament) async {
     final state = context.read<MapBloc>().state;
     if (state is MapLoaded && _isMapInitialized()) {
       context.read<MapBloc>().add(ShowDirections(
-        state.position,
-        Point(
-          coordinates: Position(tournament.longitude, tournament.latitude),
-        ),
-      ));
+            state.position,
+            Point(
+              coordinates: Position(tournament.longitude, tournament.latitude),
+            ),
+          ));
     }
   }
 
@@ -211,11 +307,11 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
       final userLocation = await mapService.getCurrentLocation();
       final origin = Point(
           coordinates:
-          Position(userLocation['longitude']!, userLocation['latitude']!));
+              Position(userLocation['longitude']!, userLocation['latitude']!));
       final destination = Point(
           coordinates: Position(tournament.longitude, tournament.latitude));
       final polylinePoints =
-      await mapService.getDirections(origin, destination);
+          await mapService.getDirections(origin, destination);
 
       if (!mounted) return;
 
@@ -274,32 +370,26 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     bool serviceEnabled;
     geo.LocationPermission permission;
 
-    // Vérifiez si les services de localisation sont activés
     serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      // Les services de localisation ne sont pas activés, ne pas continuer
       developer.log('Les services de localisation ne sont pas activés.');
       return;
     }
 
-    // Vérifiez les permissions de localisation
     permission = await geo.Geolocator.checkPermission();
     if (permission == geo.LocationPermission.denied) {
       permission = await geo.Geolocator.requestPermission();
       if (permission == geo.LocationPermission.denied) {
-        // Les permissions sont refusées, ne pas continuer
         developer.log('Les permissions de localisation sont refusées.');
         return;
       }
     }
 
     if (permission == geo.LocationPermission.deniedForever) {
-      // Les permissions sont refusées à jamais, ne pas continuer
       developer.log('Les permissions de localisation sont refusées à jamais.');
       return;
     }
 
-    // Obtenez la position actuelle
     geo.Position position = await geo.Geolocator.getCurrentPosition(
         desiredAccuracy: geo.LocationAccuracy.high);
 
@@ -344,6 +434,9 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
             context
                 .read<MapBloc>()
                 .add(LoadMap(widget.tournaments, _showTournamentDetails));
+            context
+                .read<MapBloc>()
+                .add(UpdateMarkers(widget.tournaments, _showTournamentDetails));
             _centerOnCurrentLocation();
           } else if (state is MarkerTappedState) {
             _showTournamentDetails(state.tournament);
@@ -378,14 +471,14 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
               ),
               leading: _searching
                   ? IconButton(
-                icon: const Icon(Icons.arrow_back_ios_new),
-                onPressed: () {
-                  setState(() {
-                    _searching = false;
-                    _searchController.clear();
-                  });
-                },
-              )
+                      icon: const Icon(Icons.arrow_back_ios_new),
+                      onPressed: () {
+                        setState(() {
+                          _searching = false;
+                          _searchController.clear();
+                        });
+                      },
+                    )
                   : null,
             ),
             body: Stack(
@@ -412,7 +505,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Card(
                             child: Padding(
                               padding:
-                              const EdgeInsets.symmetric(horizontal: 8.0),
+                                  const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Column(
                                 children: [
                                   Expanded(
@@ -428,14 +521,14 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                                             title: Text(_recentSearches[index]),
                                             onTap: () {
                                               _searchController.text =
-                                              _recentSearches[index];
+                                                  _recentSearches[index];
                                               _filterTournaments(
                                                   _recentSearches[index]);
                                             },
                                           );
                                         } else {
                                           final tournament =
-                                          _filteredTournaments[index];
+                                              _filteredTournaments[index];
                                           return ListTile(
                                             title: Text(tournament.name),
                                             onTap: () {
