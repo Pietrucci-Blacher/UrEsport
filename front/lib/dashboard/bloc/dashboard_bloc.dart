@@ -4,9 +4,9 @@ import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
-  final Websocket _ws;
+  final Websocket _websocket;
 
-  DashboardBloc(this._ws) : super(DashboardInitial()) {
+  DashboardBloc(this._websocket) : super(DashboardInitial()) {
     on<ConnectWebSocket>(_onConnectWebSocket);
     on<DisconnectWebSocket>(_onDisconnectWebSocket);
     on<WebSocketMessageReceived>(_onWebSocketMessageReceived);
@@ -14,76 +14,77 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<AddLogEntry>(_onAddLogEntry);
   }
 
-  void _onConnectWebSocket(
-      ConnectWebSocket event, Emitter<DashboardState> emit) {
+  Future<void> _onConnectWebSocket(
+    ConnectWebSocket event,
+    Emitter<DashboardState> emit,
+  ) async {
     emit(DashboardLoading());
-    _ws.on('connected', (socket, message) {
-      add(const WebSocketMessageReceived('Connected to WebSocket'));
-    });
-
-    _ws.on('error', (socket, message) {
-      emit(DashboardError('Error: $message'));
-    });
-
-    _ws.on('pong', (socket, message) {
-      add(WebSocketMessageReceived('Pong received: $message'));
-    });
-
-    _ws.on('stats_update', (socket, message) {
-      add(UpdateDashboardStats(message as Map<String, dynamic>));
-    });
-
-    _ws.on('new_log', (socket, message) {
-      add(AddLogEntry(message as String));
-    });
-
-    _ws.emit('ping', 'Hello from client!');
+    try {
+      _websocket.connect();
+      emit(const DashboardLoaded(
+        message: 'Connected',
+        activeUsers: 0,
+        activeTournaments: 0,
+        totalGames: 0,
+        recentLogs: [],
+      ));
+    } catch (e) {
+      emit(DashboardError(e.toString()));
+    }
   }
 
-  void _onDisconnectWebSocket(
-      DisconnectWebSocket event, Emitter<DashboardState> emit) {
-    emit(DashboardInitial());
+  Future<void> _onDisconnectWebSocket(
+    DisconnectWebSocket event,
+    Emitter<DashboardState> emit,
+  ) async {
+    try {
+      _websocket.disconnect();
+      emit(const DashboardLoaded(
+        message: 'Disconnected',
+        activeUsers: 0,
+        activeTournaments: 0,
+        totalGames: 0,
+        recentLogs: [],
+      ));
+    } catch (e) {
+      emit(DashboardError(e.toString()));
+    }
   }
 
   void _onWebSocketMessageReceived(
-      WebSocketMessageReceived event, Emitter<DashboardState> emit) {
+    WebSocketMessageReceived event,
+    Emitter<DashboardState> emit,
+  ) {
     if (state is DashboardLoaded) {
-      emit((state as DashboardLoaded).copyWith(message: event.message));
-    } else {
-      emit(DashboardLoaded(message: event.message));
+      final currentState = state as DashboardLoaded;
+      emit(currentState.copyWith(message: event.message));
     }
   }
 
   void _onUpdateDashboardStats(
-      UpdateDashboardStats event, Emitter<DashboardState> emit) {
+    UpdateDashboardStats event,
+    Emitter<DashboardState> emit,
+  ) {
     if (state is DashboardLoaded) {
-      emit((state as DashboardLoaded).copyWith(
-        activeUsers: event.stats['activeUsers'] as int?,
-        activeTournaments: event.stats['activeTournaments'] as int?,
-        totalGames: event.stats['totalGames'] as int?,
-      ));
-    } else {
-      emit(DashboardLoaded(
-        message: 'Stats updated',
-        activeUsers: event.stats['activeUsers'] as int? ?? 0,
-        activeTournaments: event.stats['activeTournaments'] as int? ?? 0,
-        totalGames: event.stats['totalGames'] as int? ?? 0,
+      final currentState = state as DashboardLoaded;
+      emit(currentState.copyWith(
+        activeUsers: event.stats['activeUsers'] ?? currentState.activeUsers,
+        activeTournaments:
+            event.stats['activeTournaments'] ?? currentState.activeTournaments,
+        totalGames: event.stats['totalGames'] ?? currentState.totalGames,
       ));
     }
   }
 
-  void _onAddLogEntry(AddLogEntry event, Emitter<DashboardState> emit) {
+  void _onAddLogEntry(
+    AddLogEntry event,
+    Emitter<DashboardState> emit,
+  ) {
     if (state is DashboardLoaded) {
       final currentState = state as DashboardLoaded;
       final updatedLogs = List<String>.from(currentState.recentLogs)
-        ..insert(0, event.logEntry);
-      if (updatedLogs.length > 10) updatedLogs.removeLast();
+        ..add(event.logEntry);
       emit(currentState.copyWith(recentLogs: updatedLogs));
-    } else {
-      emit(DashboardLoaded(
-        message: 'New log entry',
-        recentLogs: [event.logEntry],
-      ));
     }
   }
 }

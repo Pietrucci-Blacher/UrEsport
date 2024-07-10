@@ -6,7 +6,7 @@ import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 
 class Dashboard extends StatefulWidget {
-  const Dashboard({Key? key}) : super(key: key);
+  const Dashboard({super.key});
 
   @override
   _DashboardState createState() => _DashboardState();
@@ -63,9 +63,12 @@ class _DashboardState extends State<Dashboard> {
             Expanded(
               child: BlocBuilder<DashboardBloc, DashboardState>(
                 builder: (context, state) {
-                  if (state is DashboardLoading) {
+                  if (state is DashboardInitial) {
+                    return const Center(child: Text('Initializing...'));
+                  } else if (state is DashboardLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is DashboardLoaded) {
+                    // Now we're sure state is DashboardLoaded, safe to access its properties
                     switch (_selectedIndex) {
                       case 0:
                         return _buildDashboardContent(state);
@@ -81,9 +84,10 @@ class _DashboardState extends State<Dashboard> {
                         return const Center(child: Text('Unknown page'));
                     }
                   } else if (state is DashboardError) {
+                    // Handle error state
                     return Center(child: Text('Error: ${state.error}'));
                   }
-                  return const Center(child: Text('Admin Dashboard Content'));
+                  return const Center(child: Text('Unknown state'));
                 },
               ),
             ),
@@ -119,17 +123,14 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildTournamentsContent(DashboardLoaded state) {
-    // Placeholder for tournaments content
     return const Center(child: Text('Tournaments Content'));
   }
 
   Widget _buildGamesContent(DashboardLoaded state) {
-    // Placeholder for games content
     return const Center(child: Text('Games Content'));
   }
 
   Widget _buildUsersContent(DashboardLoaded state) {
-    // Placeholder for users content
     return const Center(child: Text('Users Content'));
   }
 }
