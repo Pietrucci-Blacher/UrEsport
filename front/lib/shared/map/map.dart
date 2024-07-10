@@ -1,6 +1,8 @@
+import 'dart:developer' as developer;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:geolocator/geolocator.dart' as geo;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -46,14 +48,14 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
 
   void _initializeSpeechToText() async {
     bool available = await _speechToText.initialize(
-      onStatus: (status) => print('Speech recognition status: $status'),
+      onStatus: (status) => developer.log('Speech recognition status: $status'),
       onError: (errorNotification) =>
-          print('Speech recognition error: $errorNotification'),
+          developer.log('Speech recognition error: $errorNotification'),
     );
     if (available) {
-      print('Speech recognition initialized successfully');
+      developer.log('Speech recognition initialized successfully');
     } else {
-      print('Speech recognition not available');
+      developer.log('Speech recognition not available');
     }
   }
 
@@ -191,11 +193,11 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     final state = context.read<MapBloc>().state;
     if (state is MapLoaded && _isMapInitialized()) {
       context.read<MapBloc>().add(ShowDirections(
-            state.position,
-            Point(
-              coordinates: Position(tournament.longitude, tournament.latitude),
-            ),
-          ));
+        state.position,
+        Point(
+          coordinates: Position(tournament.longitude, tournament.latitude),
+        ),
+      ));
     }
   }
 
@@ -209,11 +211,11 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
       final userLocation = await mapService.getCurrentLocation();
       final origin = Point(
           coordinates:
-              Position(userLocation['longitude']!, userLocation['latitude']!));
+          Position(userLocation['longitude']!, userLocation['latitude']!));
       final destination = Point(
           coordinates: Position(tournament.longitude, tournament.latitude));
       final polylinePoints =
-          await mapService.getDirections(origin, destination);
+      await mapService.getDirections(origin, destination);
 
       if (!mounted) return;
 
@@ -225,14 +227,14 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     try {
       bool available = await _speechToText.initialize(
         onStatus: (val) {
-          print('Speech recognition status: $val');
+          developer.log('Speech recognition status: $val');
           if (mounted) {
             setState(() {
               _isListening = val == 'listening';
             });
           }
         },
-        onError: (val) => print('Speech recognition error: $val'),
+        onError: (val) => developer.log('Speech recognition error: $val'),
       );
       if (available) {
         if (mounted) {
@@ -249,13 +251,15 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
           },
           listenFor: const Duration(seconds: 30),
           pauseFor: const Duration(seconds: 5),
-          partialResults: true,
+          listenOptions: stt.SpeechListenOptions(
+            partialResults: true,
+          ),
         );
       } else {
-        print('Speech recognition not available');
+        developer.log('Speech recognition not available');
       }
     } catch (e) {
-      print('Error starting speech recognition: $e');
+      developer.log('Error starting speech recognition: $e');
     }
   }
 
@@ -267,11 +271,42 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   }
 
   void _centerOnCurrentLocation() async {
-    final currentLocation = await mapService.getCurrentLocation();
+    bool serviceEnabled;
+    geo.LocationPermission permission;
+
+    // Vérifiez si les services de localisation sont activés
+    serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      // Les services de localisation ne sont pas activés, ne pas continuer
+      developer.log('Les services de localisation ne sont pas activés.');
+      return;
+    }
+
+    // Vérifiez les permissions de localisation
+    permission = await geo.Geolocator.checkPermission();
+    if (permission == geo.LocationPermission.denied) {
+      permission = await geo.Geolocator.requestPermission();
+      if (permission == geo.LocationPermission.denied) {
+        // Les permissions sont refusées, ne pas continuer
+        developer.log('Les permissions de localisation sont refusées.');
+        return;
+      }
+    }
+
+    if (permission == geo.LocationPermission.deniedForever) {
+      // Les permissions sont refusées à jamais, ne pas continuer
+      developer.log('Les permissions de localisation sont refusées à jamais.');
+      return;
+    }
+
+    // Obtenez la position actuelle
+    geo.Position position = await geo.Geolocator.getCurrentPosition(
+        desiredAccuracy: geo.LocationAccuracy.high);
+
     final currentPoint = Point(
       coordinates: Position(
-        currentLocation['longitude']!,
-        currentLocation['latitude']!,
+        position.longitude,
+        position.latitude,
       ),
     );
 
@@ -310,6 +345,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                 .read<MapBloc>()
                 .add(LoadMap(widget.tournaments, _showTournamentDetails));
             _centerOnCurrentLocation();
+          } else if (state is MarkerTappedState) {
+            _showTournamentDetails(state.tournament);
           }
         },
         builder: (context, state) {
@@ -341,14 +378,14 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
               ),
               leading: _searching
                   ? IconButton(
-                      icon: const Icon(Icons.arrow_back_ios_new),
-                      onPressed: () {
-                        setState(() {
-                          _searching = false;
-                          _searchController.clear();
-                        });
-                      },
-                    )
+                icon: const Icon(Icons.arrow_back_ios_new),
+                onPressed: () {
+                  setState(() {
+                    _searching = false;
+                    _searchController.clear();
+                  });
+                },
+              )
                   : null,
             ),
             body: Stack(
@@ -375,7 +412,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Card(
                             child: Padding(
                               padding:
-                                  const EdgeInsets.symmetric(horizontal: 8.0),
+                              const EdgeInsets.symmetric(horizontal: 8.0),
                               child: Column(
                                 children: [
                                   Expanded(
@@ -391,14 +428,14 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                                             title: Text(_recentSearches[index]),
                                             onTap: () {
                                               _searchController.text =
-                                                  _recentSearches[index];
+                                              _recentSearches[index];
                                               _filterTournaments(
                                                   _recentSearches[index]);
                                             },
                                           );
                                         } else {
                                           final tournament =
-                                              _filteredTournaments[index];
+                                          _filteredTournaments[index];
                                           return ListTile(
                                             title: Text(tournament.name),
                                             onTap: () {

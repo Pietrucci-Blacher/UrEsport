@@ -1,6 +1,8 @@
+import 'dart:developer' as developer;
 import 'dart:io';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:geolocator/geolocator.dart' as geo;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
@@ -49,6 +51,31 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         return;
       }
 
+      emit(MapLoaded(
+        position: currentPoint,
+        tournaments: event.tournaments,
+        mapMarkers: const [],
+      ));
+
+      mapService.flyTo(
+        CameraOptions(center: currentPoint, zoom: 14.0),
+        MapAnimationOptions(duration: 2000, startDelay: 0),
+      );
+
+      if (_mapboxMap != null) {
+        add(UpdateMarkers(event.tournaments, event.onMarkerTapped));
+      }
+    } catch (e) {
+      emit(MapError(e.toString()));
+    }
+  }
+
+  void _onUpdateMarkers(UpdateMarkers event, Emitter<MapState> emit) async {
+    if (_mapboxMap != null) {
+      final pointAnnotationManager =
+          await _mapboxMap!.annotations.createPointAnnotationManager();
+      await pointAnnotationManager.deleteAll();
+
       final markers = event.tournaments
           .map((tournament) {
             final point =
@@ -57,48 +84,25 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             return PointAnnotationOptions(
               geometry: point,
               textField: tournament.name,
+              iconImage:
+                  "default_marker", // Assurez-vous que cette image est définie dans votre Mapbox style
             );
           })
           .where((marker) => marker != null)
           .toList();
 
-      emit(MapLoaded(
-        position: currentPoint,
-        tournaments: event.tournaments,
-        mapMarkers: markers.cast<PointAnnotationOptions>(),
-      ));
-
-      mapService.flyTo(
-        CameraOptions(center: currentPoint, zoom: 14.0),
-        MapAnimationOptions(duration: 2000, startDelay: 0),
+      pointAnnotationManager.addOnPointAnnotationClickListener(
+        PointAnnotationClickListener(event.tournaments, this),
       );
-      if (_mapboxMap != null) {
-        final pointAnnotationManager =
-            await _mapboxMap!.annotations.createPointAnnotationManager();
-        for (var marker in markers) {
-          if (marker != null) {
-            await pointAnnotationManager.create(marker);
-          }
+
+      for (var marker in markers) {
+        if (marker != null) {
+          await pointAnnotationManager.create(marker);
         }
       }
-    } catch (e) {
-      emit(MapError(e.toString()));
-    }
-  }
 
-  void _onUpdateMarkers(UpdateMarkers event, Emitter<MapState> emit) async {
-    final markers = event.tournaments
-        .map((tournament) {
-          final point = createPoint(tournament.longitude, tournament.latitude);
-          if (point == null) return null;
-          return PointAnnotationOptions(
-            geometry: point,
-            textField: tournament.name,
-          );
-        })
-        .where((marker) => marker != null)
-        .toList();
-    emit(MarkersUpdated(mapMarkers: markers.cast<PointAnnotationOptions>()));
+      emit(MarkersUpdated(mapMarkers: markers.cast<PointAnnotationOptions>()));
+    }
   }
 
   void _onShowDirections(ShowDirections event, Emitter<MapState> emit) async {
@@ -134,90 +138,70 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   void _onCenterOnCurrentLocation(
       CenterOnCurrentLocation event, Emitter<MapState> emit) async {
-    print('Début de _onCenterOnCurrentLocation');
+    developer.log('Début de _onCenterOnCurrentLocation');
 
     if (!mapService.isMapInitialized() || _mapboxMap == null) {
-      print('La carte n\'est pas initialisée');
+      developer.log('La carte n\'est pas initialisée');
       emit(const MapError('La carte n\'est pas initialisée'));
       return;
     }
 
     try {
-      print('Mise à jour des paramètres de localisation');
-      await _mapboxMap!.location.updateSettings(
-        LocationComponentSettings(
-            enabled: true, pulsingEnabled: true, puckBearingEnabled: true),
+      bool serviceEnabled;
+      geo.LocationPermission permission;
+
+      // Vérifiez si les services de localisation sont activés
+      serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        // Les services de localisation ne sont pas activés, ne pas continuer
+        developer.log('Les services de localisation ne sont pas activés.');
+        emit(const MapError(
+            'Les services de localisation ne sont pas activés.'));
+        return;
+      }
+
+      // Vérifiez les permissions de localisation
+      permission = await geo.Geolocator.checkPermission();
+      if (permission == geo.LocationPermission.denied) {
+        permission = await geo.Geolocator.requestPermission();
+        if (permission == geo.LocationPermission.denied) {
+          // Les permissions sont refusées, ne pas continuer
+          developer.log('Les permissions de localisation sont refusées.');
+          emit(
+              const MapError('Les permissions de localisation sont refusées.'));
+          return;
+        }
+      }
+
+      if (permission == geo.LocationPermission.deniedForever) {
+        // Les permissions sont refusées à jamais, ne pas continuer
+        developer
+            .log('Les permissions de localisation sont refusées à jamais.');
+        emit(const MapError(
+            'Les permissions de localisation sont refusées à jamais.'));
+        return;
+      }
+
+      // Obtenez la position actuelle
+      geo.Position position = await geo.Geolocator.getCurrentPosition(
+          desiredAccuracy: geo.LocationAccuracy.high);
+
+      final currentPoint = Point(
+        coordinates: Position(
+          position.longitude,
+          position.latitude,
+        ),
       );
 
-      print('Récupération de la couche de localisation');
-      Layer? layer;
-      if (Platform.isAndroid) {
-        layer =
-            await _mapboxMap!.style.getLayer("mapbox-location-indicator-layer");
-      } else {
-        layer = await _mapboxMap!.style.getLayer("puck");
-      }
-
-      if (layer is LocationIndicatorLayer) {
-        var location = layer.location;
-        if (location != null && location.length >= 2) {
-          final lat = location[1];
-          final lng = location[0];
-
-          print('Coordonnées obtenues : lat=$lat, lng=$lng');
-
-          if (lat != null &&
-              lng != null &&
-              lat >= -90 &&
-              lat <= 90 &&
-              lng >= -180 &&
-              lng <= 180) {
-            final currentPoint = Point(coordinates: Position(lng, lat));
-
-            print('Centrage de la carte dans 500ms');
-            Future.delayed(const Duration(milliseconds: 500), () {
-              if (mapService.isMapInitialized()) {
-                try {
-                  print('Tentative de flyTo');
-                  _mapboxMap!.flyTo(
-                    CameraOptions(center: currentPoint, zoom: 14.0),
-                    MapAnimationOptions(duration: 2000, startDelay: 0),
-                  );
-                  print('flyTo réussi');
-                  emit(MapCentered());
-                } catch (e) {
-                  print('Erreur lors de flyTo : $e');
-                  try {
-                    print('Tentative de setCamera');
-                    _mapboxMap!.setCamera(
-                      CameraOptions(center: currentPoint, zoom: 14.0),
-                    );
-                    print('setCamera réussi');
-                    emit(MapCentered());
-                  } catch (e) {
-                    print('Erreur lors de setCamera : $e');
-                    emit(MapError('Impossible de centrer la carte : $e'));
-                  }
-                }
-              } else {
-                print('La carte n\'est pas prête après le délai');
-                emit(const MapError('La carte n\'est pas prête'));
-              }
-            });
-          } else {
-            print('Coordonnées invalides : lat=$lat, lng=$lng');
-            emit(const MapError('Coordonnées invalides'));
-          }
-        } else {
-          print('Données de localisation invalides');
-          emit(const MapError('Données de localisation invalides'));
-        }
-      } else {
-        print('Impossible d\'obtenir la couche de localisation');
-        emit(const MapError('Impossible d\'obtenir la couche de localisation'));
+      if (_mapboxMap != null) {
+        _mapboxMap!.flyTo(
+          CameraOptions(center: currentPoint, zoom: 14.0),
+          MapAnimationOptions(duration: 2000, startDelay: 0),
+        );
+        emit(MapCentered());
       }
     } catch (e) {
-      print('Erreur lors du centrage de la carte : $e');
+      developer.log('Erreur lors du centrage de la carte : $e');
       emit(MapError('Erreur lors du centrage de la carte: ${e.toString()}'));
     }
   }
@@ -241,6 +225,15 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     _mapboxMap = event.controller;
     await mapService.initializeMap(event.controller);
     emit(MapInitialized());
+    // Appeler l'événement pour centrer sur la position actuelle ici
+    add(CenterOnCurrentLocation());
+    // Vérifiez d'abord si l'état est MapLoaded avant de recharger les marqueurs
+    if (state is MapLoaded) {
+      add(LoadMap(
+        (state as MapLoaded).tournaments,
+        (tournament) => add(MarkerTapped(tournament)),
+      ));
+    }
   }
 
   void _onExportDirections(
@@ -271,5 +264,23 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     buffer.writeln('</trkseg></trk>');
     buffer.writeln('</gpx>');
     return buffer.toString();
+  }
+}
+
+class PointAnnotationClickListener implements OnPointAnnotationClickListener {
+  final List tournaments;
+  final MapBloc mapBloc;
+
+  PointAnnotationClickListener(this.tournaments, this.mapBloc);
+
+  @override
+  bool onPointAnnotationClick(PointAnnotation annotation) {
+    final tournament = tournaments.firstWhere(
+      (t) =>
+          t.longitude == annotation.geometry.coordinates[0] &&
+          t.latitude == annotation.geometry.coordinates[1],
+    );
+    mapBloc.add(MarkerTapped(tournament));
+    return true;
   }
 }
