@@ -4,11 +4,9 @@ import (
 	"challenge/models"
 	"challenge/services"
 	"fmt"
+	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
-	"strconv"
-
-	"github.com/gin-gonic/gin"
 )
 
 // GetTournaments godoc
@@ -72,17 +70,8 @@ func GetTournament(c *gin.Context) {
 //	@Failure		500			{object}	utils.HttpError
 //	@Router			/tournaments/ [post]
 func CreateTournament(c *gin.Context) {
-	var body models.CreateTournamentDto
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	var game models.Game
-	if err := game.FindOneById(body.GameID); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Game not found"})
-		return
-	}
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
+	body, _ := c.MustGet("body").(models.CreateTournamentDto)
 
 	tournament := models.Tournament{
 		Name:        body.Name,
@@ -95,6 +84,7 @@ func CreateTournament(c *gin.Context) {
 		Private:     body.Private,
 		NbPlayer:    body.NbPlayer,
 		GameID:      body.GameID,
+		OwnerID:     connectedUser.ID,
 	}
 
 	if err := tournament.Save(); err != nil {
@@ -121,18 +111,8 @@ func CreateTournament(c *gin.Context) {
 //	@Failure		500			{object}	utils.HttpError
 //	@Router			/tournaments/{id} [patch]
 func UpdateTournament(c *gin.Context) {
-	var body models.UpdateTournamentDto
-	if err := c.ShouldBindJSON(&body); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	id, _ := strconv.Atoi(c.Param("id"))
-	var tournament models.Tournament
-	if err := tournament.FindOneById(id); err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
-		return
-	}
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+	body, _ := c.MustGet("body").(models.UpdateTournamentDto)
 
 	if body.Name != "" {
 		tournament.Name = body.Name
@@ -161,6 +141,16 @@ func UpdateTournament(c *gin.Context) {
 	if body.NbPlayer != 0 {
 		tournament.NbPlayer = body.NbPlayer
 	}
+	if !body.StartDate.IsZero() {
+		tournament.StartDate = body.StartDate
+	}
+	if !body.EndDate.IsZero() {
+		tournament.EndDate = body.EndDate
+	}
+	if body.NbPlayer >= 1 {
+		tournament.NbPlayer = body.NbPlayer
+	}
+
 	if body.GameID != 0 {
 		var game models.Game
 		if err := game.FindOneById(body.GameID); err != nil {
