@@ -16,7 +16,6 @@ import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
-import 'package:uresport/shared/utils/image_util.dart';
 import 'package:uresport/tournament/screens/tournament_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -37,6 +36,8 @@ class MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
   late final List<Widget> _widgetOptions;
   String? _profileImageUrl;
+  final ValueNotifier<String?> _profileImageNotifier =
+      ValueNotifier<String?>(null);
 
   @override
   void initState() {
@@ -48,6 +49,14 @@ class MainScreenState extends State<MainScreen> {
       const TournamentScreen(),
       const NotificationScreen(),
     ];
+
+    _profileImageNotifier.addListener(() {
+      if (_profileImageNotifier.value != null) {
+        setState(() {
+          _profileImageUrl = _profileImageNotifier.value;
+        });
+      }
+    });
   }
 
   void _onItemTapped(int index) {
@@ -57,12 +66,6 @@ class MainScreenState extends State<MainScreen> {
         Provider.of<NotificationProvider>(context, listen: false);
       }
       _selectedIndex = index;
-    });
-  }
-
-  void _updateProfileImage(String imageUrl) {
-    setState(() {
-      _profileImageUrl = imageUrl;
     });
   }
 
@@ -81,109 +84,121 @@ class MainScreenState extends State<MainScreen> {
                 );
               } else {
                 bool isLoggedIn = state is AuthAuthenticated;
-                if (isLoggedIn) {
+                if (isLoggedIn &&
+                    state.user.profileImageUrl != _profileImageUrl) {
                   _profileImageUrl = state.user.profileImageUrl;
                 }
-                return Scaffold(
-                  appBar: AppBar(
-                    title: Row(
-                      children: [
-                        if (!kIsWeb)
-                          IconButton(
-                            icon: isLoggedIn && _profileImageUrl != null
-                                ? Stack(
-                                    children: [
-                                      CachedImageWidget(
-                                        url: _profileImageUrl!,
-                                        size: 40,
-                                      ),
-                                      if (notificationProvider
-                                              .notificationCount >
-                                          0)
-                                        Positioned(
-                                          right: 0,
-                                          top: 0,
-                                          child: Container(
-                                            padding: const EdgeInsets.all(2),
-                                            decoration: BoxDecoration(
-                                              color: Colors.red,
-                                              borderRadius:
-                                                  BorderRadius.circular(6),
-                                            ),
-                                            constraints: const BoxConstraints(
-                                              minWidth: 18,
-                                              minHeight: 18,
-                                            ),
-                                            child: Text(
-                                              '${notificationProvider.notificationCount}',
-                                              style: const TextStyle(
-                                                color: Colors.white,
-                                                fontSize: 12,
-                                              ),
-                                              textAlign: TextAlign.center,
+                return ValueListenableBuilder<String?>(
+                  valueListenable: _profileImageNotifier,
+                  builder: (context, value, child) {
+                    if (value != null) {
+                      _profileImageUrl = value;
+                    }
+                    return Scaffold(
+                      appBar: AppBar(
+                        title: Row(
+                          children: [
+                            if (!kIsWeb)
+                              IconButton(
+                                icon: isLoggedIn && _profileImageUrl != null
+                                    ? Stack(
+                                        children: [
+                                          ClipOval(
+                                            child: Image.network(
+                                              _profileImageUrl!,
+                                              width: 40,
+                                              height: 40,
+                                              fit: BoxFit.cover,
                                             ),
                                           ),
+                                          if (notificationProvider
+                                                  .notificationCount >
+                                              0)
+                                            Positioned(
+                                              right: 0,
+                                              top: 0,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(2),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red,
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
+                                                constraints:
+                                                    const BoxConstraints(
+                                                  minWidth: 18,
+                                                  minHeight: 18,
+                                                ),
+                                                child: Text(
+                                                  '${notificationProvider.notificationCount}',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      )
+                                    : const Icon(Icons.person),
+                                onPressed: () async {
+                                  if (isLoggedIn) {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProfileScreen(
+                                          authService: widget.authService,
+                                          profileImageNotifier:
+                                              _profileImageNotifier,
                                         ),
-                                    ],
-                                  )
-                                : const Icon(Icons.person),
-                            onPressed: () async {
-                              if (isLoggedIn) {
-                                final imageUrl = await Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => ProfileScreen(
-                                      authService: widget.authService,
-                                      onProfileImageUpdated:
-                                          _updateProfileImage,
-                                    ),
-                                  ),
-                                );
-                                if (imageUrl != null) {
-                                  _updateProfileImage(imageUrl);
-                                }
-                              } else {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AuthScreen(
-                                      authService: widget.authService,
-                                      showLogin: true,
-                                      showRegister: !kIsWeb,
-                                    ),
-                                  ),
-                                );
-                              }
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AuthScreen(
+                                          authService: widget.authService,
+                                          showLogin: true,
+                                          showRegister: !kIsWeb,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
+                            const SizedBox(width: 8),
+                            Text(
+                              _getTitleForIndex(context, _selectedIndex),
+                              style: Theme.of(context).textTheme.headlineSmall,
+                            ),
+                          ],
+                        ),
+                        actions: [
+                          LocaleSwitcher(
+                            onLocaleChanged: (locale) {
+                              context.read<LocaleCubit>().setLocale(locale);
                             },
                           ),
-                        const SizedBox(width: 8),
-                        Text(
-                          _getTitleForIndex(context, _selectedIndex),
-                          style: Theme.of(context).textTheme.headlineSmall,
-                        ),
-                      ],
-                    ),
-                    actions: [
-                      LocaleSwitcher(
-                        onLocaleChanged: (locale) {
-                          context.read<LocaleCubit>().setLocale(locale);
-                        },
+                        ],
                       ),
-                    ],
-                  ),
-                  body: IndexedStack(
-                    index: _selectedIndex,
-                    children: _widgetOptions,
-                  ),
-                  bottomNavigationBar: kIsWeb
-                      ? null
-                      : CustomBottomNavigation(
-                          isLoggedIn: isLoggedIn,
-                          selectedIndex: _selectedIndex,
-                          onTap: _onItemTapped,
-                          notificationCount:
-                              notificationProvider.notificationCount,
-                        ),
+                      body: IndexedStack(
+                        index: _selectedIndex,
+                        children: _widgetOptions,
+                      ),
+                      bottomNavigationBar: kIsWeb
+                          ? null
+                          : CustomBottomNavigation(
+                              isLoggedIn: isLoggedIn,
+                              selectedIndex: _selectedIndex,
+                              onTap: _onItemTapped,
+                              notificationCount:
+                                  notificationProvider.notificationCount,
+                            ),
+                    );
+                  },
                 );
               }
             },
