@@ -4,6 +4,7 @@ import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:xml/xml.dart' as xml;
 
 class CachedImageWidget extends StatelessWidget {
   final String url;
@@ -13,8 +14,8 @@ class CachedImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Widget>(
-      future: _loadImage(url, size),
+    return FutureBuilder<bool>(
+      future: _isSvg(url),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircleAvatar(
@@ -27,40 +28,75 @@ class CachedImageWidget extends StatelessWidget {
             radius: 50,
             backgroundImage: AssetImage('assets/default_avatar.png'),
           );
+        } else if (snapshot.data!) {
+          return FutureBuilder<String>(
+            future: _cleanSvg(url),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator(); // Affiche un indicateur de chargement pendant le nettoyage SVG
+              } else if (snapshot.hasError || !snapshot.hasData) {
+                return const Text('Erreur lors du chargement de l\'image SVG');
+              } else {
+                return SvgPicture.string(
+                  snapshot.data!,
+                  width: size,
+                  height: size,
+                  fit: BoxFit.cover,
+                );
+              }
+            },
+          );
         } else {
-          return ClipOval(child: snapshot.data!);
+          return ExtendedImage.network(
+            url,
+            width: size,
+            height: size,
+            fit: BoxFit.cover,
+            shape: BoxShape.circle,
+            cache: true,
+            loadStateChanged: (state) {
+              switch (state.extendedImageLoadState) {
+                case LoadState.loading:
+                  return const CircleAvatar(
+                    radius: 50,
+                    backgroundColor: Colors.grey,
+                    child: CircularProgressIndicator(),
+                  );
+                case LoadState.completed:
+                  return ClipOval(
+                    child: Image.network(
+                      url,
+                      width: size,
+                      height: size,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                case LoadState.failed:
+                  return const CircleAvatar(
+                    radius: 50,
+                    backgroundImage: AssetImage('assets/default_avatar.png'),
+                  );
+                default:
+                  return const CircleAvatar(
+                    radius: 50,
+                    backgroundImage: AssetImage('assets/default_avatar.png'),
+                  );
+              }
+            },
+          );
         }
       },
     );
   }
 
-  Future<Widget> _loadImage(String url, double size) async {
+  Future<bool> _isSvg(String url) async {
     try {
       final response = await Dio()
           .get(url, options: Options(responseType: ResponseType.bytes));
       final Uint8List bytes = Uint8List.fromList(response.data);
-
-      if (isSvg(bytes)) {
-        final cleanedSvgBytes = cleanSvg(bytes);
-        return SvgPicture.memory(
-          cleanedSvgBytes,
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
-        );
-      } else {
-        return ExtendedImage.memory(
-          bytes,
-          width: size,
-          height: size,
-          fit: BoxFit.cover,
-        );
-      }
+      return isSvg(bytes);
     } catch (e) {
-      return const CircleAvatar(
-        radius: 50,
-        backgroundImage: AssetImage('assets/default_avatar.png'),
-      );
+      return false;
     }
   }
 
@@ -69,10 +105,11 @@ class CachedImageWidget extends StatelessWidget {
     return String.fromCharCodes(bytes).trim().startsWith(svgHeader);
   }
 
-  Uint8List cleanSvg(Uint8List bytes) {
-    String svgString = String.fromCharCodes(bytes);
-    svgString =
-        svgString.replaceAll(RegExp(r'<metadata[^>]*>.*?<\/metadata>'), '');
-    return Uint8List.fromList(svgString.codeUnits);
+  Future<String> _cleanSvg(String url) async {
+    final response = await Dio()
+        .get(url, options: Options(responseType: ResponseType.bytes));
+    final document = xml.XmlDocument.parse(String.fromCharCodes(response.data));
+    document.findAllElements('metadata').forEach((element) => element.remove());
+    return document.toXmlString(pretty: true);
   }
 }
