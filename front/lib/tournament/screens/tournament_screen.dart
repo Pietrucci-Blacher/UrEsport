@@ -12,14 +12,22 @@ import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 
-class TournamentScreen extends StatelessWidget {
+class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
+
+  @override
+  _TournamentScreenState createState() => _TournamentScreenState();
+}
+
+class _TournamentScreenState extends State<TournamentScreen> {
+  int _currentPage = 1;
+  final int _limit = 5;
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) => TournamentBloc(context.read<ITournamentService>())
-        ..add(const LoadTournaments()),
+        ..add(LoadTournaments(page: _currentPage, limit: _limit)),
       child: DefaultTabController(
         length: 3,
         child: Scaffold(
@@ -37,44 +45,31 @@ class TournamentScreen extends StatelessWidget {
             children: [
               RefreshIndicator(
                 onRefresh: () async {
-                  context.read<TournamentBloc>().add(const LoadTournaments());
+                  context.read<TournamentBloc>().add(
+                      LoadTournaments(page: _currentPage, limit: _limit));
                 },
                 child: BlocBuilder<TournamentBloc, TournamentState>(
                   builder: (context, state) {
                     if (state is TournamentInitial) {
-                      context
-                          .read<TournamentBloc>()
-                          .add(const LoadTournaments());
                       return const Center(child: CircularProgressIndicator());
                     } else if (state is TournamentLoadInProgress) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (state is TournamentLoadSuccess) {
-                      return Stack(
+                      if (state.tournaments.isEmpty) {
+                        return const Center(child: Text('No tournaments found'));
+                      }
+                      return Column(
                         children: [
-                          ListView.builder(
-                            itemCount: state.tournaments.length,
-                            itemBuilder: (context, index) {
-                              final tournament = state.tournaments[index];
-                              return _buildTournamentCard(context, tournament);
-                            },
-                          ),
-                          Positioned(
-                            bottom: 16,
-                            right: 16,
-                            child: FloatingActionButton(
-                              heroTag: 'map-fab',
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TournamentMapWidget(
-                                        tournaments: state.tournaments),
-                                  ),
-                                );
+                          Expanded(
+                            child: ListView.builder(
+                              itemCount: state.tournaments.length,
+                              itemBuilder: (context, index) {
+                                final tournament = state.tournaments[index];
+                                return _buildTournamentCard(context, tournament);
                               },
-                              child: const Icon(Icons.map),
                             ),
                           ),
+                          _buildPagination(state.tournaments.length),
                         ],
                       );
                     } else if (state is TournamentLoadFailure) {
@@ -94,9 +89,43 @@ class TournamentScreen extends StatelessWidget {
     );
   }
 
+  Widget _buildPagination(int itemCount) {
+    return Padding(
+      padding: const EdgeInsets.all(16.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          if (_currentPage > 1)
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _currentPage--;
+                });
+                context.read<TournamentBloc>().add(
+                    LoadTournaments(page: _currentPage, limit: _limit));
+              },
+              child: const Text('Previous'),
+            ),
+          Text('Page $_currentPage'),
+          if (itemCount >= _limit)
+            ElevatedButton(
+              onPressed: () {
+                setState(() {
+                  _currentPage++;
+                });
+                context.read<TournamentBloc>().add(
+                    LoadTournaments(page: _currentPage, limit: _limit));
+              },
+              child: const Text('Next'),
+            ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-        DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),

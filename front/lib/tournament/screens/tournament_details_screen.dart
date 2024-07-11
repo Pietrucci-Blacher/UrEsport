@@ -3,17 +3,16 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/tournament.dart' as tournament_model;
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/rating.dart';
-
 import '../../core/models/user.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
-  final Tournament tournament;
+  final tournament_model.Tournament tournament;
 
   const TournamentDetailsScreen({super.key, required this.tournament});
 
@@ -25,21 +24,21 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
   bool _hasJoined = false;
   bool _isLoading = true;
   User? _currentUser;
+  List<tournament_model.Team> _teams = [];
+  tournament_model.Team? _selectedTeam;
 
   @override
   void initState() {
     super.initState();
     _checkIfJoined();
     _loadCurrentUser();
+    _loadTeams();
   }
 
   Future<void> _checkIfJoined() async {
-    final tournamentService =
-        Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
-      final hasJoined = await tournamentService.hasJoinedTournament(
-          widget.tournament.id,
-          'username'); // Replace 'username' with the actual user ID or username
+      final hasJoined = await tournamentService.hasJoinedTournament(widget.tournament.id, 'username');
       if (!mounted) return;
       setState(() {
         _hasJoined = hasJoined;
@@ -63,12 +62,31 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
       if (!mounted) return;
       setState(() {
         _currentUser = user;
-        debugPrint('User loaded: $_currentUser');
       });
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Error loading current user: $e');
       }
+    }
+  }
+
+  Future<void> _loadTeams() async {
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    try {
+      final teams = await tournamentService.fetchTeams();
+      if (!mounted) return;
+      setState(() {
+        _teams = teams;
+        _isLoading = false;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Error loading teams: $e');
+      }
+      setState(() {
+        _isLoading = false;
+      });
+      showNotificationToast(context, 'Error loading teams: $e', backgroundColor: Colors.red);
     }
   }
 
@@ -94,6 +112,71 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     });
   }
 
+  void _showTeamsModal() {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (BuildContext context) {
+        return SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Teams',
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 8),
+                _teams.isEmpty
+                    ? const Text('No teams available.')
+                    : ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _teams.length,
+                  itemBuilder: (context, index) {
+                    final team = _teams[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.blueAccent,
+                        child: Text(
+                          team.name[0],
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                      ),
+                      title: Text(team.name),
+                      onTap: () async {
+                        Navigator.pop(context); // Fermez le modal
+                        await _sendInvite(team.id, team.name);
+                      },
+                    );
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+
+  Future<void> _sendInvite(int teamId, String teamName) async {
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+
+    try {
+      await tournamentService.inviteTeamToTournament(widget.tournament.id, teamId, teamName);
+      showNotificationToast(context, 'Invitation sent', backgroundColor: Colors.green);
+    } catch (e) {
+      debugPrint('Error sending invitation: $e');
+      showNotificationToast(context, 'Failed to send invitation: $e', backgroundColor: Colors.red);
+    }
+  }
+
+
+
+
   @override
   Widget build(BuildContext context) {
     final DateFormat dateFormat = DateFormat.yMMMd();
@@ -105,231 +188,196 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
       body: _isLoading || _currentUser == null
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Hero(
-                      tag: 'tournamentHero${widget.tournament.id}',
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12.0),
-                        child: Image.network(
-                          widget.tournament.image,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 200,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Text(
-                          widget.tournament.name,
-                          style: Theme.of(context)
-                              .textTheme
-                              .headlineMedium
-                              ?.copyWith(fontWeight: FontWeight.bold),
-                        ),
-                        if (widget.tournament.isPrivate)
-                          const Icon(
-                            Icons.lock,
-                            color: Colors.red,
-                          )
-                        else
-                          const Icon(
-                            Icons.lock_open,
-                            color: Colors.green,
-                          ),
-                      ],
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Description:',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      widget.tournament.description,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      'Location: ${widget.tournament.location}',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'Start Date: ${dateFormat.format(widget.tournament.startDate)}',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      'End Date: ${dateFormat.format(widget.tournament.endDate)}',
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    const SizedBox(height: 16),
-                    const Divider(),
-                    const SizedBox(height: 16),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Upvotes:',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: 4),
-                              UpvoteButton(
-                                tournament: widget.tournament,
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Participants:',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: 4),
-                              Column(
-                                children: List.generate(5, (index) {
-                                  if (index < widget.tournament.teams.length) {
-                                    final team = widget.tournament.teams[index];
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 4.0),
-                                      child: Row(
-                                        children: [
-                                          CircleAvatar(
-                                            radius: 16,
-                                            backgroundColor: Colors.blueAccent,
-                                            child: Text(
-                                              team.name[0],
-                                              style: const TextStyle(
-                                                  color: Colors.white),
-                                            ),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            team.name,
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge,
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  } else {
-                                    return Padding(
-                                      padding: const EdgeInsets.symmetric(
-                                          vertical: 4.0),
-                                      child: Row(
-                                        children: [
-                                          const CircleAvatar(
-                                            radius: 16,
-                                            backgroundColor: Colors.grey,
-                                            child: Icon(Icons.person,
-                                                color: Colors.white),
-                                          ),
-                                          const SizedBox(width: 8),
-                                          Text(
-                                            'Participant ${index + 1}',
-                                            style: Theme.of(context)
-                                                .textTheme
-                                                .bodyLarge,
-                                          ),
-                                        ],
-                                      ),
-                                    );
-                                  }
-                                }),
-                              ),
-                              const SizedBox(height: 8),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          TournamentParticipantsScreen(
-                                              tournament: widget.tournament),
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Voir tous les participants',
-                                      style: TextStyle(
-                                        color: Theme.of(context).primaryColor,
-                                        decoration: TextDecoration.underline,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Icon(
-                                      Icons.arrow_forward,
-                                      color: Theme.of(context).primaryColor,
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    if (!_hasJoined)
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (widget.tournament.isPrivate) {
-                              _sendJoinRequest(
-                                  context, widget.tournament.id, 1);
-                            } else {
-                              _joinTournament(context, widget.tournament.id, 1);
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 32, vertical: 16),
-                          ),
-                          child: Text(widget.tournament.isPrivate
-                              ? 'Envoyer demande pour rejoindre'
-                              : 'Rejoindre le tournoi'),
-                        ),
-                      ),
-                    const SizedBox(height: 16),
-                    RatingWidget(
-                      tournamentId: widget.tournament.id,
-                      showCustomToast: showNotificationToast,
-                      userId: _currentUser?.id ?? 0,
-                    ),
-                  ],
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Hero(
+                tag: 'tournamentHero${widget.tournament.id}',
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12.0),
+                  child: Image.network(
+                    widget.tournament.image,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                    height: 200,
+                  ),
                 ),
               ),
-            ),
+              const SizedBox(height: 16),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    widget.tournament.name,
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(fontWeight: FontWeight.bold),
+                  ),
+                  if (widget.tournament.isPrivate)
+                    const Icon(
+                      Icons.lock,
+                      color: Colors.red,
+                    )
+                  else
+                    const Icon(
+                      Icons.lock_open,
+                      color: Colors.green,
+                    ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Description:',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                widget.tournament.description,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 8),
+              Text(
+                'Location: ${widget.tournament.location}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Start Date: ${dateFormat.format(widget.tournament.startDate)}',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'End Date: ${dateFormat.format(widget.tournament.endDate)}',
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const SizedBox(height: 16),
+              const Divider(),
+              const SizedBox(height: 16),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Upvotes:',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        UpvoteButton(
+                          tournament: widget.tournament,
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Participants:',
+                          style: Theme.of(context).textTheme.titleMedium,
+                        ),
+                        const SizedBox(height: 4),
+                        Column(
+                          children: List.generate(widget.tournament.teams.length, (index) {
+                            final team = widget.tournament.teams[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: Colors.blueAccent,
+                                    child: Text(
+                                      team.name[0],
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    team.name,
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                ],
+                              ),
+                            );
+                          }),
+                        ),
+                        const SizedBox(height: 8),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TournamentParticipantsScreen(tournament: widget.tournament),
+                              ),
+                            );
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Voir tous les participants',
+                                style: TextStyle(
+                                  color: Theme.of(context).primaryColor,
+                                  decoration: TextDecoration.underline,
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: Theme.of(context).primaryColor,
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
+              if (!_hasJoined)
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      if (widget.tournament.isPrivate) {
+                        _sendJoinRequest(context, widget.tournament.id, 1);
+                      } else {
+                        _joinTournament(context, widget.tournament.id, 1);
+                      }
+                    },
+                    style: ElevatedButton.styleFrom(
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    ),
+                    child: Text(widget.tournament.isPrivate ? 'Envoyer demande pour rejoindre' : 'Rejoindre le tournoi'),
+                  ),
+                ),
+              const SizedBox(height: 16),
+              RatingWidget(
+                tournamentId: widget.tournament.id,
+                showCustomToast: showNotificationToast,
+                userId: _currentUser?.id ?? 0,
+              ),
+            ],
+          ),
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: _showTeamsModal,
+        child: const Icon(Icons.list),
+      ),
     );
   }
 
-  Future<void> _joinTournament(
-      BuildContext context, int tournamentId, int teamId) async {
-    final tournamentService =
-        Provider.of<ITournamentService>(context, listen: false);
+  Future<void> _joinTournament(BuildContext context, int tournamentId, int teamId) async {
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
 
     try {
       await tournamentService.joinTournament(tournamentId, teamId);
@@ -354,14 +402,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
       if (e.response != null && e.response?.data != null) {
         final errorMessage = e.response?.data['error'];
         if (errorMessage == 'Team already in this tournament') {
-          _showNotificationToast(
-              'Vous avez déjà rejoint le tournoi', Colors.red);
+          _showNotificationToast('Vous avez déjà rejoint le tournoi', Colors.red);
           setState(() {
             _hasJoined = true;
           });
         } else {
-          _showNotificationToast(
-              'Erreur lors du join: $errorMessage', Colors.red);
+          _showNotificationToast('Erreur lors du join: $errorMessage', Colors.red);
         }
       } else {
         _showNotificationToast('Erreur lors du join: ${e.message}', Colors.red);
@@ -371,15 +417,14 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     }
   }
 
-  Future<void> _sendJoinRequest(
-      BuildContext context, int tournamentId, int teamId) async {
+  Future<void> _sendJoinRequest(BuildContext context, int tournamentId, int teamId) async {
     if (!mounted) return;
     _showNotificationToast('Demande pour rejoindre envoyée', Colors.orange);
   }
 }
 
 class UpvoteButton extends StatefulWidget {
-  final Tournament tournament;
+  final tournament_model.Tournament tournament;
 
   const UpvoteButton({super.key, required this.tournament});
 
@@ -387,8 +432,7 @@ class UpvoteButton extends StatefulWidget {
   UpvoteButtonState createState() => UpvoteButtonState();
 }
 
-class UpvoteButtonState extends State<UpvoteButton>
-    with SingleTickerProviderStateMixin {
+class UpvoteButtonState extends State<UpvoteButton> with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Color?> _colorAnimation;
   bool _isUpvoted = false;
@@ -409,12 +453,10 @@ class UpvoteButtonState extends State<UpvoteButton>
   }
 
   Future<void> _checkIfUpvoted() async {
-    final tournamentService =
-        Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
 
     try {
-      bool hasUpvoted =
-          await tournamentService.hasUpvoted(widget.tournament.id, 'username');
+      bool hasUpvoted = await tournamentService.hasUpvoted(widget.tournament.id, 'username');
       if (!mounted) return;
       setState(() {
         _isUpvoted = hasUpvoted;
@@ -430,8 +472,7 @@ class UpvoteButtonState extends State<UpvoteButton>
   }
 
   Future<void> _toggleUpvote() async {
-    final tournamentService =
-        Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
 
     if (_isUpvoted) {
       final shouldRemove = await showDialog<bool>(
@@ -458,26 +499,22 @@ class UpvoteButtonState extends State<UpvoteButton>
     }
 
     try {
-      await tournamentService.upvoteTournament(
-          widget.tournament.id, 'username');
+      await tournamentService.upvoteTournament(widget.tournament.id, 'username');
       if (!mounted) return;
       setState(() {
         _isUpvoted = !_isUpvoted;
       });
       if (_isUpvoted) {
         _controller.forward();
-        showNotificationToast(context, 'Upvote ajouté',
-            backgroundColor: Colors.green);
+        showNotificationToast(context, 'Upvote ajouté', backgroundColor: Colors.green);
       } else {
         _controller.reverse();
-        showNotificationToast(context, 'Upvote retiré',
-            backgroundColor: Colors.red);
+        showNotificationToast(context, 'Upvote retiré', backgroundColor: Colors.red);
       }
     } catch (e) {
       debugPrint('Upvote failed: $e');
       if (!mounted) return;
-      showNotificationToast(context, 'Failed to change upvote status: $e',
-          backgroundColor: Colors.red);
+      showNotificationToast(context, 'Failed to change upvote status: $e', backgroundColor: Colors.red);
     }
   }
 

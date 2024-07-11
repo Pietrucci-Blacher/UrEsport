@@ -2,7 +2,6 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/tournament.dart';
-
 import 'cache_service.dart';
 
 abstract class ITournamentService {
@@ -12,6 +11,8 @@ abstract class ITournamentService {
   Future<bool> hasUpvoted(int tournamentId, String username);
   Future<void> joinTournament(int tournamentId, int teamId);
   Future<bool> hasJoinedTournament(int tournamentId, String username);
+  Future<void> inviteTeamToTournament(int tournamentId, int teamId, String teamName);
+  Future<List<Team>> fetchTeams();
 }
 
 class TournamentService implements ITournamentService {
@@ -86,6 +87,49 @@ class TournamentService implements ITournamentService {
   }
 
   @override
+  Future<void> inviteTeamToTournament(int tournamentId, int teamId, String teamName) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    try {
+      final response = await _dio.post(
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/invite",
+        data: {
+          'teamId': teamId,
+          'name': teamName, // Ajoutez le champ name ici
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500; // Accepter les codes de statut < 500
+          },
+        ),
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to invite team to tournament',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
+
+
+
+  @override
   Future<void> upvoteTournament(int tournamentId, String username) async {
     try {
       final token = await _cacheService.getString('token');
@@ -100,44 +144,23 @@ class TournamentService implements ITournamentService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null &&
-                status < 500; // Accepter les codes de statut < 500
+            return status != null && status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
-
-      if (kDebugMode) {
-        print('Upvote response status: ${response.statusCode}');
-      }
-      if (kDebugMode) {
-        print('Upvote response data: ${response.data}');
-      }
 
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error:
-              'Failed to upvote tournament. Status code: ${response.statusCode}',
+          error: 'Failed to upvote tournament. Status code: ${response.statusCode}',
           type: DioExceptionType.badResponse,
         );
       }
     } catch (e) {
       if (e is DioException) {
-        if (kDebugMode) {
-          print('DioException: ${e.message}');
-        }
-        if (kDebugMode) {
-          print('DioException type: ${e.type}');
-        }
-        if (kDebugMode) {
-          print('DioException response: ${e.response?.data}');
-        }
         rethrow;
       } else {
-        if (kDebugMode) {
-          print('Unexpected error: $e');
-        }
         throw Exception('Unexpected error occurred');
       }
     }
@@ -157,18 +180,10 @@ class TournamentService implements ITournamentService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null &&
-                status < 500; // Accepter les codes de statut < 500
+            return status != null && status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
-
-      if (kDebugMode) {
-        print('Has upvoted response status: ${response.statusCode}');
-      }
-      if (kDebugMode) {
-        print('Has upvoted response data: ${response.data}');
-      }
 
       if (response.statusCode == 200) {
         return response.data['upvoted'] as bool;
@@ -176,27 +191,14 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error:
-              'Failed to check if upvoted. Status code: ${response.statusCode}',
+          error: 'Failed to check if upvoted. Status code: ${response.statusCode}',
           type: DioExceptionType.badResponse,
         );
       }
     } catch (e) {
       if (e is DioException) {
-        if (kDebugMode) {
-          print('DioException: ${e.message}');
-        }
-        if (kDebugMode) {
-          print('DioException type: ${e.type}');
-        }
-        if (kDebugMode) {
-          print('DioException response: ${e.response?.data}');
-        }
         rethrow;
       } else {
-        if (kDebugMode) {
-          print('Unexpected error: $e');
-        }
         throw Exception('Unexpected error occurred');
       }
     }
@@ -219,8 +221,7 @@ class TournamentService implements ITournamentService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null &&
-                status < 500; // Accepter les codes de statut < 500
+            return status != null && status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
@@ -275,8 +276,7 @@ class TournamentService implements ITournamentService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null &&
-                status < 500; // Accepter les codes de statut < 500
+            return status != null && status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
@@ -299,4 +299,50 @@ class TournamentService implements ITournamentService {
       }
     }
   }
+
+  Future<List<Team>> fetchTeams() async {
+    try {
+      final response = await _dio.get(
+        "${dotenv.env['API_ENDPOINT']}/teams",
+      );
+
+      if (response.statusCode == 200) {
+        print('API Response: ${response.data}');
+
+        // Vérifiez si la réponse est null ou si elle n'est pas une liste
+        if (response.data == null) {
+          throw Exception('Received null response from API');
+        } else if (response.data is! List) {
+          throw Exception('Expected a list but got ${response.data.runtimeType}');
+        }
+
+        return (response.data as List)
+            .map((json) => Team.fromJson(json))
+            .toList();
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to load teams',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        print('DioException: ${e.message}');
+        rethrow;
+      } else {
+        print('Exception: ${e.toString()}');
+        throw Exception('Unexpected error occurred: ${e.toString()}');
+      }
+    }
+  }
+
+
+
+
+
+
+
+
 }
