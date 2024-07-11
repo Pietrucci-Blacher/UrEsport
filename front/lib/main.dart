@@ -29,11 +29,12 @@ void main() async {
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        options.headers['Access-Control-Allow-Origin'] = '*';
+        options.headers['Content-Type'] = 'application/json';
+        options.headers['Accept'] = 'application/json';
         return handler.next(options);
       },
       onError: (DioException e, handler) {
-        if (e.response?.statusCode == 405) {
+        if (e.response?.statusCode == 405 || e.response?.statusCode == 403) {
           return handler.resolve(Response(
             requestOptions: e.requestOptions,
             statusCode: 200,
@@ -43,7 +44,7 @@ void main() async {
       },
     ));
 
-    // dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
+    dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
   }
 
   final authService = AuthService(dio);

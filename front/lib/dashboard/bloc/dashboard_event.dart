@@ -19,3 +19,21 @@ class WebSocketMessageReceived extends DashboardEvent {
   @override
   List<Object> get props => [message];
 }
+
+class UpdateDashboardStats extends DashboardEvent {
+  final Map<String, dynamic> stats;
+
+  const UpdateDashboardStats(this.stats);
+
+  @override
+  List<Object> get props => [stats];
+}
+
+class AddLogEntry extends DashboardEvent {
+  final String logEntry;
+
+  const AddLogEntry(this.logEntry);
+
+  @override
+  List<Object> get props => [logEntry];
+}

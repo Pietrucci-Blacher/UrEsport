@@ -1,17 +1,35 @@
 <mjml>
-    <mj-body>
-        <mj-section>
-            <mj-column>
-                <mj-text>
-                    Vérifiez votre compte
-                </mj-text>
-                <mj-text>
-                    Votre code de vérification est : {{.Code}}
-                </mj-text>
-                <mj-text color="red">
-                    Ce code expirera dans 15 minutes.
-                </mj-text>
-            </mj-column>
-        </mj-section>
-    </mj-body>
+  <mj-head>
+    <mj-attributes>
+      <mj-all font-family="Arial, Helvetica, sans-serif"></mj-all>
+      <mj-text font-size="16px" color="#333333" line-height="24px" align="center"></mj-text>
+      <mj-section padding="0px" background-color="#f8f8f8"></mj-section>
+    </mj-attributes>
+    <mj-style inline="inline">.verification-code { font-size: 32px; font-weight: bold; color: #FF4081; letter-spacing: 5px; }
+      .shadow { box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); }
+      @media only screen and (max-width: 480px) {
+      .mobile-padding { padding-left: 10px !important; padding-right: 10px !important; }
+      .verification-code { font-size: 24px !important; }
+      }</mj-style>
+  </mj-head>
+  <mj-body background-color="#f8f8f8">
+    <mj-wrapper padding="20px 0" background-color="#f8f8f8">
+      <mj-section background-color="#ffffff" css-class="shadow">
+        <mj-column width="600px">
+          <mj-image width="120px" src="https://i.ibb.co/448CNZf/ic-launcher.png" alt="UrEsport Logo" align="center" padding="30px 0 20px"></mj-image>
+          <mj-text font-size="26px" font-weight="bold" color="#333333">Vérifiez votre compte UrEsport</mj-text>
+          <mj-text color="#666666" font-size="18px" padding-top="10px">Voici votre code de vérification :</mj-text>
+          <mj-text css-class="verification-code" padding="20px 0">{{.Code}}</mj-text>
+          <mj-text>Copiez ce code et collez-le sur la page de vérification pour activer votre compte.</mj-text>
+          <mj-text color="#FF4081" font-weight="bold" padding-top="20px" font-size="14px">Ce code expirera dans 15 minutes.</mj-text>
+          <mj-spacer height="20px"></mj-spacer>
+        </mj-column>
+      </mj-section>
+    </mj-wrapper>
+    <mj-section padding-top="20px">
+      <mj-column width="600px">
+        <mj-text color="#999999" font-size="12px">© 2024 UrEsport. Tous droits réservés.</mj-text>
+      </mj-column>
+    </mj-section>
+  </mj-body>
 </mjml>

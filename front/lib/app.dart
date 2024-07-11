@@ -90,7 +90,17 @@ class MyApp extends StatelessWidget {
             initialRoute: '/',
             onGenerateRoute: routeGenerator.generateRoute,
             builder: (context, child) {
-              return child!;
+              return Container(
+                decoration: const BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [Color(0xFF2D005B), Color(0xFF000000)],
+                    stops: [0.1, 1.0],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: child,
+              );
             },
           );
         },

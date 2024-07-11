@@ -5,12 +5,12 @@ import 'package:uresport/bracket/screens/custom_bracket.dart';
 import 'package:uresport/bracket/screens/custom_poules_page.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/shared/map/map.dart'; // Ensure this import points to the correct file where TournamentMapWidget is defined
+import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
-import 'package:uresport/widgets/GradientIcon.dart';
+import 'package:uresport/widgets/gradient_icon.dart';
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
@@ -96,7 +96,7 @@ class TournamentScreen extends StatelessWidget {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-    DateFormat.yMMMd(Localizations.localeOf(context).toString());
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),

@@ -20,14 +20,25 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'es';
 
-  static String m0(username) => "¡Bienvenido a tu perfil, ${username}!";
+  static String m0(count) => "Filtros (${count})";
 
-  static String m1(email) =>
+  static String m1(count) => "+${count} más";
+
+  static String m2(username) => "¡Bienvenido a tu perfil, ${username}!";
+
+  static String m3(email) =>
       "Se ha enviado un código de verificación a ${email}.";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "alphabeticalAZ":
+            MessageLookupByLibrary.simpleMessage("Alfabético (A-Z)"),
+        "alphabeticalZA":
+            MessageLookupByLibrary.simpleMessage("Alfabético (Z-A)"),
+        "anErrorOccurred":
+            MessageLookupByLibrary.simpleMessage("¡Se produjo un error!"),
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
+        "applyFilters": MessageLookupByLibrary.simpleMessage("Aplicar filtros"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancelar"),
         "cancelEditing":
             MessageLookupByLibrary.simpleMessage("Cancelar edición"),
@@ -40,6 +51,11 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Eliminar el juego"),
         "editProfile": MessageLookupByLibrary.simpleMessage("Editar perfil"),
         "email": MessageLookupByLibrary.simpleMessage("Correo electrónico"),
+        "filterAndSort":
+            MessageLookupByLibrary.simpleMessage("Filtrar y ordenar"),
+        "filterByTags":
+            MessageLookupByLibrary.simpleMessage("FILTRAR POR ETIQUETAS"),
+        "filters": m0,
         "firstName": MessageLookupByLibrary.simpleMessage("Nombre"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("¿Olvidaste tu contraseña?"),
@@ -63,6 +79,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "logout": MessageLookupByLibrary.simpleMessage("Cerrar sesión"),
         "modifyGameButton":
             MessageLookupByLibrary.simpleMessage("Modificar el juego"),
+        "moreTagsCount": m1,
+        "noGamesAvailable":
+            MessageLookupByLibrary.simpleMessage("No hay juegos disponibles."),
         "notificationScreenTitle":
             MessageLookupByLibrary.simpleMessage("Notificaciones"),
         "notificationScreenWelcome": MessageLookupByLibrary.simpleMessage(
@@ -77,15 +96,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "popularGamesTitle":
             MessageLookupByLibrary.simpleMessage("Juegos populares"),
         "profileScreenTitle": MessageLookupByLibrary.simpleMessage("Perfil"),
-        "profileScreenWelcome": m0,
+        "profileScreenWelcome": m2,
         "register": MessageLookupByLibrary.simpleMessage("Registrarse"),
         "resendCode":
             MessageLookupByLibrary.simpleMessage("Reenviar el código"),
+        "reset": MessageLookupByLibrary.simpleMessage("Restablecer"),
         "resetPassword":
             MessageLookupByLibrary.simpleMessage("Restablecer la contraseña"),
         "save": MessageLookupByLibrary.simpleMessage("Guardar"),
+        "searchTags": MessageLookupByLibrary.simpleMessage("Buscar etiquetas"),
         "sendResetEmail": MessageLookupByLibrary.simpleMessage(
             "Enviar correo de restablecimiento"),
+        "sort": MessageLookupByLibrary.simpleMessage("ORDENAR"),
         "tournamentScreenTitle":
             MessageLookupByLibrary.simpleMessage("Torneos"),
         "tournamentScreenWelcome": MessageLookupByLibrary.simpleMessage(
@@ -93,7 +115,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "trendingTournamentsTitle":
             MessageLookupByLibrary.simpleMessage("Torneos en tendencia"),
         "username": MessageLookupByLibrary.simpleMessage("Nombre de usuario"),
-        "verificationCodeSent": m1,
+        "verificationCodeSent": m3,
         "verify": MessageLookupByLibrary.simpleMessage("Verificar"),
         "viewAll": MessageLookupByLibrary.simpleMessage("Ver todo"),
         "welcome":
