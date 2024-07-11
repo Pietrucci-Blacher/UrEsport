@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
-import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/auth/bloc/auth_bloc.dart';
+import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
@@ -19,12 +19,16 @@ class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
 
   @override
-  Widget build(BuildContext context) {
-    final authService = Provider.of<IAuthService>(context, listen: false);
+  void initState() {
+    super.initState();
+    BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return BlocProvider<DashboardBloc>(
-      create: (context) => DashboardBloc(Websocket.getInstance(), authService)
-        ..add(ConnectWebSocket()),
+      create: (context) =>
+          DashboardBloc(Websocket.getInstance())..add(ConnectWebSocket()),
       child: Scaffold(
         body: Row(
           children: [
