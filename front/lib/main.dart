@@ -20,25 +20,37 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
 
-  final dio = Dio();
+  final dio = Dio(BaseOptions(
+    baseUrl: kIsWeb ? 'http://localhost:8080' : dotenv.env['API_ENDPOINT']!,
+    headers: {
+      'Content-Type': 'application/json',
+      'Accept': 'application/json',
+    },
+    followRedirects: true,
+    maxRedirects: 5,
+  ));
 
   if (kIsWeb) {
-    dio.options.validateStatus = (status) {
-      return status! < 500;
-    };
-
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        options.headers['Content-Type'] = 'application/json';
-        options.headers['Accept'] = 'application/json';
+        options.headers['Origin'] = 'http://localhost:3000';
         return handler.next(options);
       },
       onError: (DioException e, handler) {
-        if (e.response?.statusCode == 405 || e.response?.statusCode == 403) {
-          return handler.resolve(Response(
-            requestOptions: e.requestOptions,
-            statusCode: 200,
-          ));
+        if (e.response?.statusCode == 301 || e.response?.statusCode == 302) {
+          final redirectUrl = e.response?.headers.value('Location');
+          if (redirectUrl != null) {
+            final newOptions = Options(
+              method: e.requestOptions.method,
+              headers: e.requestOptions.headers,
+            );
+            dio.request(redirectUrl, options: newOptions).then((response) {
+              handler.resolve(response);
+            }).catchError((error) {
+              handler.reject(error);
+            });
+            return;
+          }
         }
         return handler.next(e);
       },
@@ -58,7 +70,9 @@ void main() async {
   final mapsBoxApiKey = dotenv.env['SDK_REGISTRY_TOKEN']!;
   final mapService = MapService(dio: dio, mapboxApiKey: mapsBoxApiKey);
 
-  connectWebsocket();
+  if (kIsWeb) {
+    connectWebsocket();
+  }
 
   runApp(
     MultiProvider(

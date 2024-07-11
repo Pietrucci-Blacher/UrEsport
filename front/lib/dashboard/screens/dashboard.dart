@@ -20,7 +20,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final authService = Provider.of<AuthService>(context, listen: false);
+    final authService = Provider.of<IAuthService>(context, listen: false);
 
     return BlocProvider<DashboardBloc>(
       create: (context) => DashboardBloc(Websocket.getInstance(), authService)
