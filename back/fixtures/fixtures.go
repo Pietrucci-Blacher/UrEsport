@@ -46,7 +46,8 @@ func ImportFixtures() error {
 		return err
 	}
 
-	if err := LoadGames(); err != nil {
+	games, err := LoadGames()
+	if err != nil {
 		return err
 	}
 
@@ -54,11 +55,10 @@ func ImportFixtures() error {
 		return err
 	}
 
-	if err := LoadTournaments(); err != nil {
+	if err := LoadTournaments(games); err != nil {
 		return err
 	}
 
-	// Load the ratings fixtures
 	if err := LoadRatings(); err != nil {
 		return err
 	}

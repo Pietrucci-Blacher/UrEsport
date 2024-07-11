@@ -165,6 +165,18 @@ class TournamentScreen extends StatelessWidget {
                         const SizedBox(height: 5),
                         Row(
                           children: [
+                            const Icon(Icons.videogame_asset,
+                                color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Game: ${tournament.game.name}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
                             const Icon(Icons.calendar_today,
                                 color: Colors.grey),
                             const SizedBox(width: 5),

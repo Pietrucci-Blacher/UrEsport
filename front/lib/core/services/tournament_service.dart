@@ -299,4 +299,28 @@ class TournamentService implements ITournamentService {
       }
     }
   }
+
+  Future<Tournament> fetchTournamentById(int tournamentId) async {
+    try {
+      final response = await _dio
+          .get("${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId");
+
+      if (response.statusCode == 200) {
+        return Tournament.fromJson(response.data);
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to load tournament',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
 }
