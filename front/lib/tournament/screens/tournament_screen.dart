@@ -10,13 +10,7 @@ import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
-import 'package:uresport/widgets/gradient_icon.dart';
-
-class TournamentScreen extends StatelessWidget {
-  const TournamentScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
+import 'package:uresport/widgets/GradientIconContext context) {
     return BlocProvider(
       create: (context) => TournamentBloc(context.read<ITournamentService>())
         ..add(const LoadTournaments()),

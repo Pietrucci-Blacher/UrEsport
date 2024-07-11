@@ -170,3 +170,27 @@ func UploadGameImage(c *gin.Context) {
 
 	c.JSON(http.StatusOK, game)
 }
+
+// GetTournamentsByGame godoc
+//
+//	@Summary		get tournaments by game
+//	@Description	get tournaments by game
+//	@Tags			game
+//	@Accept			json
+//	@Produce		json
+//	@Param			id	path		int	true	"Game ID"
+//	@Success		200		{object}	[]models.Tournament
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/games/{id}/tournaments [get]
+func GetTournamentsByGame(c *gin.Context) {
+	game, _ := c.MustGet("game").(*models.Game)
+
+	tournaments, err := game.GetTournaments()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, tournaments)
+}

@@ -109,11 +109,9 @@ class RatingService implements IRatingService {
       );
     } catch (e) {
       if (e is DioException) {
-        if (kDebugMode) {
-          print('DioException: ${e.message}');
-          print('DioException type: ${e.type}');
-          print('DioException response: ${e.response?.data}');
-        }
+        print('DioException: ${e.message}');
+        print('DioException type: ${e.type}');
+        print('DioException response: ${e.response?.data}');
         rethrow;
       } else {
         throw Exception('Unexpected error occurred');

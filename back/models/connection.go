@@ -87,6 +87,7 @@ func DropTables() error {
 		"team_members",
 		&Upvote{},
 		&Rating{},
+		"game_tournaments",
 	)
 }
 
