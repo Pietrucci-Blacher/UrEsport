@@ -1,10 +1,21 @@
 import 'package:equatable/equatable.dart';
 
-abstract class CustomBracketEvent extends Equatable {
-  const CustomBracketEvent();
+abstract class BracketEvent extends Equatable {
+  const BracketEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
-class LoadCustomBracket extends CustomBracketEvent {}
+class LoadBracket extends BracketEvent {
+  final int? limit;
+
+  const LoadBracket({this.limit});
+
+  @override
+  List<Object?> get props => [limit];
+}
+
+class WebsocketBracket extends BracketEvent {}
+
+class BracketWebsocket extends BracketEvent {}
