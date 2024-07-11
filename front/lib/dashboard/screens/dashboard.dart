@@ -4,6 +4,8 @@ import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
+import 'package:uresport/auth/bloc/auth_bloc.dart';
+import 'package:uresport/auth/bloc/auth_event.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -14,6 +16,12 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
+  }
 
   @override
   Widget build(BuildContext context) {
