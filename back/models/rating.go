@@ -31,6 +31,11 @@ type CreateRatingDto struct {
 	Rating       float32 `json:"rating" validate:"required,gte=0,lte=5"`
 }
 
+type GetRatingDto struct {
+	TournamentID uint `json:"tournament_id"`
+	UserID       uint `json:"user_id"`
+}
+
 type UpdateRatingDto struct {
 	Rating float32 `json:"rating" validate:"required,gte=0,lte=5"`
 }

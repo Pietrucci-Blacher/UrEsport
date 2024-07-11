@@ -4,8 +4,10 @@ package controllers
 import (
 	"challenge/models"
 	"challenge/services"
+	"errors"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -45,14 +47,28 @@ func GetRatings(c *gin.Context) {
 //	@Failure		400		{object}	utils.HttpError	"Bad request"
 //	@Failure		404		{object}	utils.HttpError	"Not found"
 //	@Failure		500		{object}	utils.HttpError	"Internal server error"
-//	@Router			/rating/ [post]
+//	@Router			/rating/ [get]
 func GetRating(c *gin.Context) {
-	input, _ := c.MustGet("body").(models.CreateRatingDto)
+	tournamentIDStr := c.Query("tournament_id")
+	userIDStr := c.Query("user_id")
+
+	// Convert the string parameters to uint
+	tournamentID, err := strconv.ParseUint(tournamentIDStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid tournament_id"})
+		return
+	}
+
+	userID, err := strconv.ParseUint(userIDStr, 10, 32)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user_id"})
+		return
+	}
 
 	// Find rating by tournamentId and userId
 	var rating models.Rating
-	if err := models.FindRatingByTournamentAndUser(input.TournamentID, input.UserID, &rating); err != nil {
-		if err == gorm.ErrRecordNotFound {
+	if err := models.FindRatingByTournamentAndUser(uint(tournamentID), uint(userID), &rating); err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			c.JSON(http.StatusNotFound, gin.H{"error": "Rating not found"})
 			return
 		}
