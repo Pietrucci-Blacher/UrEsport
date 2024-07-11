@@ -17,7 +17,6 @@ class TournamentBracketPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      // create: (_) => BracketBloc(MatchService(Dio()))..add(const LoadBracket())..add(WebsocketBracket()),
       create: (_) => BracketBloc(MatchService(Dio()))..add(const LoadBracket()),
       child: Scaffold(
         appBar: AppBar(
@@ -76,10 +75,6 @@ class BracketContentState extends State<BracketContent> {
       widget.bracket.updateMatch(match);
     });
 
-    // ws.on('info', (socket, message) {
-    //   print('Info: $message');
-    // });
-
     // TODO : Add tournament real id
     ws.emit('tournament:add-to-room', {
       'tournament_id': 1,
@@ -95,7 +90,8 @@ class BracketContentState extends State<BracketContent> {
           height: 130, // Ajustez la hauteur selon vos besoins
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            itemCount: widget.roundNames.length,
+            // itemCount: widget.roundNames.length,
+            itemCount: widget.bracket.getBracket().length,
             itemBuilder: (context, index) => GestureDetector(
               onTap: () {
                 setState(() {
@@ -110,7 +106,7 @@ class BracketContentState extends State<BracketContent> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      widget.roundNames[index],
+                      widget.roundNames[index + (widget.roundNames.length - widget.bracket.getBracket().length)],
                       style: TextStyle(
                         fontWeight: selectedLevel == index ? FontWeight.bold : FontWeight.normal,
                       ),
@@ -159,7 +155,7 @@ class BracketContentState extends State<BracketContent> {
                     height: 30,
                     alignment: Alignment.center,
                     child: Text(
-                      widget.roundNames[index],
+                      widget.roundNames[index + (widget.roundNames.length - widget.bracket.getBracket().length)],
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
@@ -179,15 +175,25 @@ class BracketContentState extends State<BracketContent> {
                   secondaryColor: const Color.fromARGB(15, 194, 236, 147),
                 ),
                 containt: widget.bracket.getBracket(),
-                teamNameBuilder: (Match m) => BracketText(
-                  // text: '${m.id} (${m.score1} - ${m.score2})',
-                  // text: '${m.team1?.name} (${m.score1} - ${m.score2}) ${m.team2?.name}',
-                  text: '${m.team1?.name} (${m.score1}) \n ${m.team2?.name} (${m.score2})',
-                  textStyle: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+                teamNameBuilder: (Match m) {
+                  var team1 = m.team1?.name ?? '';
+                  var team2 = m.team2?.name ?? '';
+
+                  if (team1.isEmpty) {
+                    team1 = 'waiting';
+                  }
+                  if (team2.isEmpty) {
+                    team2 = 'waiting';
+                  }
+
+                  return BracketText(
+                    text: '$team1 (${m.score1})\n$team2 (${m.score2})',
+                    textStyle: const TextStyle(
+                      color: Colors.black,
+                      fontWeight: FontWeight.bold,
+                    )
+                  );
+                },
                 onContainerTapDown: (Match? model, TapDownDetails tapDownDetails) {
                   if (model == null) {
                     if (kDebugMode) {
@@ -221,7 +227,6 @@ class BracketContentState extends State<BracketContent> {
 
   Widget _buildRoundButton(int index) {
     int numMatches = widget.bracket.getBracket().length ~/ 2;
-    // int numMatches = 0;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(numMatches, (i) => const Divider(thickness: 2)),
