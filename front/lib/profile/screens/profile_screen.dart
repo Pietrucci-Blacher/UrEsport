@@ -1,4 +1,6 @@
 import 'dart:io';
+
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,18 +10,20 @@ import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/auth/screens/auth_screen.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
-import 'package:uresport/l10n/app_localizations.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:uresport/shared/utils/image_util.dart';
-import 'package:uresport/shared/locale_switcher.dart';
 import 'package:uresport/cubit/locale_cubit.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/shared/locale_switcher.dart';
+import 'package:uresport/shared/utils/image_util.dart';
 
 class ProfileScreen extends StatefulWidget {
   final IAuthService authService;
-  final ValueChanged<String>? onProfileImageUpdated;
+  final ValueNotifier<String?> profileImageNotifier;
 
-  const ProfileScreen(
-      {super.key, required this.authService, this.onProfileImageUpdated});
+  const ProfileScreen({
+    super.key,
+    required this.authService,
+    required this.profileImageNotifier,
+  });
 
   @override
   ProfileScreenState createState() => ProfileScreenState();
@@ -34,6 +38,7 @@ class ProfileScreenState extends State<ProfileScreen>
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
+  String? _profileImageUrl;
   User? _user;
 
   @override
@@ -57,6 +62,10 @@ class ProfileScreenState extends State<ProfileScreen>
       child: Scaffold(
         appBar: AppBar(
           title: Text(AppLocalizations.of(context).profileScreenTitle),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            onPressed: () => Navigator.pop(context, _profileImageUrl),
+          ),
           actions: [
             LocaleSwitcher(
               onLocaleChanged: (locale) {
@@ -122,6 +131,7 @@ class ProfileScreenState extends State<ProfileScreen>
       _lastNameController.text = user.lastname;
       _usernameController.text = user.username;
       _emailController.text = user.email;
+      _profileImageUrl = user.profileImageUrl;
     });
   }
 
@@ -178,9 +188,13 @@ class ProfileScreenState extends State<ProfileScreen>
             onImageUpdated: (imageUrl) {
               setState(() {
                 _user = _user?.copyWith(profileImageUrl: imageUrl);
+                _profileImageUrl =
+                    '$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}';
               });
-              widget.onProfileImageUpdated?.call(imageUrl);
-              context.read<AuthBloc>().add(ProfileImageUpdated(imageUrl));
+              widget.profileImageNotifier.value = _profileImageUrl;
+              context
+                  .read<AuthBloc>()
+                  .add(ProfileImageUpdated(_profileImageUrl!));
             },
           ),
           const SizedBox(height: 20),
