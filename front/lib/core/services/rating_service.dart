@@ -44,7 +44,8 @@ class RatingService implements IRatingService {
       if (response.statusCode == 200) {
         return {
           'rating': (response.data['rating'] as num).toDouble(),
-          'ratingId': response.data['rating_id'], // Assuming the API returns rating_id
+          'ratingId':
+              response.data['rating_id'], // Assuming the API returns rating_id
         };
       } else if (response.statusCode == 404) {
         return {
