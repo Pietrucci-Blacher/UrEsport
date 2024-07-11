@@ -11,9 +11,6 @@ import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/GradientIcon.dart';
-import 'package:uresport/tournament/screens/tournament_details_screen.dart';
-
-import '../../bracket/screens/custom_schedule.dart';
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
@@ -99,7 +96,7 @@ class TournamentScreen extends StatelessWidget {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-        DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -168,8 +165,18 @@ class TournamentScreen extends StatelessWidget {
                         const SizedBox(height: 5),
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today,
-                                color: Colors.grey),
+                            const Icon(Icons.videogame_asset, color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Game: ${tournament.game.name}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Icon(Icons.calendar_today, color: Colors.grey),
                             const SizedBox(width: 5),
                             Text(
                               'Start: ${dateFormat.format(tournament.startDate)}',
@@ -180,8 +187,7 @@ class TournamentScreen extends StatelessWidget {
                         const SizedBox(height: 5),
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today,
-                                color: Colors.grey),
+                            const Icon(Icons.calendar_today, color: Colors.grey),
                             const SizedBox(width: 5),
                             Text(
                               'End: ${dateFormat.format(tournament.endDate)}',

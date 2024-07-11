@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
@@ -34,8 +35,10 @@ class _RatingWidgetState extends State<RatingWidget> {
   Future<void> _fetchRating() async {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
     try {
-      print(
+      if (kDebugMode) {
+        print(
           'Fetching rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}');
+      }
       final ratingData = await ratingService.fetchRatingDetails(
           widget.tournamentId, widget.userId);
       setState(() {
@@ -51,7 +54,9 @@ class _RatingWidgetState extends State<RatingWidget> {
             backgroundColor: Colors.green);
       }
     } catch (e) {
-      print('Error while fetching rating: $e');
+      if (kDebugMode) {
+        print('Error while fetching rating: $e');
+      }
       widget.showCustomToast(
           context, 'Erreur lors de la récupération de la note',
           backgroundColor: Colors.red);
@@ -72,8 +77,10 @@ class _RatingWidgetState extends State<RatingWidget> {
     }
 
     try {
-      print(
+      if (kDebugMode) {
+        print(
           'Submitting or updating rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}, rating=$rating');
+      }
       if (_ratingId != null) {
         // Si une note existe déjà, mettre à jour la note
         await ratingService.updateRating(
@@ -89,7 +96,9 @@ class _RatingWidgetState extends State<RatingWidget> {
         _currentRating = rating;
       });
     } catch (e) {
-      print('Error while submitting or updating rating: $e');
+      if (kDebugMode) {
+        print('Error while submitting or updating rating: $e');
+      }
       widget.showCustomToast(
           context, 'Erreur lors de l\'enregistrement de la note',
           backgroundColor: Colors.red);

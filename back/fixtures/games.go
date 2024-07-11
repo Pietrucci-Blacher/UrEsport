@@ -6,10 +6,12 @@ import (
 	"math/rand"
 )
 
-func LoadGames() error {
+func LoadGames() ([]models.Game, error) {
 	if err := models.ClearGames(); err != nil {
-		return err
+		return nil, err
 	}
+
+	var games []models.Game
 
 	for i := 0; i < GAME_NB; i++ {
 		rand.Shuffle(len(GAME_TAGS), func(i, j int) { GAME_TAGS[i], GAME_TAGS[j] = GAME_TAGS[j], GAME_TAGS[i] })
@@ -23,11 +25,12 @@ func LoadGames() error {
 		}
 
 		if err := game.Save(); err != nil {
-			return err
+			return nil, err
 		}
 
-		fmt.Printf("Game %s created\n", game.Name)
+		games = append(games, game)
+		fmt.Printf("Game %s created with ID %d\n", game.Name, game.ID)
 	}
 
-	return nil
+	return games, nil
 }
