@@ -364,15 +364,13 @@ class AuthService implements IAuthService {
     try {
       final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
       if (response.statusCode == 200) {
-        List jsonResponse = json.decode(response.data.toString());
-        return jsonResponse.map((user) => User.fromJson(user)).toList();
+        List<dynamic> data = response.data;
+        return data.map((user) => User.fromJson(user)).toList();
       } else {
-        print('Failed to load users. Status code: ${response.statusCode}');
-        throw Exception('Failed to load users');
+        throw Exception('Failed to fetch users');
       }
     } catch (e) {
-      print('Error fetching users: $e');
-      throw Exception('Failed to load users: $e');
+      throw Exception('Failed to fetch users: $e');
     }
   }
 
