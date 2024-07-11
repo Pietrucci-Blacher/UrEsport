@@ -4,9 +4,10 @@ import (
 	"challenge/models"
 	"challenge/services"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"log"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // GetTournaments godoc
