@@ -6,7 +6,8 @@ import 'package:uresport/core/models/tournament.dart';
 
 abstract class IGameService {
   Future<List<Game>> fetchGames({int? limit, List<String>? tags});
-  Future<List<Tournament>> fetchTournamentsByGameId(int gameId); // Nouvelle méthode
+  Future<List<Tournament>> fetchTournamentsByGameId(
+      int gameId); // Nouvelle méthode
 }
 
 class GameService implements IGameService {
@@ -104,5 +105,4 @@ class GameService implements IGameService {
       }
     }
   }
-
 }

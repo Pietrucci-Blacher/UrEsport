@@ -49,7 +49,10 @@ class Tournament {
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams: (json['teams'] as List?)?.map((team) => Team.fromJson(team)).toList() ?? [],
+      teams: (json['teams'] as List?)
+              ?.map((team) => Team.fromJson(team))
+              .toList() ??
+          [],
       upvotes: json['upvote'] ?? 0,
       game: Game.fromJson(json['game']),
     );
@@ -101,7 +104,8 @@ class Owner {
       username: json['username'],
       firstname: json['firstname'],
       lastname: json['lastname'],
-      teams: (json['teams'] as List?)?.map((team) => Team.fromJson(team)).toList(),
+      teams:
+          (json['teams'] as List?)?.map((team) => Team.fromJson(team)).toList(),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );
@@ -147,8 +151,12 @@ class Team {
     return Team(
       id: json['id'],
       name: json['name'],
-      members: (json['members'] as List?)?.map((member) => Member.fromJson(member)).toList(),
-      tournaments: (json['tournaments'] as List?)?.map((tournament) => Tournament.fromJson(tournament)).toList(),
+      members: (json['members'] as List?)
+          ?.map((member) => Member.fromJson(member))
+          .toList(),
+      tournaments: (json['tournaments'] as List?)
+          ?.map((tournament) => Tournament.fromJson(tournament))
+          .toList(),
       owner: Owner.fromJson(json['owner']),
       ownerId: json['owner_id'],
       isPrivate: json['private'],
@@ -162,7 +170,8 @@ class Team {
       'id': id,
       'name': name,
       'members': members?.map((member) => member.toJson()).toList(),
-      'tournaments': tournaments?.map((tournament) => tournament.toJson()).toList(),
+      'tournaments':
+          tournaments?.map((tournament) => tournament.toJson()).toList(),
       'owner': owner.toJson(),
       'owner_id': ownerId,
       'private': isPrivate,

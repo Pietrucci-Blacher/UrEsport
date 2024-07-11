@@ -96,7 +96,7 @@ class TournamentScreen extends StatelessWidget {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-    DateFormat.yMMMd(Localizations.localeOf(context).toString());
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -165,7 +165,8 @@ class TournamentScreen extends StatelessWidget {
                         const SizedBox(height: 5),
                         Row(
                           children: [
-                            const Icon(Icons.videogame_asset, color: Colors.grey),
+                            const Icon(Icons.videogame_asset,
+                                color: Colors.grey),
                             const SizedBox(width: 5),
                             Text(
                               'Game: ${tournament.game.name}',
@@ -176,7 +177,8 @@ class TournamentScreen extends StatelessWidget {
                         const SizedBox(height: 5),
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today, color: Colors.grey),
+                            const Icon(Icons.calendar_today,
+                                color: Colors.grey),
                             const SizedBox(width: 5),
                             Text(
                               'Start: ${dateFormat.format(tournament.startDate)}',
@@ -187,7 +189,8 @@ class TournamentScreen extends StatelessWidget {
                         const SizedBox(height: 5),
                         Row(
                           children: [
-                            const Icon(Icons.calendar_today, color: Colors.grey),
+                            const Icon(Icons.calendar_today,
+                                color: Colors.grey),
                             const SizedBox(width: 5),
                             Text(
                               'End: ${dateFormat.format(tournament.endDate)}',
