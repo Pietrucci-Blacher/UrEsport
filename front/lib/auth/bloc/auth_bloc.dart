@@ -1,17 +1,33 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uresport/core/models/login_request.dart';
+import 'package:uresport/core/models/register_request.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/cache_service.dart';
+import 'package:uresport/core/websocket/websocket.dart';
+
 import 'auth_event.dart';
 import 'auth_state.dart';
-import 'package:uresport/core/models/register_request.dart';
-import 'package:uresport/core/models/login_request.dart';
-import 'package:uresport/core/services/cache_service.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final IAuthService authService;
+  final ValueNotifier<String?> profileImageNotifier =
+      ValueNotifier<String?>(null);
 
   AuthBloc(this.authService) : super(AuthInitial()) {
     on<AuthCheckRequested>((event, emit) async {
       final isLoggedIn = await authService.isLoggedIn();
+      final ws = Websocket.getInstance();
+
+      if (isLoggedIn && isLoggedIn != ws.isLogged()) {
+        final token = await CacheService.instance.getString('token');
+        ws.reconnect(token: token);
+      } else if (!isLoggedIn && isLoggedIn != ws.isLogged()) {
+        ws.reconnect();
+      }
+
+      ws.setLogged(isLoggedIn);
+
       if (isLoggedIn) {
         final user = await authService.getUser();
         emit(AuthAuthenticated(user));
@@ -86,6 +102,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       }
     });
 
+    on<VerificationRequested>((event, emit) async {
+      emit(AuthLoading());
+      try {
+        await authService.requestVerification(event.email);
+        emit(VerificationEmailSent());
+      } catch (e) {
+        emit(AuthFailure(e.toString()));
+      }
+    });
+
     on<PasswordResetConfirmRequested>((event, emit) async {
       emit(AuthLoading());
       try {
@@ -103,6 +129,32 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         emit(AuthUnauthenticated());
       } catch (e) {
         emit(AuthFailure(e.toString()));
+      }
+    });
+
+    on<ProfileImageUpdated>((event, emit) async {
+      if (state is AuthAuthenticated) {
+        final updatedUser = (state as AuthAuthenticated)
+            .user
+            .copyWith(profileImageUrl: event.imageUrl);
+        await authService.updateUserInfo(
+            updatedUser.id, {'profile_image_url': event.imageUrl});
+        profileImageNotifier.value = event.imageUrl;
+        emit(AuthAuthenticated(updatedUser));
+      }
+    });
+
+    on<UserFieldUpdated>((event, emit) async {
+      if (state is AuthAuthenticated) {
+        final updatedFields = event.updatedFields;
+        final updatedUser = (state as AuthAuthenticated).user.copyWith(
+              firstname: updatedFields['firstname'],
+              lastname: updatedFields['lastname'],
+              username: updatedFields['username'],
+              email: updatedFields['email'],
+            );
+        await authService.updateUserInfo(updatedUser.id, updatedFields);
+        emit(AuthAuthenticated(updatedUser));
       }
     });
   }

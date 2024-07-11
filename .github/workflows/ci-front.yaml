@@ -43,8 +43,20 @@ jobs:
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
 
+      - name: Opt out of Dart/Flutter analytics
+        run: |
+          flutter config --no-analytics
+
       - name: Install Flutter Dependencies
         run: flutter pub get
+
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      - name: Retrieve secrets from Doppler
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: doppler secrets download --no-file --format env > .env
 
       - name: Execute Flutter Tests and Coverage
         run: flutter test --coverage

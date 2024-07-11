@@ -61,6 +61,13 @@ func Migration() error {
 		&Token{},
 		&Tournament{},
 		&VerificationCode{},
+		&Team{},
+		&Game{},
+		&Invit{},
+		&Match{},
+		&Friend{},
+		&Upvote{},
+		&Rating{},
 	)
 }
 
@@ -71,13 +78,31 @@ func DropTables() error {
 		&Token{},
 		&Tournament{},
 		&VerificationCode{},
-		"tournament_participants",
+		&Team{},
+		&Invit{},
+		&Game{},
+		&Match{},
+		&Friend{},
+		"tournament_teams",
+		"team_members",
+		&Upvote{},
+		&Rating{},
 	)
 }
 
 type Model interface {
-	FindOne(key string, value any)
+	FindOne(key string, value any) error
 	FindOneById(id int) error
 	Save() error
 	Delete() error
+}
+
+// setup db connection for testing
+func setup() {
+	_ = ConnectDB(true)
+}
+
+// close db connection after testing
+func close() {
+	_ = CloseDB()
 }

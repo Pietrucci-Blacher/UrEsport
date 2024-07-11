@@ -5,11 +5,15 @@ import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:uresport/main_screen.dart';
+import 'package:uresport/dashboard/screens/dashboard.dart';
 
 class LoginScreen extends StatefulWidget {
   final IAuthService authService;
+  final String? returnRoute;
 
-  const LoginScreen({super.key, required this.authService});
+  const LoginScreen({super.key, required this.authService, this.returnRoute});
 
   @override
   LoginScreenState createState() => LoginScreenState();
@@ -33,6 +37,18 @@ class LoginScreenState extends State<LoginScreen> {
     });
   }
 
+  void _onLoginButtonPressed(BuildContext context) {
+    final email = _emailController.text.trim();
+    final password = _passwordController.text.trim();
+
+    context.read<AuthBloc>().add(
+          LoginButtonPressed(
+            email: email,
+            password: password,
+          ),
+        );
+  }
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
@@ -46,47 +62,107 @@ class LoginScreenState extends State<LoginScreen> {
                 SnackBar(content: Text(state.error)),
               );
             } else if (state is AuthAuthenticated) {
-              Navigator.pushReplacementNamed(context, '/home');
+              if (state.user.roles.contains('admin')) {
+                if (kIsWeb) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (context) => const Dashboard(),
+                    ),
+                    (Route<dynamic> route) => false,
+                  );
+                } else {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MainScreen(authService: widget.authService),
+                    ),
+                    (Route<dynamic> route) => false,
+                  );
+                }
+              } else {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MainScreen(authService: widget.authService),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+              }
             }
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildTextField(
-                    controller: _emailController,
-                    label: AppLocalizations.of(context).email,
-                    hint: AutofillHints.email,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  _buildPasswordField(),
-                  const SizedBox(height: 20),
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      if (state is AuthLoading) {
-                        return const CircularProgressIndicator();
-                      }
-                      return ElevatedButton(
-                        onPressed: () {
-                          context.read<AuthBloc>().add(
-                                LoginButtonPressed(
-                                  email: _emailController.text,
-                                  password: _passwordController.text,
-                                ),
-                              );
-                        },
-                        child: Text(AppLocalizations.of(context).login),
-                      );
-                    },
-                  ),
-                ],
-              ),
+              child:
+                  kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
             ),
           ),
         ),
       ),
+    );
+  }
+
+  Widget _buildWebLogin(BuildContext context) {
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(maxWidth: 400),
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _buildTextField(
+              controller: _emailController,
+              label: AppLocalizations.of(context).email,
+              hint: AutofillHints.email,
+              keyboardType: TextInputType.emailAddress,
+            ),
+            _buildPasswordField(),
+            const SizedBox(height: 20),
+            BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                if (state is AuthLoading) {
+                  return const CircularProgressIndicator();
+                }
+                return ElevatedButton(
+                  onPressed: () => _onLoginButtonPressed(context),
+                  child: Text(AppLocalizations.of(context).login),
+                );
+              },
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildMobileLogin(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        _buildTextField(
+          controller: _emailController,
+          label: AppLocalizations.of(context).email,
+          hint: AutofillHints.email,
+          keyboardType: TextInputType.emailAddress,
+        ),
+        _buildPasswordField(),
+        const SizedBox(height: 20),
+        BlocBuilder<AuthBloc, AuthState>(
+          builder: (context, state) {
+            if (state is AuthLoading) {
+              return const CircularProgressIndicator();
+            }
+            return ElevatedButton(
+              onPressed: () => _onLoginButtonPressed(context),
+              child: Text(AppLocalizations.of(context).login),
+            );
+          },
+        ),
+      ],
     );
   }
 

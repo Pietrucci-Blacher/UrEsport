@@ -1,11 +1,12 @@
-import 'package:dio/dio.dart';
 import 'dart:convert';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:uresport/core/models/login_request.dart';
 import 'package:uresport/core/models/register_request.dart';
-import 'package:uresport/auth/bloc/auth_state.dart';
+import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/cache_service.dart';
 
 abstract class IAuthService {
@@ -15,10 +16,15 @@ abstract class IAuthService {
   Future<void> logout();
   Future<void> loginWithOAuth(String provider);
   Future<User> getUser();
+  Future<List<User>> fetchUsers();
   Future<void> verifyCode(String email, String code);
   Future<void> requestPasswordReset(String email);
+  Future<void> requestVerification(String email);
   Future<void> resetPassword(String code, String newPassword);
   Future<void> setToken(String token);
+  Future<String> uploadProfileImage(int userId, File image);
+  Future<void> updateUserInfo(int userId, Map<String, dynamic> updatedFields);
+  Future<void> deleteAccount(int userId);
 }
 
 class AuthService implements IAuthService {
@@ -126,7 +132,11 @@ class AuthService implements IAuthService {
       if (account != null) {
         final GoogleSignInAuthentication auth = await account.authentication;
         final String? token = auth.accessToken;
-        // Utiliser le token pour s'authentifier avec votre backend
+        if (token != null) {
+          await setToken(token);
+        } else {
+          throw Exception('Failed to retrieve Google access token');
+        }
       }
     } catch (e) {
       throw Exception('Failed to sign in with Google: $e');
@@ -139,12 +149,17 @@ class AuthService implements IAuthService {
     final String url =
         'https://appleid.apple.com/auth/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=email%20name';
 
-    await FlutterWebAuth2.authenticate(
+    final result = await FlutterWebAuth2.authenticate(
       url: url,
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    // Utiliser le token pour s'authentifier avec votre backend
+    final token = parseTokenFromResult(result);
+    if (token != null) {
+      await setToken(token);
+    } else {
+      throw Exception('Failed to retrieve Apple access token');
+    }
   }
 
   Future<void> _loginWithDiscord() async {
@@ -153,12 +168,17 @@ class AuthService implements IAuthService {
     final String url =
         'https://discord.com/api/oauth2/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=identify%20email';
 
-    await FlutterWebAuth2.authenticate(
+    final result = await FlutterWebAuth2.authenticate(
       url: url,
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    // Utiliser le token pour s'authentifier avec votre backend
+    final token = parseTokenFromResult(result);
+    if (token != null) {
+      await setToken(token);
+    } else {
+      throw Exception('Failed to retrieve Discord access token');
+    }
   }
 
   Future<void> _loginWithTwitch() async {
@@ -167,12 +187,17 @@ class AuthService implements IAuthService {
     final String url =
         'https://id.twitch.tv/oauth2/authorize?client_id=$clientId&redirect_uri=$redirectUri&response_type=code&scope=user:read:email';
 
-    await FlutterWebAuth2.authenticate(
+    final result = await FlutterWebAuth2.authenticate(
       url: url,
       callbackUrlScheme: 'YOUR_CALLBACK_URL_SCHEME',
     );
 
-    // Utiliser le token pour s'authentifier avec votre backend
+    final token = parseTokenFromResult(result);
+    if (token != null) {
+      await setToken(token);
+    } else {
+      throw Exception('Failed to retrieve Twitch access token');
+    }
   }
 
   @override
@@ -190,18 +215,24 @@ class AuthService implements IAuthService {
 
       if (response.statusCode == 200) {
         final data = response.data;
-        return User(
-          firstName: data['firstname'],
-          lastName: data['lastname'],
-          username: data['username'],
-          email: data['email'],
-        );
+        return User.fromJson(data);
       } else {
         throw Exception('Failed to load user data');
       }
     } catch (e) {
       await logout();
       throw Exception('Failed to load user data: $e');
+    }
+  }
+
+  @override
+  Future<List<User>> fetchUsers() async {
+    final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
+    if (response.statusCode == 200) {
+      List jsonResponse = json.decode(response.data.toString());
+      return jsonResponse.map((user) => User.fromJson(user)).toList();
+    } else {
+      throw Exception('Failed to load users');
     }
   }
 
@@ -231,6 +262,18 @@ class AuthService implements IAuthService {
   }
 
   @override
+  Future<void> requestVerification(String email) async {
+    try {
+      await _dio
+          .post('${dotenv.env['API_ENDPOINT']}/auth/request-verify', data: {
+        'email': email,
+      });
+    } catch (e) {
+      throw Exception('Failed to request verification: $e');
+    }
+  }
+
+  @override
   Future<void> resetPassword(String code, String newPassword) async {
     try {
       await _dio
@@ -246,5 +289,75 @@ class AuthService implements IAuthService {
   @override
   Future<void> setToken(String token) async {
     await CacheService.instance.setString('token', token);
+  }
+
+  @override
+  Future<String> uploadProfileImage(int userId, File image) async {
+    try {
+      final token = await _cacheService.getString('token');
+      if (token == null) throw Exception('No token found');
+
+      final formData = FormData.fromMap({
+        'upload[]': await MultipartFile.fromFile(image.path),
+      });
+
+      final response = await _dio.post(
+        '${dotenv.env['API_ENDPOINT']}/users/$userId/image',
+        data: formData,
+        options: Options(headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      return response.data['profile_image_url'];
+    } catch (e) {
+      throw Exception('Failed to upload profile image: $e');
+    }
+  }
+
+  @override
+  Future<void> updateUserInfo(
+      int userId, Map<String, dynamic> updatedFields) async {
+    try {
+      final token = await _cacheService.getString('token');
+      if (token == null) throw Exception('No token found');
+
+      final response = await _dio.patch(
+        '${dotenv.env['API_ENDPOINT']}/users/$userId',
+        data: updatedFields,
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to update user info');
+      }
+    } catch (e) {
+      throw Exception('Failed to update user info: $e');
+    }
+  }
+
+  @override
+  Future<void> deleteAccount(int userId) async {
+    try {
+      final response = await _dio.delete(
+        '${dotenv.env['API_ENDPOINT']}/users/$userId',
+        options: Options(headers: {
+          'Authorization': await _cacheService.getString('token'),
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to delete account');
+      }
+    } catch (e) {
+      throw Exception('Failed to delete account: $e');
+    }
+  }
+
+  String? parseTokenFromResult(String result) {
+    return null;
   }
 }

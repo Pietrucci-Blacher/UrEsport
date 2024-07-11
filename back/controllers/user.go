@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"challenge/models"
-	"challenge/utils"
+	"challenge/services"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -21,7 +21,7 @@ import (
 func GetUsers(c *gin.Context) {
 	var sanitized []models.SanitizedUser
 
-	query, _ := c.MustGet("query").(utils.QueryFilter)
+	query, _ := c.MustGet("query").(services.QueryFilter)
 
 	users, err := models.FindAllUsers(query)
 	if err != nil {
@@ -49,7 +49,7 @@ func GetUsers(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/users/{id} [get]
 func GetUser(c *gin.Context) {
-	user, _ := c.MustGet("findedUser").(models.User)
+	user, _ := c.MustGet("user").(*models.User)
 
 	sanitized := user.Sanitize(true)
 
@@ -66,7 +66,7 @@ func GetUser(c *gin.Context) {
 //	@Success		200	{object}	models.SanitizedUser
 //	@Router			/users/me [get]
 func GetUserMe(c *gin.Context) {
-	connectedUser, _ := c.MustGet("user").(models.User)
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	c.JSON(http.StatusOK, connectedUser)
 }
 
@@ -86,7 +86,7 @@ func GetUserMe(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/users/{id} [patch]
 func UpdateUser(c *gin.Context) {
-	user, _ := c.MustGet("findedUser").(models.User)
+	user, _ := c.MustGet("user").(*models.User)
 	body, _ := c.MustGet("body").(models.UpdateUserDto)
 
 	if count, err := models.CountUsersByEmail(body.Email); err != nil || count > 0 {
@@ -121,6 +121,35 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, sanitized)
 }
 
+// UpdateUserImage godoc
+//
+//	@Summary		update user image
+//	@Description	update user image
+//	@Tags			user
+//	@Accept			multipart/form-data
+//	@Produce		json
+//	@Param			user		path	int		true	"User ID"
+//	@Param			upload[]		formData	file	true	"Image"
+//	@Success		200			{object}	models.SanitizedUser
+//	@Failure		400			{object}	utils.HttpError
+//	@Failure		401			{object}	utils.HttpError
+//	@Failure		404			{object}	utils.HttpError
+//	@Failure		500			{object}	utils.HttpError
+//	@Router			/users/{user}/image [post]
+func UploadUserImage(c *gin.Context) {
+	user, _ := c.MustGet("user").(*models.User)
+	files, _ := c.MustGet("files").([]string)
+
+	user.ProfileImageUrl = files[0]
+
+	if err := user.Save(); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, user.Sanitize(false))
+}
+
 // DeleteUser godoc
 //
 //	@Summary		delete user
@@ -136,7 +165,7 @@ func UpdateUser(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/users/{id} [delete]
 func DeleteUser(c *gin.Context) {
-	user, _ := c.MustGet("findedUser").(models.User)
+	user, _ := c.MustGet("user").(*models.User)
 
 	if err := user.Delete(); err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})

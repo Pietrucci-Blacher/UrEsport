@@ -76,7 +76,7 @@ class AppLocalizations {
 
   String get welcome {
     return Intl.message(
-      'Welcome',
+      'Welcome to UrEsport!',
       name: 'welcome',
       desc: 'Welcome message',
     );
@@ -257,6 +257,352 @@ class AppLocalizations {
       name: 'verificationCodeSent',
       desc: 'Verification code sent message',
       args: [email],
+    );
+  }
+
+  String get resendCode {
+    return Intl.message(
+      'Resend Code',
+      name: 'resendCode',
+      desc: 'Resend code title',
+    );
+  }
+
+  String get inviteButton {
+    return Intl.message(
+      'Invite',
+      name: 'inviteButton',
+      desc: 'Title for the Invite button',
+    );
+  }
+
+  String get inviteSuccess {
+    return Intl.message(
+      'You have been invited successfully',
+      name: 'inviteSuccess',
+      desc: 'Title for the invite success dialog',
+    );
+  }
+
+  String get inviteError {
+    return Intl.message(
+      'An error occurred while sending the invitation',
+      name: 'inviteError',
+      desc: 'Title for the invite error dialog',
+    );
+  }
+
+  String get closeButton {
+    return Intl.message(
+      'Close',
+      name: 'closeButton',
+      desc: 'Title for the close button',
+    );
+  }
+
+  String get joinButton {
+    return Intl.message(
+      'Join',
+      name: 'joinButton',
+      desc: 'Title for the Join button',
+    );
+  }
+
+  String get gameButton {
+    return Intl.message(
+      'All Games',
+      name: 'gameButton',
+      desc: 'Title for the Games button',
+    );
+  }
+
+  String get gameScreenWelcome {
+    return Intl.message(
+      'Welcome to the Game Screen!',
+      name: 'gameScreenWelcome',
+      desc: 'Welcome message for the Games screen',
+    );
+  }
+
+  String get gameScreenTitle {
+    return Intl.message(
+      'Games',
+      name: 'gameScreenTitle',
+      desc: 'Title for the Games screen',
+    );
+  }
+
+  String get modifyGameButton {
+    return Intl.message(
+      'Modify Game',
+      name: 'modifyGameButton',
+      desc: 'Title for the Modify button',
+    );
+  }
+
+  String get deleteGameButton {
+    return Intl.message(
+      'Delete Game',
+      name: 'deleteGameButton',
+      desc: 'Title for the Delete button',
+    );
+  }
+
+  String get trendingTournamentsTitle {
+    return Intl.message(
+      'Trending Tournaments',
+      name: 'trendingTournamentsTitle',
+      desc: 'Title for the Trending Tournaments section',
+    );
+  }
+
+  String get popularGamesTitle {
+    return Intl.message(
+      'Popular Games',
+      name: 'popularGamesTitle',
+      desc: 'Title for the Popular Games section',
+    );
+  }
+
+  String get viewAll {
+    return Intl.message(
+      'View All',
+      name: 'viewAll',
+      desc: 'Title for the View All button',
+    );
+  }
+
+  String get editProfile {
+    return Intl.message(
+      'Edit Profile',
+      name: 'editProfile',
+      desc: 'Title for editing the profile',
+    );
+  }
+
+  String get save {
+    return Intl.message(
+      'Save',
+      name: 'save',
+      desc: 'Button text to save changes',
+    );
+  }
+
+  String get cancel {
+    return Intl.message(
+      'Cancel',
+      name: 'cancel',
+      desc: 'Button text to cancel changes',
+    );
+  }
+
+  String get dangerZone {
+    return Intl.message(
+      'Danger Zone',
+      name: 'dangerZone',
+      desc: 'Title for the danger zone section',
+    );
+  }
+
+  String get logout {
+    return Intl.message(
+      'Logout',
+      name: 'logout',
+      desc: 'Button text to logout',
+    );
+  }
+
+  String get deleteAccount {
+    return Intl.message(
+      'Delete Account',
+      name: 'deleteAccount',
+      desc: 'Button text to delete account',
+    );
+  }
+
+  String get confirm {
+    return Intl.message(
+      'Confirm',
+      name: 'confirm',
+      desc: 'Button text to confirm action',
+    );
+  }
+
+  String get cancelEditing {
+    return Intl.message(
+      'Cancel Editing',
+      name: 'cancelEditing',
+      desc: 'Button text to cancel editing',
+    );
+  }
+
+  String get logoutConfirmation {
+    return Intl.message(
+      'Are you sure you want to logout?',
+      name: 'logoutConfirmation',
+      desc: 'Confirmation message for logout',
+    );
+  }
+
+  String get deleteAccountConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      name: 'deleteAccountConfirmation',
+      desc: 'Confirmation message for account deletion',
+    );
+  }
+
+  String get profileUpdated {
+    return Intl.message(
+      'Profile updated successfully',
+      name: 'profileUpdated',
+      desc: 'Profile updated success message',
+    );
+  }
+
+  String get errorSavingProfile {
+    return Intl.message(
+      'Error saving profile',
+      name: 'errorSavingProfile',
+      desc: 'Error message when saving profile fails',
+    );
+  }
+
+  String get photoLibrary {
+    return Intl.message(
+      'Photo Library',
+      name: 'photoLibrary',
+      desc: 'Option text for selecting photo library',
+    );
+  }
+
+  String get camera {
+    return Intl.message(
+      'Camera',
+      name: 'camera',
+      desc: 'Option text for selecting camera',
+    );
+  }
+
+  String get errorPickingImage {
+    return Intl.message(
+      'Error picking image',
+      name: 'errorPickingImage',
+      desc: 'Error message when picking image fails',
+    );
+  }
+
+  String get errorUploadingProfileImage {
+    return Intl.message(
+      'Error uploading profile image',
+      name: 'errorUploadingProfileImage',
+      desc: 'Error message when uploading profile image fails',
+    );
+  }
+
+  String get errorDeletingAccount {
+    return Intl.message(
+      'Error deleting account',
+      name: 'errorDeletingAccount',
+      desc: 'Error message when deleting account fails',
+    );
+  }
+
+  String filters(int count) {
+    return Intl.message(
+      'Filters ($count)',
+      name: 'filters',
+      desc: 'Filter button text with count',
+      args: [count],
+    );
+  }
+
+  String get filterAndSort {
+    return Intl.message(
+      'Filter and Sort',
+      name: 'filterAndSort',
+      desc: 'Filter and sort title',
+    );
+  }
+
+  String get reset {
+    return Intl.message(
+      'Reset',
+      name: 'reset',
+      desc: 'Reset button text',
+    );
+  }
+
+  String get searchTags {
+    return Intl.message(
+      'Search tags',
+      name: 'searchTags',
+      desc: 'Search tags placeholder',
+    );
+  }
+
+  String get filterByTags {
+    return Intl.message(
+      'FILTER BY TAGS',
+      name: 'filterByTags',
+      desc: 'Filter by tags title',
+    );
+  }
+
+  String get sort {
+    return Intl.message(
+      'SORT',
+      name: 'sort',
+      desc: 'Sort title',
+    );
+  }
+
+  String get applyFilters {
+    return Intl.message(
+      'Apply Filters',
+      name: 'applyFilters',
+      desc: 'Apply filters button text',
+    );
+  }
+
+  String get alphabeticalAZ {
+    return Intl.message(
+      'Alphabetical (A-Z)',
+      name: 'alphabeticalAZ',
+      desc: 'Sort option for A-Z',
+    );
+  }
+
+  String get alphabeticalZA {
+    return Intl.message(
+      'Alphabetical (Z-A)',
+      name: 'alphabeticalZA',
+      desc: 'Sort option for Z-A',
+    );
+  }
+
+  String get anErrorOccurred {
+    return Intl.message(
+      'An error occurred!',
+      name: 'anErrorOccurred',
+      desc: 'Error message',
+    );
+  }
+
+  String get noGamesAvailable {
+    return Intl.message(
+      'No games available.',
+      name: 'noGamesAvailable',
+      desc: 'Message when no games are available',
+    );
+  }
+
+  String moreTagsCount(int count) {
+    return Intl.message(
+      '+$count more',
+      name: 'moreTagsCount',
+      desc: 'More tags count',
+      args: [count],
     );
   }
 }

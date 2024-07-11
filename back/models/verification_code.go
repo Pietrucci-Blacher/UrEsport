@@ -5,8 +5,8 @@ import (
 )
 
 type VerificationCode struct {
-	ID        uint      `gorm:"primaryKey"`
-	UserID    uint      `gorm:"not null"`
+	ID        int       `gorm:"primaryKey"`
+	UserID    int       `gorm:"not null"`
 	Email     string    `gorm:"not null"`
 	Code      string    `gorm:"not null"`
 	ExpiresAt time.Time `gorm:"not null"`
@@ -19,7 +19,7 @@ type VerifyUserDto struct {
 	Code  string `json:"code" binding:"required"`
 }
 
-type RequestPasswordResetDto struct {
+type RequestCodeDto struct {
 	Email string `json:"email" binding:"required,email"`
 }
 
@@ -35,6 +35,14 @@ func (vc *VerificationCode) Save() error {
 
 func (vc *VerificationCode) IsExpired() bool {
 	return time.Now().After(vc.ExpiresAt)
+}
+
+func (vc *VerificationCode) FindOneByCodeAndEmail(code, email string) error {
+	return DB.Where("code = ? AND email = ?", code, email).First(vc).Error
+}
+
+func (vc *VerificationCode) Delete() error {
+	return DB.Delete(vc).Error
 }
 
 func DeleteExpiredCodes() error {

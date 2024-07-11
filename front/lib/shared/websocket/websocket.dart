@@ -1,15 +1,35 @@
 import 'package:flutter/foundation.dart';
 import 'package:uresport/core/websocket/websocket.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void connectWebsocket() {
-  final ws = Websocket(dotenv.env['WS_ENDPOINT']!);
+  final ws = Websocket.getInstance();
 
-  ws.on('pong', (socket, message) {
+  ws.on('connected', connected);
+  ws.on('error', error);
+  ws.on('pong', pong);
+  ws.on('match:update', (data) {
     if (kDebugMode) {
-      print('Pong received: $message');
+      print('Match update: ${data.score1}');
     }
   });
 
   ws.emit('ping', 'Hello from client!');
+}
+
+void connected(socket, message) {
+  if (kDebugMode) {
+    print('connected to websocket');
+  }
+}
+
+void error(socket, message) {
+  if (kDebugMode) {
+    print('Error: $message');
+  }
+}
+
+void pong(socket, message) {
+  if (kDebugMode) {
+    print('Pong received: $message');
+  }
 }

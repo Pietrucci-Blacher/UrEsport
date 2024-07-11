@@ -4,14 +4,16 @@ import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
 
 class TournamentBloc extends Bloc<TournamentEvent, TournamentState> {
-  final ITournament tournamentService;
+  final ITournamentService tournamentService;
 
   TournamentBloc(this.tournamentService) : super(TournamentInitial()) {
     on<LoadTournaments>((event, emit) async {
       emit(TournamentLoadInProgress());
       try {
-        final tournaments =
-            await tournamentService.fetchTournaments(event.limit, event.page);
+        final tournaments = await tournamentService.fetchTournaments(
+          limit: event.limit,
+          page: event.page,
+        );
         emit(TournamentLoadSuccess(tournaments: tournaments));
       } catch (_) {
         emit(TournamentLoadFailure());

@@ -26,7 +26,7 @@
         - name: Setup Go
           uses: actions/setup-go@v5
           with:
-            go-version: 1.22.3
+            go-version: 1.22.4
             cache: true
             cache-dependency-path: "**/go.sum"
 
@@ -42,7 +42,7 @@
           uses: golangci/golangci-lint-action@v6
           with:
             args: --timeout=5m
-            version: v1.58
+            version: v1.59
             working-directory: back
 
         - name: Install Dependencies
