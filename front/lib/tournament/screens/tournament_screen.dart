@@ -45,8 +45,9 @@ class _TournamentScreenState extends State<TournamentScreen> {
             children: [
               RefreshIndicator(
                 onRefresh: () async {
-                  context.read<TournamentBloc>().add(
-                      LoadTournaments(page: _currentPage, limit: _limit));
+                  context
+                      .read<TournamentBloc>()
+                      .add(LoadTournaments(page: _currentPage, limit: _limit));
                 },
                 child: BlocBuilder<TournamentBloc, TournamentState>(
                   builder: (context, state) {
@@ -56,7 +57,8 @@ class _TournamentScreenState extends State<TournamentScreen> {
                       return const Center(child: CircularProgressIndicator());
                     } else if (state is TournamentLoadSuccess) {
                       if (state.tournaments.isEmpty) {
-                        return const Center(child: Text('No tournaments found'));
+                        return const Center(
+                            child: Text('No tournaments found'));
                       }
                       return Column(
                         children: [
@@ -65,7 +67,8 @@ class _TournamentScreenState extends State<TournamentScreen> {
                               itemCount: state.tournaments.length,
                               itemBuilder: (context, index) {
                                 final tournament = state.tournaments[index];
-                                return _buildTournamentCard(context, tournament);
+                                return _buildTournamentCard(
+                                    context, tournament);
                               },
                             ),
                           ),
@@ -101,8 +104,9 @@ class _TournamentScreenState extends State<TournamentScreen> {
                 setState(() {
                   _currentPage--;
                 });
-                context.read<TournamentBloc>().add(
-                    LoadTournaments(page: _currentPage, limit: _limit));
+                context
+                    .read<TournamentBloc>()
+                    .add(LoadTournaments(page: _currentPage, limit: _limit));
               },
               child: const Text('Previous'),
             ),
@@ -113,8 +117,9 @@ class _TournamentScreenState extends State<TournamentScreen> {
                 setState(() {
                   _currentPage++;
                 });
-                context.read<TournamentBloc>().add(
-                    LoadTournaments(page: _currentPage, limit: _limit));
+                context
+                    .read<TournamentBloc>()
+                    .add(LoadTournaments(page: _currentPage, limit: _limit));
               },
               child: const Text('Next'),
             ),
@@ -125,7 +130,7 @@ class _TournamentScreenState extends State<TournamentScreen> {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-    DateFormat.yMMMd(Localizations.localeOf(context).toString());
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
