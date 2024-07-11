@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:uresport/core/models/user.dart';
 
 abstract class DashboardEvent extends Equatable {
   const DashboardEvent();
@@ -20,20 +21,15 @@ class WebSocketMessageReceived extends DashboardEvent {
   List<Object> get props => [message];
 }
 
-class UpdateDashboardStats extends DashboardEvent {
-  final Map<String, dynamic> stats;
+class LoadUsers extends DashboardEvent {}
 
-  const UpdateDashboardStats(this.stats);
+class UpdateUsers extends DashboardEvent {
+  final List<User> users;
 
-  @override
-  List<Object> get props => [stats];
-}
-
-class AddLogEntry extends DashboardEvent {
-  final String logEntry;
-
-  const AddLogEntry(this.logEntry);
+  const UpdateUsers(this.users);
 
   @override
-  List<Object> get props => [logEntry];
+  List<Object> get props => [users];
 }
+
+class FetchAllUsers extends DashboardEvent {}

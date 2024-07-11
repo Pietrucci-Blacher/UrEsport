@@ -1,13 +1,13 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
-import 'package:uresport/l10n/app_localizations.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:uresport/main_screen.dart';
 import 'package:uresport/dashboard/screens/dashboard.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final IAuthService authService;

@@ -1,9 +1,10 @@
 import 'dart:convert';
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
+import 'package:google_sign_in/google_sign_in.dart';
 import 'package:uresport/core/models/login_request.dart';
 import 'package:uresport/core/models/register_request.dart';
 import 'package:uresport/core/models/user.dart';
@@ -25,6 +26,7 @@ abstract class IAuthService {
   Future<String> uploadProfileImage(int userId, File image);
   Future<void> updateUserInfo(int userId, Map<String, dynamic> updatedFields);
   Future<void> deleteAccount(int userId);
+  Future<List<User>> fetchAllUsers();
 }
 
 class AuthService implements IAuthService {
@@ -354,6 +356,21 @@ class AuthService implements IAuthService {
       }
     } catch (e) {
       throw Exception('Failed to delete account: $e');
+    }
+  }
+
+  @override
+  Future<List<User>> fetchAllUsers() async {
+    try {
+      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
+      if (response.statusCode == 200) {
+        List<dynamic> data = response.data;
+        return data.map((user) => User.fromJson(user)).toList();
+      } else {
+        throw Exception('Failed to fetch users');
+      }
+    } catch (e) {
+      throw Exception('Failed to fetch users: $e');
     }
   }
 

@@ -1,15 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
+import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
+import 'package:uresport/dashboard/screens/users_screen.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
   @override
-  _DashboardState createState() => _DashboardState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
@@ -17,9 +20,11 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          DashboardBloc(Websocket.getInstance())..add(ConnectWebSocket()),
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    return BlocProvider<DashboardBloc>(
+      create: (context) => DashboardBloc(Websocket.getInstance(), authService)
+        ..add(ConnectWebSocket()),
       child: Scaffold(
         body: Row(
           children: [
@@ -68,23 +73,8 @@ class _DashboardState extends State<Dashboard> {
                   } else if (state is DashboardLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is DashboardLoaded) {
-                    // Now we're sure state is DashboardLoaded, safe to access its properties
-                    switch (_selectedIndex) {
-                      case 0:
-                        return _buildDashboardContent(state);
-                      case 1:
-                        return _buildLogsContent(state);
-                      case 2:
-                        return _buildTournamentsContent(state);
-                      case 3:
-                        return _buildGamesContent(state);
-                      case 4:
-                        return _buildUsersContent(state);
-                      default:
-                        return const Center(child: Text('Unknown page'));
-                    }
+                    return _buildContent(state);
                   } else if (state is DashboardError) {
-                    // Handle error state
                     return Center(child: Text('Error: ${state.error}'));
                   }
                   return const Center(child: Text('Unknown state'));
@@ -95,6 +85,23 @@ class _DashboardState extends State<Dashboard> {
         ),
       ),
     );
+  }
+
+  Widget _buildContent(DashboardLoaded state) {
+    switch (_selectedIndex) {
+      case 0:
+        return _buildDashboardContent(state);
+      case 1:
+        return _buildLogsContent(state);
+      case 2:
+        return _buildTournamentsContent(state);
+      case 3:
+        return _buildGamesContent(state);
+      case 4:
+        return const UsersPage();
+      default:
+        return const Center(child: Text('Unknown page'));
+    }
   }
 
   Widget _buildDashboardContent(DashboardLoaded state) {
@@ -128,9 +135,5 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildGamesContent(DashboardLoaded state) {
     return const Center(child: Text('Games Content'));
-  }
-
-  Widget _buildUsersContent(DashboardLoaded state) {
-    return const Center(child: Text('Users Content'));
   }
 }

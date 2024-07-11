@@ -8,11 +8,11 @@ import 'package:uresport/core/services/friends_services.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/core/services/notification_service.dart';
+import 'package:uresport/core/services/rating_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
-import 'package:uresport/core/services/rating_service.dart';
-import 'package:uresport/shared/websocket/websocket.dart';
 import 'package:uresport/shared/routing/routing.dart';
+import 'package:uresport/shared/websocket/websocket.dart';
 
 import 'app.dart';
 
@@ -51,7 +51,6 @@ void main() async {
   final tournamentService = TournamentService(dio);
   final gameService = GameService(dio);
 
-  // L'URL de base sera maintenant récupérée via dotenv dans le service
   final ratingService = RatingService(dio);
 
   final routeGenerator = RouteGenerator(authService);
