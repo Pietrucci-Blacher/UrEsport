@@ -81,8 +81,8 @@ class _GameDetailPageState extends State<GameDetailPage> {
               Text(
                 'Game Description',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 10),
               Text(
@@ -93,8 +93,8 @@ class _GameDetailPageState extends State<GameDetailPage> {
               Text(
                 'Tags',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 10),
               Wrap(
@@ -114,8 +114,8 @@ class _GameDetailPageState extends State<GameDetailPage> {
               Text(
                 'Tournaments',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 10),
               FutureBuilder<List<Tournament>>(
@@ -139,9 +139,12 @@ class _GameDetailPageState extends State<GameDetailPage> {
                             const SizedBox(height: 16),
                             Text(
                               'Aucun tournoi pour ce jeu',
-                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                color: Colors.grey,
-                              ),
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .headlineSmall
+                                  ?.copyWith(
+                                    color: Colors.grey,
+                                  ),
                             ),
                           ],
                         ),
@@ -185,10 +188,12 @@ class _GameDetailPageState extends State<GameDetailPage> {
                                 Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
-                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
                                             child: Text(
@@ -197,8 +202,8 @@ class _GameDetailPageState extends State<GameDetailPage> {
                                                   .textTheme
                                                   .titleLarge
                                                   ?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
@@ -217,17 +222,22 @@ class _GameDetailPageState extends State<GameDetailPage> {
                                         tournament.description,
                                         maxLines: 2,
                                         overflow: TextOverflow.ellipsis,
-                                        style: Theme.of(context).textTheme.bodyMedium,
+                                        style: Theme.of(context)
+                                            .textTheme
+                                            .bodyMedium,
                                       ),
                                       const SizedBox(height: 8.0),
                                       Row(
                                         children: [
-                                          const Icon(Icons.location_on, color: Colors.blue),
+                                          const Icon(Icons.location_on,
+                                              color: Colors.blue),
                                           const SizedBox(width: 8),
                                           Expanded(
                                             child: Text(
                                               tournament.location,
-                                              style: Theme.of(context).textTheme.bodyMedium,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodyMedium,
                                             ),
                                           ),
                                         ],
@@ -235,22 +245,28 @@ class _GameDetailPageState extends State<GameDetailPage> {
                                       const SizedBox(height: 8.0),
                                       Row(
                                         children: [
-                                          const Icon(Icons.date_range, color: Colors.blue),
+                                          const Icon(Icons.date_range,
+                                              color: Colors.blue),
                                           const SizedBox(width: 8),
                                           Text(
                                             'Start: ${DateFormat.yMMMd().format(tournament.startDate)}',
-                                            style: Theme.of(context).textTheme.bodyMedium,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
                                           ),
                                         ],
                                       ),
                                       const SizedBox(height: 4.0),
                                       Row(
                                         children: [
-                                          const Icon(Icons.date_range, color: Colors.blue),
+                                          const Icon(Icons.date_range,
+                                              color: Colors.blue),
                                           const SizedBox(width: 8),
                                           Text(
                                             'End: ${DateFormat.yMMMd().format(tournament.endDate)}',
-                                            style: Theme.of(context).textTheme.bodyMedium,
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyMedium,
                                           ),
                                         ],
                                       ),
