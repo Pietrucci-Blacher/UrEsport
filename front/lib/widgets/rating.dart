@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
@@ -18,13 +17,13 @@ class RatingWidget extends StatefulWidget {
   });
 
   @override
-  _RatingWidgetState createState() => _RatingWidgetState();
+  RatingWidgetState createState() => RatingWidgetState();
 }
 
-class _RatingWidgetState extends State<RatingWidget> {
+class RatingWidgetState extends State<RatingWidget> {
   double _currentRating = 0.0;
   bool _isLoading = true;
-  int? _ratingId; // Ajouter une variable pour stocker l'ID de la note
+  int? _ratingId;
 
   @override
   void initState() {
@@ -35,12 +34,11 @@ class _RatingWidgetState extends State<RatingWidget> {
   Future<void> _fetchRating() async {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
     try {
-      if (kDebugMode) {
-        print(
+      debugPrint(
           'Fetching rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}');
-      }
       final ratingData = await ratingService.fetchRatingDetails(
           widget.tournamentId, widget.userId);
+      if (!mounted) return; // Check if the widget is still in the widget tree
       setState(() {
         _currentRating = ratingData['rating'];
         _ratingId = ratingData['ratingId'];
@@ -54,9 +52,8 @@ class _RatingWidgetState extends State<RatingWidget> {
             backgroundColor: Colors.green);
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error while fetching rating: $e');
-      }
+      debugPrint('Error while fetching rating: $e');
+      if (!mounted) return; // Check if the widget is still in the widget tree
       widget.showCustomToast(
           context, 'Erreur lors de la récupération de la note',
           backgroundColor: Colors.red);
@@ -69,7 +66,6 @@ class _RatingWidgetState extends State<RatingWidget> {
   Future<void> _submitOrUpdateRating(double rating) async {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
 
-    // Vérifier si la note est égale à zéro
     if (rating == 0.0) {
       widget.showCustomToast(context, 'La note ne peut pas être zéro',
           backgroundColor: Colors.red);
@@ -77,28 +73,24 @@ class _RatingWidgetState extends State<RatingWidget> {
     }
 
     try {
-      if (kDebugMode) {
-        print(
+      debugPrint(
           'Submitting or updating rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}, rating=$rating');
-      }
       if (_ratingId != null) {
-        // Si une note existe déjà, mettre à jour la note
         await ratingService.updateRating(
             widget.tournamentId, _ratingId!, widget.userId, rating);
       } else {
-        // Sinon, soumettre une nouvelle note
         await ratingService.submitRating(
             widget.tournamentId, widget.userId, rating);
       }
+      if (!mounted) return; // Check if the widget is still in the widget tree
       widget.showCustomToast(context, 'Note enregistrée avec succès',
           backgroundColor: Colors.green);
       setState(() {
         _currentRating = rating;
       });
     } catch (e) {
-      if (kDebugMode) {
-        print('Error while submitting or updating rating: $e');
-      }
+      debugPrint('Error while submitting or updating rating: $e');
+      if (!mounted) return; // Check if the widget is still in the widget tree
       widget.showCustomToast(
           context, 'Erreur lors de l\'enregistrement de la note',
           backgroundColor: Colors.red);

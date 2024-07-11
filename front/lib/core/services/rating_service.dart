@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
+import 'package:flutter/foundation.dart' show kDebugMode;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/services/cache_service.dart';
 
@@ -64,11 +64,7 @@ class RatingService implements IRatingService {
       if (e is DioException) {
         if (kDebugMode) {
           print('DioException: ${e.message}');
-        }
-        if (kDebugMode) {
           print('DioException type: ${e.type}');
-        }
-        if (kDebugMode) {
           print('DioException response: ${e.response?.data}');
         }
         rethrow;
@@ -115,11 +111,7 @@ class RatingService implements IRatingService {
       if (e is DioException) {
         if (kDebugMode) {
           print('DioException: ${e.message}');
-        }
-        if (kDebugMode) {
           print('DioException type: ${e.type}');
-        }
-        if (kDebugMode) {
           print('DioException response: ${e.response?.data}');
         }
         rethrow;
@@ -164,11 +156,7 @@ class RatingService implements IRatingService {
       if (e is DioException) {
         if (kDebugMode) {
           print('DioException: ${e.message}');
-        }
-        if (kDebugMode) {
           print('DioException type: ${e.type}');
-        }
-        if (kDebugMode) {
           print('DioException response: ${e.response?.data}');
         }
         rethrow;
@@ -225,11 +213,7 @@ class RatingService implements IRatingService {
       if (e is DioException) {
         if (kDebugMode) {
           print('DioException: ${e.message}');
-        }
-        if (kDebugMode) {
           print('DioException type: ${e.type}');
-        }
-        if (kDebugMode) {
           print('DioException response: ${e.response?.data}');
         }
         rethrow;

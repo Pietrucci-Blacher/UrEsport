@@ -19,11 +19,10 @@ class TournamentDetailsScreen extends StatefulWidget {
   const TournamentDetailsScreen({super.key, required this.tournament});
 
   @override
-  _TournamentDetailsScreenState createState() =>
-      _TournamentDetailsScreenState();
+  TournamentDetailsScreenState createState() => TournamentDetailsScreenState();
 }
 
-class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
+class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
   bool _hasJoined = false;
   bool _isLoading = true;
   User? _currentUser;
@@ -41,15 +40,17 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     try {
       final hasJoined = await tournamentService.hasJoinedTournament(
           widget.tournament.id,
-          'username'); // Remplacez 'username' par l'ID ou le nom d'utilisateur réel
+          'username'); // Replace 'username' with the actual user ID or username
+      if (!mounted) return;
       setState(() {
         _hasJoined = hasJoined;
         _isLoading = false;
       });
     } catch (e) {
       if (kDebugMode) {
-        print('Error checking if joined: $e');
+        debugPrint('Error checking if joined: $e');
       }
+      if (!mounted) return;
       setState(() {
         _isLoading = false;
       });
@@ -60,15 +61,14 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     final authService = Provider.of<IAuthService>(context, listen: false);
     try {
       final user = await authService.getUser();
+      if (!mounted) return;
       setState(() {
         _currentUser = user;
-        if (kDebugMode) {
-          print('User loaded: $_currentUser');
-        }
+        debugPrint('User loaded: $_currentUser');
       });
     } catch (e) {
       if (kDebugMode) {
-        print('Error loading current user: $e');
+        debugPrint('Error loading current user: $e');
       }
     }
   }
@@ -103,7 +103,7 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
       appBar: AppBar(
         title: Text(widget.tournament.name),
       ),
-      body: _isLoading || _currentUser == null // Ajoutez cette condition
+      body: _isLoading || _currentUser == null
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
         child: Padding(
@@ -380,40 +380,48 @@ class _TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
 
     try {
       await tournamentService.joinTournament(tournamentId, teamId);
-      showNotificationToast(context, 'Vous avez bien rejoint le tournoi',
-          backgroundColor: Colors.green);
+      if (!mounted) return;
+      _showNotificationToast('Vous avez bien rejoint le tournoi', Colors.green);
       setState(() {
         _hasJoined = true;
       });
     } catch (e) {
-      if (e is DioException) {
-        if (e.response != null && e.response?.data != null) {
-          final errorMessage = e.response?.data['error'];
-          if (errorMessage == 'Team already in this tournament') {
-            showNotificationToast(context, 'Vous avez déjà rejoint le tournoi',
-                backgroundColor: Colors.red);
-            setState(() {
-              _hasJoined = true;
-            });
-          } else {
-            showNotificationToast(context, 'Erreur lors du join: $errorMessage',
-                backgroundColor: Colors.red);
-          }
+      if (!mounted) return;
+      _handleJoinError(e);
+    }
+  }
+
+  void _showNotificationToast(String message, Color backgroundColor) {
+    if (!mounted) return;
+    showNotificationToast(context, message, backgroundColor: backgroundColor);
+  }
+
+  void _handleJoinError(dynamic e) {
+    if (e is DioException) {
+      if (e.response != null && e.response?.data != null) {
+        final errorMessage = e.response?.data['error'];
+        if (errorMessage == 'Team already in this tournament') {
+          _showNotificationToast(
+              'Vous avez déjà rejoint le tournoi', Colors.red);
+          setState(() {
+            _hasJoined = true;
+          });
         } else {
-          showNotificationToast(context, 'Erreur lors du join: ${e.message}',
-              backgroundColor: Colors.red);
+          _showNotificationToast(
+              'Erreur lors du join: $errorMessage', Colors.red);
         }
       } else {
-        showNotificationToast(context, 'Erreur pour rejoindre le tournoi',
-            backgroundColor: Colors.red);
+        _showNotificationToast('Erreur lors du join: ${e.message}', Colors.red);
       }
+    } else {
+      _showNotificationToast('Erreur pour rejoindre le tournoi', Colors.red);
     }
   }
 
   Future<void> _sendJoinRequest(
       BuildContext context, int tournamentId, int teamId) async {
-    showNotificationToast(context, 'Demande pour rejoindre envoyée',
-        backgroundColor: Colors.orange);
+    if (!mounted) return;
+    _showNotificationToast('Demande pour rejoindre envoyée', Colors.orange);
   }
 }
 
@@ -423,10 +431,10 @@ class UpvoteButton extends StatefulWidget {
   const UpvoteButton({super.key, required this.tournament});
 
   @override
-  _UpvoteButtonState createState() => _UpvoteButtonState();
+  UpvoteButtonState createState() => UpvoteButtonState();
 }
 
-class _UpvoteButtonState extends State<UpvoteButton>
+class UpvoteButtonState extends State<UpvoteButton>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<Color?> _colorAnimation;
@@ -453,7 +461,8 @@ class _UpvoteButtonState extends State<UpvoteButton>
 
     try {
       bool hasUpvoted =
-      await tournamentService.hasUpvoted(widget.tournament.id, 'username');
+          await tournamentService.hasUpvoted(widget.tournament.id, 'username');
+      if (!mounted) return;
       setState(() {
         _isUpvoted = hasUpvoted;
       });
@@ -463,9 +472,7 @@ class _UpvoteButtonState extends State<UpvoteButton>
         _controller.reverse();
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error checking if upvoted: $e');
-      }
+      debugPrint('Error checking if upvoted: $e');
     }
   }
 
@@ -500,6 +507,7 @@ class _UpvoteButtonState extends State<UpvoteButton>
     try {
       await tournamentService.upvoteTournament(
           widget.tournament.id, 'username');
+      if (!mounted) return;
       setState(() {
         _isUpvoted = !_isUpvoted;
       });
@@ -513,9 +521,8 @@ class _UpvoteButtonState extends State<UpvoteButton>
             backgroundColor: Colors.red);
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Upvote failed: $e');
-      }
+      debugPrint('Upvote failed: $e');
+      if (!mounted) return;
       showNotificationToast(context, 'Failed to change upvote status: $e',
           backgroundColor: Colors.red);
     }
@@ -563,8 +570,7 @@ class _UpvoteButtonState extends State<UpvoteButton>
             ),
           ),
           const SizedBox(width: 4),
-          Text(
-              '${widget.tournament.upvotes + (_isUpvoted ? 1 : 0)}'), // Affiche le nombre de upvotes
+          Text('${widget.tournament.upvotes + (_isUpvoted ? 1 : 0)}'),
         ],
       ),
     );
