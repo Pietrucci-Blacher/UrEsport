@@ -1,9 +1,9 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/game_service.dart';
-import 'package:dio/dio.dart';
-import 'package:intl/intl.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 
 class GameDetailPage extends StatefulWidget {
@@ -12,10 +12,10 @@ class GameDetailPage extends StatefulWidget {
   const GameDetailPage({super.key, required this.game});
 
   @override
-  _GameDetailPageState createState() => _GameDetailPageState();
+  GameDetailPageState createState() => GameDetailPageState();
 }
 
-class _GameDetailPageState extends State<GameDetailPage> {
+class GameDetailPageState extends State<GameDetailPage> {
   late Future<List<Tournament>> _futureTournaments;
   final GameService _gameService = GameService(Dio());
 
