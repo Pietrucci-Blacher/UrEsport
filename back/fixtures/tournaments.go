@@ -7,14 +7,14 @@ import (
 	"time"
 )
 
-func LoadTournaments() error {
+func LoadTournaments(games []models.Game) error {
 	if err := models.ClearTournaments(); err != nil {
 		return err
 	}
 
 	for i := 0; i < TOURNAMENT_NB; i++ {
 		owner := rand.Intn(USER_NB-1) + 1
-		game := rand.Intn(GAME_NB-1) + 1
+		tournamentGame := games[rand.Intn(len(games))]
 
 		tournament := models.Tournament{
 			Name:        fake.Lorem().Word(),
@@ -27,7 +27,7 @@ func LoadTournaments() error {
 			OwnerID:     owner,
 			Image:       fmt.Sprintf("https://picsum.photos/seed/%d/200/300", i),
 			Private:     fake.Bool(),
-			GameID:      game,
+			GameID:      tournamentGame.ID,
 			NbPlayer:    TEAM_MEMBERS_NB + 1,
 		}
 
@@ -81,7 +81,7 @@ func addUpvotesToTournament(tournamentID int) error {
 		return err
 	}
 
-	for i := 0; i < rand.Intn(20)+1; i++ { // 1 to 4 upvotes
+	for i := 0; i < rand.Intn(20)+1; i++ { // 1 to 20 upvotes
 		userID := rand.Intn(USER_NB-1) + 1
 		if err := tournament.AddUpvote(userID); err != nil {
 			if err.Error() == "User has already upvoted this tournament" {

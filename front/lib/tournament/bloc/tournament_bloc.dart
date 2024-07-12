@@ -14,8 +14,10 @@ class TournamentBloc extends Bloc<TournamentEvent, TournamentState> {
           limit: event.limit,
           page: event.page,
         );
+        print('Fetched ${tournaments.length} tournaments');
         emit(TournamentLoadSuccess(tournaments: tournaments));
-      } catch (_) {
+      } catch (e) {
+        print('Error loading tournaments: $e');
         emit(TournamentLoadFailure());
       }
     });

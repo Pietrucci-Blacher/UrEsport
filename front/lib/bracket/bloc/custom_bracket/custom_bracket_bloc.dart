@@ -19,26 +19,6 @@ class BracketBloc extends Bloc<BracketEvent, BracketState> {
         emit(const BracketError("Failed to load custom brackets"));
       }
     });
-
-    // on<WebsocketBracket>((event, emit) {
-    //   ws.on('match:update', (socket, data) async {
-    //     final match = Match.fromJson(data);
-    //     print('Match updated: ${match.toJson()}');
-    //     emit(BracketUpdate(match));
-    //   });
-
-    //   ws.on('error', (socket, message) {
-    //     emit(BracketError(message));
-    //   });
-
-    //   ws.on('info', (socket, message) {
-    //     print('Info: $message');
-    //   });
-
-    //   ws.emit('tournament:add-to-room', {
-    //     'tournament_id': 1,
-    //   });
-    // });
   }
 
   List<String> _initializeRoundNames() {

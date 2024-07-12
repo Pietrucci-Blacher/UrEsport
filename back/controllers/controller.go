@@ -261,15 +261,14 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Get[*models.Tournament]("tournament"),
 				GetRatings,
 			)
-			tournaments.POST("/:tournament/rating",
-				middlewares.Get[*models.Tournament]("tournament"),
-				middlewares.Validate[models.CreateRatingDto](),
-				GetRating,
-			)
 			tournaments.GET("/:tournament/ratings/:rating",
 				middlewares.Get[*models.Tournament]("tournament"),
 				middlewares.Get[*models.Rating]("rating"),
 				GetRatingById,
+			)
+			tournaments.GET("/:tournament/rating",
+				middlewares.Get[*models.Tournament]("tournament"),
+				GetRating,
 			)
 			tournaments.POST("/:tournament/ratings",
 				middlewares.IsLoggedIn(true),
@@ -399,6 +398,10 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Get[*models.Game]("game"),
 				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
 				UploadGameImage,
+			)
+			games.GET("/:game/tournaments",
+				middlewares.Get[*models.Game]("game"),
+				GetTournamentsByGame,
 			)
 		}
 
