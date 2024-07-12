@@ -127,9 +127,9 @@ class Owner {
 class Team {
   final int id;
   final String name;
-  final List<Member>? members;
-  final List<Tournament>? tournaments;
-  final Owner owner;
+  final List<dynamic> members; // Utiliser List<dynamic> pour les membres
+  final List<dynamic> tournaments; // Utiliser List<dynamic> pour les tournois
+  final Map<String, dynamic> owner; // Utiliser Map pour le propriétaire
   final int ownerId;
   final bool isPrivate;
   final DateTime createdAt;
@@ -138,8 +138,8 @@ class Team {
   Team({
     required this.id,
     required this.name,
-    this.members,
-    this.tournaments,
+    required this.members,
+    required this.tournaments,
     required this.owner,
     required this.ownerId,
     required this.isPrivate,
@@ -151,13 +151,9 @@ class Team {
     return Team(
       id: json['id'],
       name: json['name'],
-      members: (json['members'] as List?)
-          ?.map((member) => Member.fromJson(member))
-          .toList(),
-      tournaments: (json['tournaments'] as List?)
-          ?.map((tournament) => Tournament.fromJson(tournament))
-          .toList(),
-      owner: Owner.fromJson(json['owner']),
+      members: json['members'] ?? [], // Assurer une liste vide si null
+      tournaments: json['tournaments'] ?? [], // Assurer une liste vide si null
+      owner: json['owner'] ?? {}, // Assurer une map vide si null
       ownerId: json['owner_id'],
       isPrivate: json['private'],
       createdAt: DateTime.parse(json['created_at']),
@@ -169,10 +165,9 @@ class Team {
     return {
       'id': id,
       'name': name,
-      'members': members?.map((member) => member.toJson()).toList(),
-      'tournaments':
-          tournaments?.map((tournament) => tournament.toJson()).toList(),
-      'owner': owner.toJson(),
+      'members': members, // Pas besoin de transformer en JSON
+      'tournaments': tournaments, // Pas besoin de transformer en JSON
+      'owner': owner, // Pas besoin de transformer en JSON
       'owner_id': ownerId,
       'private': isPrivate,
       'created_at': createdAt.toIso8601String(),
