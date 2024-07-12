@@ -12,8 +12,6 @@ import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/rating.dart';
 
-import 'package:uresport/core/models/user.dart';
-
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
 
@@ -28,7 +26,6 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
   bool _isLoading = true;
   User? _currentUser;
   List<tournament_model.Team> _teams = [];
-  tournament_model.Team? _selectedTeam;
 
   @override
   void initState() {
@@ -154,7 +151,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                             ),
                             title: Text(team.name),
                             onTap: () async {
-                              Navigator.pop(context); // Fermez le modal
+                              Navigator.pop(context); // Close the modal
                               await _sendInvite(team.id, team.name);
                             },
                           );
@@ -175,10 +172,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     try {
       await tournamentService.inviteTeamToTournament(
           widget.tournament.id, teamId, teamName);
+      if (!mounted) return;
       showNotificationToast(context, 'Invitation sent',
           backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error sending invitation: $e');
+      if (!mounted) return;
       showNotificationToast(context, 'Failed to send invitation: $e',
           backgroundColor: Colors.red);
     }
@@ -328,7 +327,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                               const SizedBox(height: 4),
                               UpvoteButton(
                                   tournament: widget
-                                      .tournament), // Utiliser le widget personnalisé
+                                      .tournament), // Custom widget for upvote
                             ],
                           ),
                         ),
@@ -388,19 +387,16 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Text(
-                                      'Voir tous les participants',
+                                      'View all participants',
                                       style: TextStyle(
-                                        color: Theme.of(context)
-                                            .primaryColor, // Couleur du texte cliquable
-                                        decoration: TextDecoration
-                                            .underline, // Souligner le texte
+                                        color: Theme.of(context).primaryColor,
+                                        decoration: TextDecoration.underline,
                                       ),
                                     ),
                                     const SizedBox(width: 8),
                                     Icon(
                                       Icons.arrow_forward,
-                                      color: Theme.of(context)
-                                          .primaryColor, // Couleur de l'icône
+                                      color: Theme.of(context).primaryColor,
                                     ),
                                   ],
                                 ),
@@ -417,10 +413,10 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                           onPressed: () {
                             if (widget.tournament.isPrivate) {
                               _sendJoinRequest(context, widget.tournament.id,
-                                  1); // Remplacez 1 par l'ID de l'équipe réelle
+                                  1); // Replace 1 with actual team ID
                             } else {
                               _joinTournament(context, widget.tournament.id,
-                                  1); // Remplacez 1 par l'ID de l'équipe réelle
+                                  1); // Replace 1 with actual team ID
                             }
                           },
                           style: ElevatedButton.styleFrom(
@@ -431,8 +427,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                                 horizontal: 32, vertical: 16),
                           ),
                           child: Text(widget.tournament.isPrivate
-                              ? 'Envoyer demande pour rejoindre'
-                              : 'Rejoindre le tournoi'),
+                              ? 'Send Join Request'
+                              : 'Join Tournament'),
                         ),
                       ),
                     const SizedBox(height: 16),
@@ -460,7 +456,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     try {
       await tournamentService.joinTournament(tournamentId, teamId);
       if (!mounted) return;
-      _showNotificationToast('Vous avez bien rejoint le tournoi', Colors.green);
+      _showNotificationToast('You have joined the tournament', Colors.green);
       setState(() {
         _hasJoined = true;
       });
@@ -481,26 +477,26 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
         final errorMessage = e.response?.data['error'];
         if (errorMessage == 'Team already in this tournament') {
           _showNotificationToast(
-              'Vous avez déjà rejoint le tournoi', Colors.red);
+              'You have already joined the tournament', Colors.red);
           setState(() {
             _hasJoined = true;
           });
         } else {
           _showNotificationToast(
-              'Erreur lors du join: $errorMessage', Colors.red);
+              'Error during join: $errorMessage', Colors.red);
         }
       } else {
-        _showNotificationToast('Erreur lors du join: ${e.message}', Colors.red);
+        _showNotificationToast('Error during join: ${e.message}', Colors.red);
       }
     } else {
-      _showNotificationToast('Erreur pour rejoindre le tournoi', Colors.red);
+      _showNotificationToast('Error joining tournament', Colors.red);
     }
   }
 
   Future<void> _sendJoinRequest(
       BuildContext context, int tournamentId, int teamId) async {
     if (!mounted) return;
-    _showNotificationToast('Demande pour rejoindre envoyée', Colors.orange);
+    _showNotificationToast('Join request sent', Colors.orange);
   }
 }
 
@@ -592,11 +588,11 @@ class UpvoteButtonState extends State<UpvoteButton>
       });
       if (_isUpvoted) {
         _controller.forward();
-        showNotificationToast(context, 'Upvote ajouté',
+        showNotificationToast(context, 'Upvote added',
             backgroundColor: Colors.green);
       } else {
         _controller.reverse();
-        showNotificationToast(context, 'Upvote retiré',
+        showNotificationToast(context, 'Upvote removed',
             backgroundColor: Colors.red);
       }
     } catch (e) {
