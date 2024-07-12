@@ -4,14 +4,13 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/rating.dart';
-import 'package:uresport/game/screens/game_detail.dart'; // Importation de GameDetailPage
-
-import '../../core/models/user.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
   final Tournament tournament;

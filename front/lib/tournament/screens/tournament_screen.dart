@@ -24,7 +24,6 @@ class TournamentScreen extends StatelessWidget {
         length: 3,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Tournaments'),
             bottom: const TabBar(
               tabs: [
                 Tab(text: 'Liste Tournois'),
