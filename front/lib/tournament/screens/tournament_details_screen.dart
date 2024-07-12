@@ -24,7 +24,6 @@ class TournamentDetailsScreen extends StatefulWidget {
 
 class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
   bool _hasJoined = false;
-  bool _isLoading = true;
   User? _currentUser;
   List<tournament_model.Team> _teams = [];
 
@@ -45,16 +44,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
       if (!mounted) return;
       setState(() {
         _hasJoined = hasJoined;
-        _isLoading = false;
       });
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Error checking if joined: $e');
       }
-      if (!mounted) return;
-      setState(() {
-        _isLoading = false;
-      });
     }
   }
 
@@ -81,15 +75,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
       if (!mounted) return;
       setState(() {
         _teams = teams;
-        _isLoading = false;
       });
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Error loading teams: $e');
       }
-      setState(() {
-        _isLoading = false;
-      });
       showNotificationToast(context, 'Error loading teams: $e',
           backgroundColor: Colors.red);
     }
@@ -190,9 +180,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
 
     try {
       await tournamentService.generateBracket(widget.tournament.id);
+      if (!mounted) return;
       showNotificationToast(context, 'Bracket generated', backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error generating bracket: $e');
+      if (!mounted) return;
       showNotificationToast(context, 'Failed to generate bracket: $e', backgroundColor: Colors.red);
     }
   }

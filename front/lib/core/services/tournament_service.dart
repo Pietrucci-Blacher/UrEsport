@@ -15,6 +15,7 @@ abstract class ITournamentService {
   Future<void> inviteTeamToTournament(
       int tournamentId, int teamId, String teamName);
   Future<List<Team>> fetchTeams();
+  Future<Tournament> fetchTournamentById(int tournamentId);
   Future<void> generateBracket(int tournamentId);
 }
 
@@ -349,6 +350,7 @@ class TournamentService implements ITournamentService {
     }
   }
 
+  @override
   Future<Tournament> fetchTournamentById(int tournamentId) async {
     try {
       final response = await _dio
@@ -373,6 +375,7 @@ class TournamentService implements ITournamentService {
     }
   }
 
+  @override
   Future<void> generateBracket(int tournamentId) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
