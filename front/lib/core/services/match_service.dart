@@ -3,7 +3,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/match.dart';
 
 abstract class IMatchService {
-  Future<List<Match>> fetchMatches({int? limit, int? page});
+  Future<List<Match>> fetchMatches({int? limit, int? page, int? tournamentId});
 }
 
 class MatchService implements IMatchService {
@@ -12,7 +12,7 @@ class MatchService implements IMatchService {
   MatchService(this._dio);
 
   @override
-  Future<List<Match>> fetchMatches({int? limit, int? page}) async {
+  Future<List<Match>> fetchMatches({int? limit, int? page, int? tournamentId}) async {
     try {
       final Map<String, dynamic> queryParameters = {};
       if (limit != null) {
@@ -20,6 +20,9 @@ class MatchService implements IMatchService {
       }
       if (page != null) {
         queryParameters['page'] = page;
+      }
+      if (tournamentId != null) {
+        queryParameters['where[tournament_id]'] = tournamentId;
       }
 
       final response = await _dio.get(

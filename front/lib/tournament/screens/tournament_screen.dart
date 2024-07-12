@@ -20,73 +20,55 @@ class TournamentScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => TournamentBloc(context.read<ITournamentService>())
         ..add(const LoadTournaments()),
-      child: DefaultTabController(
-        length: 3,
-        child: Scaffold(
-          appBar: AppBar(
-            bottom: const TabBar(
-              tabs: [
-                Tab(text: 'Liste Tournois'),
-                Tab(text: 'Custom Bracket'),
-                Tab(text: 'Custom Poules'),
-              ],
-            ),
-          ),
-          body: TabBarView(
-            children: [
-              RefreshIndicator(
-                onRefresh: () async {
-                  context.read<TournamentBloc>().add(const LoadTournaments());
-                },
-                child: BlocBuilder<TournamentBloc, TournamentState>(
-                  builder: (context, state) {
-                    if (state is TournamentInitial) {
-                      context
-                          .read<TournamentBloc>()
-                          .add(const LoadTournaments());
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is TournamentLoadInProgress) {
-                      return const Center(child: CircularProgressIndicator());
-                    } else if (state is TournamentLoadSuccess) {
-                      return Stack(
-                        children: [
-                          ListView.builder(
-                            itemCount: state.tournaments.length,
-                            itemBuilder: (context, index) {
-                              final tournament = state.tournaments[index];
-                              return _buildTournamentCard(context, tournament);
-                            },
-                          ),
-                          Positioned(
-                            bottom: 16,
-                            right: 16,
-                            child: FloatingActionButton(
-                              heroTag: 'map-fab',
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => TournamentMapWidget(
-                                        tournaments: state.tournaments),
-                                  ),
-                                );
-                              },
-                              child: const Icon(Icons.map),
+      child: Scaffold(
+        body: RefreshIndicator(
+          onRefresh: () async {
+            context.read<TournamentBloc>().add(const LoadTournaments());
+          },
+          child: BlocBuilder<TournamentBloc, TournamentState>(
+            builder: (context, state) {
+              if (state is TournamentInitial) {
+                context
+                    .read<TournamentBloc>()
+                    .add(const LoadTournaments());
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is TournamentLoadInProgress) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is TournamentLoadSuccess) {
+                return Stack(
+                  children: [
+                    ListView.builder(
+                      itemCount: state.tournaments.length,
+                      itemBuilder: (context, index) {
+                        final tournament = state.tournaments[index];
+                        return _buildTournamentCard(context, tournament);
+                      },
+                    ),
+                    Positioned(
+                      bottom: 16,
+                      right: 16,
+                      child: FloatingActionButton(
+                        heroTag: 'map-fab',
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => TournamentMapWidget(
+                                  tournaments: state.tournaments),
                             ),
-                          ),
-                        ],
-                      );
-                    } else if (state is TournamentLoadFailure) {
-                      return const Center(
-                          child: Text('Failed to load tournaments'));
-                    }
-                    return const Center(child: Text('Unknown state'));
-                  },
-                ),
-              ),
-              const TournamentBracketPage(),
-              const CustomPoulesPage(),
-            ],
+                          );
+                        },
+                        child: const Icon(Icons.map),
+                      ),
+                    ),
+                  ],
+                );
+              } else if (state is TournamentLoadFailure) {
+                return const Center(
+                    child: Text('Failed to load tournaments'));
+              }
+              return const Center(child: Text('Unknown state'));
+            },
           ),
         ),
       ),

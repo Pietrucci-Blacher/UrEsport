@@ -9,11 +9,12 @@ abstract class BracketEvent extends Equatable {
 
 class LoadBracket extends BracketEvent {
   final int? limit;
+  final int tournamentId;
 
-  const LoadBracket({this.limit});
+  const LoadBracket({this.limit, required this.tournamentId});
 
   @override
-  List<Object?> get props => [limit];
+  List<Object?> get props => [limit, tournamentId];
 }
 
 class WebsocketBracket extends BracketEvent {}

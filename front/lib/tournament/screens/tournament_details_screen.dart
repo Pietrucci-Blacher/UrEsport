@@ -11,8 +11,7 @@ import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/rating.dart';
-
-import 'package:uresport/core/models/user.dart';
+import 'package:uresport/bracket/screens/custom_bracket.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
@@ -184,270 +183,316 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     }
   }
 
+  Future<void> generateBracket() async {
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
+
+    try {
+      await tournamentService.generateBracket(widget.tournament.id);
+      showNotificationToast(context, 'Bracket generated', backgroundColor: Colors.green);
+    } catch (e) {
+      debugPrint('Error generating bracket: $e');
+      showNotificationToast(context, 'Failed to generate bracket: $e', backgroundColor: Colors.red);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final DateFormat dateFormat = DateFormat.yMMMd();
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.tournament.name),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Details'),
+              Tab(text: 'Bracket'),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _pageDetail(),
+            TournamentBracketPage(tournamentId: widget.tournament.id),
+          ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: _showTeamsModal,
+          child: const Icon(Icons.list),
+        ),
+      )
+    );
+  }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.tournament.name),
-      ),
-      body: _isLoading || _currentUser == null
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Hero(
-                      tag: 'tournamentHero${widget.tournament.id}',
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12.0),
-                        child: Image.network(
-                          widget.tournament.image,
-                          fit: BoxFit.cover,
-                          width: double.infinity,
-                          height: 200,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Expanded(
-                          child: Text(
-                            widget.tournament.name,
-                            style: Theme.of(context)
-                                .textTheme
-                                .headlineMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                        Icon(
-                          widget.tournament.isPrivate
-                              ? Icons.lock
-                              : Icons.lock_open,
-                          color: widget.tournament.isPrivate
-                              ? Colors.red
-                              : Colors.green,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      'Description:',
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      widget.tournament.description,
-                      style: Theme.of(context).textTheme.bodyLarge,
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const Icon(Icons.location_on, color: Colors.blue),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            'Location: ${widget.tournament.location}',
-                            style: Theme.of(context).textTheme.titleMedium,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.videogame_asset, color: Colors.blue),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => GameDetailPage(
-                                      game: widget.tournament.game),
-                                ),
-                              );
-                            },
-                            child: Text(
-                              'Game: ${widget.tournament.game.name}',
-                              style: Theme.of(context)
-                                  .textTheme
-                                  .titleMedium
-                                  ?.copyWith(
-                                    color: Theme.of(context).primaryColor,
-                                    decoration: TextDecoration.underline,
-                                  ),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        const Icon(Icons.date_range, color: Colors.blue),
-                        const SizedBox(width: 8),
-                        Text(
-                          'Start Date: ${dateFormat.format(widget.tournament.startDate)}',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        const Icon(Icons.date_range, color: Colors.blue),
-                        const SizedBox(width: 8),
-                        Text(
-                          'End Date: ${dateFormat.format(widget.tournament.endDate)}',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    const Divider(),
-                    const SizedBox(height: 16),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Upvotes:',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: 4),
-                              UpvoteButton(
-                                  tournament: widget
-                                      .tournament), // Utiliser le widget personnalisé
-                            ],
-                          ),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                'Participants:',
-                                style: Theme.of(context).textTheme.titleMedium,
-                              ),
-                              const SizedBox(height: 4),
-                              Column(
-                                children: List.generate(
-                                    widget.tournament.teams.length, (index) {
-                                  final team = widget.tournament.teams[index];
-                                  return Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 4.0),
-                                    child: Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 16,
-                                          backgroundColor: Colors.blueAccent,
-                                          child: Text(
-                                            team.name[0],
-                                            style: const TextStyle(
-                                                color: Colors.white),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          team.name,
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge,
-                                        ),
-                                      ],
-                                    ),
-                                  );
-                                }),
-                              ),
-                              const SizedBox(height: 8),
-                              GestureDetector(
-                                onTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          TournamentParticipantsScreen(
-                                              tournament: widget.tournament),
-                                    ),
-                                  );
-                                },
-                                child: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Text(
-                                      'Voir tous les participants',
-                                      style: TextStyle(
-                                        color: Theme.of(context)
-                                            .primaryColor, // Couleur du texte cliquable
-                                        decoration: TextDecoration
-                                            .underline, // Souligner le texte
-                                      ),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Icon(
-                                      Icons.arrow_forward,
-                                      color: Theme.of(context)
-                                          .primaryColor, // Couleur de l'icône
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 16),
-                    if (!_hasJoined)
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            if (widget.tournament.isPrivate) {
-                              _sendJoinRequest(context, widget.tournament.id,
-                                  1); // Remplacez 1 par l'ID de l'équipe réelle
-                            } else {
-                              _joinTournament(context, widget.tournament.id,
-                                  1); // Remplacez 1 par l'ID de l'équipe réelle
-                            }
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(20),
-                            ),
-                            padding: const EdgeInsets.symmetric(
-                                horizontal: 32, vertical: 16),
-                          ),
-                          child: Text(widget.tournament.isPrivate
-                              ? 'Envoyer demande pour rejoindre'
-                              : 'Rejoindre le tournoi'),
-                        ),
-                      ),
-                    const SizedBox(height: 16),
-                    RatingWidget(
-                      tournamentId: widget.tournament.id,
-                      showCustomToast: showNotificationToast,
-                      userId: _currentUser?.id ?? 0,
-                    ),
-                  ],
+  Widget _pageDetail() {
+    final DateFormat dateFormat = DateFormat.yMMMd();
+    var isOwner = widget.tournament.ownerId == _currentUser?.id;
+
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Hero(
+              tag: 'tournamentHero${widget.tournament.id}',
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(12.0),
+                child: Image.network(
+                  widget.tournament.image,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 200,
                 ),
               ),
             ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showTeamsModal,
-        child: const Icon(Icons.list),
+            const SizedBox(height: 16),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                Expanded(
+                  child: Text(
+                    widget.tournament.name,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headlineMedium
+                        ?.copyWith(fontWeight: FontWeight.bold),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+                Icon(
+                  widget.tournament.isPrivate
+                      ? Icons.lock
+                      : Icons.lock_open,
+                  color: widget.tournament.isPrivate
+                      ? Colors.red
+                      : Colors.green,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              'Description:',
+              style: Theme.of(context).textTheme.titleMedium,
+            ),
+            const SizedBox(height: 4),
+            Text(
+              widget.tournament.description,
+              style: Theme.of(context).textTheme.bodyLarge,
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Icon(Icons.location_on, color: Colors.blue),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    'Location: ${widget.tournament.location}',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                const Icon(Icons.videogame_asset, color: Colors.blue),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => GameDetailPage(
+                              game: widget.tournament.game),
+                        ),
+                      );
+                    },
+                    child: Text(
+                      'Game: ${widget.tournament.game.name}',
+                      style: Theme.of(context)
+                          .textTheme
+                          .titleMedium
+                          ?.copyWith(
+                            color: Theme.of(context).primaryColor,
+                            decoration: TextDecoration.underline,
+                          ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                const Icon(Icons.date_range, color: Colors.blue),
+                const SizedBox(width: 8),
+                Text(
+                  'Start Date: ${dateFormat.format(widget.tournament.startDate)}',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            const SizedBox(height: 4),
+            Row(
+              children: [
+                const Icon(Icons.date_range, color: Colors.blue),
+                const SizedBox(width: 8),
+                Text(
+                  'End Date: ${dateFormat.format(widget.tournament.endDate)}',
+                  style: Theme.of(context).textTheme.bodyLarge,
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            const Divider(),
+            const SizedBox(height: 16),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Upvotes:',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      UpvoteButton(
+                          tournament: widget
+                              .tournament), // Utiliser le widget personnalisé
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Participants:',
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Column(
+                        children: List.generate(
+                            widget.tournament.teams.length, (index) {
+                          final team = widget.tournament.teams[index];
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 4.0),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  radius: 16,
+                                  backgroundColor: Colors.blueAccent,
+                                  child: Text(
+                                    team.name[0],
+                                    style: const TextStyle(
+                                        color: Colors.white),
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Text(
+                                  team.name,
+                                  style: Theme.of(context)
+                                      .textTheme
+                                      .bodyLarge,
+                                ),
+                              ],
+                            ),
+                          );
+                        }),
+                      ),
+                      const SizedBox(height: 8),
+                      GestureDetector(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  TournamentParticipantsScreen(
+                                      tournament: widget.tournament),
+                            ),
+                          );
+                        },
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              'Voir tous les participants',
+                              style: TextStyle(
+                                color: Theme.of(context)
+                                    .primaryColor, // Couleur du texte cliquable
+                                decoration: TextDecoration
+                                    .underline, // Souligner le texte
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.arrow_forward,
+                              color: Theme.of(context)
+                                  .primaryColor, // Couleur de l'icône
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            if (isOwner)
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    generateBracket();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
+                  ),
+                  child: const Text('Générer le bracket'),
+                ),
+              ),
+            if (!_hasJoined)
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (widget.tournament.isPrivate) {
+                      _sendJoinRequest(context, widget.tournament.id,
+                          1); // Remplacez 1 par l'ID de l'équipe réelle
+                    } else {
+                      _joinTournament(context, widget.tournament.id,
+                          1); // Remplacez 1 par l'ID de l'équipe réelle
+                    }
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
+                  ),
+                  child: Text(widget.tournament.isPrivate
+                      ? 'Envoyer demande pour rejoindre'
+                      : 'Rejoindre le tournoi'),
+                ),
+              ),
+            const SizedBox(height: 16),
+            RatingWidget(
+              tournamentId: widget.tournament.id,
+              showCustomToast: showNotificationToast,
+              userId: _currentUser?.id ?? 0,
+            ),
+          ],
+        ),
       ),
     );
   }

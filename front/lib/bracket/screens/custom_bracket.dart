@@ -12,23 +12,22 @@ import 'package:uresport/core/services/bracket_service.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 
 class TournamentBracketPage extends StatelessWidget {
-  const TournamentBracketPage({super.key});
+  final int tournamentId;
+
+  const TournamentBracketPage({super.key, required this.tournamentId});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BracketBloc(MatchService(Dio()))..add(const LoadBracket()),
+      create: (_) => BracketBloc(MatchService(Dio()))..add(LoadBracket(tournamentId: tournamentId)),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Tournament Bracket'),
-        ),
         body: BlocBuilder<BracketBloc, BracketState>(
           builder: (context, state) {
             if (state is BracketLoading) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is BracketLoaded) {
               BracketService bracket = BracketService(state.matches);
-              return BracketContent(bracket: bracket, roundNames: state.roundNames);
+              return BracketContent(bracket: bracket, roundNames: state.roundNames, tournamentId: tournamentId);
             } else if (state is BracketUpdate) {
               return const Center(child: Text('Bracket updated'));
             } else if (state is BracketError) {
@@ -46,8 +45,9 @@ class TournamentBracketPage extends StatelessWidget {
 class BracketContent extends StatefulWidget {
   final BracketService bracket;
   final List<String> roundNames;
+  final int tournamentId;
 
-  const BracketContent({required this.bracket, required this.roundNames, super.key});
+  const BracketContent({required this.bracket, required this.roundNames, required this.tournamentId, super.key});
 
   @override
   BracketContentState createState() => BracketContentState();
@@ -70,9 +70,8 @@ class BracketContentState extends State<BracketContent> {
       widget.bracket.updateMatch(match);
     });
 
-    // TODO : Add tournament real id
     ws.emit('tournament:add-to-room', {
-      'tournament_id': 1,
+      'tournament_id': widget.tournamentId,
     });
   }
 
@@ -82,10 +81,9 @@ class BracketContentState extends State<BracketContent> {
     return Column(
       children: [
         SizedBox(
-          height: 130, // Ajustez la hauteur selon vos besoins
+          height: 130,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
-            // itemCount: widget.roundNames.length,
             itemCount: widget.bracket.getBracket().length,
             itemBuilder: (context, index) => GestureDetector(
               onTap: () {

@@ -13,7 +13,11 @@ class BracketBloc extends Bloc<BracketEvent, BracketState> {
       emit(BracketLoading());
       try {
         List<String> roundNames = _initializeRoundNames();
-        final matches = await matchService.fetchMatches();
+        final matches = await matchService.fetchMatches(tournamentId: event.tournamentId);
+        if (matches.isEmpty) {
+          emit(const BracketError("No matches found"));
+          return;
+        }
         emit(BracketLoaded(matches, roundNames));
       } catch (e) {
         emit(const BracketError("Failed to load custom brackets"));
