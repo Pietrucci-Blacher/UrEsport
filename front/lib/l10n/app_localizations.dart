@@ -605,6 +605,30 @@ class AppLocalizations {
       args: [count],
     );
   }
+
+  String get mustBeLoggedIn {
+    return Intl.message(
+      'You must be logged in to view your tournaments',
+      name: 'mustBeLoggedIn',
+      desc: 'Message when no tournaments are available',
+    );
+  }
+
+  String get listAllTournaments {
+    return Intl.message(
+      'List tournaments',
+      name: 'listAllTournaments ',
+      desc: 'List Tournaments button text',
+    );
+  }
+
+  String get listMyTournaments {
+    return Intl.message(
+      'My tournaments',
+      name: 'listMyTournaments',
+      desc: 'My Tournaments button text',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:uresport/bracket/screens/custom_bracket.dart';
-import 'package:uresport/bracket/screens/custom_poules_page.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/shared/map/map.dart';
@@ -11,26 +9,90 @@ import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
+import 'package:uresport/core/models/user.dart';
+import 'package:provider/provider.dart';
+import 'package:uresport/core/services/auth_service.dart';
+import 'package:flutter/foundation.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
-class TournamentScreen extends StatelessWidget {
+class TournamentScreen extends StatefulWidget  {
   const TournamentScreen({super.key});
 
   @override
+  TournamentScreenState createState() => TournamentScreenState();
+}
+
+class TournamentScreenState extends State<TournamentScreen> {
+  User? _currentUser;
+
+  Future<void> _loadCurrentUser() async {
+    final authService = Provider.of<IAuthService>(context, listen: false);
+    try {
+      final user = await authService.getUser();
+      if (!mounted) return;
+      setState(() {
+        _currentUser = user;
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Error loading current user: $e');
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _loadCurrentUser();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: TabBar(
+            tabs: [
+              Tab(text: l.listAllTournaments),
+              Tab(text: l.listMyTournaments),
+            ],
+          ),
+        ),
+        body: TabBarView(
+          children: [
+            _buildTournamentList(context, false),
+            _buildTournamentList(context, true),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTournamentList(BuildContext context, bool isOwner) {
+    var ownerId = isOwner ? _currentUser?.id : null;
+    AppLocalizations l = AppLocalizations.of(context);
+
+    if (isOwner && ownerId == null) {
+      return Center(child: Text(l.mustBeLoggedIn));
+    }
+
     return BlocProvider(
       create: (context) => TournamentBloc(context.read<ITournamentService>())
-        ..add(const LoadTournaments()),
+        ..add(LoadTournaments(ownerId: ownerId)),
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
-            context.read<TournamentBloc>().add(const LoadTournaments());
+            context.read<TournamentBloc>().add(LoadTournaments(ownerId: ownerId));
           },
           child: BlocBuilder<TournamentBloc, TournamentState>(
             builder: (context, state) {
               if (state is TournamentInitial) {
                 context
                     .read<TournamentBloc>()
-                    .add(const LoadTournaments());
+                    .add(LoadTournaments(ownerId: ownerId));
                 return const Center(child: CircularProgressIndicator());
               } else if (state is TournamentLoadInProgress) {
                 return const Center(child: CircularProgressIndicator());

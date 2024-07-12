@@ -5,7 +5,7 @@ import 'package:uresport/core/models/tournament.dart';
 import 'cache_service.dart';
 
 abstract class ITournamentService {
-  Future<List<Tournament>> fetchTournaments({int? limit, int? page});
+  Future<List<Tournament>> fetchTournaments({int? limit, int? page, int? ownerId});
   Future<void> inviteUserToTournament(String tournamentId, String username);
   Future<void> upvoteTournament(int tournamentId, String username);
   Future<bool> hasUpvoted(int tournamentId, String username);
@@ -24,7 +24,7 @@ class TournamentService implements ITournamentService {
   TournamentService(this._dio);
 
   @override
-  Future<List<Tournament>> fetchTournaments({int? limit, int? page}) async {
+  Future<List<Tournament>> fetchTournaments({int? limit, int? page, int? ownerId}) async {
     try {
       final Map<String, dynamic> queryParameters = {};
       if (limit != null) {
@@ -32,6 +32,9 @@ class TournamentService implements ITournamentService {
       }
       if (page != null) {
         queryParameters['page'] = page;
+      }
+      if (ownerId != null) {
+        queryParameters['where[owner_id]'] = ownerId;
       }
 
       final response = await _dio.get(
