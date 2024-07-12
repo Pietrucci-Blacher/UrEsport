@@ -1,14 +1,18 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:uresport/core/services/auth_service.dart';
-import 'auth_event.dart';
-import 'auth_state.dart';
 import 'package:uresport/core/models/login_request.dart';
 import 'package:uresport/core/models/register_request.dart';
+import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/cache_service.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 
+import 'auth_event.dart';
+import 'auth_state.dart';
+
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final IAuthService authService;
+  final ValueNotifier<String?> profileImageNotifier =
+      ValueNotifier<String?>(null);
 
   AuthBloc(this.authService) : super(AuthInitial()) {
     on<AuthCheckRequested>((event, emit) async {
@@ -135,6 +139,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             .copyWith(profileImageUrl: event.imageUrl);
         await authService.updateUserInfo(
             updatedUser.id, {'profile_image_url': event.imageUrl});
+        profileImageNotifier.value = event.imageUrl;
         emit(AuthAuthenticated(updatedUser));
       }
     });

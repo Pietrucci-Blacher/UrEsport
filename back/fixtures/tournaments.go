@@ -7,14 +7,14 @@ import (
 	"time"
 )
 
-func LoadTournaments() error {
+func LoadTournaments(games []models.Game) error {
 	if err := models.ClearTournaments(); err != nil {
 		return err
 	}
 
 	for i := 0; i < TOURNAMENT_NB; i++ {
 		owner := rand.Intn(USER_NB-1) + 1
-		game := rand.Intn(GAME_NB-1) + 1
+		tournamentGame := games[rand.Intn(len(games))]
 
 		tournament := models.Tournament{
 			Name:        fake.Lorem().Word(),
@@ -27,7 +27,7 @@ func LoadTournaments() error {
 			OwnerID:     owner,
 			Image:       fmt.Sprintf("https://picsum.photos/seed/%d/200/300", i),
 			Private:     fake.Bool(),
-			GameID:      game,
+			GameID:      tournamentGame.ID,
 			NbPlayer:    TEAM_MEMBERS_NB + 1,
 		}
 
@@ -41,6 +41,9 @@ func LoadTournaments() error {
 			if err := addTeamToTournament(tournament.ID); err != nil {
 				return err
 			}
+		}
+		if err := addUpvotesToTournament(tournament.ID); err != nil {
+			return err
 		}
 	}
 
@@ -68,6 +71,26 @@ func addTeamToTournament(tournamentID int) error {
 	}
 
 	fmt.Printf("Team %s added to tournament %s\n", team.Name, tournament.Name)
+
+	return nil
+}
+
+func addUpvotesToTournament(tournamentID int) error {
+	var tournament models.Tournament
+	if err := tournament.FindOneById(tournamentID); err != nil {
+		return err
+	}
+
+	for i := 0; i < rand.Intn(20)+1; i++ { // 1 to 20 upvotes
+		userID := rand.Intn(USER_NB-1) + 1
+		if err := tournament.AddUpvote(userID); err != nil {
+			if err.Error() == "User has already upvoted this tournament" {
+				continue // Skip if the user has already upvoted
+			}
+			return err
+		}
+		fmt.Printf("User %d upvoted tournament %s\n", userID, tournament.Name)
+	}
 
 	return nil
 }

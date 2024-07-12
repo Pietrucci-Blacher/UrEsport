@@ -1,10 +1,13 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/game.dart';
-import 'package:flutter/foundation.dart';
+import 'package:uresport/core/models/tournament.dart';
 
 abstract class IGameService {
-  Future<List<Game>> fetchGames({int? limit});
+  Future<List<Game>> fetchGames({int? limit, List<String>? tags});
+  Future<List<Tournament>> fetchTournamentsByGameId(
+      int gameId); // Nouvelle méthode
 }
 
 class GameService implements IGameService {
@@ -13,11 +16,16 @@ class GameService implements IGameService {
   GameService(this._dio);
 
   @override
-  Future<List<Game>> fetchGames({int? limit}) async {
+  Future<List<Game>> fetchGames({int? limit, List<String>? tags}) async {
     try {
+      final queryParams = {
+        if (limit != null) 'limit': limit,
+        if (tags != null && tags.isNotEmpty) 'search[tags]': tags.join(','),
+      };
+
       final response = await _dio.get(
         "${dotenv.env['API_ENDPOINT']}/games",
-        queryParameters: limit != null ? {'limit': limit} : null,
+        queryParameters: queryParams,
       );
 
       if (response.statusCode == 200) {
@@ -31,6 +39,55 @@ class GameService implements IGameService {
         throw DioException(
           requestOptions: response.requestOptions,
           error: 'Failed to load games',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        if (kDebugMode) {
+          print('Dio exception: ${e.message}');
+        }
+        rethrow;
+      } else {
+        if (kDebugMode) {
+          print('Unexpected error: $e');
+        }
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
+  @override
+  Future<List<Tournament>> fetchTournamentsByGameId(int gameId) async {
+    try {
+      final response = await _dio.get(
+        "${dotenv.env['API_ENDPOINT']}/games/$gameId/tournaments",
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data;
+        if (kDebugMode) {
+          print('Response data: $data'); // Log the data
+        }
+        if (data != null) {
+          if (data is List) {
+            return data.map((json) => Tournament.fromJson(json)).toList();
+          } else {
+            if (kDebugMode) {
+              print('Data is not a list');
+            }
+            throw Exception('Unexpected response format');
+          }
+        } else {
+          if (kDebugMode) {
+            print('Data is null');
+          }
+          return []; // Return an empty list if data is null
+        }
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          error: 'Failed to load tournaments',
           type: DioExceptionType.badResponse,
         );
       }

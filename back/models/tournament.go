@@ -2,8 +2,11 @@ package models
 
 import (
 	"challenge/services"
+	"errors"
 	"math"
 	"time"
+
+	"gorm.io/gorm"
 )
 
 type Tournament struct {
@@ -25,6 +28,7 @@ type Tournament struct {
 	NbPlayer    int       `json:"nb_player" gorm:"default:1"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	Upvotes     int       `json:"upvote" gorm:"default:0"`
 }
 
 type CreateTournamentDto struct {
@@ -67,11 +71,11 @@ type SanitizedTournament struct {
 	OwnerID     int             `json:"owner_id"`
 	Owner       SanitizedUser   `json:"owner"`
 	Teams       []SanitizedTeam `json:"teams"`
-	GameID      int             `json:"game_id"`
 	Game        Game            `json:"game"`
 	NbPlayer    int             `json:"nb_player"`
 	CreatedAt   time.Time       `json:"created_at"`
 	UpdatedAt   time.Time       `json:"updated_at"`
+	Upvotes     int             `json:"upvotes"`
 }
 
 func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
@@ -178,11 +182,11 @@ func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {
 		Private:     t.Private,
 		OwnerID:     t.OwnerID,
 		Owner:       t.Owner.Sanitize(false),
-		GameID:      t.GameID,
 		Game:        t.Game,
 		NbPlayer:    t.NbPlayer,
 		CreatedAt:   t.CreatedAt,
 		UpdatedAt:   t.UpdatedAt,
+		Upvotes:     t.Upvotes,
 	}
 
 	if getTeam {
@@ -255,4 +259,43 @@ func (t *Tournament) Delete() error {
 
 func ClearTournaments() error {
 	return DB.Exec("DELETE FROM tournaments").Error
+}
+
+func (t *Tournament) AddUpvote(userID int) error {
+	return DB.Transaction(func(tx *gorm.DB) error {
+		var upvote Upvote
+		err := tx.Where("user_id = ? AND tournament_id = ?", userID, t.ID).First(&upvote).Error
+
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			// Ajouter l'upvote
+			upvote = Upvote{UserID: userID, TournamentID: t.ID}
+			if err := tx.Create(&upvote).Error; err != nil {
+				return err
+			}
+			// Incrémenter le compteur de upvotes
+			if err := tx.Model(&Tournament{}).Where("id = ?", t.ID).UpdateColumn("upvotes", gorm.Expr("upvotes + ?", 1)).Error; err != nil {
+				return err
+			}
+		} else if err == nil {
+			// Retirer l'upvote
+			if err := tx.Delete(&upvote).Error; err != nil {
+				return err
+			}
+			// Décrémenter le compteur de upvotes
+			if err := tx.Model(&Tournament{}).Where("id = ?", t.ID).UpdateColumn("upvotes", gorm.Expr("upvotes - ?", 1)).Error; err != nil {
+				return err
+			}
+		} else {
+			return err
+		}
+
+		return nil
+	})
+}
+
+// Compter le nombre de upvotes d'un tournoi
+func (t *Tournament) CountUpvotes() (int64, error) {
+	var count int64
+	err := DB.Model(&Upvote{}).Where("tournament_id = ?", t.ID).Count(&count).Error
+	return count, err
 }

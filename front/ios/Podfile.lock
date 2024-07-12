@@ -34,9 +34,9 @@ PODS:
     - GTMSessionFetcher/Core
   - image_picker_ios (0.0.1):
     - Flutter
-  - mapbox_maps_flutter (2.1.0-rc.1):
+  - mapbox_maps_flutter (2.1.0):
     - Flutter
-    - MapboxMaps (~> 11.5.0-rc.1)
+    - MapboxMaps (~> 11.5.1)
     - Turf (= 2.8.0)
   - MapboxCommon (24.5.0)
   - MapboxCoreMaps (11.5.1):

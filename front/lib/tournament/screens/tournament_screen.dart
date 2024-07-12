@@ -9,6 +9,8 @@ import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
+import 'package:uresport/tournament/screens/tournament_details_screen.dart';
+import 'package:uresport/widgets/gradient_icon.dart';
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
@@ -18,44 +20,24 @@ class TournamentScreen extends StatelessWidget {
     return BlocProvider(
       create: (context) => TournamentBloc(context.read<ITournamentService>())
         ..add(const LoadTournaments()),
-      child: Scaffold(
-        body: RefreshIndicator(
-          onRefresh: () async {
-            context.read<TournamentBloc>().add(const LoadTournaments());
-          },
-          child: Column(
+      child: DefaultTabController(
+        length: 3,
+        child: Scaffold(
+          appBar: AppBar(
+            bottom: const TabBar(
+              tabs: [
+                Tab(text: 'Liste Tournois'),
+                Tab(text: 'Custom Bracket'),
+                Tab(text: 'Custom Poules'),
+              ],
+            ),
+          ),
+          body: TabBarView(
             children: [
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const TournamentBracketPage(),
-                          ),
-                        );
-                      },
-                      child: const Text('Custom Bracket'),
-                    ),
-                    ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const CustomPoulesPage(),
-                          ),
-                        );
-                      },
-                      child: const Text('Custom Poules'),
-                    ),
-                  ],
-                ),
-              ),
-              Expanded(
+              RefreshIndicator(
+                onRefresh: () async {
+                  context.read<TournamentBloc>().add(const LoadTournaments());
+                },
                 child: BlocBuilder<TournamentBloc, TournamentState>(
                   builder: (context, state) {
                     if (state is TournamentInitial) {
@@ -102,6 +84,8 @@ class TournamentScreen extends StatelessWidget {
                   },
                 ),
               ),
+              const TournamentBracketPage(),
+              const CustomPoulesPage(),
             ],
           ),
         ),
@@ -115,49 +99,153 @@ class TournamentScreen extends StatelessWidget {
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      child: Padding(
-        padding: const EdgeInsets.all(15),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              tournament.name,
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15),
+      ),
+      elevation: 5,
+      child: Column(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: Image.network(
+              tournament.image,
+              fit: BoxFit.cover,
+              width: double.infinity,
+              height: 150,
             ),
-            const SizedBox(height: 10),
-            Text(
-              tournament.description,
-              style: const TextStyle(fontSize: 16),
+          ),
+          Container(
+            padding: const EdgeInsets.all(15),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      tournament.name,
+                      style: const TextStyle(
+                          fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    if (tournament.isPrivate)
+                      const Icon(
+                        Icons.lock,
+                        color: Colors.red,
+                      )
+                    else
+                      const Icon(
+                        Icons.lock_open,
+                        color: Colors.green,
+                      ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                Text(
+                  tournament.description,
+                  style: const TextStyle(fontSize: 16, color: Colors.grey),
+                ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            const Icon(Icons.location_on, color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Text(
+                              tournament.location,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Icon(Icons.videogame_asset,
+                                color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Game: ${tournament.game.name}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Icon(Icons.calendar_today,
+                                color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Start: ${dateFormat.format(tournament.startDate)}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Icon(Icons.calendar_today,
+                                color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Text(
+                              'End: ${dateFormat.format(tournament.endDate)}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                    Column(
+                      children: [
+                        Row(
+                          children: [
+                            GradientIcon(
+                              icon: Icons.local_fire_department,
+                              size: 30.0,
+                              gradient: LinearGradient(
+                                colors: <Color>[
+                                  Colors.red,
+                                  Colors.red.withOpacity(0.7),
+                                  Colors.orange,
+                                  Colors.yellow,
+                                ],
+                                stops: const [0.0, 0.3, 0.6, 1.0],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                            ),
+                            const SizedBox(width: 5),
+                            Text(
+                              '${tournament.upvotes}',
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 10),
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TournamentDetailsScreen(
+                                    tournament: tournament),
+                              ),
+                            );
+                          },
+                          child: const Text('View Details'),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ],
             ),
-            const SizedBox(height: 10),
-            Text(
-              'Location: ${tournament.location}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'Start Date: ${dateFormat.format(tournament.startDate)}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'End Date: ${dateFormat.format(tournament.endDate)}',
-              style: const TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            const Text(
-              'Participants:',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 15),
-            ElevatedButton(
-              onPressed: () {
-                // Handle view details action
-              },
-              child: const Text('View Details'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

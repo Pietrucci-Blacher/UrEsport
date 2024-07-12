@@ -12,6 +12,10 @@ ARG JWT_SECRET_KEY
 ARG BREVO_API_KEY
 ARG BREVO_SENDER
 ARG GIN_MODE
+ARG ALLOWED_ORIGINS
+ARG CLOUDINARY_CLOUD_NAME
+ARG CLOUDINARY_API_KEY
+ARG CLOUDINARY_API_SECRET
 
 ENV DB_HOST=$DB_HOST
 ENV DB_USER=$DB_USER
@@ -22,6 +26,10 @@ ENV COOKIE_SECURE=$COOKIE_SECURE
 ENV JWT_SECRET_KEY=$JWT_SECRET_KEY
 ENV BREVO_API_KEY=$BREVO_API_KEY
 ENV BREVO_SENDER=$BREVO_SENDER
+ENV ALLOWED_ORIGINS=$ALLOWED_ORIGINS
+ENV CLOUDINARY_CLOUD_NAME=$CLOUDINARY_CLOUD_NAME
+ENV CLOUDINARY_API_KEY=$CLOUDINARY_API_KEY
+ENV CLOUDINARY_API_SECRET=$CLOUDINARY_API_SECRET
 ENV GIN_MODE=release
 
 COPY back/generate_env.sh ./
@@ -30,12 +38,12 @@ RUN chmod +x generate_env.sh && ./generate_env.sh
 COPY back/go.mod back/go.sum ./
 RUN go mod download
 
-COPY . .
+COPY back/ .
 
 RUN go install github.com/swaggo/swag/cmd/swag@latest
-RUN swag init
+RUN swag init -g main.go
 
-RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o uresport-api back/main.go
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -o uresport-api main.go
 
 FROM alpine:3.20
 
@@ -46,9 +54,11 @@ WORKDIR /app
 COPY --from=builder /app/uresport-api /app/uresport-api
 COPY --from=builder /app/docs /app/docs
 COPY --from=builder /app/.env /app/.env
+COPY --from=builder /app/template-html /app/template-html
 
 RUN chmod +x /app/uresport-api
 
 EXPOSE 8080
 
+RUN ./uresport-api migrate
 CMD ["./uresport-api"]

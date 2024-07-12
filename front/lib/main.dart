@@ -10,8 +10,9 @@ import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/core/services/notification_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
-import 'package:uresport/shared/routing/routing.dart';
+import 'package:uresport/core/services/rating_service.dart';
 import 'package:uresport/shared/websocket/websocket.dart';
+import 'package:uresport/shared/routing/routing.dart';
 
 import 'app.dart';
 
@@ -28,11 +29,12 @@ void main() async {
 
     dio.interceptors.add(InterceptorsWrapper(
       onRequest: (options, handler) {
-        options.headers['Access-Control-Allow-Origin'] = '*';
+        options.headers['Content-Type'] = 'application/json';
+        options.headers['Accept'] = 'application/json';
         return handler.next(options);
       },
       onError: (DioException e, handler) {
-        if (e.response?.statusCode == 405) {
+        if (e.response?.statusCode == 405 || e.response?.statusCode == 403) {
           return handler.resolve(Response(
             requestOptions: e.requestOptions,
             statusCode: 200,
@@ -42,12 +44,16 @@ void main() async {
       },
     ));
 
-    // dio.httpClientAdapter = BrowserHttpClientAdapter(withCredentials: true);
+    dio.interceptors.add(LogInterceptor(responseBody: true, requestBody: true));
   }
 
   final authService = AuthService(dio);
   final tournamentService = TournamentService(dio);
   final gameService = GameService(dio);
+
+  // L'URL de base sera maintenant récupérée via dotenv dans le service
+  final ratingService = RatingService(dio);
+
   final routeGenerator = RouteGenerator(authService);
   final friendService = FriendService(dio);
   final mapsBoxApiKey = dotenv.env['SDK_REGISTRY_TOKEN']!;
@@ -61,6 +67,7 @@ void main() async {
         Provider<IAuthService>.value(value: authService),
         Provider<ITournamentService>.value(value: tournamentService),
         Provider<IGameService>.value(value: gameService),
+        Provider<IRatingService>.value(value: ratingService),
         Provider<IFriendService>.value(value: friendService),
         ChangeNotifierProvider<NotificationService>(
             create: (_) => NotificationService()),

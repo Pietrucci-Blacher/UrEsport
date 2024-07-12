@@ -6,13 +6,14 @@ import (
 )
 
 type Game struct {
-	ID          int       `json:"id" gorm:"primaryKey"`
-	Name        string    `json:"name" gorm:"type:varchar(100)"`
-	Description string    `json:"description" gorm:"type:varchar(255)"`
-	Image       string    `json:"image" gorm:"type:varchar(255)"`
-	Tags        []string  `json:"tags" gorm:"json"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int          `json:"id" gorm:"primaryKey"`
+	Name        string       `json:"name" gorm:"type:varchar(100)"`
+	Description string       `json:"description" gorm:"type:varchar(255)"`
+	Image       string       `json:"image" gorm:"type:varchar(255)"`
+	Tags        []string     `json:"tags" gorm:"json"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
+	Tournaments []Tournament `json:"tournaments" gorm:"foreignKey:GameID"`
 }
 
 type CreateGameDto struct {
@@ -32,14 +33,16 @@ type UpdateGameDto struct {
 func FindAllGames(query services.QueryFilter) ([]Game, error) {
 	var games []Game
 
-	err := DB.Model(&Game{}).
+	value := DB.Model(&Game{}).
 		Offset(query.GetSkip()).
 		Limit(query.GetLimit()).
 		Where(query.GetWhere()).
+		Where(query.GetSearch()).
 		Order(query.GetSort()).
-		Find(&games).Error
+		Preload("Tournaments").
+		Find(&games)
 
-	return games, err
+	return games, value.Error
 }
 
 func CountGameByName(name string) (int64, error) {
@@ -70,4 +73,10 @@ func (g *Game) Delete() error {
 
 func ClearGames() error {
 	return DB.Exec("DELETE FROM games").Error
+}
+
+func (g *Game) GetTournaments() ([]Tournament, error) {
+	var tournaments []Tournament
+	err := DB.Model(&g).Association("Tournaments").Find(&tournaments)
+	return tournaments, err
 }

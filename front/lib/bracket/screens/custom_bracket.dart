@@ -15,15 +15,6 @@ class TournamentBracketPage extends StatelessWidget {
     return BlocProvider(
       create: (_) => CustomBracketBloc()..add(LoadCustomBracket()),
       child: Scaffold(
-        appBar: AppBar(
-          title: const Text('Tournament Bracket'),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () {
-              Navigator.pop(context);
-            },
-          ),
-        ),
         body: BlocBuilder<CustomBracketBloc, CustomBracketState>(
           builder: (context, state) {
             if (state is CustomBracketLoading) {

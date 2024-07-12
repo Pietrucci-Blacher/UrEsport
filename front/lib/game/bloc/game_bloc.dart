@@ -20,11 +20,9 @@ class GameBloc extends Bloc<GameEvent, GameState> {
     on<FilterGames>((event, emit) async {
       emit(GameLoading());
       try {
-        final games = await gameService.fetchGames();
-        final filteredGames = games.where((game) {
-          return event.tags.any((tag) => game.tags.contains(tag));
-        }).toList();
-        emit(GameLoaded(filteredGames));
+        final games = await gameService.fetchGames(
+            tags: event.tags.isNotEmpty ? event.tags : null);
+        emit(GameLoaded(games));
       } catch (error) {
         emit(GameError(error.toString()));
       }

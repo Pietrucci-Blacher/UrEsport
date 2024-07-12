@@ -4,6 +4,7 @@ import (
 	"challenge/models"
 	"challenge/services"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -76,15 +77,15 @@ func CreateTournament(c *gin.Context) {
 	tournament := models.Tournament{
 		Name:        body.Name,
 		Description: body.Description,
+		StartDate:   body.StartDate,
+		EndDate:     body.EndDate,
 		Location:    body.Location,
 		Latitude:    body.Latitude,
 		Longitude:   body.Longitude,
-		StartDate:   body.StartDate,
-		EndDate:     body.EndDate,
-		OwnerID:     connectedUser.ID,
 		Private:     body.Private,
-		GameID:      body.GameID,
 		NbPlayer:    body.NbPlayer,
+		GameID:      body.GameID,
+		OwnerID:     connectedUser.ID,
 	}
 
 	if err := tournament.Save(); err != nil {
@@ -92,7 +93,7 @@ func CreateTournament(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, tournament)
+	c.JSON(http.StatusCreated, tournament)
 }
 
 // UpdateTournament godoc
@@ -120,6 +121,12 @@ func UpdateTournament(c *gin.Context) {
 	if body.Description != "" {
 		tournament.Description = body.Description
 	}
+	if !body.StartDate.IsZero() {
+		tournament.StartDate = body.StartDate
+	}
+	if !body.EndDate.IsZero() {
+		tournament.EndDate = body.EndDate
+	}
 	if body.Location != "" {
 		tournament.Location = body.Location
 	}
@@ -129,17 +136,29 @@ func UpdateTournament(c *gin.Context) {
 	if body.Longitude != 0 {
 		tournament.Longitude = body.Longitude
 	}
+	if body.Image != "" {
+		tournament.Image = body.Image
+	}
+	if body.NbPlayer != 0 {
+		tournament.NbPlayer = body.NbPlayer
+	}
 	if !body.StartDate.IsZero() {
 		tournament.StartDate = body.StartDate
 	}
 	if !body.EndDate.IsZero() {
 		tournament.EndDate = body.EndDate
 	}
-	if body.GameID != 0 {
-		tournament.GameID = body.GameID
-	}
 	if body.NbPlayer >= 1 {
 		tournament.NbPlayer = body.NbPlayer
+	}
+
+	if body.GameID != 0 {
+		var game models.Game
+		if err := game.FindOneById(body.GameID); err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Game not found"})
+			return
+		}
+		tournament.GameID = body.GameID
 	}
 
 	if err := tournament.Save(); err != nil {
@@ -498,4 +517,34 @@ func GenerateTournamentBracket(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, matches)
+}
+
+// AddUpvote godoc
+//
+//	@Summary		add upvote to tournament
+//	@Description	add upvote to tournament
+//	@Tags			tournament
+//	@Param			id	path	int	true	"Tournament ID"
+//	@Success		204
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/upvote [post]
+func AddUpvote(c *gin.Context) {
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+
+	// Log the user ID
+	log.Printf("User ID: %d", connectedUser.ID)
+
+	// Log the tournament ID
+	log.Printf("Tournament ID: %d", tournament.ID)
+
+	// Perform the upvote
+	if err := tournament.AddUpvote(connectedUser.ID); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Upvote toggled"})
 }

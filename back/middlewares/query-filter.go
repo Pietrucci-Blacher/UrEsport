@@ -19,5 +19,6 @@ func QueryFilter() gin.HandlerFunc {
 		}
 
 		c.Set("query", queryFilter)
+		c.Next() // Continue to the next handler
 	}
 }
