@@ -181,11 +181,13 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     try {
       await tournamentService.generateBracket(widget.tournament.id);
       if (!mounted) return;
-      showNotificationToast(context, 'Bracket generated', backgroundColor: Colors.green);
+      showNotificationToast(context, 'Bracket generated',
+          backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error generating bracket: $e');
       if (!mounted) return;
-      showNotificationToast(context, 'Failed to generate bracket: $e', backgroundColor: Colors.red);
+      showNotificationToast(context, 'Failed to generate bracket: $e',
+          backgroundColor: Colors.red);
     }
   }
 
