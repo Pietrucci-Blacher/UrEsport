@@ -13,10 +13,13 @@ import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/rating.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 
+import 'package:uresport/core/models/game.dart';
+
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
+  final Game? game;
 
-  const TournamentDetailsScreen({super.key, required this.tournament});
+  const TournamentDetailsScreen({super.key, required this.tournament, this.game});
 
   @override
   TournamentDetailsScreenState createState() => TournamentDetailsScreenState();
@@ -325,16 +328,19 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                   Expanded(
                     child: GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => GameDetailPage(
-                                game: widget.tournament.game),
-                          ),
-                        );
+                        if (widget.game != null) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => GameDetailPage(
+                                game: widget.game!,
+                              ),
+                            ),
+                          );
+                        }
                       },
                       child: Text(
-                        'Game: ${widget.tournament.game.name}',
+                        'Game: ${widget.game?.name ?? widget.tournament.game.name}',
                         style: Theme.of(context)
                             .textTheme
                             .titleMedium
@@ -536,6 +542,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
       ),
     );
   }
+
 
   Future<void> _joinTournament(
       BuildContext context, int tournamentId, int teamId) async {

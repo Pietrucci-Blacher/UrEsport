@@ -81,8 +81,8 @@ class GameDetailPageState extends State<GameDetailPage> {
               Text(
                 'Game Description',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 10),
               Text(
@@ -93,8 +93,8 @@ class GameDetailPageState extends State<GameDetailPage> {
               Text(
                 'Tags',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 10),
               Wrap(
@@ -114,8 +114,8 @@ class GameDetailPageState extends State<GameDetailPage> {
               Text(
                 'Tournaments',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 10),
               FutureBuilder<List<Tournament>>(
@@ -143,8 +143,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                                   .textTheme
                                   .headlineSmall
                                   ?.copyWith(
-                                    color: Colors.grey,
-                                  ),
+                                color: Colors.grey,
+                              ),
                             ),
                           ],
                         ),
@@ -162,7 +162,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => TournamentDetailsScreen(
-                                    tournament: tournament),
+                                    tournament: tournament,
+                                    game: widget.game,),
                               ),
                             );
                           },
@@ -189,11 +190,11 @@ class GameDetailPageState extends State<GameDetailPage> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         mainAxisAlignment:
-                                            MainAxisAlignment.spaceBetween,
+                                        MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
                                             child: Text(
@@ -202,8 +203,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                                                   .textTheme
                                                   .titleLarge
                                                   ?.copyWith(
-                                                    fontWeight: FontWeight.bold,
-                                                  ),
+                                                fontWeight: FontWeight.bold,
+                                              ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),

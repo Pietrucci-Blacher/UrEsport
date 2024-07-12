@@ -94,160 +94,170 @@ class TournamentScreen extends StatelessWidget {
   }
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
-    final DateFormat dateFormat =
-        DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    final DateFormat dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15),
-      ),
-      elevation: 5,
-      child: Column(
-        children: [
-          ClipRRect(
-            borderRadius: BorderRadius.circular(15),
-            child: Image.network(
-              tournament.image,
-              fit: BoxFit.cover,
-              width: double.infinity,
-              height: 150,
-            ),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TournamentDetailsScreen(tournament: tournament),
           ),
-          Container(
-            padding: const EdgeInsets.all(15),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      tournament.name,
-                      style: const TextStyle(
-                          fontSize: 22, fontWeight: FontWeight.bold),
-                    ),
-                    if (tournament.isPrivate)
-                      const Icon(
-                        Icons.lock,
-                        color: Colors.red,
-                      )
-                    else
-                      const Icon(
-                        Icons.lock_open,
-                        color: Colors.green,
+        );
+      },
+      child: Card(
+        margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(15),
+        ),
+        elevation: 5,
+        child: Column(
+          children: [
+            ClipRRect(
+              borderRadius: BorderRadius.circular(15),
+              child: Image.network(
+                tournament.image,
+                fit: BoxFit.cover,
+                width: double.infinity,
+                height: 150,
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(15),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        tournament.name,
+                        style: const TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
                       ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Text(
-                  tournament.description,
-                  style: const TextStyle(fontSize: 16, color: Colors.grey),
-                ),
-                const SizedBox(height: 10),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            const Icon(Icons.location_on, color: Colors.grey),
-                            const SizedBox(width: 5),
-                            Text(
-                              tournament.location,
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
+                      if (tournament.isPrivate)
+                        const Icon(
+                          Icons.lock,
+                          color: Colors.red,
+                        )
+                      else
+                        const Icon(
+                          Icons.lock_open,
+                          color: Colors.green,
                         ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Icon(Icons.videogame_asset,
-                                color: Colors.grey),
-                            const SizedBox(width: 5),
-                            Text(
-                              'Game: ${tournament.game.name}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Icon(Icons.calendar_today,
-                                color: Colors.grey),
-                            const SizedBox(width: 5),
-                            Text(
-                              'Start: ${dateFormat.format(tournament.startDate)}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 5),
-                        Row(
-                          children: [
-                            const Icon(Icons.calendar_today,
-                                color: Colors.grey),
-                            const SizedBox(width: 5),
-                            Text(
-                              'End: ${dateFormat.format(tournament.endDate)}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
-                    Column(
-                      children: [
-                        Row(
-                          children: [
-                            GradientIcon(
-                              icon: Icons.local_fire_department,
-                              size: 30.0,
-                              gradient: LinearGradient(
-                                colors: <Color>[
-                                  Colors.red,
-                                  Colors.red.withOpacity(0.7),
-                                  Colors.orange,
-                                  Colors.yellow,
-                                  Colors.green, // Nouvelle couleur ajoutée à la fin
-                                ],
-                                stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
-                                begin: Alignment.topLeft,
-                                end: Alignment.bottomRight,
+                    ],
+                  ),
+                  const SizedBox(height: 10),
+                  Text(
+                    tournament.description,
+                    style: const TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                  const SizedBox(height: 10),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on, color: Colors.grey),
+                              const SizedBox(width: 5),
+                              Text(
+                                tournament.location,
+                                style: const TextStyle(fontSize: 16),
                               ),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              '${tournament.upvotes}',
-                              style: const TextStyle(fontSize: 16),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TournamentDetailsScreen(
-                                    tournament: tournament),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              const Icon(Icons.videogame_asset,
+                                  color: Colors.grey),
+                              const SizedBox(width: 5),
+                              Text(
+                                'Game: ${tournament.game.name}',
+                                style: const TextStyle(fontSize: 16),
                               ),
-                            );
-                          },
-                          child: const Text('View Details'),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ],
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_today,
+                                  color: Colors.grey),
+                              const SizedBox(width: 5),
+                              Text(
+                                'Start: ${dateFormat.format(tournament.startDate)}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 5),
+                          Row(
+                            children: [
+                              const Icon(Icons.calendar_today,
+                                  color: Colors.grey),
+                              const SizedBox(width: 5),
+                              Text(
+                                'End: ${dateFormat.format(tournament.endDate)}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      Column(
+                        children: [
+                          Row(
+                            children: [
+                              GradientIcon(
+                                icon: Icons.local_fire_department,
+                                size: 30.0,
+                                gradient: LinearGradient(
+                                  colors: <Color>[
+                                    Colors.red,
+                                    Colors.red.withOpacity(0.7),
+                                    Colors.orange,
+                                    Colors.yellow,
+                                    Colors.green, // Nouvelle couleur ajoutée à la fin
+                                  ],
+                                  stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                              ),
+                              const SizedBox(width: 5),
+                              Text(
+                                '${tournament.upvotes}',
+                                style: const TextStyle(fontSize: 16),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TournamentDetailsScreen(
+                                      tournament: tournament),
+                                ),
+                              );
+                            },
+                            child: const Text('View Details'),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
+
 }
