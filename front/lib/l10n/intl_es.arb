@@ -60,5 +60,8 @@
   "alphabeticalZA": "Alfabético (Z-A)",
   "anErrorOccurred": "¡Se produjo un error!",
   "noGamesAvailable": "No hay juegos disponibles.",
-  "moreTagsCount": "+{count} más"
+  "moreTagsCount": "+{count} más",
+  "mustBeLoggedIn": "Debes estar conectado para ver tus torneos",
+  "listAllTournaments": "Lista de torneos",
+  "listMyTournaments": "Mis torneos"
 }

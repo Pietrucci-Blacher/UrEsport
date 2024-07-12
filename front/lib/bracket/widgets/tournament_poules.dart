@@ -45,7 +45,8 @@ class TournamentScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const TournamentBracketPage(),
+                                          const TournamentBracketPage(
+                                              tournamentId: 1),
                                     ),
                                   );
                                 },

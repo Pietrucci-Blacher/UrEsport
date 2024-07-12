@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'cache_service.dart';
 
 abstract class ITournamentService {
-  Future<List<Tournament>> fetchTournaments({int? limit, int? page});
+  Future<List<Tournament>> fetchTournaments(
+      {int? limit, int? page, int? ownerId});
   Future<void> inviteUserToTournament(String tournamentId, String username);
   Future<void> upvoteTournament(int tournamentId, String username);
   Future<bool> hasUpvoted(int tournamentId, String username);
@@ -15,6 +16,8 @@ abstract class ITournamentService {
   Future<void> inviteTeamToTournament(
       int tournamentId, int teamId, String teamName);
   Future<List<Team>> fetchTeams();
+  Future<Tournament> fetchTournamentById(int tournamentId);
+  Future<void> generateBracket(int tournamentId);
 }
 
 class TournamentService implements ITournamentService {
@@ -24,7 +27,8 @@ class TournamentService implements ITournamentService {
   TournamentService(this._dio);
 
   @override
-  Future<List<Tournament>> fetchTournaments({int? limit, int? page}) async {
+  Future<List<Tournament>> fetchTournaments(
+      {int? limit, int? page, int? ownerId}) async {
     try {
       final Map<String, dynamic> queryParameters = {};
       if (limit != null) {
@@ -32,6 +36,9 @@ class TournamentService implements ITournamentService {
       }
       if (page != null) {
         queryParameters['page'] = page;
+      }
+      if (ownerId != null) {
+        queryParameters['where[owner_id]'] = ownerId;
       }
 
       final response = await _dio.get(
@@ -345,6 +352,7 @@ class TournamentService implements ITournamentService {
     }
   }
 
+  @override
   Future<Tournament> fetchTournamentById(int tournamentId) async {
     try {
       final response = await _dio
@@ -360,6 +368,44 @@ class TournamentService implements ITournamentService {
           type: DioExceptionType.badResponse,
         );
       }
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
+  @override
+  Future<void> generateBracket(int tournamentId) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    try {
+      final response = await _dio.post(
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/bracket",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to generate bracket',
+          type: DioExceptionType.badResponse,
+        );
+      }
+
+      return;
     } catch (e) {
       if (e is DioException) {
         rethrow;
