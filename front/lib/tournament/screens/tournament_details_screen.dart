@@ -14,7 +14,6 @@ import 'package:uresport/widgets/rating.dart';
 
 import 'package:uresport/core/models/user.dart';
 
-
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
 

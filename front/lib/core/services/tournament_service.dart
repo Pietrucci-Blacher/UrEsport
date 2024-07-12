@@ -343,8 +343,8 @@ class TournamentService implements ITournamentService {
       }
     }
   }
-  
-    Future<Tournament> fetchTournamentById(int tournamentId) async {
+
+  Future<Tournament> fetchTournamentById(int tournamentId) async {
     try {
       final response = await _dio
           .get("${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId");
@@ -367,5 +367,4 @@ class TournamentService implements ITournamentService {
       }
     }
   }
-        
 }
