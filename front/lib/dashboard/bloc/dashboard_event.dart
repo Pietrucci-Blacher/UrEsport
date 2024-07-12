@@ -37,3 +37,5 @@ class AddLogEntry extends DashboardEvent {
   @override
   List<Object> get props => [logEntry];
 }
+
+class FetchAllUsers extends DashboardEvent {}
