@@ -24,7 +24,6 @@ class TournamentScreen extends StatelessWidget {
         length: 3,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Tournaments'),
             bottom: const TabBar(
               tabs: [
                 Tab(text: 'Liste Tournois'),
@@ -158,6 +157,18 @@ class TournamentScreen extends StatelessWidget {
                             const SizedBox(width: 5),
                             Text(
                               tournament.location,
+                              style: const TextStyle(fontSize: 16),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 5),
+                        Row(
+                          children: [
+                            const Icon(Icons.videogame_asset,
+                                color: Colors.grey),
+                            const SizedBox(width: 5),
+                            Text(
+                              'Game: ${tournament.game.name}',
                               style: const TextStyle(fontSize: 16),
                             ),
                           ],
