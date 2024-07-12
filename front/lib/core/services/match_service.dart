@@ -12,7 +12,8 @@ class MatchService implements IMatchService {
   MatchService(this._dio);
 
   @override
-  Future<List<Match>> fetchMatches({int? limit, int? page, int? tournamentId}) async {
+  Future<List<Match>> fetchMatches(
+      {int? limit, int? page, int? tournamentId}) async {
     try {
       final Map<String, dynamic> queryParameters = {};
       if (limit != null) {
