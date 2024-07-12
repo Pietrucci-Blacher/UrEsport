@@ -1,13 +1,16 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/core/models/user.dart';
+import 'package:uresport/core/services/auth_service.dart'; // Assurez-vous que le chemin est correct
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final Websocket _websocket;
+  final AuthService _authService;
 
-  DashboardBloc(this._websocket) : super(DashboardInitial()) {
+  DashboardBloc(this._websocket, this._authService)
+      : super(DashboardInitial()) {
     on<ConnectWebSocket>(_onConnectWebSocket);
     on<DisconnectWebSocket>(_onDisconnectWebSocket);
     on<WebSocketMessageReceived>(_onWebSocketMessageReceived);
@@ -19,7 +22,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   Future<void> _onFetchAllUsers(
       FetchAllUsers event, Emitter<DashboardState> emit) async {
     try {
-      List<User> users = await fetchUsersFromApiOrDatabase();
+      List<User> users = await _authService.fetchUsers();
       if (state is DashboardLoaded) {
         final currentState = state as DashboardLoaded;
         emit(currentState.copyWith(users: users));
@@ -27,19 +30,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     } catch (e) {
       emit(DashboardError(e.toString()));
     }
-  }
-
-  Future<List<User>> fetchUsersFromApiOrDatabase() async {
-    await Future.delayed(const Duration(seconds: 2)); // Correction ici
-    return [
-      User(
-          id: 1,
-          username: 'user1',
-          firstname: 'First',
-          lastname: 'User',
-          email: 'user1@example.com',
-          roles: ['user']),
-    ];
   }
 
   Future<void> _onConnectWebSocket(
