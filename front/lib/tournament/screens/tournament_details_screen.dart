@@ -190,39 +190,40 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
 
     try {
       await tournamentService.generateBracket(widget.tournament.id);
-      showNotificationToast(context, 'Bracket generated', backgroundColor: Colors.green);
+      showNotificationToast(context, 'Bracket generated',
+          backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error generating bracket: $e');
-      showNotificationToast(context, 'Failed to generate bracket: $e', backgroundColor: Colors.red);
+      showNotificationToast(context, 'Failed to generate bracket: $e',
+          backgroundColor: Colors.red);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(widget.tournament.name),
-          bottom: const TabBar(
-            tabs: [
-              Tab(text: 'Details'),
-              Tab(text: 'Bracket'),
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.tournament.name),
+            bottom: const TabBar(
+              tabs: [
+                Tab(text: 'Details'),
+                Tab(text: 'Bracket'),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              _pageDetail(),
+              TournamentBracketPage(tournamentId: widget.tournament.id),
             ],
           ),
-        ),
-        body: TabBarView(
-          children: [
-            _pageDetail(),
-            TournamentBracketPage(tournamentId: widget.tournament.id),
-          ],
-        ),
-        floatingActionButton: FloatingActionButton(
-          onPressed: _showTeamsModal,
-          child: const Icon(Icons.list),
-        ),
-      )
-    );
+          floatingActionButton: FloatingActionButton(
+            onPressed: _showTeamsModal,
+            child: const Icon(Icons.list),
+          ),
+        ));
   }
 
   Widget _pageDetail() {
@@ -262,12 +263,9 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                   ),
                 ),
                 Icon(
-                  widget.tournament.isPrivate
-                      ? Icons.lock
-                      : Icons.lock_open,
-                  color: widget.tournament.isPrivate
-                      ? Colors.red
-                      : Colors.green,
+                  widget.tournament.isPrivate ? Icons.lock : Icons.lock_open,
+                  color:
+                      widget.tournament.isPrivate ? Colors.red : Colors.green,
                 ),
               ],
             ),
@@ -305,17 +303,14 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => GameDetailPage(
-                              game: widget.tournament.game),
+                          builder: (context) =>
+                              GameDetailPage(game: widget.tournament.game),
                         ),
                       );
                     },
                     child: Text(
                       'Game: ${widget.tournament.game.name}',
-                      style: Theme.of(context)
-                          .textTheme
-                          .titleMedium
-                          ?.copyWith(
+                      style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: Theme.of(context).primaryColor,
                             decoration: TextDecoration.underline,
                           ),
@@ -378,12 +373,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                       ),
                       const SizedBox(height: 4),
                       Column(
-                        children: List.generate(
-                            widget.tournament.teams.length, (index) {
+                        children: List.generate(widget.tournament.teams.length,
+                            (index) {
                           final team = widget.tournament.teams[index];
                           return Padding(
-                            padding: const EdgeInsets.symmetric(
-                                vertical: 4.0),
+                            padding: const EdgeInsets.symmetric(vertical: 4.0),
                             child: Row(
                               children: [
                                 CircleAvatar(
@@ -391,16 +385,13 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                                   backgroundColor: Colors.blueAccent,
                                   child: Text(
                                     team.name[0],
-                                    style: const TextStyle(
-                                        color: Colors.white),
+                                    style: const TextStyle(color: Colors.white),
                                   ),
                                 ),
                                 const SizedBox(width: 8),
                                 Text(
                                   team.name,
-                                  style: Theme.of(context)
-                                      .textTheme
-                                      .bodyLarge,
+                                  style: Theme.of(context).textTheme.bodyLarge,
                                 ),
                               ],
                             ),

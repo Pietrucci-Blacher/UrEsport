@@ -15,7 +15,7 @@ import 'package:uresport/core/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 
-class TournamentScreen extends StatefulWidget  {
+class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
 
   @override
@@ -85,7 +85,9 @@ class TournamentScreenState extends State<TournamentScreen> {
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
-            context.read<TournamentBloc>().add(LoadTournaments(ownerId: ownerId));
+            context
+                .read<TournamentBloc>()
+                .add(LoadTournaments(ownerId: ownerId));
           },
           child: BlocBuilder<TournamentBloc, TournamentState>(
             builder: (context, state) {
@@ -126,8 +128,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                   ],
                 );
               } else if (state is TournamentLoadFailure) {
-                return const Center(
-                    child: Text('Failed to load tournaments'));
+                return const Center(child: Text('Failed to load tournaments'));
               }
               return const Center(child: Text('Unknown state'));
             },

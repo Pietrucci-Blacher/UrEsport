@@ -6,7 +6,8 @@ import 'package:flutter/material.dart';
 import 'cache_service.dart';
 
 abstract class ITournamentService {
-  Future<List<Tournament>> fetchTournaments({int? limit, int? page, int? ownerId});
+  Future<List<Tournament>> fetchTournaments(
+      {int? limit, int? page, int? ownerId});
   Future<void> inviteUserToTournament(String tournamentId, String username);
   Future<void> upvoteTournament(int tournamentId, String username);
   Future<bool> hasUpvoted(int tournamentId, String username);
@@ -25,7 +26,8 @@ class TournamentService implements ITournamentService {
   TournamentService(this._dio);
 
   @override
-  Future<List<Tournament>> fetchTournaments({int? limit, int? page, int? ownerId}) async {
+  Future<List<Tournament>> fetchTournaments(
+      {int? limit, int? page, int? ownerId}) async {
     try {
       final Map<String, dynamic> queryParameters = {};
       if (limit != null) {

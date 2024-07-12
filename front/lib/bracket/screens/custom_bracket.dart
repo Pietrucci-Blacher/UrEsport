@@ -19,7 +19,8 @@ class TournamentBracketPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => BracketBloc(MatchService(Dio()))..add(LoadBracket(tournamentId: tournamentId)),
+      create: (_) => BracketBloc(MatchService(Dio()))
+        ..add(LoadBracket(tournamentId: tournamentId)),
       child: Scaffold(
         body: BlocBuilder<BracketBloc, BracketState>(
           builder: (context, state) {
@@ -27,7 +28,10 @@ class TournamentBracketPage extends StatelessWidget {
               return const Center(child: CircularProgressIndicator());
             } else if (state is BracketLoaded) {
               BracketService bracket = BracketService(state.matches);
-              return BracketContent(bracket: bracket, roundNames: state.roundNames, tournamentId: tournamentId);
+              return BracketContent(
+                  bracket: bracket,
+                  roundNames: state.roundNames,
+                  tournamentId: tournamentId);
             } else if (state is BracketUpdate) {
               return const Center(child: Text('Bracket updated'));
             } else if (state is BracketError) {
@@ -47,7 +51,11 @@ class BracketContent extends StatefulWidget {
   final List<String> roundNames;
   final int tournamentId;
 
-  const BracketContent({required this.bracket, required this.roundNames, required this.tournamentId, super.key});
+  const BracketContent(
+      {required this.bracket,
+      required this.roundNames,
+      required this.tournamentId,
+      super.key});
 
   @override
   BracketContentState createState() => BracketContentState();
@@ -99,7 +107,9 @@ class BracketContentState extends State<BracketContent> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      widget.roundNames[index + (widget.roundNames.length - widget.bracket.getBracket().length)],
+                      widget.roundNames[index +
+                          (widget.roundNames.length -
+                              widget.bracket.getBracket().length)],
                       style: TextStyle(
                         fontWeight: selectedLevel == index
                             ? FontWeight.bold
@@ -150,7 +160,9 @@ class BracketContentState extends State<BracketContent> {
                     height: 30,
                     alignment: Alignment.center,
                     child: Text(
-                      widget.roundNames[index + (widget.roundNames.length - widget.bracket.getBracket().length)],
+                      widget.roundNames[index +
+                          (widget.roundNames.length -
+                              widget.bracket.getBracket().length)],
                       style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
@@ -182,14 +194,14 @@ class BracketContentState extends State<BracketContent> {
                   }
 
                   return BracketText(
-                    text: '$team1 (${m.score1})\n$team2 (${m.score2})',
-                    textStyle: const TextStyle(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold,
-                    )
-                  );
+                      text: '$team1 (${m.score1})\n$team2 (${m.score2})',
+                      textStyle: const TextStyle(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ));
                 },
-                onContainerTapDown: (Match? model, TapDownDetails tapDownDetails) {
+                onContainerTapDown:
+                    (Match? model, TapDownDetails tapDownDetails) {
                   if (model == null) {
                     if (kDebugMode) {
                       print(null);
