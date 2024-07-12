@@ -71,7 +71,6 @@ type SanitizedTournament struct {
 	OwnerID     int             `json:"owner_id"`
 	Owner       SanitizedUser   `json:"owner"`
 	Teams       []SanitizedTeam `json:"teams"`
-	GameID      int             `json:"game_id"`
 	Game        Game            `json:"game"`
 	NbPlayer    int             `json:"nb_player"`
 	CreatedAt   time.Time       `json:"created_at"`
@@ -183,7 +182,6 @@ func (t *Tournament) Sanitize(getTeam bool) SanitizedTournament {
 		Private:     t.Private,
 		OwnerID:     t.OwnerID,
 		Owner:       t.Owner.Sanitize(false),
-		GameID:      t.GameID,
 		Game:        t.Game,
 		NbPlayer:    t.NbPlayer,
 		CreatedAt:   t.CreatedAt,

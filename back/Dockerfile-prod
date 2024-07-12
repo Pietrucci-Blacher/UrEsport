@@ -54,10 +54,11 @@ WORKDIR /app
 COPY --from=builder /app/uresport-api /app/uresport-api
 COPY --from=builder /app/docs /app/docs
 COPY --from=builder /app/.env /app/.env
+COPY --from=builder /app/template-html /app/template-html
 
 RUN chmod +x /app/uresport-api
 
 EXPOSE 8080
 
-CMD ["./uresport-api", "migrate"]
+RUN ./uresport-api migrate
 CMD ["./uresport-api"]

@@ -399,6 +399,10 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.FileUploader(utils.IMAGE, utils.SIZE_10MB),
 				UploadGameImage,
 			)
+			games.GET("/:game/tournaments",
+				middlewares.Get[*models.Game]("game"),
+				GetTournamentsByGame,
+			)
 		}
 
 		matches := api.Group("/matches")
