@@ -305,6 +305,7 @@ class TournamentService implements ITournamentService {
     }
   }
 
+  @override
   Future<List<Team>> fetchTeams() async {
     try {
       final response = await _dio.get(
@@ -312,7 +313,9 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode == 200) {
-        print('API Response: ${response.data}');
+        if (kDebugMode) {
+          print('API Response: ${response.data}');
+        }
 
         // Vérifiez si la réponse est null ou si elle n'est pas une liste
         if (response.data == null) {
@@ -335,10 +338,14 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       if (e is DioException) {
-        print('DioException: ${e.message}');
+        if (kDebugMode) {
+          print('DioException: ${e.message}');
+        }
         rethrow;
       } else {
-        print('Exception: ${e.toString()}');
+        if (kDebugMode) {
+          print('Exception: ${e.toString()}');
+        }
         throw Exception('Unexpected error occurred: ${e.toString()}');
       }
     }

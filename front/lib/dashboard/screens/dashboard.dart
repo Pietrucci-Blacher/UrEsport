@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uresport/auth/bloc/auth_bloc.dart';
+import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'package:uresport/auth/bloc/auth_bloc.dart';
-import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/dashboard/models/game.dart';
 import 'package:uresport/dashboard/models/tournament.dart';
 import 'package:uresport/dashboard/models/data.dart'; // Importez les données
@@ -14,7 +14,7 @@ class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
 
   @override
-  _DashboardState createState() => _DashboardState();
+  State<Dashboard> createState() => _DashboardState();
 }
 
 class _DashboardState extends State<Dashboard> {
@@ -140,14 +140,14 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildTournamentsContent(DashboardLoaded state) {
-    final ScrollController _scrollController = ScrollController();
+    final ScrollController scrollController = ScrollController();
 
     return Center(
       child: Scrollbar(
-        controller: _scrollController,
+        controller: scrollController,
         thumbVisibility: true,
         child: SingleChildScrollView(
-          controller: _scrollController,
+          controller: scrollController,
           scrollDirection: Axis.horizontal,
           child: DataTable(
             columns: const [
@@ -214,14 +214,14 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildGamesContent(DashboardLoaded state) {
-    final ScrollController _scrollController = ScrollController();
+    final ScrollController scrollController = ScrollController();
 
     return Center(
       child: Scrollbar(
-        controller: _scrollController,
+        controller: scrollController,
         thumbVisibility: true,
         child: SingleChildScrollView(
-          controller: _scrollController,
+          controller: scrollController,
           scrollDirection: Axis.horizontal,
           child: DataTable(
             columns: const [

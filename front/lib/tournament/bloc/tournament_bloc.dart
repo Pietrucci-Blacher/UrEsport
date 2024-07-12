@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
@@ -14,10 +15,14 @@ class TournamentBloc extends Bloc<TournamentEvent, TournamentState> {
           limit: event.limit,
           page: event.page,
         );
-        print('Fetched ${tournaments.length} tournaments');
+        if (kDebugMode) {
+          print('Fetched ${tournaments.length} tournaments');
+        }
         emit(TournamentLoadSuccess(tournaments: tournaments));
       } catch (e) {
-        print('Error loading tournaments: $e');
+        if (kDebugMode) {
+          print('Error loading tournaments: $e');
+        }
         emit(TournamentLoadFailure());
       }
     });

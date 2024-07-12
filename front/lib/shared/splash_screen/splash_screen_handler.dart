@@ -4,7 +4,6 @@ import 'package:uresport/dashboard/screens/dashboard.dart';
 import 'package:uresport/shared/splash_screen/splash_screen.dart';
 import 'package:uresport/main_screen.dart';
 import 'package:uresport/core/services/auth_service.dart';
-import 'package:uresport/auth/screens/login_screen.dart';
 
 class SplashScreenHandler extends StatefulWidget {
   final IAuthService authService;
