@@ -18,7 +18,6 @@ import 'package:uresport/widgets/GradientIconContext context) {
         length: 3,
         child: Scaffold(
           appBar: AppBar(
-            title: const Text('Tournaments'),
             bottom: const TabBar(
               tabs: [
                 Tab(text: 'Liste Tournois'),
