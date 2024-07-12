@@ -773,6 +773,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.2.0"
+  mapbox_api_pro:
+    dependency: "direct main"
+    description:
+      name: mapbox_api_pro
+      sha256: "7e442396799d27427f82f71720f604d2ca2c1eef4c5b60e1b53f97ed12ca2589"
+      url: "https://pub.dev"
+    source: hosted
+    version: "1.0.0"
   mapbox_maps_flutter:
     dependency: "direct main"
     description:

@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:geolocator/geolocator.dart' as geo;
+import 'package:mapbox_api_pro/mapbox_api_pro.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -32,6 +33,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   final List<String> _recentSearches = ["La Trésor", "Gymnase René Rousseau"];
   bool _isListening = false;
   final stt.SpeechToText _speechToText = stt.SpeechToText();
+  late MapboxApi _directions;
 
   @override
   void initState() {
@@ -40,6 +42,18 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     _filteredTournaments = widget.tournaments;
     mapService = RepositoryProvider.of<MapService>(context);
     _initializeSpeechToText();
+    _initializeNavigation();
+  }
+
+  void _initializeNavigation() {
+    String? token = dotenv.env['SDK_REGISTRY_TOKEN'];
+    if (token != null) {
+      _directions = MapboxApi(
+        accessToken: token,
+      );
+    } else {
+      developer.log('SDK_REGISTRY_TOKEN is null');
+    }
   }
 
   @override
@@ -71,7 +85,12 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   }
 
   void _initializeMap() {
-    MapboxOptions.setAccessToken(dotenv.env['SDK_REGISTRY_TOKEN']!);
+    String? accessToken = dotenv.env['SDK_REGISTRY_TOKEN'];
+    if (accessToken != null) {
+      MapboxOptions.setAccessToken(accessToken);
+    } else {
+      developer.log('SDK_REGISTRY_TOKEN is null');
+    }
   }
 
   void _filterTournaments(String query) {
@@ -288,12 +307,36 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   void _startDirections(Tournament tournament) async {
     final state = context.read<MapBloc>().state;
     if (state is MapLoaded && _isMapInitialized()) {
-      context.read<MapBloc>().add(ShowDirections(
-            state.position,
-            Point(
-              coordinates: Position(tournament.longitude, tournament.latitude),
-            ),
-          ));
+      final currentLocation = await mapService.getCurrentLocation();
+
+      final latitude = currentLocation['latitude'];
+      final longitude = currentLocation['longitude'];
+
+      if (latitude != null && longitude != null) {
+        final response = await _directions.directions.request(
+          coordinates: [
+            [longitude, latitude],
+            [tournament.longitude, tournament.latitude]
+          ],
+          profile: NavigationProfile.DRIVING,
+          geometries: NavigationGeometries.GEOJSON,
+        );
+
+        final routes = response.routes;
+        if (routes != null && routes.isNotEmpty) {
+          final route = routes.first;
+          final coordinates = route.geometry?.coordinates;
+          if (coordinates != null) {
+            final points = coordinates.map((coord) {
+              return Point(coordinates: Position(coord[0], coord[1]));
+            }).toList();
+
+            if (points.isNotEmpty) {
+              mapService.addPolyline(points);
+            }
+          }
+        }
+      }
     }
   }
 

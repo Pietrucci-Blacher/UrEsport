@@ -71,5 +71,7 @@
     <string>Allow access to location</string>
     <key>NSSpeechRecognitionUsageDescription</key>
     <string>Allow access to speech recognition</string>
+    <string>NSLocationAlwaysUsageDescription</string>
+    <string>Allow access to location</string>
 </dict>
 </plist>

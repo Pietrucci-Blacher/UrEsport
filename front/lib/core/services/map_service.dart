@@ -51,12 +51,12 @@ class MapService implements IMapService {
     }
     final locationComponent = _mapboxMap!.location;
     final locationSettings = await locationComponent.getSettings();
-    if (locationSettings.enabled ?? false) {
+    if (locationSettings.enabled == true) {
       final cameraState = await _mapboxMap!.getCameraState();
       final center = cameraState.center;
       return {
-        'latitude': center.coordinates[1]!.toDouble(),
-        'longitude': center.coordinates[0]!.toDouble(),
+        'latitude': center.coordinates[1]?.toDouble() ?? 0.0,
+        'longitude': center.coordinates[0]?.toDouble() ?? 0.0,
       };
     } else {
       throw Exception('Location is not enabled');

@@ -27,10 +27,10 @@ PODS:
   - GTMAppAuth (4.1.1):
     - AppAuth/Core (~> 1.7)
     - GTMSessionFetcher/Core (< 4.0, >= 3.3)
-  - GTMSessionFetcher (3.4.1):
-    - GTMSessionFetcher/Full (= 3.4.1)
-  - GTMSessionFetcher/Core (3.4.1)
-  - GTMSessionFetcher/Full (3.4.1):
+  - GTMSessionFetcher (3.5.0):
+    - GTMSessionFetcher/Full (= 3.5.0)
+  - GTMSessionFetcher/Core (3.5.0)
+  - GTMSessionFetcher/Full (3.5.0):
     - GTMSessionFetcher/Core
   - image_picker_ios (0.0.1):
     - Flutter
@@ -38,12 +38,12 @@ PODS:
     - Flutter
     - MapboxMaps (~> 11.5.0-rc.1)
     - Turf (= 2.8.0)
-  - MapboxCommon (24.5.0-rc.1)
-  - MapboxCoreMaps (11.5.0-rc.1):
-    - MapboxCommon (~> 24.5.0-rc)
-  - MapboxMaps (11.5.0-rc.1):
-    - MapboxCommon (= 24.5.0-rc.1)
-    - MapboxCoreMaps (= 11.5.0-rc.1)
+  - MapboxCommon (24.5.0)
+  - MapboxCoreMaps (11.5.1):
+    - MapboxCommon (~> 24.5)
+  - MapboxMaps (11.5.1):
+    - MapboxCommon (= 24.5.0)
+    - MapboxCoreMaps (= 11.5.1)
     - Turf (= 2.8.0)
   - path_provider_foundation (0.0.1):
     - Flutter
@@ -120,12 +120,12 @@ SPEC CHECKSUMS:
   google_sign_in_ios: 07375bfbf2620bc93a602c0e27160d6afc6ead38
   GoogleSignIn: d4281ab6cf21542b1cfaff85c191f230b399d2db
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
-  GTMSessionFetcher: 8000756fc1c19d2e5697b90311f7832d2e33f6cd
+  GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
   mapbox_maps_flutter: 6de31691b2709239722521b5530d2eeb97d6b8d4
-  MapboxCommon: 06dd0a0e277ae06e88fe3dc6dba6c90c632b909c
-  MapboxCoreMaps: 335fc5d65b32376b30955caa18217f1f2fe724c0
-  MapboxMaps: 2787403dfd7b6e74b44d914751b5ae38a5d6f6a3
+  MapboxCommon: c69a04a1accd77650372c96d8978a15ed1d95186
+  MapboxCoreMaps: 9d8833b738b94d63ee842722641e8cfdc1fa1191
+  MapboxMaps: 24a52620178b5390373489c083d4a3acd319c1d3
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
   share_plus: 8875f4f2500512ea181eef553c3e27dba5135aad
   speech_to_text: b43a7d99aef037bd758ed8e45d79bbac035d2dfe
