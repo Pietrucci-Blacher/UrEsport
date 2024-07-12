@@ -72,8 +72,27 @@ jobs:
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
 
+      - name: Opt out of Dart/Flutter analytics
+        run: |
+          flutter config --no-analytics
+
       - name: Install dependencies
         run: flutter pub get
+
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
+
+      - name: Retrieve secrets from Doppler
+        env:
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: doppler secrets download --no-file --format env > .env
+
+      - name: Generate .netrc file
+        run: |
+          echo "machine api.mapbox.com" >> ~/.netrc
+          echo "login mapbox" >> ~/.netrc
+          echo "password ${{ secrets.SDK_REGISTRY_TOKEN }}" >> ~/.netrc
+          chmod 600 ~/.netrc
 
       - name: Build Flutter Web
         run: flutter build web --release

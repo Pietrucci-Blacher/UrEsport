@@ -58,7 +58,6 @@ jobs:
           DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
         run: doppler secrets download --no-file --format env > .env
 
-
       - name: Generate .netrc file
         run: |
           echo "machine api.mapbox.com" >> ~/.netrc
