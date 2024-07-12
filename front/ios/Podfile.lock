@@ -122,7 +122,7 @@ SPEC CHECKSUMS:
   GTMAppAuth: f69bd07d68cd3b766125f7e072c45d7340dea0de
   GTMSessionFetcher: 5aea5ba6bd522a239e236100971f10cb71b96ab6
   image_picker_ios: c560581cceedb403a6ff17f2f816d7fea1421fc1
-  mapbox_maps_flutter: 6de31691b2709239722521b5530d2eeb97d6b8d4
+  mapbox_maps_flutter: c7e9ddad4b3e7e68397fc0f8643ff408913dc44f
   MapboxCommon: c69a04a1accd77650372c96d8978a15ed1d95186
   MapboxCoreMaps: 9d8833b738b94d63ee842722641e8cfdc1fa1191
   MapboxMaps: 24a52620178b5390373489c083d4a3acd319c1d3
