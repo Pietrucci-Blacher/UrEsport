@@ -95,7 +95,6 @@ class TournamentService implements ITournamentService {
       final response = await _dio.post(
         "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/invite",
         data: {
-          'teamId': teamId,
           'name': teamName, // Ajoutez le champ name ici
         },
         options: Options(
