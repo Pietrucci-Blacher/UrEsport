@@ -11,7 +11,8 @@ abstract class ITournamentService {
   Future<bool> hasUpvoted(int tournamentId, String username);
   Future<void> joinTournament(int tournamentId, int teamId);
   Future<bool> hasJoinedTournament(int tournamentId, String username);
-  Future<void> inviteTeamToTournament(int tournamentId, int teamId, String teamName);
+  Future<void> inviteTeamToTournament(
+      int tournamentId, int teamId, String teamName);
   Future<List<Team>> fetchTeams();
 }
 
@@ -87,7 +88,8 @@ class TournamentService implements ITournamentService {
   }
 
   @override
-  Future<void> inviteTeamToTournament(int tournamentId, int teamId, String teamName) async {
+  Future<void> inviteTeamToTournament(
+      int tournamentId, int teamId, String teamName) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
@@ -103,7 +105,8 @@ class TournamentService implements ITournamentService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null && status < 500; // Accepter les codes de statut < 500
+            return status != null &&
+                status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
@@ -125,9 +128,6 @@ class TournamentService implements ITournamentService {
     }
   }
 
-
-
-
   @override
   Future<void> upvoteTournament(int tournamentId, String username) async {
     try {
@@ -143,7 +143,8 @@ class TournamentService implements ITournamentService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null && status < 500; // Accepter les codes de statut < 500
+            return status != null &&
+                status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
@@ -152,7 +153,8 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to upvote tournament. Status code: ${response.statusCode}',
+          error:
+              'Failed to upvote tournament. Status code: ${response.statusCode}',
           type: DioExceptionType.badResponse,
         );
       }
@@ -179,7 +181,8 @@ class TournamentService implements ITournamentService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null && status < 500; // Accepter les codes de statut < 500
+            return status != null &&
+                status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
@@ -190,7 +193,8 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to check if upvoted. Status code: ${response.statusCode}',
+          error:
+              'Failed to check if upvoted. Status code: ${response.statusCode}',
           type: DioExceptionType.badResponse,
         );
       }
@@ -220,7 +224,8 @@ class TournamentService implements ITournamentService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null && status < 500; // Accepter les codes de statut < 500
+            return status != null &&
+                status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
@@ -275,7 +280,8 @@ class TournamentService implements ITournamentService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null && status < 500; // Accepter les codes de statut < 500
+            return status != null &&
+                status < 500; // Accepter les codes de statut < 500
           },
         ),
       );
@@ -312,7 +318,8 @@ class TournamentService implements ITournamentService {
         if (response.data == null) {
           throw Exception('Received null response from API');
         } else if (response.data is! List) {
-          throw Exception('Expected a list but got ${response.data.runtimeType}');
+          throw Exception(
+              'Expected a list but got ${response.data.runtimeType}');
         }
 
         return (response.data as List)
@@ -336,12 +343,4 @@ class TournamentService implements ITournamentService {
       }
     }
   }
-
-
-
-
-
-
-
-
 }
