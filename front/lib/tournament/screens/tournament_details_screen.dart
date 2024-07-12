@@ -27,7 +27,6 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
   bool _isLoading = true;
   User? _currentUser;
   List<tournament_model.Team> _teams = [];
-  tournament_model.Team? _selectedTeam;
 
   @override
   void initState() {
@@ -153,7 +152,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
                             ),
                             title: Text(team.name),
                             onTap: () async {
-                              Navigator.pop(context); // Fermez le modal
+                              Navigator.pop(context); // Close the modal
                               await _sendInvite(team.id, team.name);
                             },
                           );
@@ -174,10 +173,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     try {
       await tournamentService.inviteTeamToTournament(
           widget.tournament.id, teamId, teamName);
+      if (!mounted) return;
       showNotificationToast(context, 'Invitation sent',
           backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error sending invitation: $e');
+      if (!mounted) return;
       showNotificationToast(context, 'Failed to send invitation: $e',
           backgroundColor: Colors.red);
     }
@@ -505,7 +506,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
     try {
       await tournamentService.joinTournament(tournamentId, teamId);
       if (!mounted) return;
-      _showNotificationToast('Vous avez bien rejoint le tournoi', Colors.green);
+      _showNotificationToast('You have joined the tournament', Colors.green);
       setState(() {
         _hasJoined = true;
       });
@@ -526,26 +527,26 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> {
         final errorMessage = e.response?.data['error'];
         if (errorMessage == 'Team already in this tournament') {
           _showNotificationToast(
-              'Vous avez déjà rejoint le tournoi', Colors.red);
+              'You have already joined the tournament', Colors.red);
           setState(() {
             _hasJoined = true;
           });
         } else {
           _showNotificationToast(
-              'Erreur lors du join: $errorMessage', Colors.red);
+              'Error during join: $errorMessage', Colors.red);
         }
       } else {
-        _showNotificationToast('Erreur lors du join: ${e.message}', Colors.red);
+        _showNotificationToast('Error during join: ${e.message}', Colors.red);
       }
     } else {
-      _showNotificationToast('Erreur pour rejoindre le tournoi', Colors.red);
+      _showNotificationToast('Error joining tournament', Colors.red);
     }
   }
 
   Future<void> _sendJoinRequest(
       BuildContext context, int tournamentId, int teamId) async {
     if (!mounted) return;
-    _showNotificationToast('Demande pour rejoindre envoyée', Colors.orange);
+    _showNotificationToast('Join request sent', Colors.orange);
   }
 }
 
@@ -637,11 +638,11 @@ class UpvoteButtonState extends State<UpvoteButton>
       });
       if (_isUpvoted) {
         _controller.forward();
-        showNotificationToast(context, 'Upvote ajouté',
+        showNotificationToast(context, 'Upvote added',
             backgroundColor: Colors.green);
       } else {
         _controller.reverse();
-        showNotificationToast(context, 'Upvote retiré',
+        showNotificationToast(context, 'Upvote removed',
             backgroundColor: Colors.red);
       }
     } catch (e) {

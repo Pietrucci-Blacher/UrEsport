@@ -5,10 +5,10 @@ env:
   VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
 
 on:
-  push:
-    branches:
-      - feature/cd-v2
   pull_request:
+    branches:
+      - main
+  push:
     branches:
       - main
 
@@ -51,16 +51,15 @@ jobs:
         env:
           RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
 
-  deploy_apk_and_ios_with_fastlane:
+  deploy_flutter_web_to_vercel:
     needs: deploy_api_to_railway
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        directory: [ 'front/ios', 'front/android' ]
+    env:
+      VERCEL_ORG_ID: ${{ secrets.VERCEL_ORG_ID }}
+      VERCEL_PROJECT_ID: ${{ secrets.VERCEL_PROJECT_ID }}
     defaults:
       run:
-        working-directory: ${{ matrix.directory }}
-
+        working-directory: front
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -73,32 +72,55 @@ jobs:
           cache-key: 'flutter-${{ runner.os }}-${{ env.FLUTTER_CHANNEL }}-${{ env.CACHE_VERSION }}'
           cache-path: '${{ runner.tool_cache }}/flutter/${{ env.FLUTTER_CHANNEL }}'
 
+      - name: Opt out of Dart/Flutter analytics
+        run: |
+          flutter config --no-analytics
+
       - name: Install dependencies
         run: flutter pub get
 
-      - name: Set up Ruby
-        uses: ruby/setup-ruby@v1
-        with:
-          ruby-version: '3.3'
-          bundler-cache: true
+      - name: Install Doppler CLI
+        uses: dopplerhq/cli-action@v3
 
-      - name: Install dependencies
-        run: bundle install
-
-      - name: Install Fastlane
-        run: gem install fastlane
-
-      - name: Deploy APK and iOS build with Fastlane
-        run: |
-          if [ "${{ matrix.directory }}" == "front/ios" ]; then
-            bundle exec fastlane deploy_to_app_store
-          elif [ "${{ matrix.directory }}" == "front/android" ]; then
-            flutter build apk --release
-            bundle exec fastlane deploy_to_play_store
-          fi
+      - name: Retrieve secrets from Doppler
         env:
-          FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
-          FASTLANE_APPLE_ID: ${{ secrets.FASTLANE_APPLE_ID }}
-          FASTLANE_TEAM_ID: ${{ secrets.FASTLANE_TEAM_ID }}
-          FASTLANE_MATCH_PASSWORD: ${{ secrets.FASTLANE_MATCH_PASSWORD }}
-          GOOGLE_APPLICATION_CREDENTIALS: ${{ secrets.GOOGLE_APPLICATION_CREDENTIALS }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+        run: doppler secrets download --no-file --format env > .env
+
+      - name: Generate .netrc file
+        run: |
+          echo "machine api.mapbox.com" >> ~/.netrc
+          echo "login mapbox" >> ~/.netrc
+          echo "password ${{ secrets.SDK_REGISTRY_TOKEN }}" >> ~/.netrc
+          chmod 600 ~/.netrc
+
+      - name: Build Flutter Web
+        run: flutter build web --release
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: latest
+          run_install: false
+
+      - name: Get pnpm store directory
+        id: pnpm-cache
+        run: |
+          echo "STORE_PATH=$(pnpm store path --silent)" >> $GITHUB_ENV
+
+      - name: Setup pnpm cache
+        uses: actions/cache@v4
+        with:
+          path: ${{ env.STORE_PATH }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: Install Vercel CLI
+        run: pnpm install --global vercel@latest
+
+      - name: Pull Vercel Environment Information
+        run: vercel pull --yes --environment=production --token=${{ secrets.VERCEL_TOKEN }}
+
+      - name: Deploy Flutter Web to Vercel
+        run: vercel deploy --prod --token=${{ secrets.VERCEL_TOKEN }} --yes --cwd build/web

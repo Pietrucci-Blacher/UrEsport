@@ -1,0 +1,3 @@
+-keepattributes *Annotation*
+-keep class com.google.j2objc.annotations.** { *; }
+-keep class com.google.common.util.concurrent.** { *; }

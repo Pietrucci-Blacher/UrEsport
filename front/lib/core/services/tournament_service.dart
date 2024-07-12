@@ -1,7 +1,8 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/tournament.dart';
+import 'package:flutter/material.dart';
+
 import 'cache_service.dart';
 
 abstract class ITournamentService {
@@ -309,6 +310,7 @@ class TournamentService implements ITournamentService {
     }
   }
 
+  @override
   Future<List<Team>> fetchTeams() async {
     try {
       final response = await _dio.get(
@@ -316,9 +318,8 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode == 200) {
-        print('API Response: ${response.data}');
+        debugPrint('API Response: ${response.data}');
 
-        // Vérifiez si la réponse est null ou si elle n'est pas une liste
         if (response.data == null) {
           throw Exception('Received null response from API');
         } else if (response.data is! List) {
@@ -339,10 +340,10 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       if (e is DioException) {
-        print('DioException: ${e.message}');
+        debugPrint('DioException: ${e.message}');
         rethrow;
       } else {
-        print('Exception: ${e.toString()}');
+        debugPrint('Exception: ${e.toString()}');
         throw Exception('Unexpected error occurred: ${e.toString()}');
       }
     }

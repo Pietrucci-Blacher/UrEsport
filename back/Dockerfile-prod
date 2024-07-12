@@ -60,5 +60,5 @@ RUN chmod +x /app/uresport-api
 
 EXPOSE 8080
 
-CMD ["./uresport-api", "migrate"]
+RUN ./uresport-api migrate
 CMD ["./uresport-api"]
