@@ -45,6 +45,8 @@ class ZoomOut extends MapEvent {}
 
 class CenterOnCurrentLocation extends MapEvent {}
 
+class Toggle3DView extends MapEvent {}
+
 class SetMapController extends MapEvent {
   final MapboxMap controller;
 
@@ -52,4 +54,22 @@ class SetMapController extends MapEvent {
 
   @override
   List<Object> get props => [controller];
+}
+
+class MarkerTapped extends MapEvent {
+  final Tournament tournament;
+
+  const MarkerTapped(this.tournament);
+
+  @override
+  List<Object> get props => [tournament];
+}
+
+class ExportDirections extends MapEvent {
+  final List<List<double>> polylinePoints;
+
+  const ExportDirections(this.polylinePoints);
+
+  @override
+  List<Object> get props => [polylinePoints];
 }
