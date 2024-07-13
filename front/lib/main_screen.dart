@@ -38,7 +38,7 @@ class MainScreenState extends State<MainScreen> {
   late final List<Widget> _widgetOptions;
   String? _profileImageUrl;
   final ValueNotifier<String?> _profileImageNotifier =
-      ValueNotifier<String?>(null);
+  ValueNotifier<String?>(null);
 
   @override
   void initState() {
@@ -74,7 +74,7 @@ class MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: Consumer<NotificationProvider>(
         builder: (context, notificationProvider, child) {
           return BlocBuilder<AuthBloc, AuthState>(
@@ -99,75 +99,6 @@ class MainScreenState extends State<MainScreen> {
                       appBar: AppBar(
                         title: Row(
                           children: [
-                            if (!kIsWeb)
-                              IconButton(
-                                icon: isLoggedIn && _profileImageUrl != null
-                                    ? Stack(
-                                        children: [
-                                          ClipOval(
-                                            child: CachedImageWidget(
-                                              url: _profileImageUrl!,
-                                              size: 40,
-                                            ),
-                                          ),
-                                          if (notificationProvider
-                                                  .notificationCount >
-                                              0)
-                                            Positioned(
-                                              right: 0,
-                                              top: 0,
-                                              child: Container(
-                                                padding:
-                                                    const EdgeInsets.all(2),
-                                                decoration: BoxDecoration(
-                                                  color: Colors.red,
-                                                  borderRadius:
-                                                      BorderRadius.circular(6),
-                                                ),
-                                                constraints:
-                                                    const BoxConstraints(
-                                                  minWidth: 18,
-                                                  minHeight: 18,
-                                                ),
-                                                child: Text(
-                                                  '${notificationProvider.notificationCount}',
-                                                  style: const TextStyle(
-                                                    color: Colors.white,
-                                                    fontSize: 12,
-                                                  ),
-                                                  textAlign: TextAlign.center,
-                                                ),
-                                              ),
-                                            ),
-                                        ],
-                                      )
-                                    : const Icon(Icons.person),
-                                onPressed: () async {
-                                  if (isLoggedIn) {
-                                    await Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => ProfileScreen(
-                                          authService: widget.authService,
-                                          profileImageNotifier:
-                                              _profileImageNotifier,
-                                        ),
-                                      ),
-                                    );
-                                  } else {
-                                    Navigator.push(
-                                      context,
-                                      MaterialPageRoute(
-                                        builder: (context) => AuthScreen(
-                                          authService: widget.authService,
-                                          showLogin: true,
-                                          showRegister: !kIsWeb,
-                                        ),
-                                      ),
-                                    );
-                                  }
-                                },
-                              ),
                             const SizedBox(width: 8),
                             Text(
                               _getTitleForIndex(context, _selectedIndex),
@@ -176,12 +107,169 @@ class MainScreenState extends State<MainScreen> {
                           ],
                         ),
                         actions: [
+                          if (!kIsWeb)
+                            IconButton(
+                              icon: isLoggedIn && _profileImageUrl != null
+                                  ? Stack(
+                                children: [
+                                  ClipOval(
+                                    child: CachedImageWidget(
+                                      url: _profileImageUrl!,
+                                      size: 40,
+                                    ),
+                                  ),
+                                  if (notificationProvider
+                                      .notificationCount >
+                                      0)
+                                    Positioned(
+                                      right: 0,
+                                      top: 0,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(2),
+                                        decoration: BoxDecoration(
+                                          color: Colors.red,
+                                          borderRadius:
+                                          BorderRadius.circular(6),
+                                        ),
+                                        constraints:
+                                        const BoxConstraints(
+                                          minWidth: 18,
+                                          minHeight: 18,
+                                        ),
+                                        child: Text(
+                                          '${notificationProvider.notificationCount}',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 12,
+                                          ),
+                                          textAlign: TextAlign.center,
+                                        ),
+                                      ),
+                                    ),
+                                ],
+                              )
+                                  : const Icon(Icons.person),
+                              onPressed: () async {
+                                if (isLoggedIn) {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProfileScreen(
+                                        authService: widget.authService,
+                                        profileImageNotifier:
+                                        _profileImageNotifier,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AuthScreen(
+                                        authService: widget.authService,
+                                        showLogin: true,
+                                        showRegister: !kIsWeb,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
                           LocaleSwitcher(
                             onLocaleChanged: (locale) {
                               context.read<LocaleCubit>().setLocale(locale);
                             },
                           ),
                         ],
+                      ),
+                      drawer: Drawer(
+                        child: ListView(
+                          padding: EdgeInsets.zero,
+                          children: [
+                            DrawerHeader(
+                              decoration: BoxDecoration(
+                                color: Theme.of(context).primaryColor,
+                              ),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  if (isLoggedIn && _profileImageUrl != null)
+                                    CircleAvatar(
+                                      radius: 40,
+                                      backgroundImage:
+                                      NetworkImage(_profileImageUrl!),
+                                    )
+                                  else if (isLoggedIn)
+                                    CircleAvatar(
+                                      radius: 40,
+                                      child: Text(
+                                        state.user.username[0].toUpperCase(),
+                                        style: const TextStyle(fontSize: 24),
+                                      ),
+                                    )
+                                  else
+                                    const CircleAvatar(
+                                      radius: 40,
+                                      child: Icon(Icons.person),
+                                    ),
+                                  const SizedBox(height: 8),
+                                  if (isLoggedIn)
+                                    Text(
+                                      state.user.username,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 18,
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.person),
+                              title: const Text('Profile'),
+                              onTap: () async {
+                                Navigator.pop(context); // Close the drawer
+                                if (isLoggedIn) {
+                                  await Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => ProfileScreen(
+                                        authService: widget.authService,
+                                        profileImageNotifier:
+                                        _profileImageNotifier,
+                                      ),
+                                    ),
+                                  );
+                                } else {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AuthScreen(
+                                        authService: widget.authService,
+                                        showLogin: true,
+                                        showRegister: !kIsWeb,
+                                      ),
+                                    ),
+                                  );
+                                }
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.settings),
+                              title: const Text('Settings'),
+                              onTap: () {
+                                // Implement the navigation to Settings screen here
+                              },
+                            ),
+                            ListTile(
+                              leading: const Icon(Icons.logout),
+                              title: const Text('Logout'),
+                              onTap: () {
+                                // Implement the logout functionality here
+                              },
+                            ),
+                          ],
+                        ),
                       ),
                       body: IndexedStack(
                         index: _selectedIndex,
@@ -190,12 +278,12 @@ class MainScreenState extends State<MainScreen> {
                       bottomNavigationBar: kIsWeb
                           ? null
                           : CustomBottomNavigation(
-                              isLoggedIn: isLoggedIn,
-                              selectedIndex: _selectedIndex,
-                              onTap: _onItemTapped,
-                              notificationCount:
-                                  notificationProvider.notificationCount,
-                            ),
+                        isLoggedIn: isLoggedIn,
+                        selectedIndex: _selectedIndex,
+                        onTap: _onItemTapped,
+                        notificationCount:
+                        notificationProvider.notificationCount,
+                      ),
                     );
                   },
                 );
