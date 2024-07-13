@@ -273,6 +273,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   }
 
   Future<void> _toggleUpvote() async {
+    if (_currentUser == null) {
+      showNotificationToast(context, 'You must be logged in to upvote', backgroundColor: Colors.red);
+      return;
+    }
+
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
 
     try {
@@ -304,30 +309,35 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-        length: 2,
-        child: Scaffold(
-          appBar: AppBar(
-            title: Text(widget.tournament.name),
-            bottom: const TabBar(
-              tabs: [
-                Tab(text: 'Details'),
-                Tab(text: 'Bracket'),
-              ],
-            ),
-          ),
-          body: TabBarView(
-            children: [
-              _pageDetail(),
-              TournamentBracketPage(tournamentId: widget.tournament.id),
+      length: 2,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.tournament.name),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: 'Details'),
+              Tab(text: 'Bracket'),
             ],
           ),
-          floatingActionButton: _currentUser?.id == widget.tournament.ownerId
-              ? FloatingActionButton(
-            onPressed: _showTeamsModal,
-            child: const Icon(Icons.list),
-          )
-              : null,
-        ));
+        ),
+        body: TabBarView(
+          children: [
+            _pageDetail(),
+            _currentUser != null
+                ? TournamentBracketPage(tournamentId: widget.tournament.id)
+                : const Center(
+              child: Text('You must be logged in to view your bracket'),
+            ),
+          ],
+        ),
+        floatingActionButton: _currentUser != null && widget.tournament.ownerId == _currentUser!.id
+            ? FloatingActionButton(
+          onPressed: _showTeamsModal,
+          child: const Icon(Icons.list),
+        )
+            : null,
+      ),
+    );
   }
 
   Widget _pageDetail() {
@@ -468,30 +478,38 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                       ),
                       const SizedBox(height: 4),
                       GestureDetector(
-                        onTap: _toggleUpvote,
+                        onTap: _currentUser != null ? _toggleUpvote : null,
                         child: Row(
                           children: [
                             AnimatedBuilder(
                               animation: _controller,
-                              builder: (context, child) => GradientIcon(
-                                icon: Icons.local_fire_department,
-                                size: 30.0,
-                                gradient: LinearGradient(
-                                  colors: _hasUpvoted
-                                      ? [
-                                    Colors.red,
-                                    Colors.orange,
-                                    Colors.yellow,
-                                  ]
-                                      : [
-                                    Colors.grey,
-                                    Colors.grey.shade600,
+                              builder: (context, child) {
+                                final isUpvoteIconDisabled = _currentUser == null;
+                                return Stack(
+                                  children: [
+                                    GradientIcon(
+                                      icon: Icons.local_fire_department,
+                                      size: 30.0,
+                                      gradient: LinearGradient(
+                                        colors: _hasUpvoted
+                                            ? [Colors.red, Colors.orange, Colors.yellow]
+                                            : [Colors.grey, Colors.grey.shade600],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                    ),
+                                    if (isUpvoteIconDisabled)
+                                      Positioned.fill(
+                                        child: Icon(
+                                          Icons.not_interested,
+                                          color: Colors.red.withOpacity(1),
+                                        ),
+                                      ),
                                   ],
-                                  begin: Alignment.topLeft,
-                                  end: Alignment.bottomRight,
-                                ),
-                              ),
+                                );
+                              },
                             ),
+
                             const SizedBox(width: 4),
                             Text('${widget.tournament.upvotes + (_hasUpvoted ? 1 : 0)}'),
                           ],
@@ -598,7 +616,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
             if (!_hasJoined && widget.tournament.ownerId != _currentUser?.id && !widget.tournament.isPrivate)
               Center(
                 child: ElevatedButton(
-                  onPressed: _showJoinTeamsModal, // Show the modal to select a team
+                  onPressed: _currentUser != null ? _showJoinTeamsModal : null, // Show the modal to select a team
                   style: ElevatedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
@@ -665,5 +683,4 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
       _showNotificationToast('Erreur pour rejoindre le tournoi', Colors.red);
     }
   }
-
 }
