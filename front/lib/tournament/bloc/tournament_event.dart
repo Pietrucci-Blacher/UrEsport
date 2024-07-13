@@ -10,9 +10,10 @@ abstract class TournamentEvent extends Equatable {
 class LoadTournaments extends TournamentEvent {
   final int? limit;
   final int? page;
+  final int? ownerId;
 
-  const LoadTournaments({this.limit, this.page});
+  const LoadTournaments({this.limit, this.page, this.ownerId});
 
   @override
-  List<Object?> get props => [limit, page];
+  List<Object?> get props => [limit, page, ownerId];
 }

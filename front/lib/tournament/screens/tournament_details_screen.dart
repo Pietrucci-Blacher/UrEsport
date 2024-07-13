@@ -11,8 +11,9 @@ import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/rating.dart';
+import 'package:uresport/bracket/screens/custom_bracket.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
-
+import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/models/game.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
@@ -171,28 +172,28 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 _teams.isEmpty
                     ? const Text('No teams available.')
                     : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _teams.length,
-                  itemBuilder: (context, index) {
-                    final team = _teams[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Colors.blueAccent,
-                        child: Text(
-                          team.name[0],
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _teams.length,
+                        itemBuilder: (context, index) {
+                          final team = _teams[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.blueAccent,
+                              child: Text(
+                                team.name[0],
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            title: Text(team.name),
+                            onTap: () async {
+                              Navigator.pop(context); // Close the modal
+                              await _sendInvite(team.id, team.name);
+                            },
+                          );
+                        },
                       ),
-                      title: Text(team.name),
-                      onTap: () async {
-                        Navigator.pop(context); // Fermez le modal
-                        await _sendInvite(team.id, team.name);
-                      },
-                    );
-                  },
-                ),
               ],
             ),
           ),
@@ -207,11 +208,30 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     try {
       await tournamentService.inviteTeamToTournament(
           widget.tournament.id, teamId, teamName);
+      if (!mounted) return;
       showNotificationToast(context, 'Invitation sent',
           backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error sending invitation: $e');
+      if (!mounted) return;
       showNotificationToast(context, 'Failed to send invitation: $e',
+          backgroundColor: Colors.red);
+    }
+  }
+
+  Future<void> generateBracket() async {
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
+
+    try {
+      await tournamentService.generateBracket(widget.tournament.id);
+      if (!mounted) return;
+      showNotificationToast(context, 'Bracket generated',
+          backgroundColor: Colors.green);
+    } catch (e) {
+      debugPrint('Error generating bracket: $e');
+      if (!mounted) return;
+      showNotificationToast(context, 'Failed to generate bracket: $e',
           backgroundColor: Colors.red);
     }
   }
@@ -247,15 +267,36 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
   @override
   Widget build(BuildContext context) {
-    final DateFormat dateFormat = DateFormat.yMMMd();
+    return DefaultTabController(
+        length: 2,
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(widget.tournament.name),
+            bottom: const TabBar(
+              tabs: [
+                Tab(text: 'Details'),
+                Tab(text: 'Bracket'),
+              ],
+            ),
+          ),
+          body: TabBarView(
+            children: [
+              _pageDetail(),
+              TournamentBracketPage(tournamentId: widget.tournament.id),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton(
+            onPressed: _showTeamsModal,
+            child: const Icon(Icons.list),
+          ),
+        ));
+  }
 
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.tournament.name),
-      ),
-      body: _isLoading || _currentUser == null
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
+  Widget _pageDetail() {
+    final DateFormat dateFormat = DateFormat.yMMMd();
+    var isOwner = widget.tournament.ownerId == _currentUser?.id;
+
+    return SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
           child: Column(
@@ -332,8 +373,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => GameDetailPage(
-                                game: widget.game!,
+                              builder: (context) =>
+                                GameDetailPage(game: widget.game!,
                               ),
                             ),
                           );
@@ -501,7 +542,22 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                   ),
                 ],
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 16),if (isOwner)
+              Center(
+                child: ElevatedButton(
+                  onPressed: () {
+                    generateBracket();
+                  },
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
+                  ),
+                  child: const Text('Générer le bracket'),
+                ),
+              ),
               if (!_hasJoined)
                 Center(
                   child: ElevatedButton(
@@ -534,15 +590,10 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
               ),
             ],
           ),
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _showTeamsModal,
-        child: const Icon(Icons.list),
+
       ),
     );
   }
-
 
   Future<void> _joinTournament(
       BuildContext context, int tournamentId, int teamId) async {
