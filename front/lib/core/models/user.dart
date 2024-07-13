@@ -1,3 +1,5 @@
+import 'package:uresport/core/models/tournament.dart'; // Assurez-vous d'importer le modèle Team
+
 class User {
   final int id;
   final String firstname;
@@ -6,6 +8,7 @@ class User {
   final String email;
   final String? profileImageUrl;
   final List<dynamic> roles;
+  final List<Team> teams; // Ajoutez cette ligne
 
   User({
     required this.id,
@@ -15,6 +18,7 @@ class User {
     required this.email,
     this.profileImageUrl,
     required this.roles,
+    required this.teams, // Ajoutez cette ligne
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,7 @@ class User {
       email: json['email'],
       profileImageUrl: json['profile_image_url'],
       roles: json['roles'],
+      teams: (json['teams'] as List<dynamic>).map((teamJson) => Team.fromJson(teamJson)).toList(), // Ajoutez cette ligne
     );
   }
 
@@ -36,6 +41,8 @@ class User {
     String? username,
     String? email,
     String? profileImageUrl,
+    List<dynamic>? roles,
+    List<Team>? teams, // Ajoutez cette ligne
   }) {
     return User(
       id: id ?? this.id,
@@ -44,7 +51,8 @@ class User {
       username: username ?? this.username,
       email: email ?? this.email,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
-      roles: roles,
+      roles: roles ?? this.roles,
+      teams: teams ?? this.teams, // Ajoutez cette ligne
     );
   }
 }
