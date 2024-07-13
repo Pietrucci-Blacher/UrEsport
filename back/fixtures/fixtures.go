@@ -22,12 +22,11 @@ var (
 
 	GAME_TAGS = []string{"RPG", "Aventure", "Action", "FPS", "MMORPG", "Survival", "Horror", "Simulation", "Sport", "Battle Royale"}
 
-	TOURNAMENT_NB      = 10
-	TOURNAMENT_TEAM_NB = 5
+	TOURNAMENT_NB      = 20
+	TOURNAMENT_TEAM_NB = 20
 
-	TEAM_NB = 10
+	TEAM_NB = 20
 
-	GAME_NB         = 40
 	TEAM_MEMBERS_NB = 4
 
 	FRIEND_NB = 10
