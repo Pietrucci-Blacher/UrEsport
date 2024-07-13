@@ -4,16 +4,21 @@ import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 
+import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/core/models/tournament.dart';
+
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final Websocket _websocket;
+  final TournamentService _tournamentService;
 
-  DashboardBloc(this._websocket) : super(DashboardInitial()) {
+  DashboardBloc(this._websocket, this._tournamentService) : super(DashboardInitial()) {
     on<ConnectWebSocket>(_onConnectWebSocket);
     on<DisconnectWebSocket>(_onDisconnectWebSocket);
     on<WebSocketMessageReceived>(_onWebSocketMessageReceived);
     on<UpdateDashboardStats>(_onUpdateDashboardStats);
     on<AddLogEntry>(_onAddLogEntry);
-    on<FetchAllUsers>(_onFetchAllUsers); // Ajout de cette ligne
+    on<FetchAllUsers>(_onFetchAllUsers);
+    on<FetchTournaments>(_onFetchTournaments);
   }
 
   Future<void> _onFetchAllUsers(
@@ -115,4 +120,25 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       emit(currentState.copyWith(recentLogs: updatedLogs));
     }
   }
+
+
+  Future<void> _onFetchTournaments(
+      FetchTournaments event, Emitter<DashboardState> emit) async {
+    try {
+      List<Tournament> tournaments = await _tournamentService.fetchTournaments();
+      print('Tournaments fetched: $tournaments');
+      emit(DashboardLoaded(
+        message: 'Tournaments loaded',
+        activeUsers: 0, // mettez à jour selon vos besoins
+        activeTournaments: tournaments.length,
+        totalGames: 0, // mettez à jour selon vos besoins
+        recentLogs: [], // mettez à jour selon vos besoins
+        tournaments: tournaments,
+      ));
+    } catch (e) {
+      print('Error fetching tournaments: $e');
+      emit(DashboardError(e.toString()));
+    }
+  }
+
 }

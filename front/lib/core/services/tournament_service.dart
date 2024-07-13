@@ -27,8 +27,7 @@ class TournamentService implements ITournamentService {
   TournamentService(this._dio);
 
   @override
-  Future<List<Tournament>> fetchTournaments(
-      {int? limit, int? page, int? ownerId}) async {
+  Future<List<Tournament>> fetchTournaments({int? limit, int? page, int? ownerId}) async {
     try {
       final Map<String, dynamic> queryParameters = {};
       if (limit != null) {
@@ -42,11 +41,12 @@ class TournamentService implements ITournamentService {
       }
 
       final response = await _dio.get(
-        "${dotenv.env['API_ENDPOINT']}/tournaments",
+        "http://localhost:8080/tournaments",
         queryParameters: queryParameters,
       );
 
       if (response.statusCode == 200) {
+        print('Data fetched successfully: ${response.data}');
         final tournaments = (response.data as List)
             .map((json) => Tournament.fromJson(json))
             .toList();
@@ -60,6 +60,7 @@ class TournamentService implements ITournamentService {
         );
       }
     } catch (e) {
+      print('Error: $e');
       if (e is DioException) {
         rethrow;
       } else {

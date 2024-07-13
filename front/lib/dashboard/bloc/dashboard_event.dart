@@ -39,3 +39,6 @@ class AddLogEntry extends DashboardEvent {
 }
 
 class FetchAllUsers extends DashboardEvent {}
+
+class FetchTournaments extends DashboardEvent {}
+

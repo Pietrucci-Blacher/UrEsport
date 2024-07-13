@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
@@ -8,7 +9,8 @@ import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 import 'package:uresport/dashboard/models/game.dart';
 import 'package:uresport/dashboard/models/tournament.dart';
-import 'package:uresport/dashboard/models/data.dart'; // Importez les données
+import 'package:uresport/dashboard/models/data.dart';
+import 'package:uresport/core/services/tournament_service.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -28,9 +30,12 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    final Dio dio = Dio();
+    final TournamentService tournamentService = TournamentService(dio);
+
     return BlocProvider(
       create: (context) =>
-      DashboardBloc(Websocket.getInstance())..add(ConnectWebSocket()),
+      DashboardBloc(Websocket.getInstance(), tournamentService)..add(FetchTournaments()),
       child: Scaffold(
         body: Row(
           children: [
@@ -74,11 +79,10 @@ class _DashboardState extends State<Dashboard> {
             Expanded(
               child: BlocBuilder<DashboardBloc, DashboardState>(
                 builder: (context, state) {
-                  if (state is DashboardInitial) {
-                    return const Center(child: Text('Initializing...'));
-                  } else if (state is DashboardLoading) {
+                  if (state is DashboardLoading) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (state is DashboardLoaded) {
+                    print('DashboardLoaded state: ${state.tournaments}');
                     switch (_selectedIndex) {
                       case 0:
                         return _buildDashboardContent(state);
@@ -169,37 +173,37 @@ class _DashboardState extends State<Dashboard> {
               DataColumn(label: Text('Upvotes')),
               DataColumn(label: Text('Actions')),
             ],
-            rows: tournaments.map((tournament) {
+            rows: state.tournaments.map((tournament) {
               return DataRow(cells: [
                 DataCell(Text(tournament.id.toString())),
                 DataCell(Text(tournament.name)),
                 DataCell(Text(tournament.description)),
-                DataCell(Text(tournament.startDate)),
-                DataCell(Text(tournament.endDate)),
+                DataCell(Text(tournament.startDate.toIso8601String())),
+                DataCell(Text(tournament.endDate.toIso8601String())),
                 DataCell(Text(tournament.location)),
                 DataCell(Text(tournament.latitude.toString())),
                 DataCell(Text(tournament.longitude.toString())),
                 DataCell(Text(tournament.ownerId.toString())),
                 DataCell(Text(tournament.image)),
-                DataCell(Text(tournament.private.toString())),
-                DataCell(Text(tournament.gameId.toString())),
-                DataCell(Text(tournament.nbPlayer.toString())),
-                DataCell(Text(tournament.createdAt)),
-                DataCell(Text(tournament.updatedAt)),
+                DataCell(Text(tournament.isPrivate.toString())),
+                DataCell(Text(tournament.game.name)),
+                DataCell(Text(tournament.teams.length.toString())), // Nombre d'équipes
+                DataCell(Text(tournament.startDate.toIso8601String())), // Example for Created At, update according to your data
+                DataCell(Text(tournament.endDate.toIso8601String())), // Example for Updated At, update according to your data
                 DataCell(Text(tournament.upvotes.toString())),
                 DataCell(Row(
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit),
                       onPressed: () {
-                        _showTournamentDialog(context, tournament: tournament);
+                        _showTournamentDialog(context, tournament: tournament as Tournament?);
                       },
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () {
                         setState(() {
-                          tournaments.remove(tournament);
+                          state.tournaments.remove(tournament); // Mettez à jour l'état des tournois ici
                         });
                       },
                     ),
@@ -212,6 +216,7 @@ class _DashboardState extends State<Dashboard> {
       ),
     );
   }
+
 
   Widget _buildGamesContent(DashboardLoaded state) {
     final ScrollController scrollController = ScrollController();
