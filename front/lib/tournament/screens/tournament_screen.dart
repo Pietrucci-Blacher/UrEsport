@@ -130,7 +130,7 @@ class TournamentScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Flexible(
+                      Expanded(
                         child: Text(
                           tournament.name,
                           style: const TextStyle(
@@ -161,60 +161,67 @@ class TournamentScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on, color: Colors.grey),
-                              const SizedBox(width: 5),
-                              Text(
-                                tournament.location,
-                                style: const TextStyle(fontSize: 16),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              const Icon(Icons.videogame_asset,
-                                  color: Colors.grey),
-                              const SizedBox(width: 5),
-                              Text(
-                                'Game: ${tournament.game.name}',
-                                style: const TextStyle(fontSize: 16),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              const Icon(Icons.calendar_today,
-                                  color: Colors.grey),
-                              const SizedBox(width: 5),
-                              Text(
-                                'Start: ${dateFormat.format(tournament.startDate)}',
-                                style: const TextStyle(fontSize: 16),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 5),
-                          Row(
-                            children: [
-                              const Icon(Icons.calendar_today,
-                                  color: Colors.grey),
-                              const SizedBox(width: 5),
-                              Text(
-                                'End: ${dateFormat.format(tournament.endDate)}',
-                                style: const TextStyle(fontSize: 16),
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ],
-                          ),
-                        ],
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                const Icon(Icons.location_on, color: Colors.grey),
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    tournament.location,
+                                    style: const TextStyle(fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                const Icon(Icons.videogame_asset, color: Colors.grey),
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    'Game: ${tournament.game.name}',
+                                    style: const TextStyle(fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                const Icon(Icons.calendar_today, color: Colors.grey),
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    'Start: ${dateFormat.format(tournament.startDate)}',
+                                    style: const TextStyle(fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 5),
+                            Row(
+                              children: [
+                                const Icon(Icons.calendar_today, color: Colors.grey),
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    'End: ${dateFormat.format(tournament.endDate)}',
+                                    style: const TextStyle(fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
                       ),
                       Column(
                         children: [
