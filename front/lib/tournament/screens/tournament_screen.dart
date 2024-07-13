@@ -130,10 +130,13 @@ class TournamentScreen extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        tournament.name,
-                        style: const TextStyle(
-                            fontSize: 22, fontWeight: FontWeight.bold),
+                      Flexible(
+                        child: Text(
+                          tournament.name,
+                          style: const TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
+                          overflow: TextOverflow.ellipsis,
+                        ),
                       ),
                       if (tournament.isPrivate)
                         const Icon(
@@ -151,6 +154,8 @@ class TournamentScreen extends StatelessWidget {
                   Text(
                     tournament.description,
                     style: const TextStyle(fontSize: 16, color: Colors.grey),
+                    overflow: TextOverflow.ellipsis,
+                    maxLines: 2,
                   ),
                   const SizedBox(height: 10),
                   Row(
@@ -166,6 +171,7 @@ class TournamentScreen extends StatelessWidget {
                               Text(
                                 tournament.location,
                                 style: const TextStyle(fontSize: 16),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
@@ -178,6 +184,7 @@ class TournamentScreen extends StatelessWidget {
                               Text(
                                 'Game: ${tournament.game.name}',
                                 style: const TextStyle(fontSize: 16),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
@@ -190,6 +197,7 @@ class TournamentScreen extends StatelessWidget {
                               Text(
                                 'Start: ${dateFormat.format(tournament.startDate)}',
                                 style: const TextStyle(fontSize: 16),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
@@ -202,6 +210,7 @@ class TournamentScreen extends StatelessWidget {
                               Text(
                                 'End: ${dateFormat.format(tournament.endDate)}',
                                 style: const TextStyle(fontSize: 16),
+                                overflow: TextOverflow.ellipsis,
                               ),
                             ],
                           ),
@@ -259,5 +268,4 @@ class TournamentScreen extends StatelessWidget {
       ),
     );
   }
-
 }
