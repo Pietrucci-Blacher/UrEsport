@@ -1,9 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:uresport/core/models/tournament.dart';
-
-import '../../core/models/game.dart';
 
 class EditTournamentPage extends StatefulWidget {
   final Tournament? tournament;
@@ -17,8 +17,6 @@ class EditTournamentPage extends StatefulWidget {
 class _EditTournamentPageState extends State<EditTournamentPage> {
   late TextEditingController nameController;
   late TextEditingController descriptionController;
-  late TextEditingController startDateController;
-  late TextEditingController endDateController;
   late TextEditingController locationController;
   late TextEditingController latitudeController;
   late TextEditingController longitudeController;
@@ -29,30 +27,32 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
   late TextEditingController upvotesController;
 
   final Dio _dio = Dio();
+  final DateFormat _dateFormat = DateFormat("yyyy-MM-dd HH:mm");
+
+  DateTime? _startDateTime;
+  DateTime? _endDateTime;
 
   @override
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.tournament?.name ?? '');
     descriptionController = TextEditingController(text: widget.tournament?.description ?? '');
-    startDateController = TextEditingController(text: widget.tournament?.startDate.toIso8601String() ?? '');
-    endDateController = TextEditingController(text: widget.tournament?.endDate.toIso8601String() ?? '');
+    _startDateTime = widget.tournament?.startDate;
+    _endDateTime = widget.tournament?.endDate;
     locationController = TextEditingController(text: widget.tournament?.location ?? '');
-    latitudeController = TextEditingController(text: widget.tournament?.latitude.toString() ?? '');
-    longitudeController = TextEditingController(text: widget.tournament?.longitude.toString() ?? '');
-    ownerIdController = TextEditingController(text: widget.tournament?.ownerId.toString() ?? '');
+    latitudeController = TextEditingController(text: widget.tournament?.latitude?.toString() ?? '');
+    longitudeController = TextEditingController(text: widget.tournament?.longitude?.toString() ?? '');
+    ownerIdController = TextEditingController(text: widget.tournament?.ownerId?.toString() ?? '');
     imageController = TextEditingController(text: widget.tournament?.image ?? '');
-    privateController = TextEditingController(text: widget.tournament?.isPrivate.toString() ?? '');
+    privateController = TextEditingController(text: widget.tournament?.isPrivate?.toString() ?? '');
     nbPlayerController = TextEditingController(text: widget.tournament?.teams.length.toString() ?? '');
-    upvotesController = TextEditingController(text: widget.tournament?.upvotes.toString() ?? '');
+    upvotesController = TextEditingController(text: widget.tournament?.upvotes?.toString() ?? '');
   }
 
   @override
   void dispose() {
     nameController.dispose();
     descriptionController.dispose();
-    startDateController.dispose();
-    endDateController.dispose();
     locationController.dispose();
     latitudeController.dispose();
     longitudeController.dispose();
@@ -69,16 +69,15 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
       // Add new tournament logic
       // Implement your own logic for adding a new tournament
     } else {
-      // Edit existing tournament
       final updatedTournament = Tournament(
         id: widget.tournament!.id,
         name: nameController.text,
         description: descriptionController.text,
-        startDate: DateTime.parse(startDateController.text),
-        endDate: DateTime.parse(endDateController.text),
+        startDate: _startDateTime!,
+        endDate: _endDateTime!,
         location: locationController.text,
-        latitude: double.parse(latitudeController.text),
-        longitude: double.parse(longitudeController.text),
+        latitude: double.tryParse(latitudeController.text) ?? 0,
+        longitude: double.tryParse(longitudeController.text) ?? 0,
         ownerId: int.parse(ownerIdController.text),
         image: imageController.text,
         isPrivate: privateController.text.toLowerCase() == 'true',
@@ -131,13 +130,67 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
                 controller: descriptionController,
                 decoration: const InputDecoration(labelText: 'Description'),
               ),
-              TextField(
-                controller: startDateController,
-                decoration: const InputDecoration(labelText: 'Start Date'),
+              DateTimeField(
+                format: _dateFormat,
+                initialValue: _startDateTime,
+                decoration: const InputDecoration(labelText: 'Start Date & Time'),
+                onShowPicker: (context, currentValue) async {
+                  final date = await showDatePicker(
+                    context: context,
+                    firstDate: DateTime(2000),
+                    initialDate: currentValue ?? DateTime.now(),
+                    lastDate: DateTime(2100),
+                  );
+                  if (date != null) {
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                    );
+                    return DateTimeField.combine(date, time);
+                  } else {
+                    return currentValue;
+                  }
+                },
+                onChanged: (date) => setState(() {
+                  _startDateTime = date;
+                }),
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please enter the start date and time';
+                  }
+                  return null;
+                },
               ),
-              TextField(
-                controller: endDateController,
-                decoration: const InputDecoration(labelText: 'End Date'),
+              DateTimeField(
+                format: _dateFormat,
+                initialValue: _endDateTime,
+                decoration: const InputDecoration(labelText: 'End Date & Time'),
+                onShowPicker: (context, currentValue) async {
+                  final date = await showDatePicker(
+                    context: context,
+                    firstDate: DateTime(2000),
+                    initialDate: currentValue ?? DateTime.now(),
+                    lastDate: DateTime(2100),
+                  );
+                  if (date != null) {
+                    final time = await showTimePicker(
+                      context: context,
+                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                    );
+                    return DateTimeField.combine(date, time);
+                  } else {
+                    return currentValue;
+                  }
+                },
+                onChanged: (date) => setState(() {
+                  _endDateTime = date;
+                }),
+                validator: (value) {
+                  if (value == null) {
+                    return 'Please enter the end date and time';
+                  }
+                  return null;
+                },
               ),
               TextField(
                 controller: locationController,
@@ -146,14 +199,12 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
               TextField(
                 controller: latitudeController,
                 decoration: const InputDecoration(labelText: 'Latitude'),
+                keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: longitudeController,
                 decoration: const InputDecoration(labelText: 'Longitude'),
-              ),
-              TextField(
-                controller: ownerIdController,
-                decoration: const InputDecoration(labelText: 'Owner ID'),
+                keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: imageController,
@@ -166,10 +217,6 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
               TextField(
                 controller: nbPlayerController,
                 decoration: const InputDecoration(labelText: 'Nb Players'),
-              ),
-              TextField(
-                controller: upvotesController,
-                decoration: const InputDecoration(labelText: 'Upvotes'),
               ),
               const SizedBox(height: 20),
               ElevatedButton(

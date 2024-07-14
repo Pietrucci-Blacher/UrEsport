@@ -34,11 +34,18 @@ class _AddGamePageState extends State<AddGamePage> {
         'tags': tags,
       };
 
+      // Log des données envoyées
+      print('Sending data: $newGame');
+
       try {
         final response = await _dio.post(
           'http://localhost:8080/games',
           data: newGame,
         );
+
+        // Log de la réponse complète du serveur
+        print('Response status: ${response.statusCode}');
+        print('Response data: ${response.data}');
 
         if (response.statusCode == 201) {
           BlocProvider.of<DashboardBloc>(context).add(FetchGames());
@@ -48,12 +55,15 @@ class _AddGamePageState extends State<AddGamePage> {
           _showAlertDialog('Erreur ajout du jeux: ${response.statusMessage}');
         }
       } catch (e) {
+        // Log de l'exception complète
+        print('Exception: $e');
         _showAlertDialog('Erreur ajout du jeux: $e');
       }
     }
   }
 
   void _showAlertDialog(String message) {
+    print(message); // Afficher le message dans la console
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -82,67 +92,81 @@ class _AddGamePageState extends State<AddGamePage> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: const Text('Add Game'),
-      content: Form(
-        key: _formKey,
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the game name';
-                  }
-                  return null;
-                },
+    return Dialog(
+      insetPadding: EdgeInsets.all(20),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        padding: EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Add Game', style: TextStyle(fontSize: 24)),
+            Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(labelText: 'Name'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the game name';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration: const InputDecoration(labelText: 'Description'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the game description';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: _imageController,
+                      decoration: const InputDecoration(labelText: 'Image URL'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the image URL';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: _tagsController,
+                      decoration: const InputDecoration(labelText: 'Tags (comma or space separated)'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the tags';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
               ),
-              TextFormField(
-                controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the game description';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _imageController,
-                decoration: const InputDecoration(labelText: 'Image URL'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the image URL';
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _tagsController,
-                decoration: const InputDecoration(labelText: 'Tags (comma or space separated)'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Please enter the tags';
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
+            ),
+            SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: _saveGame,
+                  child: const Text('Save'),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.of(context).pop(),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: _saveGame,
-          child: const Text('Save'),
-        ),
-      ],
     );
   }
 }

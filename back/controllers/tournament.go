@@ -84,10 +84,12 @@ func CreateTournament(c *gin.Context) {
 		Location:    body.Location,
 		Latitude:    body.Latitude,
 		Longitude:   body.Longitude,
-		Private:     body.Private,
-		NbPlayer:    body.NbPlayer,
-		GameID:      body.GameID,
 		OwnerID:     connectedUser.ID,
+		//Image:       body.Image,
+		Private:  body.Private,
+		GameID:   body.GameID,
+		NbPlayer: body.NbPlayer,
+		Upvotes:  0,
 	}
 
 	if err := tournament.Save(); err != nil {
