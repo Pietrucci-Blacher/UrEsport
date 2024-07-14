@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:uresport/core/services/tournament_service.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
@@ -17,11 +19,24 @@ class Dashboard extends StatefulWidget {
 
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
+  final Websocket ws = Websocket.getInstance();
+  int _activeUsers = 0;
+
+  void _websocket() {
+    ws.on('user:connected', (socket, data) {
+      setState(() {
+        _activeUsers = data['nbUsers'];
+      });
+    });
+
+    ws.emit('user:get-nb', null);
+  }
 
   @override
   void initState() {
     super.initState();
     BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
+    _websocket();
   }
 
   @override
@@ -110,13 +125,36 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildDashboardContent(DashboardLoaded state) {
     return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+      child: GridView.count(
+        crossAxisCount: 2,
+        padding: const EdgeInsets.all(10),
         children: [
-          Text('Active Users: ${state.activeUsers}'),
-          Text('Active Tournaments: ${state.activeTournaments}'),
-          Text('Total Games: ${state.totalGames}'),
-          Text('Latest Message: ${state.message}'),
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            margin: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              children: [
+                Text('Active Users: $_activeUsers'),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            margin: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Column(
+              children: [
+                Text('test'),
+              ],
+            ),
+          )
         ],
       ),
     );

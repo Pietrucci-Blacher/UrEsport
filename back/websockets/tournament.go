@@ -30,11 +30,7 @@ func AddAnonClientToTournamentRoom(client *services.Client, msg any) error {
 	roomName := fmt.Sprintf("tournament:%d", roomMsg.TournamentID)
 	client.Ws.Room(roomName).AddClient(client)
 
-	if err := client.Emit("info", "You have been added to the room"); err != nil {
-		return err
-	}
-
-	return nil
+	return client.Emit("info", "You have been added to the room")
 }
 
 func AddClientToTournamentRoom(client *services.Client) error {
