@@ -20,12 +20,16 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
   final Websocket ws = Websocket.getInstance();
-  int _activeUsers = 0;
+  int _loggedUsers = 0;
+  int _annonUsers = 0;
+  int _totalUsers = 0;
 
   void _websocket() {
     ws.on('user:connected', (socket, data) {
       setState(() {
-        _activeUsers = data['nbUsers'];
+        _loggedUsers = data['loggedUsers'];
+        _annonUsers = data['annonUsers'];
+        _totalUsers = data['totalUsers'];
       });
     });
 
@@ -126,25 +130,60 @@ class _DashboardState extends State<Dashboard> {
   Widget _buildDashboardContent(DashboardLoaded state) {
     return Center(
       child: GridView.count(
-        crossAxisCount: 2,
+        crossAxisCount: 4,
+        crossAxisSpacing: 10,
+        mainAxisSpacing: 10,
         padding: const EdgeInsets.all(10),
         children: [
           Container(
-            padding: const EdgeInsets.all(16.0),
-            margin: const EdgeInsets.all(10),
+            padding: const EdgeInsets.all(10),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Column(
+            child: ListView(
               children: [
-                Text('Active Users: $_activeUsers'),
+                ListTile(
+                  title: const Text('Logged Users'),
+                  subtitle: Text('$_loggedUsers'),
+                ),
+                ListTile(
+                  title: const Text('Annonymous Users'),
+                  subtitle: Text('$_annonUsers'),
+                ),
+                ListTile(
+                  title: const Text('Subscribed Users'),
+                  subtitle: Text('$_totalUsers'),
+                ),
               ],
             ),
           ),
           Container(
             padding: const EdgeInsets.all(16.0),
-            margin: const EdgeInsets.all(10),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Column(
+              children: [
+                Text('test'),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16.0),
+            decoration: BoxDecoration(
+              border: Border.all(color: Colors.grey),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: const Column(
+              children: [
+                Text('test'),
+              ],
+            ),
+          ),
+          Container(
+            padding: const EdgeInsets.all(16.0),
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(8),

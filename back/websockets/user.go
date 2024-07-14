@@ -6,11 +6,26 @@ import (
 	"fmt"
 )
 
-func SendNbUserToAdmin(client *services.Client) error {
-	wsData := map[string]int{
-		"nbUsers": len(client.Ws.GetClients()),
-	}
+func countUsers(client *services.Client) map[string]int {
+	totalUsers, _ := models.CountUsers()
 
+	loggedClients := client.Ws.FilterClient(func(c *services.Client) bool {
+		return c.Get("logged").(bool)
+	})
+
+	annonClients := client.Ws.FilterClient(func(c *services.Client) bool {
+		return !c.Get("logged").(bool)
+	})
+
+	return map[string]int{
+		"loggedUsers": len(loggedClients),
+		"annonUsers":  len(annonClients),
+		"totalUsers":  int(totalUsers),
+	}
+}
+
+func SendNbUserToAdmin(client *services.Client) error {
+	wsData := countUsers(client)
 	return client.Ws.Room("admin").Emit("user:connected", wsData)
 }
 
@@ -27,9 +42,7 @@ func GetNbUser(client *services.Client, msg any) error {
 		return fmt.Errorf("You must be an admin to get the number of users")
 	}
 
-	wsData := map[string]int{
-		"nbUsers": len(client.Ws.GetClients()),
-	}
+	wsData := countUsers(client)
 
 	return client.Emit("user:connected", wsData)
 }
