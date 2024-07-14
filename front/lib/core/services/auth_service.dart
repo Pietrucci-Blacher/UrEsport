@@ -97,7 +97,7 @@ class AuthService implements IAuthService {
       await _dio.post(
         '${dotenv.env['API_ENDPOINT']}/auth/logout',
         options: Options(headers: {
-          'Authorization': 'Bearer $token',
+          'Authorization': token,
         }),
       );
       return;

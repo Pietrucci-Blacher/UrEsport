@@ -13,7 +13,6 @@ class TournamentBloc extends Bloc<TournamentEvent, TournamentState> {
       try {
         final tournaments = await tournamentService.fetchTournaments(
             limit: event.limit, page: event.page, ownerId: event.ownerId);
-        debugPrint('Fetched ${tournaments.length} tournaments');
         emit(TournamentLoadSuccess(tournaments: tournaments));
       } catch (e) {
         debugPrint('Error loading tournaments: $e');
