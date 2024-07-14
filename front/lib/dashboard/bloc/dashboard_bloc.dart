@@ -23,6 +23,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<FetchAllUsers>(_onFetchAllUsers);
     on<FetchTournaments>(_onFetchTournaments);
     on<FetchGames>(_onFetchGames);
+    on<DeleteGameEvent>(_onDeleteGame);
   }
 
   Future<void> _onFetchAllUsers(FetchAllUsers event, Emitter<DashboardState> emit) async {
@@ -138,9 +139,18 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           recentLogs: [],
           users: [],
           tournaments: [],
-          games: games, // Ajoutez ceci
+          games: games,
         ));
       }
+    } catch (e) {
+      emit(DashboardError(e.toString()));
+    }
+  }
+
+  Future<void> _onDeleteGame(DeleteGameEvent event, Emitter<DashboardState> emit) async {
+    try {
+      await _gameService.deleteGame(event.gameId);
+      add(FetchGames());  // Fetch updated list of games
     } catch (e) {
       emit(DashboardError(e.toString()));
     }

@@ -44,3 +44,12 @@ class FetchTournaments extends DashboardEvent {}
 
 class FetchGames extends DashboardEvent {}
 
+class DeleteGameEvent extends DashboardEvent {
+  final int gameId;
+
+  const DeleteGameEvent(this.gameId);
+
+  @override
+  List<Object> get props => [gameId];
+}
+

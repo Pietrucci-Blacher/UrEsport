@@ -105,4 +105,13 @@ class GameService implements IGameService {
       }
     }
   }
+
+  Future<void> deleteGame(int gameId) async {
+    final response = await _dio.delete(
+        '${dotenv.env['API_ENDPOINT']}/games/$gameId');
+    if (response.statusCode != 204) {
+      throw Exception('Failed to delete game');
+    }
+  }
+
 }

@@ -1,7 +1,11 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/game.dart';
+
+import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
+import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 
 class EditGamePage extends StatefulWidget {
   final Game? game;
@@ -62,7 +66,7 @@ class _EditGamePageState extends State<EditGamePage> {
 
         if (response.statusCode == 200) {
           // Successfully updated the game
-          Navigator.of(context).pop(updatedGame);
+          Navigator.of(context).pop(true);  // Return true to indicate success
         } else {
           // Handle error
           ScaffoldMessenger.of(context).showSnackBar(
@@ -77,6 +81,8 @@ class _EditGamePageState extends State<EditGamePage> {
       }
     }
   }
+
+
 
   @override
   Widget build(BuildContext context) {

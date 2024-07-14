@@ -13,6 +13,7 @@ import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/game.dart';
 import 'edit_tournament_page.dart';
 import 'edit_game_page.dart';
+import 'add_game_page.dart';  // Import the new AddGamePage
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -32,106 +33,111 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    final Dio dio = Dio();
-    final TournamentService tournamentService = TournamentService(dio);
-    final GameService gameService = GameService(dio);
-
-    return BlocProvider(
-      create: (context) =>
-      DashboardBloc(Websocket.getInstance(), tournamentService, gameService)..add(FetchTournaments())..add(FetchGames()),
-      child: Scaffold(
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: (int index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              labelType: NavigationRailLabelType.selected,
-              destinations: const <NavigationRailDestination>[
-                NavigationRailDestination(
-                  icon: Icon(Icons.dashboard),
-                  selectedIcon: Icon(Icons.dashboard),
-                  label: Text('Dashboard'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.list),
-                  selectedIcon: Icon(Icons.list),
-                  label: Text('Logs'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.emoji_events),
-                  selectedIcon: Icon(Icons.emoji_events),
-                  label: Text('Tournaments'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.games),
-                  selectedIcon: Icon(Icons.games),
-                  label: Text('Games'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.people),
-                  selectedIcon: Icon(Icons.people),
-                  label: Text('Users'),
-                ),
-              ],
-            ),
-            const VerticalDivider(thickness: 1, width: 1),
-            Expanded(
-              child: BlocBuilder<DashboardBloc, DashboardState>(
-                builder: (context, state) {
-                  if (state is DashboardLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is DashboardLoaded) {
-                    switch (_selectedIndex) {
-                      case 0:
-                        return _buildDashboardContent(state);
-                      case 1:
-                        return _buildLogsContent(state);
-                      case 2:
-                        return _buildTournamentsContent(state);
-                      case 3:
-                        return _buildGamesContent(state);
-                      case 4:
-                        return _buildUsersContent(state);
-                      default:
-                        return const Center(child: Text('Unknown page'));
-                    }
-                  } else if (state is DashboardError) {
-                    return Center(child: Text('Error: ${state.error}'));
-                  }
-                  return const Center(child: Text('Unknown state'));
-                },
+    return Scaffold(
+      body: Row(
+        children: [
+          NavigationRail(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (int index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            labelType: NavigationRailLabelType.selected,
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.dashboard),
+                selectedIcon: Icon(Icons.dashboard),
+                label: Text('Dashboard'),
               ),
+              NavigationRailDestination(
+                icon: Icon(Icons.list),
+                selectedIcon: Icon(Icons.list),
+                label: Text('Logs'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.emoji_events),
+                selectedIcon: Icon(Icons.emoji_events),
+                label: Text('Tournaments'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.games),
+                selectedIcon: Icon(Icons.games),
+                label: Text('Games'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.people),
+                selectedIcon: Icon(Icons.people),
+                label: Text('Users'),
+              ),
+            ],
+          ),
+          const VerticalDivider(thickness: 1, width: 1),
+          Expanded(
+            child: BlocBuilder<DashboardBloc, DashboardState>(
+              builder: (context, state) {
+                if (state is DashboardLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is DashboardLoaded) {
+                  switch (_selectedIndex) {
+                    case 0:
+                      return _buildDashboardContent(state);
+                    case 1:
+                      return _buildLogsContent(state);
+                    case 2:
+                      return _buildTournamentsContent(state);
+                    case 3:
+                      return _buildGamesContent(state);
+                    case 4:
+                      return _buildUsersContent(state);
+                    default:
+                      return const Center(child: Text('Unknown page'));
+                  }
+                } else if (state is DashboardError) {
+                  return Center(child: Text('Error: ${state.error}'));
+                }
+                return const Center(child: Text('Unknown state'));
+              },
             ),
-          ],
-        ),
-        floatingActionButton: _selectedIndex == 2
-            ? FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const EditTournamentPage()),
-            );
-          },
-          child: const Icon(Icons.add),
-        )
-            : _selectedIndex == 3
-            ? FloatingActionButton(
-          onPressed: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => const EditGamePage()),
-            );
-          },
-          child: const Icon(Icons.add),
-        )
-            : null,
+          ),
+        ],
       ),
+      floatingActionButton: _selectedIndex == 2
+          ? FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const EditTournamentPage()),
+          );
+
+          if (result == true) {
+            // Fetch updated tournaments
+            BlocProvider.of<DashboardBloc>(context).add(FetchTournaments());
+          }
+        },
+        child: const Icon(Icons.add),
+      )
+          : _selectedIndex == 3
+          ? FloatingActionButton(
+        onPressed: () async {
+          final result = await showDialog<bool>(
+            context: context,
+            builder: (BuildContext context) {
+              return const AddGamePage();
+            },
+          );
+
+          if (result == true) {
+            // Fetch updated games
+            BlocProvider.of<DashboardBloc>(context).add(FetchGames());
+          }
+        },
+        child: const Icon(Icons.add),
+      )
+          : null,
     );
   }
+
 
   Widget _buildDashboardContent(DashboardLoaded state) {
     return Center(
@@ -218,7 +224,7 @@ class _DashboardState extends State<Dashboard> {
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () {
-                        // Add delete functionality
+                        _showDeleteConfirmationDialog(context, tournament.id);
                       },
                     ),
                   ],
@@ -275,7 +281,7 @@ class _DashboardState extends State<Dashboard> {
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () {
-                        // Add delete functionality
+                        _showDeleteConfirmationDialog(context, game.id);
                       },
                     ),
                   ],
@@ -285,6 +291,36 @@ class _DashboardState extends State<Dashboard> {
           ),
         ),
       ),
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, int gameId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return Builder(
+          builder: (BuildContext innerContext) {
+            return AlertDialog(
+              title: const Text('Delete Game'),
+              content: const Text('Are you sure you want to delete this game?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Utilisez innerContext pour accéder à DashboardBloc
+                    BlocProvider.of<DashboardBloc>(innerContext).add(DeleteGameEvent(gameId));
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: const Text('Delete'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
