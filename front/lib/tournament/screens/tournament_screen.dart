@@ -139,14 +139,16 @@ class TournamentScreenState extends State<TournamentScreen> {
   }
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
-    final DateFormat dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    final DateFormat dateFormat =
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TournamentDetailsScreen(tournament: tournament),
+            builder: (context) =>
+                TournamentDetailsScreen(tournament: tournament),
           ),
         );
       },
@@ -212,7 +214,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.location_on, color: Colors.grey),
+                                const Icon(Icons.location_on,
+                                    color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -226,7 +229,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                const Icon(Icons.videogame_asset, color: Colors.grey),
+                                const Icon(Icons.videogame_asset,
+                                    color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -240,7 +244,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                const Icon(Icons.calendar_today, color: Colors.grey),
+                                const Icon(Icons.calendar_today,
+                                    color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -254,7 +259,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                const Icon(Icons.calendar_today, color: Colors.grey),
+                                const Icon(Icons.calendar_today,
+                                    color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -281,7 +287,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     Colors.red.withOpacity(0.7),
                                     Colors.orange,
                                     Colors.yellow,
-                                    Colors.green, // Nouvelle couleur ajoutée à la fin
+                                    Colors
+                                        .green, // Nouvelle couleur ajoutée à la fin
                                   ],
                                   stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
                                   begin: Alignment.topLeft,
@@ -302,8 +309,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 context,
                                 MaterialPageRoute(
                                   builder: (context) => TournamentDetailsScreen(
-                                      tournament: tournament,
-                                      game: tournament.game,
+                                    tournament: tournament,
+                                    game: tournament.game,
                                   ),
                                 ),
                               );

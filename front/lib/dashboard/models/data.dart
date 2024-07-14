@@ -5,7 +5,8 @@ List<Game> games = [
   Game(
     id: 1,
     name: 'The Legend of Zelda: Breath of the Wild',
-    description: 'An open-world action-adventure game set in a vast and beautiful world.',
+    description:
+        'An open-world action-adventure game set in a vast and beautiful world.',
     image: 'zelda_botw.png',
     tags: 'adventure, open-world, action',
     createdAt: '2017-03-03 00:00:00',
@@ -14,7 +15,8 @@ List<Game> games = [
   Game(
     id: 2,
     name: 'Fortnite',
-    description: 'A battle royale game where players fight to be the last one standing.',
+    description:
+        'A battle royale game where players fight to be the last one standing.',
     image: 'fortnite.png',
     tags: 'battle royale, multiplayer, action',
     createdAt: '2017-07-21 00:00:00',
@@ -23,7 +25,8 @@ List<Game> games = [
   Game(
     id: 3,
     name: 'Minecraft',
-    description: 'A sandbox game that allows players to build and explore their own worlds.',
+    description:
+        'A sandbox game that allows players to build and explore their own worlds.',
     image: 'minecraft.png',
     tags: 'sandbox, adventure, creative',
     createdAt: '2011-11-18 00:00:00',
@@ -32,7 +35,8 @@ List<Game> games = [
   Game(
     id: 4,
     name: 'Overwatch',
-    description: 'A team-based shooter game featuring a diverse cast of characters.',
+    description:
+        'A team-based shooter game featuring a diverse cast of characters.',
     image: 'overwatch.png',
     tags: 'shooter, team-based, multiplayer',
     createdAt: '2016-05-24 00:00:00',
@@ -41,7 +45,8 @@ List<Game> games = [
   Game(
     id: 5,
     name: 'League of Legends',
-    description: 'A multiplayer online battle arena game where players control champions.',
+    description:
+        'A multiplayer online battle arena game where players control champions.',
     image: 'league_of_legends.png',
     tags: 'MOBA, multiplayer, strategy',
     createdAt: '2009-10-27 00:00:00',
@@ -50,7 +55,8 @@ List<Game> games = [
   Game(
     id: 6,
     name: 'Apex Legends',
-    description: 'A free-to-play battle royale game set in the Titanfall universe.',
+    description:
+        'A free-to-play battle royale game set in the Titanfall universe.',
     image: 'apex_legends.png',
     tags: 'battle royale, multiplayer, action',
     createdAt: '2019-02-04 00:00:00',
@@ -59,7 +65,8 @@ List<Game> games = [
   Game(
     id: 7,
     name: 'Animal Crossing: New Horizons',
-    description: 'A social simulation game where players build and manage their own island.',
+    description:
+        'A social simulation game where players build and manage their own island.',
     image: 'animal_crossing.png',
     tags: 'simulation, social, casual',
     createdAt: '2020-03-20 00:00:00',
@@ -86,7 +93,8 @@ List<Game> games = [
   Game(
     id: 10,
     name: 'Among Us',
-    description: 'A multiplayer party game where players must find the imposter among them.',
+    description:
+        'A multiplayer party game where players must find the imposter among them.',
     image: 'among_us.png',
     tags: 'party, multiplayer, social deduction',
     createdAt: '2018-06-15 00:00:00',

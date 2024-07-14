@@ -30,7 +30,7 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-      DashboardBloc(Websocket.getInstance())..add(ConnectWebSocket()),
+          DashboardBloc(Websocket.getInstance())..add(ConnectWebSocket()),
       child: Scaffold(
         body: Row(
           children: [
@@ -104,11 +104,11 @@ class _DashboardState extends State<Dashboard> {
         ),
         floatingActionButton: _selectedIndex == 2
             ? FloatingActionButton(
-          onPressed: () {
-            _showTournamentDialog(context);
-          },
-          child: const Icon(Icons.add),
-        )
+                onPressed: () {
+                  _showTournamentDialog(context);
+                },
+                child: const Icon(Icons.add),
+              )
             : null,
       ),
     );
@@ -275,13 +275,13 @@ class _DashboardState extends State<Dashboard> {
 
   void _showGameDialog(BuildContext context, {Game? game}) {
     final TextEditingController nameController =
-    TextEditingController(text: game?.name);
+        TextEditingController(text: game?.name);
     final TextEditingController descriptionController =
-    TextEditingController(text: game?.description);
+        TextEditingController(text: game?.description);
     final TextEditingController imageController =
-    TextEditingController(text: game?.image);
+        TextEditingController(text: game?.image);
     final TextEditingController tagsController =
-    TextEditingController(text: game?.tags);
+        TextEditingController(text: game?.tags);
 
     showDialog(
       context: context,
@@ -350,37 +350,38 @@ class _DashboardState extends State<Dashboard> {
 
   void _showTournamentDialog(BuildContext context, {Tournament? tournament}) {
     final TextEditingController nameController =
-    TextEditingController(text: tournament?.name);
+        TextEditingController(text: tournament?.name);
     final TextEditingController descriptionController =
-    TextEditingController(text: tournament?.description);
+        TextEditingController(text: tournament?.description);
     final TextEditingController startDateController =
-    TextEditingController(text: tournament?.startDate);
+        TextEditingController(text: tournament?.startDate);
     final TextEditingController endDateController =
-    TextEditingController(text: tournament?.endDate);
+        TextEditingController(text: tournament?.endDate);
     final TextEditingController locationController =
-    TextEditingController(text: tournament?.location);
+        TextEditingController(text: tournament?.location);
     final TextEditingController latitudeController =
-    TextEditingController(text: tournament?.latitude.toString());
+        TextEditingController(text: tournament?.latitude.toString());
     final TextEditingController longitudeController =
-    TextEditingController(text: tournament?.longitude.toString());
+        TextEditingController(text: tournament?.longitude.toString());
     final TextEditingController ownerIdController =
-    TextEditingController(text: tournament?.ownerId.toString());
+        TextEditingController(text: tournament?.ownerId.toString());
     final TextEditingController imageController =
-    TextEditingController(text: tournament?.image);
+        TextEditingController(text: tournament?.image);
     final TextEditingController privateController =
-    TextEditingController(text: tournament?.private.toString());
+        TextEditingController(text: tournament?.private.toString());
     final TextEditingController gameIdController =
-    TextEditingController(text: tournament?.gameId.toString());
+        TextEditingController(text: tournament?.gameId.toString());
     final TextEditingController nbPlayerController =
-    TextEditingController(text: tournament?.nbPlayer.toString());
+        TextEditingController(text: tournament?.nbPlayer.toString());
     final TextEditingController upvotesController =
-    TextEditingController(text: tournament?.upvotes.toString());
+        TextEditingController(text: tournament?.upvotes.toString());
 
     showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
-          title: Text(tournament == null ? 'Add Tournament' : 'Edit Tournament'),
+          title:
+              Text(tournament == null ? 'Add Tournament' : 'Edit Tournament'),
           content: SingleChildScrollView(
             child: Column(
               children: [
@@ -475,10 +476,12 @@ class _DashboardState extends State<Dashboard> {
                     tournament.endDate = endDateController.text;
                     tournament.location = locationController.text;
                     tournament.latitude = double.parse(latitudeController.text);
-                    tournament.longitude = double.parse(longitudeController.text);
+                    tournament.longitude =
+                        double.parse(longitudeController.text);
                     tournament.ownerId = int.parse(ownerIdController.text);
                     tournament.image = imageController.text;
-                    tournament.private = privateController.text.toLowerCase() == 'true';
+                    tournament.private =
+                        privateController.text.toLowerCase() == 'true';
                     tournament.gameId = int.parse(gameIdController.text);
                     tournament.nbPlayer = int.parse(nbPlayerController.text);
                     tournament.updatedAt = DateTime.now().toString();
