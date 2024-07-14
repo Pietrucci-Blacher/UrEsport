@@ -1,5 +1,4 @@
 import 'package:uresport/dashboard/models/game.dart';
-import 'package:uresport/dashboard/models/tournament.dart';
 
 List<Game> games = [
   Game(

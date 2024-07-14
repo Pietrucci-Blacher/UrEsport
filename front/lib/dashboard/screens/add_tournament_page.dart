@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -8,7 +9,7 @@ import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 
 class AddTournamentPage extends StatefulWidget {
-  const AddTournamentPage({Key? key}) : super(key: key);
+  const AddTournamentPage({super.key});
 
   @override
   _AddTournamentPageState createState() => _AddTournamentPageState();
@@ -52,7 +53,9 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
       };
 
       // Log des données envoyées
-      print('Sending data: $newTournament');
+      if (kDebugMode) {
+        print('Sending data: $newTournament');
+      }
 
       try {
         final response = await _dio.post(
@@ -61,8 +64,12 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
         );
 
         // Log de la réponse complète du serveur
-        print('Response status: ${response.statusCode}');
-        print('Response data: ${response.data}');
+        if (kDebugMode) {
+          print('Response status: ${response.statusCode}');
+        }
+        if (kDebugMode) {
+          print('Response data: ${response.data}');
+        }
 
         if (response.statusCode == 201) {
           BlocProvider.of<DashboardBloc>(context).add(FetchTournaments());
@@ -73,7 +80,9 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
         }
       } catch (e) {
         // Log de l'exception complète
-        print('Exception: $e');
+        if (kDebugMode) {
+          print('Exception: $e');
+        }
         _showAlertDialog('Erreur ajout du tournoi: $e');
       }
     } else {
@@ -82,7 +91,9 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
   }
 
   void _showAlertDialog(String message) {
-    print(message); // Afficher le message dans la console
+    if (kDebugMode) {
+      print(message);
+    } // Afficher le message dans la console
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -117,14 +128,14 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      insetPadding: EdgeInsets.all(20),
+      insetPadding: const EdgeInsets.all(20),
       child: Container(
         width: MediaQuery.of(context).size.width * 0.8,
-        padding: EdgeInsets.all(16),
+        padding: const EdgeInsets.all(16),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Add Tournament', style: TextStyle(fontSize: 24)),
+            const Text('Add Tournament', style: TextStyle(fontSize: 24)),
             Form(
               key: _formKey,
               child: SingleChildScrollView(
@@ -260,7 +271,7 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [

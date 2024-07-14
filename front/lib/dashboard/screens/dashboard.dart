@@ -1,16 +1,10 @@
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
-import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/core/services/game_service.dart';
-import 'package:uresport/core/models/tournament.dart';
-import 'package:uresport/core/models/game.dart';
 import 'edit_tournament_page.dart';
 import 'edit_game_page.dart';
 import 'add_game_page.dart';
@@ -219,10 +213,10 @@ class _DashboardState extends State<Dashboard> {
         ),
         Positioned(
           right: 0,
-          child: Container(
+          child: SizedBox(
             width: 100, // Set the width for the fixed column
             child: DataTable(
-              columns: [
+              columns: const [
                 DataColumn(label: Text('Actions')),
               ],
               rows: state.tournaments.map((tournament) {
@@ -294,10 +288,10 @@ class _DashboardState extends State<Dashboard> {
         ),
         Positioned(
           right: 0,
-          child: Container(
+          child: SizedBox(
             width: 100, // Set the width for the fixed column
             child: DataTable(
-              columns: [
+              columns: const [
                 DataColumn(label: Text('Actions')),
               ],
               rows: state.games.map((game) {

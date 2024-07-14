@@ -1,16 +1,12 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/game.dart';
-
-import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
-import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 
 class EditGamePage extends StatefulWidget {
   final Game? game;
 
-  const EditGamePage({Key? key, this.game}) : super(key: key);
+  const EditGamePage({super.key, this.game});
 
   @override
   _EditGamePageState createState() => _EditGamePageState();

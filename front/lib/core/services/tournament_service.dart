@@ -1,7 +1,7 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/tournament.dart';
-import 'package:flutter/material.dart';
 
 import 'cache_service.dart';
 
@@ -46,7 +46,9 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode == 200) {
-        print('Data fetched successfully: ${response.data}');
+        if (kDebugMode) {
+          print('Data fetched successfully: ${response.data}');
+        }
         final tournaments = (response.data as List)
             .map((json) => Tournament.fromJson(json))
             .toList();
@@ -60,7 +62,9 @@ class TournamentService implements ITournamentService {
         );
       }
     } catch (e) {
-      print('Error: $e');
+      if (kDebugMode) {
+        print('Error: $e');
+      }
       if (e is DioException) {
         rethrow;
       } else {

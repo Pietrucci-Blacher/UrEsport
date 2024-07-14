@@ -40,13 +40,13 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
     _startDateTime = widget.tournament?.startDate;
     _endDateTime = widget.tournament?.endDate;
     locationController = TextEditingController(text: widget.tournament?.location ?? '');
-    latitudeController = TextEditingController(text: widget.tournament?.latitude?.toString() ?? '');
-    longitudeController = TextEditingController(text: widget.tournament?.longitude?.toString() ?? '');
-    ownerIdController = TextEditingController(text: widget.tournament?.ownerId?.toString() ?? '');
+    latitudeController = TextEditingController(text: widget.tournament?.latitude.toString() ?? '');
+    longitudeController = TextEditingController(text: widget.tournament?.longitude.toString() ?? '');
+    ownerIdController = TextEditingController(text: widget.tournament?.ownerId.toString() ?? '');
     imageController = TextEditingController(text: widget.tournament?.image ?? '');
-    privateController = TextEditingController(text: widget.tournament?.isPrivate?.toString() ?? '');
+    privateController = TextEditingController(text: widget.tournament?.isPrivate.toString() ?? '');
     nbPlayerController = TextEditingController(text: widget.tournament?.teams.length.toString() ?? '');
-    upvotesController = TextEditingController(text: widget.tournament?.upvotes?.toString() ?? '');
+    upvotesController = TextEditingController(text: widget.tournament?.upvotes.toString() ?? '');
   }
 
   @override

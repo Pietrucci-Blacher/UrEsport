@@ -116,7 +116,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
         activeUsers: 0, // mettez à jour selon vos besoins
         activeTournaments: tournaments.length,
         totalGames: 0, // mettez à jour selon vos besoins
-        recentLogs: [], // mettez à jour selon vos besoins
+        recentLogs: const [], // mettez à jour selon vos besoins
         tournaments: tournaments,
       ));
     } catch (e) {
@@ -136,9 +136,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           activeUsers: 0,
           activeTournaments: 0,
           totalGames: games.length,
-          recentLogs: [],
-          users: [],
-          tournaments: [],
+          recentLogs: const [],
+          users: const [],
+          tournaments: const [],
           games: games,
         ));
       }
