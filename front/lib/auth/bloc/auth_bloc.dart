@@ -43,6 +43,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthLoggedOut>((event, emit) async {
       await authService.logout();
+      profileImageNotifier.value = null;
+      await CacheService.instance.deleteString('token');
       emit(AuthUnauthenticated());
     });
 
