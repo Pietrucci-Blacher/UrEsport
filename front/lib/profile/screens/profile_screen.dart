@@ -1,17 +1,16 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
-import 'package:uresport/auth/screens/auth_screen.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/cubit/locale_cubit.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/main_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
 import 'package:uresport/shared/utils/image_util.dart';
 
@@ -94,6 +93,16 @@ class ProfileScreenState extends State<ProfileScreen>
               );
             } else if (state is AuthAuthenticated) {
               _initializeControllers(state.user);
+            } else if (state is AuthUnauthenticated) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MainScreen(authService: widget.authService),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+              });
             }
           },
           child: BlocBuilder<AuthBloc, AuthState>(
@@ -115,7 +124,7 @@ class ProfileScreenState extends State<ProfileScreen>
                 }
                 return _buildProfileScreen(context);
               } else {
-                return _buildLoginRegisterButtons(context);
+                return const Center(child: CircularProgressIndicator());
               }
             },
           ),
@@ -133,48 +142,6 @@ class ProfileScreenState extends State<ProfileScreen>
       _emailController.text = user.email;
       _profileImageUrl = user.profileImageUrl;
     });
-  }
-
-  Widget _buildLoginRegisterButtons(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            AppLocalizations.of(context).youAreNotLoggedIn,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AuthScreen(
-                    authService: widget.authService,
-                    showLogin: true,
-                    showRegister: !kIsWeb,
-                  ),
-                ),
-              ).then((_) {
-                if (mounted) {
-                  context.read<AuthBloc>().add(AuthCheckRequested());
-                }
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            child: Text(AppLocalizations.of(context).logIn),
-          ),
-        ],
-      ),
-    );
   }
 
   Widget _buildProfileScreen(BuildContext context) {
@@ -289,7 +256,7 @@ class ProfileScreenState extends State<ProfileScreen>
     final authBloc = context.read<AuthBloc>();
     try {
       await authBloc.authService.updateUserInfo(_user!.id, updatedFields);
-      if (!mounted) return; // Ajout de cette ligne
+      if (!mounted) return;
       authBloc.add(UserFieldUpdated(updatedFields));
       setState(() {
         _isEditing = false;
@@ -300,7 +267,7 @@ class ProfileScreenState extends State<ProfileScreen>
       );
     } catch (e) {
       debugPrint('Error saving profile: $e');
-      if (!mounted) return; // Ajout de cette ligne
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
             content: Text(AppLocalizations.of(context).errorSavingProfile)),
@@ -343,7 +310,18 @@ class ProfileScreenState extends State<ProfileScreen>
             context,
             title: AppLocalizations.of(context).logout,
             content: AppLocalizations.of(context).logoutConfirmation,
-            confirmAction: () => context.read<AuthBloc>().add(AuthLoggedOut()),
+            confirmAction: () {
+              context.read<AuthBloc>().add(AuthLoggedOut());
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MainScreen(authService: widget.authService),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+              });
+            },
           ),
         ),
         _buildDangerZoneTile(
@@ -465,10 +443,15 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
                     backgroundColor: Colors.grey,
                     child: CircularProgressIndicator(),
                   )
-                : CachedImageWidget(
-                    url: _profileImageUrl ?? '',
-                    size: 100,
-                  ),
+                : _profileImageUrl != null
+                    ? CachedImageWidget(
+                        url: _profileImageUrl!,
+                        size: 100,
+                      )
+                    : const CircleAvatar(
+                        radius: 50,
+                        child: Icon(Icons.person),
+                      ),
           ),
           Positioned(
             bottom: 0,
