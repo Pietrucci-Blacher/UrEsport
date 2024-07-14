@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uresport/core/services/tournament_service.dart';
-import 'package:provider/provider.dart';
+// import 'package:uresport/core/services/tournament_service.dart';
+// import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
@@ -9,6 +9,9 @@ import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 import 'package:uresport/dashboard/screens/users_screen.dart';
+// import 'package:fl_chart_app/presentation/resources/app_resources.dart';
+import 'package:fl_chart/fl_chart.dart';
+// import 'package:fl_chart_app/presentation/widgets/indicator.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -23,6 +26,7 @@ class _DashboardState extends State<Dashboard> {
   int _loggedUsers = 0;
   int _annonUsers = 0;
   int _totalUsers = 0;
+  int touchedIndex = -1;
 
   void _websocket() {
     ws.on('user:connected', (socket, data) {
@@ -141,19 +145,37 @@ class _DashboardState extends State<Dashboard> {
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: ListView(
+            child: Column(
               children: [
-                ListTile(
-                  title: const Text('Logged Users'),
-                  subtitle: Text('$_loggedUsers'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Logged Users'),
+                    Text(
+                      '$_loggedUsers',
+                      style: const TextStyle(fontSize: 24),
+                    )
+                  ],
                 ),
-                ListTile(
-                  title: const Text('Annonymous Users'),
-                  subtitle: Text('$_annonUsers'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Annonymous Users'),
+                    Text(
+                      '$_annonUsers',
+                      style: const TextStyle(fontSize: 24),
+                    )
+                  ],
                 ),
-                ListTile(
-                  title: const Text('Subscribed Users'),
-                  subtitle: Text('$_totalUsers'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const Text('Subscribed Users'),
+                    Text(
+                      '$_totalUsers',
+                      style: const TextStyle(fontSize: 24),
+                    )
+                  ],
                 ),
               ],
             ),
@@ -164,9 +186,88 @@ class _DashboardState extends State<Dashboard> {
               border: Border.all(color: Colors.grey),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: const Column(
+            child: Column(
               children: [
-                Text('test'),
+                Expanded(
+                  child: AspectRatio(
+                    aspectRatio: 1,
+                    child: PieChart(
+                      PieChartData(
+                        pieTouchData: PieTouchData(
+                          touchCallback: (FlTouchEvent event, pieTouchResponse) {
+                            setState(() {
+                              if (!event.isInterestedForInteractions ||
+                                pieTouchResponse == null ||
+                                pieTouchResponse.touchedSection == null) {
+                                touchedIndex = -1;
+                                return;
+                              }
+                              touchedIndex = pieTouchResponse
+                                  .touchedSection!.touchedSectionIndex;
+                            });
+                          },
+                        ),
+                        borderData: FlBorderData(
+                          show: false,
+                        ),
+                        sectionsSpace: 0,
+                        centerSpaceRadius: 40,
+                        sections: showingSections(),
+                      ),
+                    ),
+                  ),
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    Row(
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          color: Colors.blue,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Logged User',
+                          style: TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          color: Colors.green,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Annonymous User',
+                          style: TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Container(
+                          width: 10,
+                          height: 10,
+                          color: Colors.purple,
+                        ),
+                        const SizedBox(width: 8),
+                        const Text(
+                          'Subscribed User',
+                          style: TextStyle(fontSize: 10),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 4),
+                  ],
+                ),
               ],
             ),
           ),
@@ -197,6 +298,58 @@ class _DashboardState extends State<Dashboard> {
         ],
       ),
     );
+  }
+
+  List<PieChartSectionData> showingSections() {
+    var total = _loggedUsers + _annonUsers + _totalUsers;
+    var loggedUsersPercentage = double.parse((_loggedUsers / total * 100).toStringAsFixed(2));
+    var annonUsersPercentage = double.parse((_annonUsers / total * 100).toStringAsFixed(2));
+    var totalUsersPercentage = double.parse((_totalUsers / total * 100).toStringAsFixed(2));
+    return List.generate(3, (i) {
+      final isTouched = i == touchedIndex;
+      final fontSize = isTouched ? 25.0 : 16.0;
+      final radius = isTouched ? 60.0 : 50.0;
+      switch (i) {
+        case 0:
+          return PieChartSectionData(
+            color: Colors.blue,
+            value: loggedUsersPercentage,
+            title: '$loggedUsersPercentage%',
+            radius: radius,
+            titleStyle: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          );
+        case 1:
+          return PieChartSectionData(
+            color: Colors.green,
+            value: annonUsersPercentage,
+            title: '$annonUsersPercentage%',
+            radius: radius,
+            titleStyle: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          );
+        case 2:
+          return PieChartSectionData(
+            color: Colors.purple,
+            value: totalUsersPercentage,
+            title: '$totalUsersPercentage%',
+            radius: radius,
+            titleStyle: TextStyle(
+              fontSize: fontSize,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          );
+        default:
+          throw Error();
+      }
+    });
   }
 
   Widget _buildLogsContent(DashboardLoaded state) {

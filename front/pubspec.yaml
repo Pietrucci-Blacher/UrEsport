@@ -36,6 +36,7 @@ dependencies:
   flutter_local_notifications: ^17.2.1+1
   overlay_support: ^2.1.0
   xml: ^6.5.0
+  fl_chart: ^0.68.0
 
 dev_dependencies:
   flutter_test:
