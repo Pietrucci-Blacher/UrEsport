@@ -299,3 +299,9 @@ func (t *Tournament) CountUpvotes() (int64, error) {
 	err := DB.Model(&Upvote{}).Where("tournament_id = ?", t.ID).Count(&count).Error
 	return count, err
 }
+
+func GetUpvoteByUserAndTournament(userID, tournamentID uint) (*Upvote, error) {
+	var upvote Upvote
+	err := DB.Where("user_id = ? AND tournament_id = ?", userID, tournamentID).First(&upvote).Error
+	return &upvote, err
+}

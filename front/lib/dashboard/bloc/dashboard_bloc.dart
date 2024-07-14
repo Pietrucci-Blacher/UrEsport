@@ -38,7 +38,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           firstname: 'First',
           lastname: 'User',
           email: 'user1@example.com',
-          roles: ['user']),
+          roles: ['user'],
+          teams: []),
     ];
   }
 

@@ -3,11 +3,13 @@ package controllers
 import (
 	"challenge/models"
 	"challenge/services"
+	"errors"
 	"fmt"
+	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	"log"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"time"
 )
 
 // GetTournaments godoc
@@ -547,4 +549,64 @@ func AddUpvote(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Upvote toggled"})
+}
+
+// GetTournamentUpvote godoc
+//
+//	@Summary		get tournament upvote
+//	@Description	get tournament upvote
+//	@Tags			tournament
+//	@Param			id	path	int	true	"Tournament ID"
+//	@Success		200	{object}	models.Upvote
+//	@Failure		401	{object}	utils.HttpError
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/upvote [get]
+func GetTournamentUpvote(c *gin.Context) {
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+
+	c.JSON(http.StatusOK, gin.H{"upvote": tournament.Upvotes})
+}
+
+type SimpleUpvote struct {
+	ID           uint      `json:"id"`
+	UserID       uint      `json:"user_id"`
+	TournamentID uint      `json:"tournament_id"`
+	CreatedAt    time.Time `json:"created_at"`
+	UpdatedAt    time.Time `json:"updated_at"`
+}
+
+// GetUpvoteById godoc
+//
+//	@Summary		get upvote by user and tournament ID
+//	@Description	get upvote by user and tournament ID
+//	@Tags			tournament
+//	@Param			id		path	int	true	"Tournament ID"
+//	@Param			userid	path	int	true	"User ID"
+//	@Success		200	{object}	SimpleUpvote
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/upvotes/{userid} [get]
+func GetUpvoteById(c *gin.Context) {
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+
+	log.Printf("Connected User ID: %d", connectedUser.ID)
+	log.Printf("Tournament ID: %d", tournament.ID)
+
+	// Check if the user has upvoted the tournament
+	upvote, err := models.GetUpvoteByUserAndTournament(uint(connectedUser.ID), uint(tournament.ID))
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			log.Printf("Upvote not found for user %d and tournament %d", connectedUser.ID, tournament.ID)
+			c.JSON(http.StatusNotFound, gin.H{"error": "Upvote not found"})
+		} else {
+			log.Printf("Database error: %v", err)
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		}
+		return
+	}
+
+	log.Printf("Upvote found: %v", upvote)
+	c.JSON(http.StatusOK, upvote)
 }

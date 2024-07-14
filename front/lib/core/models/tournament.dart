@@ -53,7 +53,7 @@ class Tournament {
               ?.map((team) => Team.fromJson(team))
               .toList() ??
           [],
-      upvotes: json['upvote'] ?? 0,
+      upvotes: json['upvotes'] ?? 0,
       game: Game.fromJson(json['game']),
     );
   }
