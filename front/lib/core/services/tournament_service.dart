@@ -41,7 +41,7 @@ class TournamentService implements ITournamentService {
       }
 
       final response = await _dio.get(
-        "http://localhost:8080/tournaments",
+        "${dotenv.env['API_ENDPOINT']}/tournaments",
         queryParameters: queryParameters,
       );
 

@@ -1,5 +1,4 @@
-// lib/models/tournament.dart
-class Tournament {
+class DashboardTournament {
   final int id;
   late String name;
   late String description;
@@ -17,7 +16,7 @@ class Tournament {
   late String updatedAt;
   late int upvotes;
 
-  Tournament({
+  DashboardTournament({
     required this.id,
     required this.name,
     required this.description,
@@ -35,4 +34,46 @@ class Tournament {
     required this.updatedAt,
     required this.upvotes,
   });
+
+  factory DashboardTournament.fromJson(Map<String, dynamic> json) {
+    return DashboardTournament(
+      id: json['id'],
+      name: json['name'],
+      description: json['description'],
+      startDate: json['startDate'],
+      endDate: json['endDate'],
+      location: json['location'],
+      latitude: json['latitude'],
+      longitude: json['longitude'],
+      ownerId: json['ownerId'],
+      image: json['image'],
+      private: json['private'],
+      gameId: json['gameId'],
+      nbPlayer: json['nbPlayer'],
+      createdAt: json['createdAt'],
+      updatedAt: json['updatedAt'],
+      upvotes: json['upvotes'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'name': name,
+      'description': description,
+      'startDate': startDate,
+      'endDate': endDate,
+      'location': location,
+      'latitude': latitude,
+      'longitude': longitude,
+      'ownerId': ownerId,
+      'image': image,
+      'private': private,
+      'gameId': gameId,
+      'nbPlayer': nbPlayer,
+      'createdAt': createdAt,
+      'updatedAt': updatedAt,
+      'upvotes': upvotes,
+    };
+  }
 }

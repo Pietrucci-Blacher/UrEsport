@@ -95,7 +95,7 @@ List<Game> games = [
   // Ajoutez plus de jeux ici
 ];
 
-List<Tournament> tournaments = [
+/*List<Tournament> tournaments = [
   Tournament(
     id: 1,
     name: 'Fortnite World Cup',
@@ -205,4 +205,4 @@ List<Tournament> tournaments = [
     upvotes: 110,
   ),
   // Ajoutez plus de tournois ici
-];
+];*/

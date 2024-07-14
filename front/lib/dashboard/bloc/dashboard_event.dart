@@ -42,3 +42,5 @@ class FetchAllUsers extends DashboardEvent {}
 
 class FetchTournaments extends DashboardEvent {}
 
+class FetchGames extends DashboardEvent {}
+

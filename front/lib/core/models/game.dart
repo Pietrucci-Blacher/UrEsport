@@ -1,9 +1,11 @@
 class Game {
   final int id;
-  final String name;
-  final String description;
-  final String imageUrl;
-  final List<String> tags;
+  late final String name;
+  late final String description;
+  late final String imageUrl;
+  late final List<String> tags;
+  late final String createdAt;
+  late final String updatedAt;
 
   Game({
     required this.id,
@@ -11,6 +13,8 @@ class Game {
     required this.description,
     required this.imageUrl,
     required this.tags,
+    required this.createdAt,
+    required this.updatedAt,
   });
 
   factory Game.fromJson(Map<String, dynamic> json) {
@@ -20,6 +24,8 @@ class Game {
       description: json['description'],
       imageUrl: json['image'],
       tags: List<String>.from(json['tags'] ?? []),
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 
@@ -30,6 +36,8 @@ class Game {
       'description': description,
       'image': imageUrl,
       'tags': tags,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
   }
 }

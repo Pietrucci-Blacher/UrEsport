@@ -2,20 +2,20 @@ import 'game.dart';
 
 class Tournament {
   final int id;
-  final String name;
-  final String description;
-  final DateTime startDate;
-  final DateTime endDate;
-  final String location;
-  final double latitude;
-  final double longitude;
-  final String image;
-  final bool isPrivate;
-  final int ownerId;
+  late final String name;
+  late final String description;
+  late final DateTime startDate;
+  late final DateTime endDate;
+  late final String location;
+  late final double latitude;
+  late final double longitude;
+  late final String image;
+  late final bool isPrivate;
+  late final int ownerId;
   final Owner owner;
-  final List<Team> teams;
-  final int upvotes;
-  final Game game;
+  late final List<Team> teams;
+  late final int upvotes;
+  late final Game game;
 
   Tournament({
     required this.id,

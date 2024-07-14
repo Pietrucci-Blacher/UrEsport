@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:uresport/core/models/user.dart';
 
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/game.dart';
 
 abstract class DashboardState extends Equatable {
   const DashboardState();
@@ -22,6 +23,7 @@ class DashboardLoaded extends DashboardState {
   final List<String> recentLogs;
   final List<User> users;
   final List<Tournament> tournaments;
+  final List<Game> games;
 
   const DashboardLoaded({
     required this.message,
@@ -31,11 +33,12 @@ class DashboardLoaded extends DashboardState {
     this.recentLogs = const [],
     this.users = const [],
     this.tournaments = const [],
+    this.games = const [],
   });
 
   @override
   List<Object> get props =>
-      [message, activeUsers, activeTournaments, totalGames, recentLogs, users, tournaments];
+      [message, activeUsers, activeTournaments, totalGames, recentLogs, users, tournaments, games];
 
   DashboardLoaded copyWith({
     String? message,
@@ -45,6 +48,7 @@ class DashboardLoaded extends DashboardState {
     List<String>? recentLogs,
     List<User>? users,
     List<Tournament>? tournaments,
+    List<Game>? games,
   }) {
     return DashboardLoaded(
       message: message ?? this.message,
@@ -54,6 +58,7 @@ class DashboardLoaded extends DashboardState {
       recentLogs: recentLogs ?? this.recentLogs,
       users: users ?? this.users,
       tournaments: tournaments ?? this.tournaments,
+      games: games ?? this.games,
     );
   }
 }
