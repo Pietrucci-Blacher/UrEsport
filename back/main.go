@@ -9,7 +9,6 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"time"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -82,28 +81,16 @@ func main() {
 
 	allowedOrigins := os.Getenv("ALLOWED_ORIGINS")
 
-	if gin.Mode() == gin.DebugMode {
-		r.Use(cors.New(cors.Config{
-			AllowOrigins:     []string{"http://localhost:*"},
-			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-			AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
-			ExposeHeaders:    []string{"Content-Length"},
-			AllowCredentials: true,
-			AllowOriginFunc: func(origin string) bool {
-				return strings.HasPrefix(origin, "http://localhost:")
-			},
-			MaxAge: 12 * time.Hour,
-		}))
-	} else {
-		r.Use(cors.New(cors.Config{
-			AllowOrigins:     strings.Split(allowedOrigins, ","),
-			AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-			AllowHeaders:     []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"},
-			ExposeHeaders:    []string{"Content-Length"},
-			AllowCredentials: true,
-			MaxAge:           12 * time.Hour,
-		}))
-	}
+	config := cors.DefaultConfig()
+	config.AllowOrigins = strings.Split(allowedOrigins, ",")
+	config.AllowMethods = []string{"GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"}
+	config.AllowHeaders = []string{"Origin", "Content-Type", "Accept", "Authorization", "X-Requested-With"}
+	config.AllowCredentials = true
+	config.AllowWebSockets = true
+	config.AllowWildcard = true
+	config.MaxAge = 0
+
+	r.Use(cors.New(config))
 
 	controllers.RegisterRoutes(r)
 	websockets.RegisterWebsocket(r)

@@ -24,7 +24,7 @@ class GameService implements IGameService {
       };
 
       final response = await _dio.get(
-        "${dotenv.env['API_ENDPOINT']}/games",
+        "${dotenv.env['API_ENDPOINT']}/games/",
         queryParameters: queryParams,
       );
 
