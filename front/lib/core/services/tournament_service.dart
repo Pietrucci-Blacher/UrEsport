@@ -13,7 +13,8 @@ abstract class ITournamentService {
   Future<bool> hasUpvoted(int tournamentId, int userId);
   Future<void> joinTournament(int tournamentId, int teamId);
   Future<bool> hasJoinedTournament(int tournamentId, String username);
-  Future<void> inviteTeamToTournament(int tournamentId, int teamId, String teamName);
+  Future<void> inviteTeamToTournament(
+      int tournamentId, int teamId, String teamName);
   Future<List<Team>> fetchTeams();
   Future<Tournament> fetchTournamentById(int tournamentId);
   Future<void> generateBracket(int tournamentId);
@@ -74,12 +75,14 @@ class TournamentService implements ITournamentService {
   }
 
   @override
-  Future<void> inviteUserToTournament(String tournamentId, String username) async {
+  Future<void> inviteUserToTournament(
+      String tournamentId, String username) async {
     try {
       final response = await _dio.post(
         "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/invite",
         data: {'username': username},
-        options: Options(headers: {'Content-Type': 'application/json; charset=UTF-8'}),
+        options: Options(
+            headers: {'Content-Type': 'application/json; charset=UTF-8'}),
       );
 
       if (response.statusCode != 200) {
@@ -100,7 +103,8 @@ class TournamentService implements ITournamentService {
   }
 
   @override
-  Future<void> inviteTeamToTournament(int tournamentId, int teamId, String teamName) async {
+  Future<void> inviteTeamToTournament(
+      int tournamentId, int teamId, String teamName) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
@@ -160,7 +164,8 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to upvote tournament. Status code: ${response.statusCode}',
+          error:
+              'Failed to upvote tournament. Status code: ${response.statusCode}',
           type: DioExceptionType.badResponse,
         );
       }
@@ -215,7 +220,8 @@ class TournamentService implements ITournamentService {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
-    final url = "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
+    final url =
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
 
     try {
       final response = await _dio.post(
@@ -253,7 +259,8 @@ class TournamentService implements ITournamentService {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
-    final url = "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/joined/$username";
+    final url =
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/joined/$username";
 
     try {
       final response = await _dio.get(
@@ -301,7 +308,8 @@ class TournamentService implements ITournamentService {
         if (response.data == null) {
           throw Exception('Received null response from API');
         } else if (response.data is! List) {
-          throw Exception('Expected a list but got ${response.data.runtimeType}');
+          throw Exception(
+              'Expected a list but got ${response.data.runtimeType}');
         }
 
         return (response.data as List)
@@ -394,7 +402,8 @@ class TournamentService implements ITournamentService {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
-    final url = "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
+    final url =
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
 
     try {
       final response = await _dio.post(
@@ -426,5 +435,4 @@ class TournamentService implements ITournamentService {
       }
     }
   }
-
 }

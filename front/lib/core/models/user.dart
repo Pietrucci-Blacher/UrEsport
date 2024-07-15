@@ -30,7 +30,9 @@ class User {
       email: json['email'],
       profileImageUrl: json['profile_image_url'],
       roles: json['roles'],
-      teams: (json['teams'] as List<dynamic>).map((teamJson) => Team.fromJson(teamJson)).toList(), // Ajoutez cette ligne
+      teams: (json['teams'] as List<dynamic>)
+          .map((teamJson) => Team.fromJson(teamJson))
+          .toList(), // Ajoutez cette ligne
     );
   }
 
