@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uresport/bracket/screens/custom_schedule.dart';
+// import 'package:uresport/bracket/screens/custom_schedule.dart' as custom_schedule;
+import 'package:uresport/core/models/match.dart';
 
 class MatchDetailsPage extends StatelessWidget {
   final Match match;
@@ -42,27 +43,27 @@ class MatchDetailsPage extends StatelessWidget {
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
                     children: [
-                      _buildTeamHeader(match.team1, match.team2),
-                      const Divider(thickness: 2),
-                      _buildStatColumn('Date', match.date),
-                      _buildStatColumn('Time', match.time),
+                      _buildTeamHeader(match.team1?.name ?? '', match.team2?.name ?? ''),
+                      // const Divider(thickness: 2),
+                      // _buildStatColumn('Date', match.date),
+                      // _buildStatColumn('Time', match.time),
                       const Divider(thickness: 2),
                       _buildCustomScoreRow(
-                          'Score', '0', '0'), // Ligne personnalisée
-                      _buildVerticalDivider(),
-                      _buildStatRow('Goals', '0', '0'),
-                      _buildVerticalDivider(),
-                      _buildStatRow('Total Shots', '0', '0'),
-                      _buildVerticalDivider(),
-                      _buildStatRow('Shots on Target', '0', '0'),
-                      _buildVerticalDivider(),
-                      _buildStatRow('Possession', '50%', '50%'),
-                      _buildVerticalDivider(),
-                      _buildStatRow('Fouls', '0', '0'),
-                      _buildVerticalDivider(),
-                      _buildStatRow('Yellow Cards', '0', '0'),
-                      _buildVerticalDivider(),
-                      _buildStatRow('Red Cards', '0', '0'),
+                          'Score', match.score1.toString(), match.score2.toString()),
+                      // _buildVerticalDivider(),
+                      // _buildStatRow('Goals', '0', '0'),
+                      // _buildVerticalDivider(),
+                      // _buildStatRow('Total Shots', '0', '0'),
+                      // _buildVerticalDivider(),
+                      // _buildStatRow('Shots on Target', '0', '0'),
+                      // _buildVerticalDivider(),
+                      // _buildStatRow('Possession', '50%', '50%'),
+                      // _buildVerticalDivider(),
+                      // _buildStatRow('Fouls', '0', '0'),
+                      // _buildVerticalDivider(),
+                      // _buildStatRow('Yellow Cards', '0', '0'),
+                      // _buildVerticalDivider(),
+                      // _buildStatRow('Red Cards', '0', '0'),
                     ],
                   ),
                 ),

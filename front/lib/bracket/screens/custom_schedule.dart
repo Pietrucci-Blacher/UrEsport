@@ -149,14 +149,14 @@ class CustomSchedulePage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     vertical: 10.0, horizontal: 15.0),
                 child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => MatchDetailsPage(match: match),
-                      ),
-                    );
-                  },
+                  // onTap: () {
+                  //   Navigator.push(
+                  //     context,
+                  //     MaterialPageRoute(
+                  //       builder: (context) => MatchDetailsPage(match: match),
+                  //     ),
+                  //   );
+                  // },
                   child: MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: AnimatedContainer(

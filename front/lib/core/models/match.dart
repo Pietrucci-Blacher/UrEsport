@@ -7,7 +7,8 @@ class Match {
   final int? team2Id;
   final Team? team1;
   final Team? team2;
-  final int? winnerId;
+  final int? winner;
+  final String status;
   final int score1;
   final int score2;
   final int? nextMatchId;
@@ -20,7 +21,8 @@ class Match {
     required this.team2Id,
     required this.team1,
     required this.team2,
-    required this.winnerId,
+    required this.winner,
+    required this.status,
     required this.score1,
     required this.score2,
     required this.nextMatchId,
@@ -35,7 +37,8 @@ class Match {
       team2Id: json['team2_id'],
       team1: json['team1'] != null ? Team.fromJson(json['team1']) : null,
       team2: json['team2'] != null ? Team.fromJson(json['team2']) : null,
-      winnerId: json['winner_id'],
+      winner: json['winner'],
+      status: json['status'],
       score1: json['score1'],
       score2: json['score2'],
       nextMatchId: json['next_match_id'],
@@ -51,7 +54,8 @@ class Match {
       'team2_id': team2Id,
       'team1': team1?.toJson(),
       'team2': team2?.toJson(),
-      'winner_id': winnerId,
+      'winner': winner,
+      'status': status,
       'score1': score1,
       'score2': score2,
       'next_match_id': nextMatchId,

@@ -5,6 +5,17 @@ import (
 	"time"
 )
 
+const (
+	NONE      = 0
+	TEAM1_WIN = 1
+	TEAM2_WIN = 2
+	DRAW      = 3
+
+	WAITING  = "waiting"
+	PLAYING  = "playing"
+	FINISHED = "finished"
+)
+
 type Match struct {
 	ID           int        `json:"id" gorm:"primaryKey"`
 	TournamentID int        `json:"tournament_id"`
@@ -13,7 +24,8 @@ type Match struct {
 	Team1        Team       `json:"team1" gorm:"foreignKey:Team1ID"`
 	Team2ID      *int       `json:"team2_id"`
 	Team2        Team       `json:"team2" gorm:"foreignKey:Team2ID"`
-	WinnerID     *int       `json:"winner_id"`
+	Winner       int        `json:"winner"`
+	Status       string     `json:"status"`
 	Score1       int        `json:"score1"`
 	Score2       int        `json:"score2"`
 	NextMatchID  *int       `json:"next_match_id"`
@@ -23,12 +35,13 @@ type Match struct {
 }
 
 type UpdateMatchDto struct {
-	Team1ID     *int `json:"team1_id"`
-	Team2ID     *int `json:"team2_id"`
-	Score1      int  `json:"score1"`
-	Score2      int  `json:"score2"`
-	WinnerID    *int `json:"winner_id"`
-	NextMatchID *int `json:"next_match_id"`
+	Team1ID     *int   `json:"team1_id"`
+	Team2ID     *int   `json:"team2_id"`
+	Score1      int    `json:"score1"`
+	Score2      int    `json:"score2"`
+	Winner      int    `json:"winner"`
+	Status      string `json:"status"`
+	NextMatchID *int   `json:"next_match_id"`
 }
 
 type ScoreMatchDto struct {
@@ -40,7 +53,8 @@ func NewMatch(tournamentID int, next *int, depth int) Match {
 		TournamentID: tournamentID,
 		Team1ID:      nil,
 		Team2ID:      nil,
-		WinnerID:     nil,
+		Winner:       NONE,
+		Status:       PLAYING,
 		NextMatchID:  next,
 		Depth:        depth,
 		Score1:       0,
@@ -103,6 +117,19 @@ func (m *Match) SetScore(team Team, score int) {
 	}
 
 	m.Score2 = score
+}
+
+func (m *Match) Close() {
+	if m.Score1 > m.Score2 {
+		m.Winner = TEAM1_WIN
+		return
+	} else if m.Score1 < m.Score2 {
+		m.Winner = TEAM2_WIN
+	} else {
+		m.Winner = DRAW
+	}
+
+	m.Status = FINISHED
 }
 
 func (m *Match) HasTeam(team Team) bool {
