@@ -46,9 +46,7 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode == 200) {
-        if (kDebugMode) {
-          print('Data fetched successfully: ${response.data}');
-        }
+        debugPrint('Data fetched successfully: ${response.data}');
         final tournaments = (response.data as List)
             .map((json) => Tournament.fromJson(json))
             .toList();
@@ -62,9 +60,7 @@ class TournamentService implements ITournamentService {
         );
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error: $e');
-      }
+      debugPrint('Error: $e');
       if (e is DioException) {
         rethrow;
       } else {
