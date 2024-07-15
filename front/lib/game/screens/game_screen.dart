@@ -19,7 +19,10 @@ class GamesScreen extends StatefulWidget {
 
 class GamesScreenState extends State<GamesScreen> {
   final List<String> _selectedTags = [];
-  final List<String> _availableTags = [];
+  final List<String> _allAvailableTags =
+      []; // Nouvelle liste pour tous les tags
+  List<String> _filteredAvailableTags =
+      []; // Liste filtrée des tags disponibles
   late String _sortOption;
   late List<String> _sortOptions;
 
@@ -57,7 +60,7 @@ class GamesScreenState extends State<GamesScreen> {
         body: BlocListener<GameBloc, GameState>(
           listener: (context, state) {
             if (state is GameLoaded) {
-              _updateAvailableTags(state.games);
+              _updateAllAvailableTags(state.games);
             }
           },
           child: BlocBuilder<GameBloc, GameState>(
@@ -88,6 +91,7 @@ class GamesScreenState extends State<GamesScreen> {
                               } else {
                                 _selectedTags.add(tag);
                               }
+                              _updateFilteredAvailableTags(); // Mettez à jour les tags filtrés
                             });
                             _filterGames(context);
                           },
@@ -107,7 +111,8 @@ class GamesScreenState extends State<GamesScreen> {
           ),
         ),
         floatingActionButton: FilterButton(
-          availableTags: _availableTags,
+          availableTags:
+              _filteredAvailableTags, // Utilisez la liste filtrée ici
           selectedTags: _selectedTags,
           sortOptions: _sortOptions,
           currentSortOption: _sortOption,
@@ -117,6 +122,7 @@ class GamesScreenState extends State<GamesScreen> {
               _selectedTags.addAll(selectedTags);
               _sortOption = sortOption;
               _currentSortIndex = _sortOptions.indexOf(sortOption);
+              _updateFilteredAvailableTags(); // Mettez à jour les tags filtrés
             });
             _filterGames(context);
           },
@@ -126,24 +132,33 @@ class GamesScreenState extends State<GamesScreen> {
     );
   }
 
-  void _updateAvailableTags(List<Game> games) {
+  void _updateAllAvailableTags(List<Game> games) {
     setState(() {
-      _availableTags.clear();
+      _allAvailableTags.clear();
       Set<String> uniqueTags = {};
       for (var game in games) {
         uniqueTags.addAll(game.tags);
       }
-      _availableTags.addAll(uniqueTags);
+      _allAvailableTags.addAll(uniqueTags);
+      _updateFilteredAvailableTags();
+    });
+  }
+
+  void _updateFilteredAvailableTags() {
+    setState(() {
+      _filteredAvailableTags = _allAvailableTags.toList();
     });
   }
 
   List<Game> _filterAndSortGames(List<Game> games) {
-    List<Game> filteredGames = _selectedTags.isEmpty
-        ? games
-        : games
-            .where(
-                (game) => game.tags.any((tag) => _selectedTags.contains(tag)))
-            .toList();
+    List<Game> filteredGames = games;
+
+    if (_selectedTags.isNotEmpty) {
+      filteredGames = games
+          .where(
+              (game) => _selectedTags.every((tag) => game.tags.contains(tag)))
+          .toList();
+    }
 
     filteredGames.sort((a, b) {
       if (_sortOption == AppLocalizations.of(context).alphabeticalAZ) {
