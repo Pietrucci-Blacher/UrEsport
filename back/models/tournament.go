@@ -36,12 +36,12 @@ type CreateTournamentDto struct {
 	Description string    `json:"description" validate:"required"`
 	StartDate   time.Time `json:"start_date" validate:"required"`
 	EndDate     time.Time `json:"end_date" validate:"required"`
-	Location    string    `json:"location" validate:"required"`
-	Latitude    float64   `json:"latitude" validate:"required"`
-	Longitude   float64   `json:"longitude" validate:"required"`
+	Location    string    `json:"location"`
+	Latitude    float64   `json:"latitude"`
+	Longitude   float64   `json:"longitude"`
 	Private     bool      `json:"private"`
-	NbPlayer    int       `json:"nb_player" validate:"required"`
 	GameID      int       `json:"game_id" validate:"required"`
+	NbPlayer    int       `json:"nb_player" validate:"required"`
 }
 
 type UpdateTournamentDto struct {

@@ -2,19 +2,25 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/friends_services.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/core/services/notification_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/core/services/rating_service.dart';
 import 'package:uresport/shared/websocket/websocket.dart';
 import 'package:uresport/shared/routing/routing.dart';
 
 import 'app.dart';
+import 'auth/bloc/auth_event.dart';
+import 'core/websocket/websocket.dart';
+import 'dashboard/bloc/dashboard_event.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -75,12 +81,26 @@ void main() async {
             create: (_) => NotificationProvider()),
         Provider<MapService>.value(value: mapService),
       ],
-      child: MyApp(
-        authService: authService,
-        tournamentService: tournamentService,
-        gameService: gameService,
-        mapService: mapService,
-        routeGenerator: routeGenerator,
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AuthBloc>(
+            create: (context) =>
+                AuthBloc(authService)..add(AuthCheckRequested()),
+          ),
+          BlocProvider<DashboardBloc>(
+            create: (context) => DashboardBloc(
+                Websocket.getInstance(), tournamentService, gameService)
+              ..add(FetchTournaments())
+              ..add(FetchGames()),
+          ),
+        ],
+        child: MyApp(
+          authService: authService,
+          tournamentService: tournamentService,
+          gameService: gameService,
+          mapService: mapService,
+          routeGenerator: routeGenerator,
+        ),
       ),
     ),
   );

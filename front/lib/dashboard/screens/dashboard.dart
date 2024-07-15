@@ -6,9 +6,10 @@ import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'package:uresport/dashboard/models/game.dart';
-import 'package:uresport/dashboard/models/tournament.dart';
-import 'package:uresport/dashboard/models/data.dart'; // Importez les données
+import 'edit_tournament_page.dart';
+import 'edit_game_page.dart';
+import 'add_game_page.dart';
+import 'add_tournament_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -28,89 +29,111 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          DashboardBloc(Websocket.getInstance())..add(ConnectWebSocket()),
-      child: Scaffold(
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: (int index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              labelType: NavigationRailLabelType.selected,
-              destinations: const <NavigationRailDestination>[
-                NavigationRailDestination(
-                  icon: Icon(Icons.dashboard),
-                  selectedIcon: Icon(Icons.dashboard),
-                  label: Text('Dashboard'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.list),
-                  selectedIcon: Icon(Icons.list),
-                  label: Text('Logs'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.emoji_events),
-                  selectedIcon: Icon(Icons.emoji_events),
-                  label: Text('Tournaments'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.games),
-                  selectedIcon: Icon(Icons.games),
-                  label: Text('Games'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.people),
-                  selectedIcon: Icon(Icons.people),
-                  label: Text('Users'),
-                ),
-              ],
-            ),
-            const VerticalDivider(thickness: 1, width: 1),
-            Expanded(
-              child: BlocBuilder<DashboardBloc, DashboardState>(
-                builder: (context, state) {
-                  if (state is DashboardInitial) {
-                    return const Center(child: Text('Initializing...'));
-                  } else if (state is DashboardLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is DashboardLoaded) {
-                    switch (_selectedIndex) {
-                      case 0:
-                        return _buildDashboardContent(state);
-                      case 1:
-                        return _buildLogsContent(state);
-                      case 2:
-                        return _buildTournamentsContent(state);
-                      case 3:
-                        return _buildGamesContent(state);
-                      case 4:
-                        return _buildUsersContent(state);
-                      default:
-                        return const Center(child: Text('Unknown page'));
-                    }
-                  } else if (state is DashboardError) {
-                    return Center(child: Text('Error: ${state.error}'));
-                  }
-                  return const Center(child: Text('Unknown state'));
-                },
+    return Scaffold(
+      body: Row(
+        children: [
+          NavigationRail(
+            selectedIndex: _selectedIndex,
+            onDestinationSelected: (int index) {
+              setState(() {
+                _selectedIndex = index;
+              });
+            },
+            labelType: NavigationRailLabelType.selected,
+            destinations: const <NavigationRailDestination>[
+              NavigationRailDestination(
+                icon: Icon(Icons.dashboard),
+                selectedIcon: Icon(Icons.dashboard),
+                label: Text('Dashboard'),
               ),
+              NavigationRailDestination(
+                icon: Icon(Icons.list),
+                selectedIcon: Icon(Icons.list),
+                label: Text('Logs'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.emoji_events),
+                selectedIcon: Icon(Icons.emoji_events),
+                label: Text('Tournaments'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.games),
+                selectedIcon: Icon(Icons.games),
+                label: Text('Games'),
+              ),
+              NavigationRailDestination(
+                icon: Icon(Icons.people),
+                selectedIcon: Icon(Icons.people),
+                label: Text('Users'),
+              ),
+            ],
+          ),
+          const VerticalDivider(thickness: 1, width: 1),
+          Expanded(
+            child: BlocBuilder<DashboardBloc, DashboardState>(
+              builder: (context, state) {
+                if (state is DashboardLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is DashboardLoaded) {
+                  switch (_selectedIndex) {
+                    case 0:
+                      return _buildDashboardContent(state);
+                    case 1:
+                      return _buildLogsContent(state);
+                    case 2:
+                      return _buildTournamentsContent(state);
+                    case 3:
+                      return _buildGamesContent(state);
+                    case 4:
+                      return _buildUsersContent(state);
+                    default:
+                      return const Center(child: Text('Unknown page'));
+                  }
+                } else if (state is DashboardError) {
+                  return Center(child: Text('Error: ${state.error}'));
+                }
+                return const Center(child: Text('Unknown state'));
+              },
             ),
-          ],
-        ),
-        floatingActionButton: _selectedIndex == 2
-            ? FloatingActionButton(
-                onPressed: () {
-                  _showTournamentDialog(context);
-                },
-                child: const Icon(Icons.add),
-              )
-            : null,
+          ),
+        ],
       ),
+      floatingActionButton: _selectedIndex == 2
+          ? FloatingActionButton(
+              onPressed: () async {
+                final result = await showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const AddTournamentPage();
+                  },
+                );
+
+                if (result == true) {
+                  // Fetch updated tournaments
+                  BlocProvider.of<DashboardBloc>(context)
+                      .add(FetchTournaments());
+                }
+              },
+              child: const Icon(Icons.add),
+            )
+          : _selectedIndex == 3
+              ? FloatingActionButton(
+                  onPressed: () async {
+                    final result = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const AddGamePage();
+                      },
+                    );
+
+                    if (result == true) {
+                      // Fetch updated games
+                      BlocProvider.of<DashboardBloc>(context).add(FetchGames());
+                    }
+                  },
+                  child: const Icon(Icons.add),
+                )
+              : null,
     );
   }
 
@@ -142,359 +165,206 @@ class _DashboardState extends State<Dashboard> {
   Widget _buildTournamentsContent(DashboardLoaded state) {
     final ScrollController scrollController = ScrollController();
 
-    return Center(
-      child: Scrollbar(
-        controller: scrollController,
-        thumbVisibility: true,
-        child: SingleChildScrollView(
-          controller: scrollController,
+    return Stack(
+      children: [
+        SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: DataTable(
-            columns: const [
-              DataColumn(label: Text('ID')),
-              DataColumn(label: Text('Name')),
-              DataColumn(label: Text('Description')),
-              DataColumn(label: Text('Start Date')),
-              DataColumn(label: Text('End Date')),
-              DataColumn(label: Text('Location')),
-              DataColumn(label: Text('Latitude')),
-              DataColumn(label: Text('Longitude')),
-              DataColumn(label: Text('Owner ID')),
-              DataColumn(label: Text('Image')),
-              DataColumn(label: Text('Private')),
-              DataColumn(label: Text('Game ID')),
-              DataColumn(label: Text('Nb Players')),
-              DataColumn(label: Text('Created At')),
-              DataColumn(label: Text('Updated At')),
-              DataColumn(label: Text('Upvotes')),
-              DataColumn(label: Text('Actions')),
-            ],
-            rows: tournaments.map((tournament) {
-              return DataRow(cells: [
-                DataCell(Text(tournament.id.toString())),
-                DataCell(Text(tournament.name)),
-                DataCell(Text(tournament.description)),
-                DataCell(Text(tournament.startDate)),
-                DataCell(Text(tournament.endDate)),
-                DataCell(Text(tournament.location)),
-                DataCell(Text(tournament.latitude.toString())),
-                DataCell(Text(tournament.longitude.toString())),
-                DataCell(Text(tournament.ownerId.toString())),
-                DataCell(Text(tournament.image)),
-                DataCell(Text(tournament.private.toString())),
-                DataCell(Text(tournament.gameId.toString())),
-                DataCell(Text(tournament.nbPlayer.toString())),
-                DataCell(Text(tournament.createdAt)),
-                DataCell(Text(tournament.updatedAt)),
-                DataCell(Text(tournament.upvotes.toString())),
-                DataCell(Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        _showTournamentDialog(context, tournament: tournament);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          tournaments.remove(tournament);
-                        });
-                      },
-                    ),
-                  ],
-                )),
-              ]);
-            }).toList(),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: DataTable(
+              columns: const [
+                DataColumn(label: Text('ID')),
+                DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Description')),
+                DataColumn(label: Text('Start Date')),
+                DataColumn(label: Text('End Date')),
+                DataColumn(label: Text('Location')),
+                DataColumn(label: Text('Latitude')),
+                DataColumn(label: Text('Longitude')),
+                DataColumn(label: Text('Owner ID')),
+                DataColumn(label: Text('Image')),
+                DataColumn(label: Text('Private')),
+                DataColumn(label: Text('Nb Players')),
+                DataColumn(label: Text('Created At')),
+                DataColumn(label: Text('Updated At')),
+                DataColumn(label: Text('Upvotes')),
+                DataColumn(label: Text('')), // Empty column for spacing
+              ],
+              rows: state.tournaments.map((tournament) {
+                return DataRow(cells: [
+                  DataCell(Text(tournament.id.toString())),
+                  DataCell(Text(tournament.name)),
+                  DataCell(Text(tournament.description)),
+                  DataCell(Text(tournament.startDate.toIso8601String())),
+                  DataCell(Text(tournament.endDate.toIso8601String())),
+                  DataCell(Text(tournament.location)),
+                  DataCell(Text(tournament.latitude.toString())),
+                  DataCell(Text(tournament.longitude.toString())),
+                  DataCell(Text(tournament.ownerId.toString())),
+                  DataCell(Text(tournament.image)),
+                  DataCell(Text(tournament.isPrivate.toString())),
+                  DataCell(Text(tournament.nbPlayer.toString())),
+                  DataCell(Text(tournament.startDate.toIso8601String())),
+                  DataCell(Text(tournament.endDate.toIso8601String())),
+                  DataCell(Text(tournament.upvotes.toString())),
+                  DataCell(Container()), // Empty cell for spacing
+                ]);
+              }).toList(),
+            ),
           ),
         ),
-      ),
+        Positioned(
+          right: 0,
+          child: SizedBox(
+            width: 100, // Set the width for the fixed column
+            child: DataTable(
+              columns: const [
+                DataColumn(label: Text('Actions')),
+              ],
+              rows: state.tournaments.map((tournament) {
+                return DataRow(cells: [
+                  DataCell(
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditTournamentPage(
+                                      tournament: tournament)),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            _showDeleteConfirmationDialog(
+                                context, tournament.id);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ]);
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
     );
   }
 
   Widget _buildGamesContent(DashboardLoaded state) {
     final ScrollController scrollController = ScrollController();
 
-    return Center(
-      child: Scrollbar(
-        controller: scrollController,
-        thumbVisibility: true,
-        child: SingleChildScrollView(
-          controller: scrollController,
+    return Stack(
+      children: [
+        SingleChildScrollView(
           scrollDirection: Axis.horizontal,
-          child: DataTable(
-            columns: const [
-              DataColumn(label: Text('ID')),
-              DataColumn(label: Text('Name')),
-              DataColumn(label: Text('Description')),
-              DataColumn(label: Text('Image')),
-              DataColumn(label: Text('Tags')),
-              DataColumn(label: Text('Created At')),
-              DataColumn(label: Text('Updated At')),
-              DataColumn(label: Text('Actions')),
-            ],
-            rows: games.map((game) {
-              return DataRow(cells: [
-                DataCell(Text(game.id.toString())),
-                DataCell(Text(game.name)),
-                DataCell(Text(game.description)),
-                DataCell(Text(game.image)),
-                DataCell(Text(game.tags)),
-                DataCell(Text(game.createdAt)),
-                DataCell(Text(game.updatedAt)),
-                DataCell(Row(
-                  children: [
-                    IconButton(
-                      icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        _showGameDialog(context, game: game);
-                      },
-                    ),
-                    IconButton(
-                      icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        setState(() {
-                          games.remove(game);
-                        });
-                      },
-                    ),
-                  ],
-                )),
-              ]);
-            }).toList(),
+          child: SingleChildScrollView(
+            controller: scrollController,
+            child: DataTable(
+              columns: const [
+                DataColumn(label: Text('ID')),
+                DataColumn(label: Text('Name')),
+                DataColumn(label: Text('Description')),
+                DataColumn(label: Text('Image URL')),
+                DataColumn(label: Text('Tags')),
+                DataColumn(label: Text('Created At')),
+                DataColumn(label: Text('Updated At')),
+                DataColumn(label: Text('')), // Empty column for spacing
+              ],
+              rows: state.games.map((game) {
+                return DataRow(cells: [
+                  DataCell(Text(game.id.toString())),
+                  DataCell(Text(game.name)),
+                  DataCell(Text(game.description)),
+                  DataCell(Text(game.imageUrl)),
+                  DataCell(Text(game.tags.join(', '))),
+                  DataCell(Text(game.createdAt)),
+                  DataCell(Text(game.updatedAt)),
+                  DataCell(Container()), // Empty cell for spacing
+                ]);
+              }).toList(),
+            ),
           ),
         ),
-      ),
+        Positioned(
+          right: 0,
+          child: SizedBox(
+            width: 100, // Set the width for the fixed column
+            child: DataTable(
+              columns: const [
+                DataColumn(label: Text('Actions')),
+              ],
+              rows: state.games.map((game) {
+                return DataRow(cells: [
+                  DataCell(
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditGamePage(game: game)),
+                            );
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () {
+                            _showDeleteConfirmationDialog(context, game.id);
+                          },
+                        ),
+                      ],
+                    ),
+                  ),
+                ]);
+              }).toList(),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  void _showDeleteConfirmationDialog(BuildContext context, int gameId) {
+    showDialog(
+      context: context,
+      builder: (BuildContext dialogContext) {
+        return Builder(
+          builder: (BuildContext innerContext) {
+            return AlertDialog(
+              title: const Text('Delete Game'),
+              content: const Text('Are you sure you want to delete this game?'),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Cancel'),
+                ),
+                TextButton(
+                  onPressed: () {
+                    // Utilisez innerContext pour accéder à DashboardBloc
+                    BlocProvider.of<DashboardBloc>(innerContext)
+                        .add(DeleteGameEvent(gameId));
+                    Navigator.of(dialogContext).pop();
+                  },
+                  child: const Text('Delete'),
+                ),
+              ],
+            );
+          },
+        );
+      },
     );
   }
 
   Widget _buildUsersContent(DashboardLoaded state) {
     return const Center(child: Text('Users Content'));
-  }
-
-  void _showGameDialog(BuildContext context, {Game? game}) {
-    final TextEditingController nameController =
-        TextEditingController(text: game?.name);
-    final TextEditingController descriptionController =
-        TextEditingController(text: game?.description);
-    final TextEditingController imageController =
-        TextEditingController(text: game?.image);
-    final TextEditingController tagsController =
-        TextEditingController(text: game?.tags);
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(game == null ? 'Add Game' : 'Edit Game'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                ),
-                TextField(
-                  controller: imageController,
-                  decoration: const InputDecoration(labelText: 'Image'),
-                ),
-                TextField(
-                  controller: tagsController,
-                  decoration: const InputDecoration(labelText: 'Tags'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  if (game == null) {
-                    games.add(Game(
-                      id: games.length + 1,
-                      name: nameController.text,
-                      description: descriptionController.text,
-                      image: imageController.text,
-                      tags: tagsController.text,
-                      createdAt: DateTime.now().toString(),
-                      updatedAt: DateTime.now().toString(),
-                    ));
-                  } else {
-                    game.name = nameController.text;
-                    game.description = descriptionController.text;
-                    game.image = imageController.text;
-                    game.tags = tagsController.text;
-                    game.updatedAt = DateTime.now().toString();
-                  }
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _showTournamentDialog(BuildContext context, {Tournament? tournament}) {
-    final TextEditingController nameController =
-        TextEditingController(text: tournament?.name);
-    final TextEditingController descriptionController =
-        TextEditingController(text: tournament?.description);
-    final TextEditingController startDateController =
-        TextEditingController(text: tournament?.startDate);
-    final TextEditingController endDateController =
-        TextEditingController(text: tournament?.endDate);
-    final TextEditingController locationController =
-        TextEditingController(text: tournament?.location);
-    final TextEditingController latitudeController =
-        TextEditingController(text: tournament?.latitude.toString());
-    final TextEditingController longitudeController =
-        TextEditingController(text: tournament?.longitude.toString());
-    final TextEditingController ownerIdController =
-        TextEditingController(text: tournament?.ownerId.toString());
-    final TextEditingController imageController =
-        TextEditingController(text: tournament?.image);
-    final TextEditingController privateController =
-        TextEditingController(text: tournament?.private.toString());
-    final TextEditingController gameIdController =
-        TextEditingController(text: tournament?.gameId.toString());
-    final TextEditingController nbPlayerController =
-        TextEditingController(text: tournament?.nbPlayer.toString());
-    final TextEditingController upvotesController =
-        TextEditingController(text: tournament?.upvotes.toString());
-
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title:
-              Text(tournament == null ? 'Add Tournament' : 'Edit Tournament'),
-          content: SingleChildScrollView(
-            child: Column(
-              children: [
-                TextField(
-                  controller: nameController,
-                  decoration: const InputDecoration(labelText: 'Name'),
-                ),
-                TextField(
-                  controller: descriptionController,
-                  decoration: const InputDecoration(labelText: 'Description'),
-                ),
-                TextField(
-                  controller: startDateController,
-                  decoration: const InputDecoration(labelText: 'Start Date'),
-                ),
-                TextField(
-                  controller: endDateController,
-                  decoration: const InputDecoration(labelText: 'End Date'),
-                ),
-                TextField(
-                  controller: locationController,
-                  decoration: const InputDecoration(labelText: 'Location'),
-                ),
-                TextField(
-                  controller: latitudeController,
-                  decoration: const InputDecoration(labelText: 'Latitude'),
-                ),
-                TextField(
-                  controller: longitudeController,
-                  decoration: const InputDecoration(labelText: 'Longitude'),
-                ),
-                TextField(
-                  controller: ownerIdController,
-                  decoration: const InputDecoration(labelText: 'Owner ID'),
-                ),
-                TextField(
-                  controller: imageController,
-                  decoration: const InputDecoration(labelText: 'Image'),
-                ),
-                TextField(
-                  controller: privateController,
-                  decoration: const InputDecoration(labelText: 'Private'),
-                ),
-                TextField(
-                  controller: gameIdController,
-                  decoration: const InputDecoration(labelText: 'Game ID'),
-                ),
-                TextField(
-                  controller: nbPlayerController,
-                  decoration: const InputDecoration(labelText: 'Nb Players'),
-                ),
-                TextField(
-                  controller: upvotesController,
-                  decoration: const InputDecoration(labelText: 'Upvotes'),
-                ),
-              ],
-            ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                setState(() {
-                  if (tournament == null) {
-                    tournaments.add(Tournament(
-                      id: tournaments.length + 1,
-                      name: nameController.text,
-                      description: descriptionController.text,
-                      startDate: startDateController.text,
-                      endDate: endDateController.text,
-                      location: locationController.text,
-                      latitude: double.parse(latitudeController.text),
-                      longitude: double.parse(longitudeController.text),
-                      ownerId: int.parse(ownerIdController.text),
-                      image: imageController.text,
-                      private: privateController.text.toLowerCase() == 'true',
-                      gameId: int.parse(gameIdController.text),
-                      nbPlayer: int.parse(nbPlayerController.text),
-                      createdAt: DateTime.now().toString(),
-                      updatedAt: DateTime.now().toString(),
-                      upvotes: int.parse(upvotesController.text),
-                    ));
-                  } else {
-                    tournament.name = nameController.text;
-                    tournament.description = descriptionController.text;
-                    tournament.startDate = startDateController.text;
-                    tournament.endDate = endDateController.text;
-                    tournament.location = locationController.text;
-                    tournament.latitude = double.parse(latitudeController.text);
-                    tournament.longitude =
-                        double.parse(longitudeController.text);
-                    tournament.ownerId = int.parse(ownerIdController.text);
-                    tournament.image = imageController.text;
-                    tournament.private =
-                        privateController.text.toLowerCase() == 'true';
-                    tournament.gameId = int.parse(gameIdController.text);
-                    tournament.nbPlayer = int.parse(nbPlayerController.text);
-                    tournament.updatedAt = DateTime.now().toString();
-                    tournament.upvotes = int.parse(upvotesController.text);
-                  }
-                });
-                Navigator.of(context).pop();
-              },
-              child: const Text('Save'),
-            ),
-          ],
-        );
-      },
-    );
   }
 }

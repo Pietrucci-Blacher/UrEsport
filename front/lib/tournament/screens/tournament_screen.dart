@@ -34,9 +34,7 @@ class TournamentScreenState extends State<TournamentScreen> {
         _currentUser = user;
       });
     } catch (e) {
-      if (kDebugMode) {
-        debugPrint('Error loading current user: $e');
-      }
+      debugPrint('Error loading current user: $e');
     }
   }
 

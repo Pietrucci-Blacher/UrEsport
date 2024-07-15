@@ -2,20 +2,21 @@ import 'game.dart';
 
 class Tournament {
   final int id;
-  final String name;
-  final String description;
-  final DateTime startDate;
-  final DateTime endDate;
-  final String location;
-  final double latitude;
-  final double longitude;
-  final String image;
-  final bool isPrivate;
-  final int ownerId;
+  late final String name;
+  late final String description;
+  late final DateTime startDate;
+  late final DateTime endDate;
+  late final String location;
+  late final double latitude;
+  late final double longitude;
+  late final String image;
+  late final bool isPrivate;
+  late final int ownerId;
   final Owner owner;
-  final List<Team> teams;
-  final int upvotes;
-  final Game game;
+  late final List<Team> teams;
+  late final int nbPlayer;
+  late final int upvotes;
+  late final Game game;
 
   Tournament({
     required this.id,
@@ -30,7 +31,7 @@ class Tournament {
     required this.isPrivate,
     required this.ownerId,
     required this.owner,
-    required this.teams,
+    required this.nbPlayer,
     required this.upvotes,
     required this.game,
   });
@@ -49,10 +50,7 @@ class Tournament {
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams: (json['teams'] as List?)
-              ?.map((team) => Team.fromJson(team))
-              .toList() ??
-          [],
+      nbPlayer: json['nb_player'] ?? 1,
       upvotes: json['upvotes'] ?? 0,
       game: Game.fromJson(json['game']),
     );
@@ -72,7 +70,7 @@ class Tournament {
       'private': isPrivate,
       'owner_id': ownerId,
       'owner': owner.toJson(),
-      'teams': teams.map((team) => team.toJson()).toList(),
+      'nb_player': nbPlayer,
       'upvotes': upvotes,
       'game': game.toJson(),
     };
