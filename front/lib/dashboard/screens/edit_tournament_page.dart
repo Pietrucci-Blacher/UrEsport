@@ -85,6 +85,7 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
         teams: widget.tournament!.teams,
         upvotes: int.parse(upvotesController.text),
         game: widget.tournament!.game,
+        nbPlayers: int.parse(nbPlayerController.text),
       );
 
       try {

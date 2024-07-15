@@ -15,6 +15,8 @@ import 'package:uresport/core/services/auth_service.dart';
 import 'package:flutter/foundation.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 
+import 'package:uresport/tournament/screens/add_tournament.dart';
+
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
 
@@ -106,21 +108,41 @@ class TournamentScreenState extends State<TournamentScreen> {
                         return _buildTournamentCard(context, tournament);
                       },
                     ),
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: FloatingActionButton(
-                        heroTag: 'map-fab',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TournamentMapWidget(
-                                  tournaments: state.tournaments),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FloatingActionButton(
+                              heroTag: 'map-fab',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TournamentMapWidget(
+                                        tournaments: state.tournaments),
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.map),
                             ),
-                          );
-                        },
-                        child: const Icon(Icons.map),
+                            const SizedBox(height: 16), // Space between buttons
+                            FloatingActionButton(
+                              heroTag: 'create tournament',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => AddTournamentPage(),
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.add),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -269,6 +291,19 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 ),
                               ],
                             ),
+                            Row(
+                              children: [
+                                const Icon(Icons.person, color: Colors.grey),
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    'Nombre joueurs par teams: ${tournament.nbPlayers}',
+                                    style: const TextStyle(fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),
