@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
+import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
@@ -201,7 +202,7 @@ class _DashboardState extends State<Dashboard> {
                   DataCell(Text(tournament.ownerId.toString())),
                   DataCell(Text(tournament.image)),
                   DataCell(Text(tournament.isPrivate.toString())),
-                  DataCell(Text(tournament.teams.length.toString())),
+                  DataCell(Text(tournament.nbPlayer.toString())),
                   DataCell(Text(tournament.startDate.toIso8601String())),
                   DataCell(Text(tournament.endDate.toIso8601String())),
                   DataCell(Text(tournament.upvotes.toString())),

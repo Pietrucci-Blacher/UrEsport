@@ -9,13 +9,11 @@ void connectWebsocket() {
 }
 
 void connected(socket, message) {
-  if (kDebugMode) {
-    print('connected to websocket');
-  }
+  debugPrint('connected to websocket');
 }
 
 void error(socket, message) {
-  if (kDebugMode) {
-    print('Error: $message');
-  }
+
+  debugPrint('Error: $message');
+
 }

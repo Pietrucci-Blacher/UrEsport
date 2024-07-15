@@ -14,6 +14,7 @@ class Tournament {
   late final int ownerId;
   final Owner owner;
   late final List<Team> teams;
+  late final int nbPlayer;
   late final int upvotes;
   late final Game game;
 
@@ -30,7 +31,7 @@ class Tournament {
     required this.isPrivate,
     required this.ownerId,
     required this.owner,
-    required this.teams,
+    required this.nbPlayer,
     required this.upvotes,
     required this.game,
   });
@@ -49,10 +50,7 @@ class Tournament {
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams: (json['teams'] as List?)
-              ?.map((team) => Team.fromJson(team))
-              .toList() ??
-          [],
+      nbPlayer: json['nb_player'] ?? 1,
       upvotes: json['upvotes'] ?? 0,
       game: Game.fromJson(json['game']),
     );
@@ -72,7 +70,7 @@ class Tournament {
       'private': isPrivate,
       'owner_id': ownerId,
       'owner': owner.toJson(),
-      'teams': teams.map((team) => team.toJson()).toList(),
+      'nb_player': nbPlayer,
       'upvotes': upvotes,
       'game': game.toJson(),
     };
