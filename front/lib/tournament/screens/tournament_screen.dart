@@ -142,23 +142,8 @@ class TournamentScreenState extends State<TournamentScreen> {
     }
 
     final userId = _currentUser!.id;
-    final url = '${dotenv.env['API_ENDPOINT']}/teams/user/$userId';
-    debugPrint('Fetching user teams from $url');
-
-    try {
-      final response = await Dio().get(url);
-      if (response.statusCode == 200) {
-        final data = response.data as List;
-        debugPrint('Received user teams: $data');
-        return data.map((json) => Team.fromJson(json)).toList();
-      } else {
-        debugPrint('Failed to load user teams with status code: ${response.statusCode}');
-        throw Exception('Failed to load user teams');
-      }
-    } catch (e) {
-      debugPrint('Error fetching user teams: $e');
-      throw Exception('Failed to load user teams');
-    }
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    return await tournamentService.getUserTeams(userId);
   }
 
   Widget _buildTournamentList(BuildContext context, bool isOwner) {

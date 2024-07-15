@@ -16,6 +16,7 @@ import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
+import 'package:uresport/shared/teams/my_teams_screen.dart';
 import 'package:uresport/shared/utils/image_util.dart';
 import 'package:uresport/tournament/screens/tournament_screen.dart';
 
@@ -38,7 +39,9 @@ class MainScreenState extends State<MainScreen> {
   late final List<Widget> _widgetOptions;
   String? _profileImageUrl;
   final ValueNotifier<String?> _profileImageNotifier =
-      ValueNotifier<String?>(null);
+  ValueNotifier<String?>(null);
+
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
   void initState() {
@@ -74,7 +77,7 @@ class MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-          AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: Consumer<NotificationProvider>(
         builder: (context, notificationProvider, child) {
           return BlocBuilder<AuthBloc, AuthState>(
@@ -96,7 +99,52 @@ class MainScreenState extends State<MainScreen> {
                       _profileImageUrl = value;
                     }
                     return Scaffold(
+                      key: _scaffoldKey,
                       appBar: AppBar(
+                        leading: IconButton(
+                          icon: isLoggedIn && _profileImageUrl != null
+                              ? Stack(
+                            children: [
+                              ClipOval(
+                                child: CachedImageWidget(
+                                  url: _profileImageUrl!,
+                                  size: 40,
+                                ),
+                              ),
+                              if (notificationProvider
+                                  .notificationCount >
+                                  0)
+                                Positioned(
+                                  right: 0,
+                                  top: 0,
+                                  child: Container(
+                                    padding: const EdgeInsets.all(2),
+                                    decoration: BoxDecoration(
+                                      color: Colors.red,
+                                      borderRadius:
+                                      BorderRadius.circular(6),
+                                    ),
+                                    constraints: const BoxConstraints(
+                                      minWidth: 18,
+                                      minHeight: 18,
+                                    ),
+                                    child: Text(
+                                      '${notificationProvider.notificationCount}',
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                            ],
+                          )
+                              : const Icon(Icons.person),
+                          onPressed: () {
+                            _scaffoldKey.currentState?.openDrawer();
+                          },
+                        ),
                         title: Row(
                           children: [
                             const SizedBox(width: 8),
@@ -107,73 +155,6 @@ class MainScreenState extends State<MainScreen> {
                           ],
                         ),
                         actions: [
-                          if (!kIsWeb)
-                            IconButton(
-                              icon: isLoggedIn && _profileImageUrl != null
-                                  ? Stack(
-                                      children: [
-                                        ClipOval(
-                                          child: CachedImageWidget(
-                                            url: _profileImageUrl!,
-                                            size: 40,
-                                          ),
-                                        ),
-                                        if (notificationProvider
-                                                .notificationCount >
-                                            0)
-                                          Positioned(
-                                            right: 0,
-                                            top: 0,
-                                            child: Container(
-                                              padding: const EdgeInsets.all(2),
-                                              decoration: BoxDecoration(
-                                                color: Colors.red,
-                                                borderRadius:
-                                                    BorderRadius.circular(6),
-                                              ),
-                                              constraints: const BoxConstraints(
-                                                minWidth: 18,
-                                                minHeight: 18,
-                                              ),
-                                              child: Text(
-                                                '${notificationProvider.notificationCount}',
-                                                style: const TextStyle(
-                                                  color: Colors.white,
-                                                  fontSize: 12,
-                                                ),
-                                                textAlign: TextAlign.center,
-                                              ),
-                                            ),
-                                          ),
-                                      ],
-                                    )
-                                  : const Icon(Icons.person),
-                              onPressed: () async {
-                                if (isLoggedIn) {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ProfileScreen(
-                                        authService: widget.authService,
-                                        profileImageNotifier:
-                                            _profileImageNotifier,
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AuthScreen(
-                                        authService: widget.authService,
-                                        showLogin: true,
-                                        showRegister: !kIsWeb,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
                           LocaleSwitcher(
                             onLocaleChanged: (locale) {
                               context.read<LocaleCubit>().setLocale(locale);
@@ -196,7 +177,7 @@ class MainScreenState extends State<MainScreen> {
                                     CircleAvatar(
                                       radius: 40,
                                       backgroundImage:
-                                          NetworkImage(_profileImageUrl!),
+                                      NetworkImage(_profileImageUrl!),
                                     )
                                   else if (isLoggedIn)
                                     CircleAvatar(
@@ -235,7 +216,7 @@ class MainScreenState extends State<MainScreen> {
                                       builder: (context) => ProfileScreen(
                                         authService: widget.authService,
                                         profileImageNotifier:
-                                            _profileImageNotifier,
+                                        _profileImageNotifier,
                                       ),
                                     ),
                                   );
@@ -253,6 +234,20 @@ class MainScreenState extends State<MainScreen> {
                                 }
                               },
                             ),
+                            ListTile(
+                              leading: const Icon(Icons.group),
+                              title: const Text('My Teams'),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => MyTeamsScreen(),
+                                  ),
+                                );
+                              },
+                            ),
+
+
                             ListTile(
                               leading: const Icon(Icons.settings),
                               title: const Text('Settings'),
@@ -277,12 +272,12 @@ class MainScreenState extends State<MainScreen> {
                       bottomNavigationBar: kIsWeb
                           ? null
                           : CustomBottomNavigation(
-                              isLoggedIn: isLoggedIn,
-                              selectedIndex: _selectedIndex,
-                              onTap: _onItemTapped,
-                              notificationCount:
-                                  notificationProvider.notificationCount,
-                            ),
+                        isLoggedIn: isLoggedIn,
+                        selectedIndex: _selectedIndex,
+                        onTap: _onItemTapped,
+                        notificationCount:
+                        notificationProvider.notificationCount,
+                      ),
                     );
                   },
                 );

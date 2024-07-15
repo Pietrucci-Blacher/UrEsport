@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:uresport/generated/l10n/intl/messages_all.dart';
 
 class AppLocalizations {
+  String get myTeams => 'My Teams';
+
   static Future<AppLocalizations> load(Locale locale) {
     final String name = locale.countryCode?.isEmpty ?? false
         ? locale.languageCode

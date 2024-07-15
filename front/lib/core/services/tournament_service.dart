@@ -18,7 +18,8 @@ abstract class ITournamentService {
   Future<Tournament> fetchTournamentById(int tournamentId);
   Future<void> generateBracket(int tournamentId);
   Future<void> joinTournamentWithTeam(int tournamentId, int teamId);
-  Future<void> createTournament(Map<String, dynamic> tournamentData); // Add this line
+  Future<void> createTournament(Map<String, dynamic> tournamentData);
+  Future<List<Team>> getUserTeams(int userId);
 }
 
 class TournamentService implements ITournamentService {
@@ -460,6 +461,22 @@ class TournamentService implements ITournamentService {
         debugPrint('Exception: ${e.toString()}');
         throw Exception('Unexpected error occurred');
       }
+    }
+  }
+
+  @override
+  Future<List<Team>> getUserTeams(int userId) async {
+    try {
+      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/teams/user/$userId');
+      if (response.statusCode == 200) {
+        final data = response.data as List;
+        return data.map((json) => Team.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load teams');
+      }
+    } catch (e) {
+      debugPrint('Error fetching teams: $e');
+      throw Exception('Failed to load teams');
     }
   }
 }
