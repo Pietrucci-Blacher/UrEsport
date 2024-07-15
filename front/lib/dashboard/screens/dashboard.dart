@@ -2,14 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
-import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'edit_tournament_page.dart';
-import 'edit_game_page.dart';
+
 import 'add_game_page.dart';
 import 'add_tournament_page.dart';
+import 'edit_game_page.dart';
+import 'edit_tournament_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -101,6 +101,7 @@ class _DashboardState extends State<Dashboard> {
       floatingActionButton: _selectedIndex == 2
           ? FloatingActionButton(
               onPressed: () async {
+                final currentContext = context;
                 final result = await showDialog<bool>(
                   context: context,
                   builder: (BuildContext context) {
@@ -110,8 +111,10 @@ class _DashboardState extends State<Dashboard> {
 
                 if (result == true) {
                   // Fetch updated tournaments
-                  BlocProvider.of<DashboardBloc>(context)
-                      .add(FetchTournaments());
+                  if (currentContext.mounted) {
+                    BlocProvider.of<DashboardBloc>(context)
+                        .add(FetchTournaments());
+                  }
                 }
               },
               child: const Icon(Icons.add),
@@ -119,6 +122,7 @@ class _DashboardState extends State<Dashboard> {
           : _selectedIndex == 3
               ? FloatingActionButton(
                   onPressed: () async {
+                    final currentContext = context;
                     final result = await showDialog<bool>(
                       context: context,
                       builder: (BuildContext context) {
@@ -127,8 +131,10 @@ class _DashboardState extends State<Dashboard> {
                     );
 
                     if (result == true) {
-                      // Fetch updated games
-                      BlocProvider.of<DashboardBloc>(context).add(FetchGames());
+                      if (currentContext.mounted) {
+                        BlocProvider.of<DashboardBloc>(context)
+                            .add(FetchGames());
+                      }
                     }
                   },
                   child: const Icon(Icons.add),

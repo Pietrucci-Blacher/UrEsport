@@ -1,10 +1,10 @@
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 
@@ -12,10 +12,10 @@ class AddTournamentPage extends StatefulWidget {
   const AddTournamentPage({super.key});
 
   @override
-  _AddTournamentPageState createState() => _AddTournamentPageState();
+  AddTournamentPageState createState() => AddTournamentPageState();
 }
 
-class _AddTournamentPageState extends State<AddTournamentPage> {
+class AddTournamentPageState extends State<AddTournamentPage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -35,6 +35,35 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
 
   String _formatDateToUtcWithoutMilliseconds(DateTime dateTime) {
     return DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(dateTime.toUtc());
+  }
+
+  Future<DateTime?> _selectDateTime(
+      BuildContext context, DateTime? initialDate) async {
+    final DateTime? date = await showDatePicker(
+      context: context,
+      initialDate: initialDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2100),
+    );
+
+    if (date == null) return null;
+
+    if (!context.mounted) return null;
+
+    final TimeOfDay? time = await showTimePicker(
+      context: context,
+      initialTime: TimeOfDay.fromDateTime(initialDate ?? DateTime.now()),
+    );
+
+    return time == null
+        ? null
+        : DateTime(
+            date.year,
+            date.month,
+            date.day,
+            time.hour,
+            time.minute,
+          );
   }
 
   Future<void> _saveTournament() async {
@@ -60,7 +89,6 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
         'nb_player': int.tryParse(_nbPlayerController.text) ?? 0,
       };
 
-      // Log des données envoyées
       if (kDebugMode) {
         print('Sending data: $newTournament');
       }
@@ -71,27 +99,24 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
           data: newTournament,
         );
 
-        // Log de la réponse complète du serveur
         if (kDebugMode) {
           print('Response status: ${response.statusCode}');
-        }
-        if (kDebugMode) {
           print('Response data: ${response.data}');
         }
 
+        if (!mounted) return;
+
         if (response.statusCode == 201) {
-          BlocProvider.of<DashboardBloc>(context).add(FetchTournaments());
-          Navigator.of(context).pop(true);
-          _showAlertDialog('Tournoi ajouté');
+          _handleSuccessfulResponse();
         } else {
           _showAlertDialog(
               'Erreur ajout du tournoi: ${response.statusMessage}');
         }
       } catch (e) {
-        // Log de l'exception complète
         if (kDebugMode) {
           print('Exception: $e');
         }
+        if (!mounted) return;
         _showAlertDialog('Erreur ajout du tournoi: $e');
       }
     } else {
@@ -100,25 +125,19 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
     }
   }
 
+  void _handleSuccessfulResponse() {
+    Navigator.of(context).pop(true);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Tournoi ajouté')));
+    context.read<DashboardBloc>().add(FetchTournaments());
+  }
+
   void _showAlertDialog(String message) {
     if (kDebugMode) {
       print(message);
-    } // Afficher le message dans la console
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Info'),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
+    }
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -176,24 +195,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
                       format: _dateFormat,
                       decoration:
                           const InputDecoration(labelText: 'Start Date & Time'),
-                      onShowPicker: (context, currentValue) async {
-                        final date = await showDatePicker(
-                          context: context,
-                          firstDate: DateTime(2000),
-                          initialDate: currentValue ?? DateTime.now(),
-                          lastDate: DateTime(2100),
-                        );
-                        if (date != null) {
-                          final time = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.fromDateTime(
-                                currentValue ?? DateTime.now()),
-                          );
-                          return DateTimeField.combine(date, time);
-                        } else {
-                          return currentValue;
-                        }
-                      },
+                      onShowPicker: (context, currentValue) =>
+                          _selectDateTime(context, currentValue),
                       onChanged: (date) => setState(() {
                         _startDateTime = date;
                       }),
@@ -208,24 +211,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
                       format: _dateFormat,
                       decoration:
                           const InputDecoration(labelText: 'End Date & Time'),
-                      onShowPicker: (context, currentValue) async {
-                        final date = await showDatePicker(
-                          context: context,
-                          firstDate: DateTime(2000),
-                          initialDate: currentValue ?? DateTime.now(),
-                          lastDate: DateTime(2100),
-                        );
-                        if (date != null) {
-                          final time = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.fromDateTime(
-                                currentValue ?? DateTime.now()),
-                          );
-                          return DateTimeField.combine(date, time);
-                        } else {
-                          return currentValue;
-                        }
-                      },
+                      onShowPicker: (context, currentValue) =>
+                          _selectDateTime(context, currentValue),
                       onChanged: (date) => setState(() {
                         _endDateTime = date;
                       }),

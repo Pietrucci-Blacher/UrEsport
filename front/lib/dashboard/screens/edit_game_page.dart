@@ -9,10 +9,10 @@ class EditGamePage extends StatefulWidget {
   const EditGamePage({super.key, this.game});
 
   @override
-  _EditGamePageState createState() => _EditGamePageState();
+  EditGamePageState createState() => EditGamePageState();
 }
 
-class _EditGamePageState extends State<EditGamePage> {
+class EditGamePageState extends State<EditGamePage> {
   late TextEditingController nameController;
   late TextEditingController descriptionController;
   late TextEditingController imageUrlController;
@@ -65,9 +65,11 @@ class _EditGamePageState extends State<EditGamePage> {
 
         if (response.statusCode == 200) {
           // Successfully updated the game
+          if (!mounted) return;
           Navigator.of(context).pop(true); // Return true to indicate success
         } else {
           // Handle error
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
                 content:
@@ -76,6 +78,7 @@ class _EditGamePageState extends State<EditGamePage> {
         }
       } catch (e) {
         // Handle error
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to update game: $e')),
         );
