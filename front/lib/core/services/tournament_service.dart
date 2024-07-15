@@ -60,9 +60,7 @@ class TournamentService implements ITournamentService {
         );
       }
     } catch (e) {
-      if (kDebugMode) {
-        print('Error: $e');
-      }
+      debugPrint('Error: $e');
       if (e is DioException) {
         rethrow;
       } else {
