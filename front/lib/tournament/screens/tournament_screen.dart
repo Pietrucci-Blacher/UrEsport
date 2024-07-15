@@ -1,5 +1,7 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
@@ -36,7 +38,7 @@ class TournamentScreenState extends State<TournamentScreen> {
         _currentUser = user;
       });
     } catch (e) {
-        debugPrint('Error loading current user: $e');
+      debugPrint('Error loading current user: $e');
     }
   }
 
@@ -51,13 +53,14 @@ class TournamentScreenState extends State<TournamentScreen> {
     AppLocalizations l = AppLocalizations.of(context);
 
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: TabBar(
             tabs: [
               Tab(text: l.listAllTournaments),
               Tab(text: l.listMyTournaments),
+              Tab(text: l.listMyTournamentsJoined),
             ],
           ),
         ),
@@ -65,10 +68,97 @@ class TournamentScreenState extends State<TournamentScreen> {
           children: [
             _buildTournamentList(context, false),
             _buildTournamentList(context, true),
+            _buildTeamList(context),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildTeamList(BuildContext context) {
+    if (_currentUser == null) {
+      AppLocalizations l = AppLocalizations.of(context);
+      return Center(child: Text(l.mustBeLoggedIn));
+    }
+
+    return FutureBuilder(
+      future: _loadUserTeams(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          debugPrint('Error in FutureBuilder: ${snapshot.error}');
+          return const Center(child: Text('Failed to load user teams'));
+        } else if (!snapshot.hasData || (snapshot.data as List<Team>).isEmpty) {
+          return const Center(child: Text('No teams found for the user'));
+        } else {
+          final teams = snapshot.data as List<Team>;
+          debugPrint('Teams data: $teams');
+          return ListView.builder(
+            itemCount: teams.length,
+            itemBuilder: (context, index) {
+              final team = teams[index];
+              return ExpansionTile(
+                title: Text(team.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                subtitle: Text('Members: ${team.members.length} | Tournaments: ${team.tournaments.length}', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                children: team.tournaments.map((tournamentJson) {
+                  Tournament tournament = Tournament.fromJson(tournamentJson);
+                  return Card(
+                    margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    child: ListTile(
+                      contentPadding: EdgeInsets.all(10.0),
+                      leading: Image.network(tournament.image, width: 50, height: 50, fit: BoxFit.cover),
+                      title: Text(tournament.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Start: ${DateFormat.yMMMd().format(tournament.startDate)}', style: TextStyle(fontSize: 14)),
+                          Text('End: ${DateFormat.yMMMd().format(tournament.endDate)}', style: TextStyle(fontSize: 14)),
+                          Text(tournament.description, style: TextStyle(fontSize: 12, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TournamentDetailsScreen(tournament: tournament),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }).toList(),
+              );
+            },
+          );
+        }
+      },
+    );
+  }
+
+  Future<List<Team>> _loadUserTeams() async {
+    if (_currentUser == null) {
+      throw Exception('User is not logged in');
+    }
+
+    final userId = _currentUser!.id;
+    final url = '${dotenv.env['API_ENDPOINT']}/teams/user/$userId';
+    debugPrint('Fetching user teams from $url');
+
+    try {
+      final response = await Dio().get(url);
+      if (response.statusCode == 200) {
+        final data = response.data as List;
+        debugPrint('Received user teams: $data');
+        return data.map((json) => Team.fromJson(json)).toList();
+      } else {
+        debugPrint('Failed to load user teams with status code: ${response.statusCode}');
+        throw Exception('Failed to load user teams');
+      }
+    } catch (e) {
+      debugPrint('Error fetching user teams: $e');
+      throw Exception('Failed to load user teams');
+    }
   }
 
   Widget _buildTournamentList(BuildContext context, bool isOwner) {
@@ -85,16 +175,12 @@ class TournamentScreenState extends State<TournamentScreen> {
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
-            context
-                .read<TournamentBloc>()
-                .add(LoadTournaments(ownerId: ownerId));
+            context.read<TournamentBloc>().add(LoadTournaments(ownerId: ownerId));
           },
           child: BlocBuilder<TournamentBloc, TournamentState>(
             builder: (context, state) {
               if (state is TournamentInitial) {
-                context
-                    .read<TournamentBloc>()
-                    .add(LoadTournaments(ownerId: ownerId));
+                context.read<TournamentBloc>().add(LoadTournaments(ownerId: ownerId));
                 return const Center(child: CircularProgressIndicator());
               } else if (state is TournamentLoadInProgress) {
                 return const Center(child: CircularProgressIndicator());
@@ -121,26 +207,26 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => TournamentMapWidget(
-                                        tournaments: state.tournaments),
+                                    builder: (context) => TournamentMapWidget(tournaments: state.tournaments),
                                   ),
                                 );
                               },
                               child: const Icon(Icons.map),
                             ),
-                            const SizedBox(height: 16), // Space between buttons
-                            FloatingActionButton(
-                              heroTag: 'create tournament',
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => AddTournamentPage(),
-                                  ),
-                                );
-                              },
-                              child: const Icon(Icons.add),
-                            ),
+                            const SizedBox(height: 16),
+                            if (_currentUser != null)
+                              FloatingActionButton(
+                                heroTag: 'create tournament',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) => AddTournamentPage(),
+                                    ),
+                                  );
+                                },
+                                child: const Icon(Icons.add),
+                              ),
                           ],
                         ),
                       ),
@@ -159,16 +245,14 @@ class TournamentScreenState extends State<TournamentScreen> {
   }
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
-    final DateFormat dateFormat =
-        DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    final DateFormat dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                TournamentDetailsScreen(tournament: tournament),
+            builder: (context) => TournamentDetailsScreen(tournament: tournament),
           ),
         );
       },
@@ -200,8 +284,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                       Expanded(
                         child: Text(
                           tournament.name,
-                          style: const TextStyle(
-                              fontSize: 22, fontWeight: FontWeight.bold),
+                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -234,8 +317,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.location_on,
-                                    color: Colors.grey),
+                                const Icon(Icons.location_on, color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -249,8 +331,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                const Icon(Icons.videogame_asset,
-                                    color: Colors.grey),
+                                const Icon(Icons.videogame_asset, color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -264,8 +345,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                const Icon(Icons.calendar_today,
-                                    color: Colors.grey),
+                                const Icon(Icons.calendar_today, color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -279,8 +359,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                const Icon(Icons.calendar_today,
-                                    color: Colors.grey),
+                                const Icon(Icons.calendar_today, color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -320,8 +399,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     Colors.red.withOpacity(0.7),
                                     Colors.orange,
                                     Colors.yellow,
-                                    Colors
-                                        .green, // Nouvelle couleur ajoutée à la fin
+                                    Colors.green,
                                   ],
                                   stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
                                   begin: Alignment.topLeft,

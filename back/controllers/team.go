@@ -54,6 +54,39 @@ func GetTeam(c *gin.Context) {
 	c.JSON(http.StatusOK, sanitized)
 }
 
+// GetUserTeams godoc
+//
+//	@Summary		get user teams
+//	@Description	get user teams
+//	@Tags			team
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	[]models.SanitizedTeam
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/teams/{userid} [get]
+func GetUserTeams(c *gin.Context) {
+	user, exists := c.Get("user")
+	if !exists {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
+		return
+	}
+
+	userId := user.(*models.User).ID
+
+	teams, err := models.FindTeamsByUserId(userId)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var sanitizedTeams []models.SanitizedTeam
+	for _, team := range teams {
+		sanitizedTeams = append(sanitizedTeams, team.Sanitize())
+	}
+
+	c.JSON(http.StatusOK, sanitizedTeams)
+}
+
 // CreateTeam godoc
 //
 //	@Summary		create team

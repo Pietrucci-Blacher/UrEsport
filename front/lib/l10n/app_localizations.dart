@@ -629,6 +629,14 @@ class AppLocalizations {
       desc: 'My Tournaments button text',
     );
   }
+
+  String get listMyTournamentsJoined {
+    return Intl.message(
+      'My tournaments Joined',
+      name: 'listMyTournamentsJoined',
+      desc: 'My Tournaments button text',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

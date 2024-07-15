@@ -174,3 +174,16 @@ func (t *Team) Delete() error {
 func ClearTeams() error {
 	return DB.Exec("DELETE FROM teams").Error
 }
+
+func FindTeamsByUserId(userId int) ([]Team, error) {
+	var teams []Team
+
+	err := DB.Model(&Team{}).
+		Where("owner_id", userId).
+		Preload("Members").
+		Preload("Owner").
+		Preload("Tournaments").
+		Find(&teams).Error
+
+	return teams, err
+}
