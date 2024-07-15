@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/user.dart';
+import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
-import 'package:uresport/core/models/user.dart';
-import 'package:provider/provider.dart';
-import 'package:uresport/core/services/auth_service.dart';
-import 'package:flutter/foundation.dart';
-import 'package:uresport/l10n/app_localizations.dart';
 
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});

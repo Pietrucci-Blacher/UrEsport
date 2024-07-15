@@ -1,20 +1,20 @@
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:uresport/core/models/tournament.dart';
 
 class EditTournamentPage extends StatefulWidget {
   final Tournament? tournament;
 
-  const EditTournamentPage({Key? key, this.tournament}) : super(key: key);
+  const EditTournamentPage({super.key, this.tournament});
 
   @override
-  _EditTournamentPageState createState() => _EditTournamentPageState();
+  EditTournamentPageState createState() => EditTournamentPageState();
 }
 
-class _EditTournamentPageState extends State<EditTournamentPage> {
+class EditTournamentPageState extends State<EditTournamentPage> {
   late TextEditingController nameController;
   late TextEditingController descriptionController;
   late TextEditingController locationController;
@@ -102,23 +102,26 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
           '${dotenv.env['API_ENDPOINT']}/tournaments/${updatedTournament.id}',
           data: updatedTournament.toJson(),
         );
-
+        if (!mounted) return;
         if (response.statusCode == 200) {
-          // Successfully updated the tournament
-          Navigator.of(context).pop(updatedTournament);
+          if (mounted) {
+            Navigator.of(context).pop(updatedTournament);
+          }
         } else {
-          // Handle error
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(
-                    'Failed to update tournament: ${response.statusMessage}')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      'Failed to update tournament: ${response.statusMessage}')),
+            );
+          }
         }
       } catch (e) {
-        // Handle error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update tournament: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to update tournament: $e')),
+          );
+        }
       }
     }
   }
@@ -155,7 +158,7 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
                     initialDate: currentValue ?? DateTime.now(),
                     lastDate: DateTime(2100),
                   );
-                  if (date != null) {
+                  if (date != null && context.mounted) {
                     final time = await showTimePicker(
                       context: context,
                       initialTime: TimeOfDay.fromDateTime(
@@ -187,7 +190,7 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
                     initialDate: currentValue ?? DateTime.now(),
                     lastDate: DateTime(2100),
                   );
-                  if (date != null) {
+                  if (date != null && context.mounted) {
                     final time = await showTimePicker(
                       context: context,
                       initialTime: TimeOfDay.fromDateTime(
