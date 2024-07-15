@@ -52,4 +52,3 @@ class DeleteGameEvent extends DashboardEvent {
   @override
   List<Object> get props => [gameId];
 }
-

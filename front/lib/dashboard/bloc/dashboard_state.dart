@@ -37,8 +37,16 @@ class DashboardLoaded extends DashboardState {
   });
 
   @override
-  List<Object> get props =>
-      [message, activeUsers, activeTournaments, totalGames, recentLogs, users, tournaments, games];
+  List<Object> get props => [
+        message,
+        activeUsers,
+        activeTournaments,
+        totalGames,
+        recentLogs,
+        users,
+        tournaments,
+        games
+      ];
 
   DashboardLoaded copyWith({
     String? message,

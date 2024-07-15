@@ -24,9 +24,12 @@ class _EditGamePageState extends State<EditGamePage> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.game?.name ?? '');
-    descriptionController = TextEditingController(text: widget.game?.description ?? '');
-    imageUrlController = TextEditingController(text: widget.game?.imageUrl ?? '');
-    tagsController = TextEditingController(text: widget.game?.tags.join(', ') ?? '');
+    descriptionController =
+        TextEditingController(text: widget.game?.description ?? '');
+    imageUrlController =
+        TextEditingController(text: widget.game?.imageUrl ?? '');
+    tagsController =
+        TextEditingController(text: widget.game?.tags.join(', ') ?? '');
   }
 
   @override
@@ -62,11 +65,13 @@ class _EditGamePageState extends State<EditGamePage> {
 
         if (response.statusCode == 200) {
           // Successfully updated the game
-          Navigator.of(context).pop(true);  // Return true to indicate success
+          Navigator.of(context).pop(true); // Return true to indicate success
         } else {
           // Handle error
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update game: ${response.statusMessage}')),
+            SnackBar(
+                content:
+                    Text('Failed to update game: ${response.statusMessage}')),
           );
         }
       } catch (e) {
@@ -77,8 +82,6 @@ class _EditGamePageState extends State<EditGamePage> {
       }
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {

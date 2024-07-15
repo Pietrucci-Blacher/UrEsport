@@ -129,7 +129,8 @@ class _AddGamePageState extends State<AddGamePage> {
                     ),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(labelText: 'Description'),
+                      decoration:
+                          const InputDecoration(labelText: 'Description'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the game description';
@@ -149,7 +150,8 @@ class _AddGamePageState extends State<AddGamePage> {
                     ),
                     TextFormField(
                       controller: _tagsController,
-                      decoration: const InputDecoration(labelText: 'Tags (comma or space separated)'),
+                      decoration: const InputDecoration(
+                          labelText: 'Tags (comma or space separated)'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the tags';

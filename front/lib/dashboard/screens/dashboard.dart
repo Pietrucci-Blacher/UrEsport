@@ -100,39 +100,40 @@ class _DashboardState extends State<Dashboard> {
       ),
       floatingActionButton: _selectedIndex == 2
           ? FloatingActionButton(
-        onPressed: () async {
-          final result = await showDialog<bool>(
-            context: context,
-            builder: (BuildContext context) {
-              return const AddTournamentPage();
-            },
-          );
+              onPressed: () async {
+                final result = await showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const AddTournamentPage();
+                  },
+                );
 
-          if (result == true) {
-            // Fetch updated tournaments
-            BlocProvider.of<DashboardBloc>(context).add(FetchTournaments());
-          }
-        },
-        child: const Icon(Icons.add),
-      )
+                if (result == true) {
+                  // Fetch updated tournaments
+                  BlocProvider.of<DashboardBloc>(context)
+                      .add(FetchTournaments());
+                }
+              },
+              child: const Icon(Icons.add),
+            )
           : _selectedIndex == 3
-          ? FloatingActionButton(
-        onPressed: () async {
-          final result = await showDialog<bool>(
-            context: context,
-            builder: (BuildContext context) {
-              return const AddGamePage();
-            },
-          );
+              ? FloatingActionButton(
+                  onPressed: () async {
+                    final result = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const AddGamePage();
+                      },
+                    );
 
-          if (result == true) {
-            // Fetch updated games
-            BlocProvider.of<DashboardBloc>(context).add(FetchGames());
-          }
-        },
-        child: const Icon(Icons.add),
-      )
-          : null,
+                    if (result == true) {
+                      // Fetch updated games
+                      BlocProvider.of<DashboardBloc>(context).add(FetchGames());
+                    }
+                  },
+                  child: const Icon(Icons.add),
+                )
+              : null,
     );
   }
 
@@ -230,14 +231,17 @@ class _DashboardState extends State<Dashboard> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => EditTournamentPage(tournament: tournament)),
+                              MaterialPageRoute(
+                                  builder: (context) => EditTournamentPage(
+                                      tournament: tournament)),
                             );
                           },
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
-                            _showDeleteConfirmationDialog(context, tournament.id);
+                            _showDeleteConfirmationDialog(
+                                context, tournament.id);
                           },
                         ),
                       ],
@@ -305,7 +309,9 @@ class _DashboardState extends State<Dashboard> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => EditGamePage(game: game)),
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditGamePage(game: game)),
                             );
                           },
                         ),
@@ -344,7 +350,8 @@ class _DashboardState extends State<Dashboard> {
                 TextButton(
                   onPressed: () {
                     // Utilisez innerContext pour accéder à DashboardBloc
-                    BlocProvider.of<DashboardBloc>(innerContext).add(DeleteGameEvent(gameId));
+                    BlocProvider.of<DashboardBloc>(innerContext)
+                        .add(DeleteGameEvent(gameId));
                     Navigator.of(dialogContext).pop();
                   },
                   child: const Text('Delete'),

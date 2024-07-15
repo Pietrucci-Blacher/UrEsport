@@ -84,10 +84,12 @@ void main() async {
       child: MultiBlocProvider(
         providers: [
           BlocProvider<AuthBloc>(
-            create: (context) => AuthBloc(authService)..add(AuthCheckRequested()),
+            create: (context) =>
+                AuthBloc(authService)..add(AuthCheckRequested()),
           ),
           BlocProvider<DashboardBloc>(
-            create: (context) => DashboardBloc(Websocket.getInstance(), tournamentService, gameService)
+            create: (context) => DashboardBloc(
+                Websocket.getInstance(), tournamentService, gameService)
               ..add(FetchTournaments())
               ..add(FetchGames()),
           ),

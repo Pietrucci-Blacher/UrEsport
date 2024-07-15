@@ -38,15 +38,23 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
   }
 
   Future<void> _saveTournament() async {
-    if (_formKey.currentState!.validate() && _startDateTime != null && _endDateTime != null) {
+    if (_formKey.currentState!.validate() &&
+        _startDateTime != null &&
+        _endDateTime != null) {
       final newTournament = {
         'name': _nameController.text,
         'description': _descriptionController.text,
         'start_date': _formatDateToUtcWithoutMilliseconds(_startDateTime!),
         'end_date': _formatDateToUtcWithoutMilliseconds(_endDateTime!),
-        'location': _locationController.text.isNotEmpty ? _locationController.text : null,
-        'latitude': _latitudeController.text.isNotEmpty ? double.tryParse(_latitudeController.text) : null,
-        'longitude': _longitudeController.text.isNotEmpty ? double.tryParse(_longitudeController.text) : null,
+        'location': _locationController.text.isNotEmpty
+            ? _locationController.text
+            : null,
+        'latitude': _latitudeController.text.isNotEmpty
+            ? double.tryParse(_latitudeController.text)
+            : null,
+        'longitude': _longitudeController.text.isNotEmpty
+            ? double.tryParse(_longitudeController.text)
+            : null,
         'private': _privateController.text.toLowerCase() == 'true',
         'game_id': int.tryParse(_gameIdController.text) ?? 0,
         'nb_player': int.tryParse(_nbPlayerController.text) ?? 0,
@@ -76,7 +84,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
           Navigator.of(context).pop(true);
           _showAlertDialog('Tournoi ajouté');
         } else {
-          _showAlertDialog('Erreur ajout du tournoi: ${response.statusMessage}');
+          _showAlertDialog(
+              'Erreur ajout du tournoi: ${response.statusMessage}');
         }
       } catch (e) {
         // Log de l'exception complète
@@ -86,7 +95,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
         _showAlertDialog('Erreur ajout du tournoi: $e');
       }
     } else {
-      _showAlertDialog('Please fill in all required fields and select dates and times');
+      _showAlertDialog(
+          'Please fill in all required fields and select dates and times');
     }
   }
 
@@ -153,7 +163,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
                     ),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(labelText: 'Description'),
+                      decoration:
+                          const InputDecoration(labelText: 'Description'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the tournament description';
@@ -163,7 +174,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
                     ),
                     DateTimeField(
                       format: _dateFormat,
-                      decoration: const InputDecoration(labelText: 'Start Date & Time'),
+                      decoration:
+                          const InputDecoration(labelText: 'Start Date & Time'),
                       onShowPicker: (context, currentValue) async {
                         final date = await showDatePicker(
                           context: context,
@@ -174,7 +186,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
                         if (date != null) {
                           final time = await showTimePicker(
                             context: context,
-                            initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                            initialTime: TimeOfDay.fromDateTime(
+                                currentValue ?? DateTime.now()),
                           );
                           return DateTimeField.combine(date, time);
                         } else {
@@ -193,7 +206,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
                     ),
                     DateTimeField(
                       format: _dateFormat,
-                      decoration: const InputDecoration(labelText: 'End Date & Time'),
+                      decoration:
+                          const InputDecoration(labelText: 'End Date & Time'),
                       onShowPicker: (context, currentValue) async {
                         final date = await showDatePicker(
                           context: context,
@@ -204,7 +218,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
                         if (date != null) {
                           final time = await showTimePicker(
                             context: context,
-                            initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                            initialTime: TimeOfDay.fromDateTime(
+                                currentValue ?? DateTime.now()),
                           );
                           return DateTimeField.combine(date, time);
                         } else {
@@ -237,7 +252,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
                     ),
                     TextFormField(
                       controller: _privateController,
-                      decoration: const InputDecoration(labelText: 'Private (true/false)'),
+                      decoration: const InputDecoration(
+                          labelText: 'Private (true/false)'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter if the tournament is private';
@@ -258,7 +274,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
                     ),
                     TextFormField(
                       controller: _nbPlayerController,
-                      decoration: const InputDecoration(labelText: 'Number of Players'),
+                      decoration:
+                          const InputDecoration(labelText: 'Number of Players'),
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
