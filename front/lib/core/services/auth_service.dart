@@ -343,10 +343,13 @@ class AuthService implements IAuthService {
   @override
   Future<void> deleteAccount(int userId) async {
     try {
+      final token = await _cacheService.getString('token');
+      if (token == null) throw Exception('No token found');
+
       final response = await _dio.delete(
         '${dotenv.env['API_ENDPOINT']}/users/$userId',
         options: Options(headers: {
-          'Authorization': await _cacheService.getString('token'),
+          'Authorization': 'Bearer $token',
         }),
       );
 

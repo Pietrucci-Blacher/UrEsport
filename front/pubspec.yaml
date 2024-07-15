@@ -55,6 +55,7 @@ flutter:
   generate: true
   assets:
     - .env
+    - assets/
 
 flutter_intl:
   enabled: true
