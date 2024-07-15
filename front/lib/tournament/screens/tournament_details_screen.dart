@@ -3,6 +3,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:uresport/bracket/screens/custom_bracket.dart';
+import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/models/tournament.dart' as tournament_model;
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
@@ -10,10 +12,8 @@ import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
-import 'package:uresport/widgets/rating.dart';
-import 'package:uresport/bracket/screens/custom_bracket.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
-import 'package:uresport/core/models/game.dart';
+import 'package:uresport/widgets/rating.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
@@ -470,140 +470,166 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Upvotes:',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 4),
-                      GestureDetector(
-                        onTap: _currentUser != null ? _toggleUpvote : null,
-                        child: Row(
+            Padding(
+              padding: const EdgeInsets.symmetric(vertical: 12.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Card(
+                      elevation: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            AnimatedBuilder(
-                              animation: _controller,
-                              builder: (context, child) {
-                                final isUpvoteIconDisabled =
-                                    _currentUser == null;
-                                return Stack(
-                                  children: [
-                                    GradientIcon(
-                                      icon: Icons.local_fire_department,
-                                      size: 30.0,
-                                      gradient: LinearGradient(
-                                        colors: _hasUpvoted
-                                            ? [
-                                                Colors.red,
-                                                Colors.orange,
-                                                Colors.yellow
-                                              ]
-                                            : [
-                                                Colors.grey,
-                                                Colors.grey.shade600
-                                              ],
-                                        begin: Alignment.topLeft,
-                                        end: Alignment.bottomRight,
-                                      ),
-                                    ),
-                                    if (isUpvoteIconDisabled)
-                                      Positioned.fill(
-                                        child: Icon(
-                                          Icons.not_interested,
-                                          color: Colors.red.withOpacity(1),
+                            Text(
+                              'Upvotes',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap:
+                                  _currentUser != null ? _toggleUpvote : null,
+                              child: Row(
+                                children: [
+                                  AnimatedBuilder(
+                                    animation: _controller,
+                                    builder: (context, child) {
+                                      return GradientIcon(
+                                        icon: Icons.local_fire_department,
+                                        size: 24.0,
+                                        gradient: LinearGradient(
+                                          colors: _hasUpvoted
+                                              ? [
+                                                  Colors.red,
+                                                  Colors.orange,
+                                                  Colors.yellow
+                                                ]
+                                              : [
+                                                  Colors.grey,
+                                                  Colors.grey.shade600
+                                                ],
+                                          begin: Alignment.topLeft,
+                                          end: Alignment.bottomRight,
                                         ),
-                                      ),
-                                  ],
-                                );
-                              },
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                                '${widget.tournament.upvotes + (_hasUpvoted ? 1 : 0)}'),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        'Participants:',
-                        style: Theme.of(context).textTheme.titleMedium,
-                      ),
-                      const SizedBox(height: 4),
-                      Column(
-                        children: List.generate(widget.tournament.teams.length,
-                            (index) {
-                          final team = widget.tournament.teams[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 16,
-                                  backgroundColor: Colors.blueAccent,
-                                  child: Text(
-                                    team.name[0],
-                                    style: const TextStyle(color: Colors.white),
+                                      );
+                                    },
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  team.name,
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
-                      ),
-                      const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  TournamentParticipantsScreen(
-                                      tournament: widget.tournament),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Voir tous les participants',
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .primaryColor, // Couleur du texte cliquable
-                                decoration: TextDecoration
-                                    .underline, // Souligner le texte
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    '${widget.tournament.upvotes + (_hasUpvoted ? 1 : 0)}',
+                                    style:
+                                        Theme.of(context).textTheme.titleMedium,
+                                  ),
+                                ],
                               ),
                             ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: Theme.of(context)
-                                  .primaryColor, // Couleur de l'icône
-                            ),
                           ],
                         ),
                       ),
-                    ],
+                    ),
                   ),
-                ),
-              ],
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Card(
+                      elevation: 2,
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Participants',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .titleSmall
+                                  ?.copyWith(fontWeight: FontWeight.bold),
+                            ),
+                            const SizedBox(height: 8),
+                            ...widget.tournament.teams
+                                .take(3)
+                                .map((team) => Padding(
+                                      padding:
+                                          const EdgeInsets.only(bottom: 8.0),
+                                      child: Row(
+                                        children: [
+                                          CircleAvatar(
+                                            radius: 12,
+                                            backgroundColor: Colors.blue,
+                                            child: Text(
+                                              team.name[0],
+                                              style: const TextStyle(
+                                                  color: Colors.white,
+                                                  fontSize: 10),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Expanded(
+                                            child: Text(
+                                              team.name,
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .bodySmall,
+                                              overflow: TextOverflow.ellipsis,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )),
+                            if (widget.tournament.teams.length > 3)
+                              Padding(
+                                padding: const EdgeInsets.only(top: 4.0),
+                                child: GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            TournamentParticipantsScreen(
+                                          tournament: widget.tournament,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.group,
+                                          size: 16,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                      const SizedBox(width: 4),
+                                      Flexible(
+                                        child: Text(
+                                          'Voir tous (${widget.tournament.teams.length})',
+                                          style: TextStyle(
+                                            color:
+                                                Theme.of(context).primaryColor,
+                                            fontWeight: FontWeight.bold,
+                                            fontSize: 12,
+                                          ),
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                      Icon(Icons.chevron_right,
+                                          size: 16,
+                                          color:
+                                              Theme.of(context).primaryColor),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 16),
             if (isOwner)
