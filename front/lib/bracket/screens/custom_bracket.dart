@@ -203,24 +203,18 @@ class BracketContentState extends State<BracketContent> {
                 onContainerTapDown:
                     (Match? model, TapDownDetails tapDownDetails) {
                   if (model == null) {
-                    if (kDebugMode) {
-                      print(null);
-                    }
+                      debugPrint(null);
                   } else {
                     if (kDebugMode) {
-                      print(model.id);
+                      debugPrint(model.id as String?);
                     }
                   }
                 },
                 onLineIconPress: (match1, match2, tapDownDetails) {
                   if (match1 != null && match2 != null) {
-                    if (kDebugMode) {
-                      print("${match1.id} and ${match2.id}");
-                    }
+                    debugPrint("${match1.id} and ${match2.id}");
                   } else {
-                    if (kDebugMode) {
-                      print(null);
-                    }
+                    debugPrint(null);
                   }
                 },
                 context: context,
