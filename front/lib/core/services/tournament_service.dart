@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/team.dart';
 
 import 'cache_service.dart';
 
@@ -19,6 +20,7 @@ abstract class ITournamentService {
   Future<Tournament> fetchTournamentById(int tournamentId);
   Future<void> generateBracket(int tournamentId);
   Future<void> joinTournamentWithTeam(int tournamentId, int teamId);
+  Future<void> createTournament(Map<String, dynamic> tournamentData);
 }
 
 class TournamentService implements ITournamentService {
@@ -428,6 +430,45 @@ class TournamentService implements ITournamentService {
       if (e is DioException) {
         rethrow;
       } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
+  @override
+  Future<void> createTournament(Map<String, dynamic> tournamentData) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    try {
+      final response = await _dio.post(
+        "${dotenv.env['API_ENDPOINT']}/tournaments/", // Ensure the URL ends with a trailing slash
+        data: tournamentData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+
+      if (response.statusCode != 201) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to create tournament',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioException: ${e.message}');
+        rethrow;
+      } else {
+        debugPrint('Exception: ${e.toString()}');
         throw Exception('Unexpected error occurred');
       }
     }

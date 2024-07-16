@@ -1,4 +1,4 @@
-import 'package:uresport/core/models/tournament.dart'; // Assurez-vous d'importer le modèle Team
+import 'package:uresport/core/models/team.dart';
 
 class User {
   final int id;

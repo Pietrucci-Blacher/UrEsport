@@ -1,4 +1,4 @@
-import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/team.dart';
 
 class Match {
   final int id;

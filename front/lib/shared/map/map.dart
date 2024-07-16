@@ -14,6 +14,7 @@ import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/shared/map/bloc/map_bloc.dart';
 import 'package:uresport/shared/map/bloc/map_event.dart';
 import 'package:uresport/shared/map/bloc/map_state.dart';
+import 'package:uresport/core/models/team.dart';
 
 class TournamentMapWidget extends StatefulWidget {
   final List<Tournament> tournaments;

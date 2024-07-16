@@ -19,6 +19,7 @@ import 'package:uresport/shared/routing/routing.dart';
 
 import 'app.dart';
 import 'auth/bloc/auth_event.dart';
+import 'core/services/team_services.dart';
 import 'core/websocket/websocket.dart';
 import 'dashboard/bloc/dashboard_event.dart';
 
@@ -64,6 +65,7 @@ void main() async {
   final friendService = FriendService(dio);
   final mapsBoxApiKey = dotenv.env['SDK_REGISTRY_TOKEN']!;
   final mapService = MapService(dio: dio, mapboxApiKey: mapsBoxApiKey);
+  final teamService = TeamService(dio);
 
   connectWebsocket();
 
@@ -80,6 +82,7 @@ void main() async {
         ChangeNotifierProvider<NotificationProvider>(
             create: (_) => NotificationProvider()),
         Provider<MapService>.value(value: mapService),
+        Provider<ITeamService>.value(value: teamService),
       ],
       child: MultiBlocProvider(
         providers: [

@@ -53,7 +53,7 @@ class EditTournamentPageState extends State<EditTournamentPage> {
     privateController = TextEditingController(
         text: widget.tournament?.isPrivate.toString() ?? '');
     nbPlayerController = TextEditingController(
-        text: widget.tournament?.nbPlayer.toString() ?? '');
+        text: widget.tournament?.nbPlayers.toString() ?? '');
     upvotesController = TextEditingController(
         text: widget.tournament?.upvotes.toString() ?? '');
   }
@@ -91,10 +91,11 @@ class EditTournamentPageState extends State<EditTournamentPage> {
         image: imageController.text,
         isPrivate: privateController.text.toLowerCase() == 'true',
         owner: widget.tournament!.owner,
-        nbPlayer: int.parse(nbPlayerController.text),
+        nbPlayers: int.parse(nbPlayerController.text),
         upvotes: int.parse(upvotesController.text),
         game: widget.tournament!.game,
         teams: [],
+        //teams: widget.tournament!.teams,
       );
 
       try {
