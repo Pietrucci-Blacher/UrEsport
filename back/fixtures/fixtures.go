@@ -27,7 +27,6 @@ var (
 
 	TEAM_NB = 10
 
-	GAME_NB         = 40
 	TEAM_MEMBERS_NB = 4
 
 	FRIEND_NB = 10

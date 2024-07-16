@@ -251,6 +251,16 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsTournamentOwner(),
 				GenerateTournamentBracket,
 			)
+			tournaments.GET("/:tournament/upvotes",
+				middlewares.Get[*models.Tournament]("tournament"),
+				GetTournamentUpvote,
+			)
+			tournaments.GET("/:tournament/upvotes/:userID",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.User]("userID"),
+				GetUpvoteById,
+			)
 			tournaments.POST("/:tournament/upvote",
 				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.Tournament]("tournament"),
@@ -290,7 +300,6 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsRatingOwner(),
 				DeleteRating,
 			)
-
 		}
 
 		teams := api.Group("/teams")

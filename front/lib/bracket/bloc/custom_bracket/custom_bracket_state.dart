@@ -1,33 +1,43 @@
 import 'package:equatable/equatable.dart';
-import 'package:uresport/bracket/models/team.dart';
+// import 'package:uresport/bracket/models/team.dart';
+import 'package:uresport/core/models/match.dart';
 
-abstract class CustomBracketState extends Equatable {
-  const CustomBracketState();
+abstract class BracketState extends Equatable {
+  const BracketState();
 
   @override
   List<Object> get props => [];
 }
 
-class CustomBracketInitial extends CustomBracketState {}
+class BracketInitial extends BracketState {}
 
-class CustomBracketLoading extends CustomBracketState {}
+class BracketLoading extends BracketState {}
 
-class CustomBracketLoaded extends CustomBracketState {
-  final List<List<Team>> teams;
+class BracketLoaded extends BracketState {
+  final List<Match> matches;
   final List<String> roundNames;
 
-  const CustomBracketLoaded(this.teams, this.roundNames);
+  const BracketLoaded(this.matches, this.roundNames);
 
   @override
-  List<Object> get props => [teams, roundNames];
+  List<Object> get props => [matches, roundNames];
 
   get poules => null;
 }
 
-class CustomBracketError extends CustomBracketState {
+class BracketUpdate extends BracketState {
+  final Match match;
+
+  const BracketUpdate(this.match);
+
+  @override
+  List<Object> get props => [match];
+}
+
+class BracketError extends BracketState {
   final String message;
 
-  const CustomBracketError(this.message);
+  const BracketError(this.message);
 
   @override
   List<Object> get props => [message];

@@ -74,12 +74,18 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Ha sido invitado"),
         "joinButton": MessageLookupByLibrary.simpleMessage("Unirse"),
         "lastName": MessageLookupByLibrary.simpleMessage("Apellido"),
+        "listAllTournaments":
+            MessageLookupByLibrary.simpleMessage("Lista de torneos"),
+        "listMyTournaments":
+            MessageLookupByLibrary.simpleMessage("Mis torneos"),
         "logIn": MessageLookupByLibrary.simpleMessage("Iniciar sesión"),
         "login": MessageLookupByLibrary.simpleMessage("Iniciar sesión"),
         "logout": MessageLookupByLibrary.simpleMessage("Cerrar sesión"),
         "modifyGameButton":
             MessageLookupByLibrary.simpleMessage("Modificar el juego"),
         "moreTagsCount": m1,
+        "mustBeLoggedIn": MessageLookupByLibrary.simpleMessage(
+            "Debes estar conectado para ver tus torneos"),
         "noGamesAvailable":
             MessageLookupByLibrary.simpleMessage("No hay juegos disponibles."),
         "notificationScreenTitle":

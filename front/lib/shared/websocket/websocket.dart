@@ -6,30 +6,12 @@ void connectWebsocket() {
 
   ws.on('connected', connected);
   ws.on('error', error);
-  ws.on('pong', pong);
-  ws.on('match:update', (data) {
-    if (kDebugMode) {
-      print('Match update: ${data.score1}');
-    }
-  });
-
-  ws.emit('ping', 'Hello from client!');
 }
 
 void connected(socket, message) {
-  if (kDebugMode) {
-    print('connected to websocket');
-  }
+  debugPrint('connected to websocket');
 }
 
 void error(socket, message) {
-  if (kDebugMode) {
-    print('Error: $message');
-  }
-}
-
-void pong(socket, message) {
-  if (kDebugMode) {
-    print('Pong received: $message');
-  }
+  debugPrint('Error: $message');
 }

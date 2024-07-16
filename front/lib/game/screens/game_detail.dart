@@ -162,7 +162,9 @@ class GameDetailPageState extends State<GameDetailPage> {
                               context,
                               MaterialPageRoute(
                                 builder: (context) => TournamentDetailsScreen(
-                                    tournament: tournament),
+                                  tournament: tournament,
+                                  game: widget.game,
+                                ),
                               ),
                             );
                           },

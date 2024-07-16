@@ -55,3 +55,16 @@ class MapError extends MapState {
   @override
   List<Object?> get props => [error];
 }
+
+class MarkerTappedState extends MapState {
+  final Tournament tournament;
+
+  const MarkerTappedState({required this.tournament});
+
+  @override
+  List<Object?> get props => [tournament];
+}
+
+class DirectionsExported extends MapState {}
+
+class MapCentered extends MapState {}
