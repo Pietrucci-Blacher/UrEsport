@@ -39,6 +39,7 @@ var ESPORT_TEAM_NAMES = []string{
 	"BIG",
 	"Heroic",
 	"MAD Lions",
+	"Team Vitality",
 }
 
 func LoadTeams() error {

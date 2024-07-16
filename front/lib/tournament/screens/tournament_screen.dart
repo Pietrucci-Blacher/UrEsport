@@ -19,6 +19,7 @@ import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/core/models/team.dart';
 import 'package:uresport/team/screen/add_team.dart';
+import 'package:uresport/team/screen/team_member.dart';
 
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
@@ -107,61 +108,95 @@ class TournamentScreenState extends State<TournamentScreen> {
                   itemBuilder: (context, index) {
                     final team = teams[index];
                     final isOwner = team.ownerId == _currentUser!.id;
-                    return ExpansionTile(
-                      title: Text(team.name,
-                          style: const TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
-                      subtitle: Text(
-                          'Members: ${team.members.length} | Tournaments: ${team.tournaments.length}',
-                          style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                      trailing: IconButton(
-                        icon: Icon(
-                          isOwner ? Icons.delete : Icons.exit_to_app,
-                          color: Colors.red,
-                        ),
-                        onPressed: () => _confirmLeaveTeam(team.id, team.name, isOwner),
-                      ),
-                      children: team.tournaments.map((tournamentJson) {
-                        Tournament tournament = Tournament.fromJson(tournamentJson);
-                        return Card(
-                          margin: const EdgeInsets.symmetric(
-                              vertical: 8.0, horizontal: 16.0),
-                          child: ListTile(
-                            contentPadding: const EdgeInsets.all(10.0),
-                            leading: Image.network(tournament.image,
-                                width: 50, height: 50, fit: BoxFit.cover),
-                            title: Text(tournament.name,
-                                style: const TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w600)),
-                            subtitle: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                    'Start: ${DateFormat.yMMMd().format(tournament.startDate)}',
-                                    style: const TextStyle(fontSize: 14)),
-                                Text(
-                                    'End: ${DateFormat.yMMMd().format(tournament.endDate)}',
-                                    style: const TextStyle(fontSize: 14)),
-                                Text(tournament.description,
-                                    style: const TextStyle(
-                                        fontSize: 12, color: Colors.grey),
-                                    overflow: TextOverflow.ellipsis),
-                              ],
+                    return Dismissible(
+                      key: Key(team.id.toString()),
+                      direction: DismissDirection.startToEnd,
+                      onDismissed: (direction) {
+                        // Log the data being sent to TeamMembersPage
+                        debugPrint('Navigating to TeamMembersPage with:');
+                        debugPrint('Team Name: ${team.name}');
+                        debugPrint('Members: ${team.members}');
+
+                        // Convert members to User objects
+                        List<User> userMembers = team.members.map((memberJson) {
+                          return User.fromJson(memberJson);
+                        }).toList();
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TeamMembersPage(
+                              teamName: team.name,
+                              members: userMembers,
                             ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => TournamentDetailsScreen(
-                                    tournament: tournament,
-                                    game: tournament.game,
-                                  ),
-                                ),
-                              );
-                            },
                           ),
                         );
-                      }).toList(),
+                      },
+                      background: Container(
+                        color: Colors.blue,
+                        alignment: Alignment.centerLeft,
+                        padding: EdgeInsets.only(left: 20.0),
+                        child: Icon(
+                          Icons.person,
+                          color: Colors.white,
+                        ),
+                      ),
+                      child: ExpansionTile(
+                        title: Text(team.name,
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        subtitle: Text(
+                            'Members: ${team.members.length} | Tournaments: ${team.tournaments.length}',
+                            style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                        trailing: IconButton(
+                          icon: Icon(
+                            isOwner ? Icons.delete : Icons.exit_to_app,
+                            color: Colors.red,
+                          ),
+                          onPressed: () => _confirmLeaveTeam(team.id, team.name, isOwner),
+                        ),
+                        children: team.tournaments.map((tournamentJson) {
+                          Tournament tournament = Tournament.fromJson(tournamentJson);
+                          return Card(
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(10.0),
+                              leading: Image.network(tournament.image,
+                                  width: 50, height: 50, fit: BoxFit.cover),
+                              title: Text(tournament.name,
+                                  style: const TextStyle(
+                                      fontSize: 16, fontWeight: FontWeight.w600)),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      'Start: ${DateFormat.yMMMd().format(tournament.startDate)}',
+                                      style: const TextStyle(fontSize: 14)),
+                                  Text(
+                                      'End: ${DateFormat.yMMMd().format(tournament.endDate)}',
+                                      style: const TextStyle(fontSize: 14)),
+                                  Text(tournament.description,
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                      overflow: TextOverflow.ellipsis),
+                                ],
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TournamentDetailsScreen(
+                                      tournament: tournament,
+                                      game: tournament.game,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ),
                     );
                   },
                 ),
@@ -189,6 +224,7 @@ class TournamentScreenState extends State<TournamentScreen> {
       },
     );
   }
+
 
 
 

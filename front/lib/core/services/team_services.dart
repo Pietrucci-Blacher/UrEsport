@@ -10,6 +10,7 @@ abstract class ITeamService {
   Future<void> createTeam(Map<String, dynamic> teamData);
   Future<void> leaveTeam(int userId, int teamId);
   Future<void> deleteTeam(int teamId);
+  Future<void> kickUserFromTeam(String teamName, String username);
 }
 
 class TeamService implements ITeamService {
@@ -134,6 +135,40 @@ class TeamService implements ITeamService {
     } catch (e) {
       debugPrint('Error deleting team: $e');
       throw Exception('Failed to delete the team');
+    }
+  }
+
+  @override
+  Future<void> kickUserFromTeam(String teamName, String username) async {
+    final token = await _cacheService.getString('token');
+    try {
+      final response = await _dio.delete(
+        '${dotenv.env['API_ENDPOINT']}/teams/$teamName/kick',
+        data: {'username': username},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+      if (response.statusCode != 204) {
+        final errorMessage = response.data['error'] ?? 'Failed to kick the user';
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: Response(
+            requestOptions: response.requestOptions,
+            statusCode: response.statusCode,
+            data: {'error': errorMessage},
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error kicking user: $e');
+      throw Exception('Failed to kick the user');
     }
   }
 }
