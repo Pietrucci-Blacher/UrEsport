@@ -34,11 +34,6 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
     }
   }
 
-
-  // MatchDetailsPageState() {
-  //   match = widget.match;
-  // }
-
   void websocket() {
     ws.on('match:update', (socket, data) async {
       setState(() {
@@ -54,6 +49,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
   @override
   void initState() {
     super.initState();
+    _loadCurrentUser();
     websocket();
   }
 
@@ -93,14 +89,15 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                       _buildCustomScoreRow(
                           'Score', match.score1.toString(), match.score2.toString()),
                       const Divider(thickness: 2),
-                      Center(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            _openScoreModal();
-                          },
-                          child: const Text('Enter le score'),
-                        ),
-                      )
+                      if (isTeamOwner)
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              _openScoreModal();
+                            },
+                            child: const Text('Enter le score'),
+                          ),
+                        )
                     ],
                   ),
                 ),
@@ -124,7 +121,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
               mainAxisAlignment: MainAxisAlignment.center,
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[
-                const Text('Enter the score'),
+                const Text('Entrer the score'),
                 const SizedBox(height: 20),
                 ElevatedButton(
                   onPressed: () async {
@@ -136,7 +133,6 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                     setState(() {
                       match = updatedMatch;
                     });
-                    // Navigator.pop(context);
                   },
                   child: const Text('1'),
                 ),

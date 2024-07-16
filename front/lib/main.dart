@@ -11,6 +11,7 @@ import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/core/services/notification_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/core/services/match_service.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/core/services/rating_service.dart';
@@ -56,6 +57,7 @@ void main() async {
   final authService = AuthService(dio);
   final tournamentService = TournamentService(dio);
   final gameService = GameService(dio);
+  final matchService = MatchService(dio);
 
   // L'URL de base sera maintenant récupérée via dotenv dans le service
   final ratingService = RatingService(dio);
@@ -75,6 +77,7 @@ void main() async {
         Provider<IGameService>.value(value: gameService),
         Provider<IRatingService>.value(value: ratingService),
         Provider<IFriendService>.value(value: friendService),
+        Provider<IMatchService>.value(value: matchService),
         ChangeNotifierProvider<NotificationService>(
             create: (_) => NotificationService()),
         ChangeNotifierProvider<NotificationProvider>(
