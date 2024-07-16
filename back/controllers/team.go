@@ -63,7 +63,7 @@ func GetTeam(c *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	[]models.SanitizedTeam
 //	@Failure		500	{object}	utils.HttpError
-//	@Router			/teams/{userid} [get]
+//	@Router			/teams/user/{userid} [get]
 func GetUserTeams(c *gin.Context) {
 	user, exists := c.Get("user")
 	if !exists {

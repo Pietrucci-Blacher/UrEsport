@@ -618,7 +618,7 @@ class AppLocalizations {
 
   String get listAllTournaments {
     return Intl.message(
-      'List tournaments',
+      'List Tournaments',
       name: 'listAllTournaments ',
       desc: 'List Tournaments button text',
     );
@@ -626,17 +626,17 @@ class AppLocalizations {
 
   String get listMyTournaments {
     return Intl.message(
-      'My tournaments',
+      'My Tournaments',
       name: 'listMyTournaments',
       desc: 'My Tournaments button text',
     );
   }
 
-  String get listMyTournamentsJoined {
+  String get listMyTeamsJoined {
     return Intl.message(
-      'My tournaments Joined',
-      name: 'listMyTournamentsJoined',
-      desc: 'My Tournaments button text',
+      'My Teams',
+      name: 'listMyTeamsJoined',
+      desc: 'My Teams button text',
     );
   }
 }

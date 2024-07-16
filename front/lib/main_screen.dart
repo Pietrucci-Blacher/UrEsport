@@ -38,9 +38,7 @@ class MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
   late final List<Widget> _widgetOptions;
   String? _profileImageUrl;
-  final ValueNotifier<String?> _profileImageNotifier =
-  ValueNotifier<String?>(null);
-
+  final ValueNotifier<String?> _profileImageNotifier = ValueNotifier<String?>(null);
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
   @override
@@ -76,8 +74,7 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) =>
-      AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      create: (context) => AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: Consumer<NotificationProvider>(
         builder: (context, notificationProvider, child) {
           return BlocBuilder<AuthBloc, AuthState>(
@@ -88,8 +85,7 @@ class MainScreenState extends State<MainScreen> {
                 );
               } else {
                 bool isLoggedIn = state is AuthAuthenticated;
-                if (isLoggedIn &&
-                    state.user.profileImageUrl != _profileImageUrl) {
+                if (isLoggedIn && state.user.profileImageUrl != _profileImageUrl) {
                   _profileImageUrl = state.user.profileImageUrl;
                 }
                 return ValueListenableBuilder<String?>(
@@ -111,9 +107,7 @@ class MainScreenState extends State<MainScreen> {
                                   size: 40,
                                 ),
                               ),
-                              if (notificationProvider
-                                  .notificationCount >
-                                  0)
+                              if (notificationProvider.notificationCount > 0)
                                 Positioned(
                                   right: 0,
                                   top: 0,
@@ -121,8 +115,7 @@ class MainScreenState extends State<MainScreen> {
                                     padding: const EdgeInsets.all(2),
                                     decoration: BoxDecoration(
                                       color: Colors.red,
-                                      borderRadius:
-                                      BorderRadius.circular(6),
+                                      borderRadius: BorderRadius.circular(6),
                                     ),
                                     constraints: const BoxConstraints(
                                       minWidth: 18,
@@ -176,8 +169,7 @@ class MainScreenState extends State<MainScreen> {
                                   if (isLoggedIn && _profileImageUrl != null)
                                     CircleAvatar(
                                       radius: 40,
-                                      backgroundImage:
-                                      NetworkImage(_profileImageUrl!),
+                                      backgroundImage: NetworkImage(_profileImageUrl!),
                                     )
                                   else if (isLoggedIn)
                                     CircleAvatar(
@@ -215,8 +207,7 @@ class MainScreenState extends State<MainScreen> {
                                     MaterialPageRoute(
                                       builder: (context) => ProfileScreen(
                                         authService: widget.authService,
-                                        profileImageNotifier:
-                                        _profileImageNotifier,
+                                        profileImageNotifier: _profileImageNotifier,
                                       ),
                                     ),
                                   );
@@ -241,13 +232,11 @@ class MainScreenState extends State<MainScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => MyTeamsScreen(),
+                                    builder: (context) => const MyTeamsScreen(),
                                   ),
                                 );
                               },
                             ),
-
-
                             ListTile(
                               leading: const Icon(Icons.settings),
                               title: const Text('Settings'),
@@ -275,8 +264,7 @@ class MainScreenState extends State<MainScreen> {
                         isLoggedIn: isLoggedIn,
                         selectedIndex: _selectedIndex,
                         onTap: _onItemTapped,
-                        notificationCount:
-                        notificationProvider.notificationCount,
+                        notificationCount: notificationProvider.notificationCount,
                       ),
                     );
                   },

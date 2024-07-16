@@ -1,23 +1,23 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/user.dart';
+import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
-import 'package:uresport/tournament/screens/tournament_details_screen.dart';
-import 'package:uresport/widgets/gradient_icon.dart';
-import 'package:uresport/core/models/user.dart';
-import 'package:provider/provider.dart';
-import 'package:uresport/core/services/auth_service.dart';
-import 'package:flutter/foundation.dart';
-import 'package:uresport/l10n/app_localizations.dart';
-
 import 'package:uresport/tournament/screens/add_tournament.dart';
+import 'package:uresport/tournament/screens/tournament_details_screen.dart';
+import 'package:uresport/widgets/custom_toast.dart';
+import 'package:uresport/widgets/gradient_icon.dart';
+import 'package:uresport/core/models/team.dart';
 
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
@@ -60,7 +60,7 @@ class TournamentScreenState extends State<TournamentScreen> {
             tabs: [
               Tab(text: l.listAllTournaments),
               Tab(text: l.listMyTournaments),
-              Tab(text: l.listMyTournamentsJoined),
+              Tab(text: l.listMyTeamsJoined),
             ],
           ),
         ),
@@ -99,29 +99,36 @@ class TournamentScreenState extends State<TournamentScreen> {
             itemBuilder: (context, index) {
               final team = teams[index];
               return ExpansionTile(
-                title: Text(team.name, style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                subtitle: Text('Members: ${team.members.length} | Tournaments: ${team.tournaments.length}', style: TextStyle(fontSize: 14, color: Colors.grey)),
+                title: Text(team.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                subtitle: Text('Members: ${team.members.length} | Tournaments: ${team.tournaments.length}', style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                trailing: IconButton(
+                  icon: const Icon(Icons.exit_to_app, color: Colors.red),
+                  onPressed: () => _confirmLeaveTeam(team.id, team.name),
+                ),
                 children: team.tournaments.map((tournamentJson) {
                   Tournament tournament = Tournament.fromJson(tournamentJson);
                   return Card(
-                    margin: EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                     child: ListTile(
-                      contentPadding: EdgeInsets.all(10.0),
+                      contentPadding: const EdgeInsets.all(10.0),
                       leading: Image.network(tournament.image, width: 50, height: 50, fit: BoxFit.cover),
-                      title: Text(tournament.name, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      title: Text(tournament.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Start: ${DateFormat.yMMMd().format(tournament.startDate)}', style: TextStyle(fontSize: 14)),
-                          Text('End: ${DateFormat.yMMMd().format(tournament.endDate)}', style: TextStyle(fontSize: 14)),
-                          Text(tournament.description, style: TextStyle(fontSize: 12, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                          Text('Start: ${DateFormat.yMMMd().format(tournament.startDate)}', style: const TextStyle(fontSize: 14)),
+                          Text('End: ${DateFormat.yMMMd().format(tournament.endDate)}', style: const TextStyle(fontSize: 14)),
+                          Text(tournament.description, style: const TextStyle(fontSize: 12, color: Colors.grey), overflow: TextOverflow.ellipsis),
                         ],
                       ),
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => TournamentDetailsScreen(tournament: tournament),
+                            builder: (context) => TournamentDetailsScreen(
+                              tournament: tournament,
+                              game: tournament.game,
+                            ),
                           ),
                         );
                       },
@@ -136,14 +143,90 @@ class TournamentScreenState extends State<TournamentScreen> {
     );
   }
 
+
+  Future<void> _confirmLeaveTeam(int teamId, String teamName) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Leave'),
+          content: Text('Are you sure you want to leave the team $teamName?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Leave'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                _leaveTeam(teamId, teamName);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _leaveTeam(int teamId, String teamName) async {
+    if (_currentUser == null) return;
+
+    final userId = _currentUser!.id;
+    final teamService = Provider.of<ITeamService>(context, listen: false);
+    try {
+      await teamService.leaveTeam(userId, teamId);
+      setState(() {
+        // Reload the teams after leaving a team
+        _loadUserTeams();
+      });
+      _showToast('Vous avez bien quitté la team $teamName', Colors.green);
+    } catch (e) {
+      if (e is DioException && e.response?.statusCode == 409) {
+        final errorResponse = e.response?.data;
+        final errorMessage = errorResponse['error'] ?? 'Failed to leave the team';
+        _showToast(errorMessage, Colors.red);
+      } else {
+        _showToast('Failed to leave the team: $e', Colors.red);
+      }
+    }
+  }
+
+  void _showToast(String message, Color backgroundColor) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: 50.0,
+        left: MediaQuery.of(context).size.width * 0.1,
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: CustomToast(
+          message: message,
+          backgroundColor: backgroundColor,
+          onClose: () {
+            overlayEntry.remove();
+          },
+        ),
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
+  }
+
   Future<List<Team>> _loadUserTeams() async {
     if (_currentUser == null) {
       throw Exception('User is not logged in');
     }
 
     final userId = _currentUser!.id;
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
-    return await tournamentService.getUserTeams(userId);
+    final teamService = Provider.of<ITeamService>(context, listen: false);
+    return await teamService.getUserTeams(userId);
   }
 
   Widget _buildTournamentList(BuildContext context, bool isOwner) {
@@ -206,7 +289,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => AddTournamentPage(),
+                                      builder: (context) => const AddTournamentPage(),
                                     ),
                                   );
                                 },
@@ -237,7 +320,7 @@ class TournamentScreenState extends State<TournamentScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TournamentDetailsScreen(tournament: tournament),
+            builder: (context) => TournamentDetailsScreen(tournament: tournament, game: tournament.game),
           ),
         );
       },

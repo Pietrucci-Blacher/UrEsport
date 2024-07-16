@@ -178,12 +178,42 @@ func ClearTeams() error {
 func FindTeamsByUserId(userId int) ([]Team, error) {
 	var teams []Team
 
+	// Retrieve teams where the user is the owner
 	err := DB.Model(&Team{}).
-		Where("owner_id", userId).
+		Where("owner_id = ?", userId).
 		Preload("Members").
 		Preload("Owner").
 		Preload("Tournaments").
+		Preload("Tournaments.Game").
 		Find(&teams).Error
+	if err != nil {
+		return nil, err
+	}
 
-	return teams, err
+	// Retrieve teams where the user is a member
+	var memberTeams []Team
+	err = DB.Model(&Team{}).
+		Joins("JOIN team_members ON team_members.team_id = teams.id").
+		Where("team_members.user_id = ?", userId).
+		Preload("Members").
+		Preload("Owner").
+		Preload("Tournaments").
+		Preload("Tournaments.Game").
+		Find(&memberTeams).Error
+	if err != nil {
+		return nil, err
+	}
+
+	// Merge the two lists of teams, ensuring no duplicates
+	teamMap := make(map[int]Team)
+	for _, team := range teams {
+		teamMap[team.ID] = team
+	}
+	for _, team := range memberTeams {
+		if _, exists := teamMap[team.ID]; !exists {
+			teams = append(teams, team)
+		}
+	}
+
+	return teams, nil
 }

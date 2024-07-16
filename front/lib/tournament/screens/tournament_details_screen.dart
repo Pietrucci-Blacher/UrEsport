@@ -14,6 +14,7 @@ import 'package:uresport/widgets/rating.dart';
 import 'package:uresport/bracket/screens/custom_bracket.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/core/models/game.dart';
+import 'package:uresport/core/models/team.dart' as team_model;
 
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
@@ -30,7 +31,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     with SingleTickerProviderStateMixin {
   bool _hasJoined = false;
   User? _currentUser;
-  List<tournament_model.Team> _teams = [];
+  List<team_model.Team> _teams = [];
   bool _hasUpvoted = false;
   late AnimationController _controller;
 

@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/team.dart';
 
 import 'cache_service.dart';
 
@@ -19,7 +20,6 @@ abstract class ITournamentService {
   Future<void> generateBracket(int tournamentId);
   Future<void> joinTournamentWithTeam(int tournamentId, int teamId);
   Future<void> createTournament(Map<String, dynamic> tournamentData);
-  Future<List<Team>> getUserTeams(int userId);
 }
 
 class TournamentService implements ITournamentService {
@@ -464,19 +464,5 @@ class TournamentService implements ITournamentService {
     }
   }
 
-  @override
-  Future<List<Team>> getUserTeams(int userId) async {
-    try {
-      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/teams/user/$userId');
-      if (response.statusCode == 200) {
-        final data = response.data as List;
-        return data.map((json) => Team.fromJson(json)).toList();
-      } else {
-        throw Exception('Failed to load teams');
-      }
-    } catch (e) {
-      debugPrint('Error fetching teams: $e');
-      throw Exception('Failed to load teams');
-    }
-  }
+
 }
