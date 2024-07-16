@@ -65,15 +65,9 @@ func GetTeam(c *gin.Context) {
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/teams/user/{userid} [get]
 func GetUserTeams(c *gin.Context) {
-	user, exists := c.Get("user")
-	if !exists {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "User not found"})
-		return
-	}
+	user, _ := c.MustGet("user").(*models.User)
 
-	userId := user.(*models.User).ID
-
-	teams, err := models.FindTeamsByUserId(userId)
+	teams, err := models.FindTeamsByUserId(user.ID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

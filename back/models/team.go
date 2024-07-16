@@ -180,7 +180,7 @@ func FindTeamsByUserId(userId int) ([]Team, error) {
 
 	// Retrieve teams where the user is the owner
 	err := DB.Model(&Team{}).
-		Where("owner_id = ?", userId).
+		Where("owner_id", userId).
 		Preload("Members").
 		Preload("Owner").
 		Preload("Tournaments").
@@ -194,7 +194,7 @@ func FindTeamsByUserId(userId int) ([]Team, error) {
 	var memberTeams []Team
 	err = DB.Model(&Team{}).
 		Joins("JOIN team_members ON team_members.team_id = teams.id").
-		Where("team_members.user_id = ?", userId).
+		Where("team_members.user_id", userId).
 		Preload("Members").
 		Preload("Owner").
 		Preload("Tournaments").
