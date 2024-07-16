@@ -1,14 +1,66 @@
+import 'package:uresport/core/services/auth_service.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 // import 'package:uresport/bracket/screens/custom_schedule.dart' as custom_schedule;
 import 'package:uresport/core/models/match.dart';
+import 'package:uresport/core/websocket/websocket.dart';
+import 'package:uresport/core/models/user.dart';
+import 'package:uresport/core/services/match_service.dart';
 
-class MatchDetailsPage extends StatelessWidget {
+class MatchDetailsPage extends StatefulWidget  {
   final Match match;
 
   const MatchDetailsPage({required this.match, super.key});
 
   @override
+  MatchDetailsPageState createState() => MatchDetailsPageState();
+}
+
+class MatchDetailsPageState extends State<MatchDetailsPage>  {
+  final Websocket ws = Websocket.getInstance();
+  late Match match;
+  User? _currentUser;
+
+  Future<void> _loadCurrentUser() async {
+    final authService = Provider.of<IAuthService>(context, listen: false);
+    try {
+      final user = await authService.getUser();
+      if (!mounted) return;
+      setState(() {
+        _currentUser = user;
+      });
+    } catch (e) {
+      debugPrint('Error loading current user: $e');
+    }
+  }
+
+
+  // MatchDetailsPageState() {
+  //   match = widget.match;
+  // }
+
+  void websocket() {
+    ws.on('match:update', (socket, data) async {
+      setState(() {
+        match = Match.fromJson(data);
+      });
+    });
+
+    ws.emit('tournament:add-to-room', {
+      'tournament_id': widget.match.tournamentId,
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    websocket();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    match = widget.match;
+    var isTeamOwner = _currentUser?.id == match.team1?.ownerId || _currentUser?.id == match.team2?.ownerId;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Match Details'),
@@ -24,16 +76,6 @@ class MatchDetailsPage extends StatelessWidget {
           padding: const EdgeInsets.all(16.0),
           child: Column(
             children: [
-              Center(
-                child: Text(
-                  'Match between ${match.team1} and ${match.team2}',
-                  style: const TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 20),
               Card(
                 elevation: 5,
                 shape: RoundedRectangleBorder(
@@ -50,20 +92,15 @@ class MatchDetailsPage extends StatelessWidget {
                       const Divider(thickness: 2),
                       _buildCustomScoreRow(
                           'Score', match.score1.toString(), match.score2.toString()),
-                      // _buildVerticalDivider(),
-                      // _buildStatRow('Goals', '0', '0'),
-                      // _buildVerticalDivider(),
-                      // _buildStatRow('Total Shots', '0', '0'),
-                      // _buildVerticalDivider(),
-                      // _buildStatRow('Shots on Target', '0', '0'),
-                      // _buildVerticalDivider(),
-                      // _buildStatRow('Possession', '50%', '50%'),
-                      // _buildVerticalDivider(),
-                      // _buildStatRow('Fouls', '0', '0'),
-                      // _buildVerticalDivider(),
-                      // _buildStatRow('Yellow Cards', '0', '0'),
-                      // _buildVerticalDivider(),
-                      // _buildStatRow('Red Cards', '0', '0'),
+                      const Divider(thickness: 2),
+                      Center(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            _openScoreModal();
+                          },
+                          child: const Text('Enter le score'),
+                        ),
+                      )
                     ],
                   ),
                 ),
@@ -72,6 +109,42 @@ class MatchDetailsPage extends StatelessWidget {
           ),
         ),
       ),
+    );
+  }
+
+  void _openScoreModal() {
+    final teamService = Provider.of<IMatchService>(context, listen: false);
+    showModalBottomSheet<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return SizedBox(
+          height: 200,
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Text('Enter the score'),
+                const SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () async {
+                    final updatedMatch = await teamService.setScore(
+                      match.id,
+                      match.team1Id ?? 0,
+                      1,
+                    );
+                    setState(() {
+                      match = updatedMatch;
+                    });
+                    // Navigator.pop(context);
+                  },
+                  child: const Text('1'),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
     );
   }
 
@@ -137,80 +210,80 @@ class MatchDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildStatColumn(String statName, String statValue) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Text(
-            statName,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-          Text(
-            statValue,
-            style: const TextStyle(
-              fontSize: 16,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildStatColumn(String statName, String statValue) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 8.0),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Text(
+  //           statName,
+  //           style: const TextStyle(
+  //             fontSize: 16,
+  //             fontWeight: FontWeight.bold,
+  //           ),
+  //         ),
+  //         Text(
+  //           statValue,
+  //           style: const TextStyle(
+  //             fontSize: 16,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
-  Widget _buildStatRow(String statName, String statValue1, String statValue2) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Expanded(
-            child: Text(
-              statValue1,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Container(
-            width: 1,
-            height: 24,
-            color: Colors.grey,
-          ),
-          Expanded(
-            child: Text(
-              statName,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          Container(
-            width: 1,
-            height: 24,
-            color: Colors.grey,
-          ),
-          Expanded(
-            child: Text(
-              statValue2,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-              textAlign: TextAlign.center,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  // Widget _buildStatRow(String statName, String statValue1, String statValue2) {
+  //   return Padding(
+  //     padding: const EdgeInsets.symmetric(vertical: 8.0),
+  //     child: Row(
+  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
+  //       children: [
+  //         Expanded(
+  //           child: Text(
+  //             statValue1,
+  //             style: const TextStyle(
+  //               fontSize: 16,
+  //               fontWeight: FontWeight.bold,
+  //             ),
+  //             textAlign: TextAlign.center,
+  //           ),
+  //         ),
+  //         Container(
+  //           width: 1,
+  //           height: 24,
+  //           color: Colors.grey,
+  //         ),
+  //         Expanded(
+  //           child: Text(
+  //             statName,
+  //             style: const TextStyle(
+  //               fontSize: 16,
+  //               fontWeight: FontWeight.bold,
+  //             ),
+  //             textAlign: TextAlign.center,
+  //           ),
+  //         ),
+  //         Container(
+  //           width: 1,
+  //           height: 24,
+  //           color: Colors.grey,
+  //         ),
+  //         Expanded(
+  //           child: Text(
+  //             statValue2,
+  //             style: const TextStyle(
+  //               fontSize: 16,
+  //               fontWeight: FontWeight.bold,
+  //             ),
+  //             textAlign: TextAlign.center,
+  //           ),
+  //         ),
+  //       ],
+  //     ),
+  //   );
+  // }
 
   // Méthode pour créer la ligne personnalisée du score
   Widget _buildCustomScoreRow(
@@ -283,10 +356,10 @@ class MatchDetailsPage extends StatelessWidget {
     );
   }
 
-  Widget _buildVerticalDivider() {
-    return const Padding(
-      padding: EdgeInsets.symmetric(vertical: 4.0),
-      child: Divider(thickness: 1, color: Colors.grey),
-    );
-  }
+  // Widget _buildVerticalDivider() {
+  //   return const Padding(
+  //     padding: EdgeInsets.symmetric(vertical: 4.0),
+  //     child: Divider(thickness: 1, color: Colors.grey),
+  //   );
+  // }
 }

@@ -1,13 +1,17 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/match.dart';
+import 'cache_service.dart';
 
 abstract class IMatchService {
   Future<List<Match>> fetchMatches({int? limit, int? page, int? tournamentId});
+  Future<Match> fetchMatch(int matchId);
+  Future<Match> setScore(int matchId, int teamId, int score);
 }
 
 class MatchService implements IMatchService {
   final Dio _dio;
+  final CacheService _cacheService = CacheService.instance;
 
   MatchService(this._dio);
 
@@ -43,6 +47,69 @@ class MatchService implements IMatchService {
       return (response.data as List)
           .map((json) => Match.fromJson(json))
           .toList();
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
+  @override
+  Future<Match> fetchMatch(int matchId) async {
+    try {
+      final response = await _dio.get(
+        "${dotenv.env['API_ENDPOINT']}/matches/$matchId",
+      );
+
+      if (response.statusCode != 200) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to load match',
+          type: DioExceptionType.badResponse,
+        );
+      }
+
+      return Match.fromJson(response.data);
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
+  @override
+  Future<Match> setScore(int matchId, int teamId, int score) async {
+    try {
+      final token = await _cacheService.getString('token');
+      if (token == null) throw Exception('No token found');
+      final response = await _dio.patch(
+        "${dotenv.env['API_ENDPOINT']}/matches/$matchId/team/$teamId/score/",
+        data: {
+          'score': score,
+        },
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to set score',
+          type: DioExceptionType.badResponse,
+        );
+      }
+
+      return Match.fromJson(response.data);
     } catch (e) {
       if (e is DioException) {
         rethrow;
