@@ -18,7 +18,8 @@ class TeamService implements ITeamService {
   @override
   Future<List<Team>> getUserTeams(int userId) async {
     try {
-      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/teams/user/$userId');
+      final response =
+          await _dio.get('${dotenv.env['API_ENDPOINT']}/teams/user/$userId');
       if (response.statusCode == 200) {
         final data = response.data as List;
         return data.map((json) => Team.fromJson(json)).toList();
@@ -48,7 +49,8 @@ class TeamService implements ITeamService {
         ),
       );
       if (response.statusCode != 204) {
-        final errorMessage = response.data['error'] ?? 'Failed to leave the team';
+        final errorMessage =
+            response.data['error'] ?? 'Failed to leave the team';
         throw DioException(
           requestOptions: response.requestOptions,
           response: Response(

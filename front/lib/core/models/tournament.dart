@@ -53,8 +53,8 @@ class Tournament {
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
       teams: (json['teams'] as List?)
-          ?.map((team) => Team.fromJson(team))
-          .toList() ??
+              ?.map((team) => Team.fromJson(team))
+              .toList() ??
           [],
       nbPlayers: json['nb_player'] ?? 1,
       upvotes: json['upvotes'] ?? 0,
@@ -128,7 +128,6 @@ class Owner {
     };
   }
 }
-
 
 class Member {
   final int id;

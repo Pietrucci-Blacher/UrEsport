@@ -100,8 +100,12 @@ class TournamentScreenState extends State<TournamentScreen> {
             itemBuilder: (context, index) {
               final team = teams[index];
               return ExpansionTile(
-                title: Text(team.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                subtitle: Text('Members: ${team.members.length} | Tournaments: ${team.tournaments.length}', style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                title: Text(team.name,
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold)),
+                subtitle: Text(
+                    'Members: ${team.members.length} | Tournaments: ${team.tournaments.length}',
+                    style: const TextStyle(fontSize: 14, color: Colors.grey)),
                 trailing: IconButton(
                   icon: const Icon(Icons.exit_to_app, color: Colors.red),
                   onPressed: () => _confirmLeaveTeam(team.id, team.name),
@@ -109,17 +113,28 @@ class TournamentScreenState extends State<TournamentScreen> {
                 children: team.tournaments.map((tournamentJson) {
                   Tournament tournament = Tournament.fromJson(tournamentJson);
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                    margin: const EdgeInsets.symmetric(
+                        vertical: 8.0, horizontal: 16.0),
                     child: ListTile(
                       contentPadding: const EdgeInsets.all(10.0),
-                      leading: Image.network(tournament.image, width: 50, height: 50, fit: BoxFit.cover),
-                      title: Text(tournament.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                      leading: Image.network(tournament.image,
+                          width: 50, height: 50, fit: BoxFit.cover),
+                      title: Text(tournament.name,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w600)),
                       subtitle: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('Start: ${DateFormat.yMMMd().format(tournament.startDate)}', style: const TextStyle(fontSize: 14)),
-                          Text('End: ${DateFormat.yMMMd().format(tournament.endDate)}', style: const TextStyle(fontSize: 14)),
-                          Text(tournament.description, style: const TextStyle(fontSize: 12, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                          Text(
+                              'Start: ${DateFormat.yMMMd().format(tournament.startDate)}',
+                              style: const TextStyle(fontSize: 14)),
+                          Text(
+                              'End: ${DateFormat.yMMMd().format(tournament.endDate)}',
+                              style: const TextStyle(fontSize: 14)),
+                          Text(tournament.description,
+                              style: const TextStyle(
+                                  fontSize: 12, color: Colors.grey),
+                              overflow: TextOverflow.ellipsis),
                         ],
                       ),
                       onTap: () {
@@ -143,7 +158,6 @@ class TournamentScreenState extends State<TournamentScreen> {
       },
     );
   }
-
 
   Future<void> _confirmLeaveTeam(int teamId, String teamName) async {
     showDialog(
@@ -187,7 +201,8 @@ class TournamentScreenState extends State<TournamentScreen> {
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 409) {
         final errorResponse = e.response?.data;
-        final errorMessage = errorResponse['error'] ?? 'Failed to leave the team';
+        final errorMessage =
+            errorResponse['error'] ?? 'Failed to leave the team';
         _showToast(errorMessage, Colors.red);
       } else {
         _showToast('Failed to leave the team: $e', Colors.red);
@@ -244,12 +259,16 @@ class TournamentScreenState extends State<TournamentScreen> {
       child: Scaffold(
         body: RefreshIndicator(
           onRefresh: () async {
-            context.read<TournamentBloc>().add(LoadTournaments(ownerId: ownerId));
+            context
+                .read<TournamentBloc>()
+                .add(LoadTournaments(ownerId: ownerId));
           },
           child: BlocBuilder<TournamentBloc, TournamentState>(
             builder: (context, state) {
               if (state is TournamentInitial) {
-                context.read<TournamentBloc>().add(LoadTournaments(ownerId: ownerId));
+                context
+                    .read<TournamentBloc>()
+                    .add(LoadTournaments(ownerId: ownerId));
                 return const Center(child: CircularProgressIndicator());
               } else if (state is TournamentLoadInProgress) {
                 return const Center(child: CircularProgressIndicator());
@@ -276,7 +295,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => TournamentMapWidget(tournaments: state.tournaments),
+                                    builder: (context) => TournamentMapWidget(
+                                        tournaments: state.tournaments),
                                   ),
                                 );
                               },
@@ -290,7 +310,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                      builder: (context) => const AddTournamentPage(),
+                                      builder: (context) =>
+                                          const AddTournamentPage(),
                                     ),
                                   );
                                 },
@@ -314,14 +335,16 @@ class TournamentScreenState extends State<TournamentScreen> {
   }
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
-    final DateFormat dateFormat = DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    final DateFormat dateFormat =
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => TournamentDetailsScreen(tournament: tournament, game: tournament.game),
+            builder: (context) => TournamentDetailsScreen(
+                tournament: tournament, game: tournament.game),
           ),
         );
       },
@@ -353,7 +376,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                       Expanded(
                         child: Text(
                           tournament.name,
-                          style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                              fontSize: 22, fontWeight: FontWeight.bold),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -386,7 +410,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                           children: [
                             Row(
                               children: [
-                                const Icon(Icons.location_on, color: Colors.grey),
+                                const Icon(Icons.location_on,
+                                    color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -400,7 +425,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                const Icon(Icons.videogame_asset, color: Colors.grey),
+                                const Icon(Icons.videogame_asset,
+                                    color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -414,7 +440,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                const Icon(Icons.calendar_today, color: Colors.grey),
+                                const Icon(Icons.calendar_today,
+                                    color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
@@ -428,7 +455,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                             const SizedBox(height: 5),
                             Row(
                               children: [
-                                const Icon(Icons.calendar_today, color: Colors.grey),
+                                const Icon(Icons.calendar_today,
+                                    color: Colors.grey),
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(

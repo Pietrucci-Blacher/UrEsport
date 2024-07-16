@@ -38,7 +38,7 @@ class MainScreenState extends State<MainScreen> {
   late final List<Widget> _widgetOptions;
   String? _profileImageUrl;
   final ValueNotifier<String?> _profileImageNotifier =
-  ValueNotifier<String?>(null);
+      ValueNotifier<String?>(null);
 
   @override
   void initState() {
@@ -74,7 +74,7 @@ class MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return BlocProvider(
       create: (context) =>
-      AuthBloc(widget.authService)..add(AuthCheckRequested()),
+          AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: Consumer<NotificationProvider>(
         builder: (context, notificationProvider, child) {
           return BlocBuilder<AuthBloc, AuthState>(
@@ -103,44 +103,44 @@ class MainScreenState extends State<MainScreen> {
                               IconButton(
                                 icon: isLoggedIn && _profileImageUrl != null
                                     ? Stack(
-                                  children: [
-                                    ClipOval(
-                                      child: CachedImageWidget(
-                                        url: _profileImageUrl!,
-                                        size: 40,
-                                      ),
-                                    ),
-                                    if (notificationProvider
-                                        .notificationCount >
-                                        0)
-                                      Positioned(
-                                        right: 0,
-                                        top: 0,
-                                        child: Container(
-                                          padding:
-                                          const EdgeInsets.all(2),
-                                          decoration: BoxDecoration(
-                                            color: Colors.red,
-                                            borderRadius:
-                                            BorderRadius.circular(6),
-                                          ),
-                                          constraints:
-                                          const BoxConstraints(
-                                            minWidth: 18,
-                                            minHeight: 18,
-                                          ),
-                                          child: Text(
-                                            '${notificationProvider.notificationCount}',
-                                            style: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 12,
+                                        children: [
+                                          ClipOval(
+                                            child: CachedImageWidget(
+                                              url: _profileImageUrl!,
+                                              size: 40,
                                             ),
-                                            textAlign: TextAlign.center,
                                           ),
-                                        ),
-                                      ),
-                                  ],
-                                )
+                                          if (notificationProvider
+                                                  .notificationCount >
+                                              0)
+                                            Positioned(
+                                              right: 0,
+                                              top: 0,
+                                              child: Container(
+                                                padding:
+                                                    const EdgeInsets.all(2),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.red,
+                                                  borderRadius:
+                                                      BorderRadius.circular(6),
+                                                ),
+                                                constraints:
+                                                    const BoxConstraints(
+                                                  minWidth: 18,
+                                                  minHeight: 18,
+                                                ),
+                                                child: Text(
+                                                  '${notificationProvider.notificationCount}',
+                                                  style: const TextStyle(
+                                                    color: Colors.white,
+                                                    fontSize: 12,
+                                                  ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
+                                            ),
+                                        ],
+                                      )
                                     : const Icon(Icons.person),
                                 onPressed: () async {
                                   if (isLoggedIn) {
@@ -150,7 +150,7 @@ class MainScreenState extends State<MainScreen> {
                                         builder: (context) => ProfileScreen(
                                           authService: widget.authService,
                                           profileImageNotifier:
-                                          _profileImageNotifier,
+                                              _profileImageNotifier,
                                         ),
                                       ),
                                     );
@@ -190,12 +190,12 @@ class MainScreenState extends State<MainScreen> {
                       bottomNavigationBar: kIsWeb
                           ? null
                           : CustomBottomNavigation(
-                        isLoggedIn: isLoggedIn,
-                        selectedIndex: _selectedIndex,
-                        onTap: _onItemTapped,
-                        notificationCount:
-                        notificationProvider.notificationCount,
-                      ),
+                              isLoggedIn: isLoggedIn,
+                              selectedIndex: _selectedIndex,
+                              onTap: _onItemTapped,
+                              notificationCount:
+                                  notificationProvider.notificationCount,
+                            ),
                     );
                   },
                 );

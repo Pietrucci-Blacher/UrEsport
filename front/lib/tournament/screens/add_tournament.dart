@@ -45,17 +45,19 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
 
       try {
         final tournamentService =
-        Provider.of<ITournamentService>(context, listen: false);
+            Provider.of<ITournamentService>(context, listen: false);
         await tournamentService.createTournament(tournamentData);
         showCustomToast('Tournoi créé avec succès', Colors.green);
         Navigator.pop(context);
       } catch (e) {
-        showCustomToast('Erreur lors de la création du tournoi: $e', Colors.red);
+        showCustomToast(
+            'Erreur lors de la création du tournoi: $e', Colors.red);
       }
     }
   }
 
-  Future<void> _selectDateTime(BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDateTime(
+      BuildContext context, TextEditingController controller) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -68,8 +70,10 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
         initialTime: TimeOfDay.now(),
       );
       if (time != null) {
-        final DateTime fullDateTime = DateTime(picked.year, picked.month, picked.day, time.hour, time.minute);
-        final formattedDate = DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
+        final DateTime fullDateTime = DateTime(
+            picked.year, picked.month, picked.day, time.hour, time.minute);
+        final formattedDate =
+            DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
         setState(() {
           controller.text = formattedDate;
         });
@@ -178,7 +182,8 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
               ),
               TextFormField(
                 controller: _nbPlayerController,
-                decoration: const InputDecoration(labelText: 'Number of Players per Team'),
+                decoration: const InputDecoration(
+                    labelText: 'Number of Players per Team'),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {

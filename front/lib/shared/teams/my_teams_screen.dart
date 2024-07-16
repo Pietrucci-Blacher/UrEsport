@@ -9,7 +9,7 @@ import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/services/team_services.dart';
 import 'package:dio/dio.dart';
-import 'package:uresport/widgets/custom_toast.dart';  // Importer le CustomToast
+import 'package:uresport/widgets/custom_toast.dart'; // Importer le CustomToast
 
 class MyTeamsScreen extends StatefulWidget {
   const MyTeamsScreen({super.key});
@@ -65,7 +65,8 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
           } else if (snapshot.hasError) {
             debugPrint('Error in FutureBuilder: ${snapshot.error}');
             return const Center(child: Text('Failed to load user teams'));
-          } else if (!snapshot.hasData || (snapshot.data as List<Team>).isEmpty) {
+          } else if (!snapshot.hasData ||
+              (snapshot.data as List<Team>).isEmpty) {
             return const Center(child: Text('No teams found for the user'));
           } else {
             final teams = snapshot.data as List<Team>;
@@ -75,8 +76,12 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
               itemBuilder: (context, index) {
                 final team = teams[index];
                 return ExpansionTile(
-                  title: Text(team.name, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
-                  subtitle: Text('Members: ${team.members.length} | Tournaments: ${team.tournaments.length}', style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                  title: Text(team.name,
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold)),
+                  subtitle: Text(
+                      'Members: ${team.members.length} | Tournaments: ${team.tournaments.length}',
+                      style: const TextStyle(fontSize: 14, color: Colors.grey)),
                   trailing: IconButton(
                     icon: const Icon(Icons.exit_to_app, color: Colors.red),
                     onPressed: () => _confirmLeaveTeam(team.id, team.name),
@@ -84,24 +89,38 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                   children: team.tournaments.map((tournamentJson) {
                     Tournament tournament = Tournament.fromJson(tournamentJson);
                     return Card(
-                      margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                      margin: const EdgeInsets.symmetric(
+                          vertical: 8.0, horizontal: 16.0),
                       child: ListTile(
                         contentPadding: const EdgeInsets.all(10.0),
-                        leading: Image.network(tournament.image, width: 50, height: 50, fit: BoxFit.cover),
-                        title: Text(tournament.name, style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
+                        leading: Image.network(tournament.image,
+                            width: 50, height: 50, fit: BoxFit.cover),
+                        title: Text(tournament.name,
+                            style: const TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w600)),
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Start: ${DateFormat.yMMMd().format(tournament.startDate)}', style: const TextStyle(fontSize: 14)),
-                            Text('End: ${DateFormat.yMMMd().format(tournament.endDate)}', style: const TextStyle(fontSize: 14)),
-                            Text(tournament.description, style: const TextStyle(fontSize: 12, color: Colors.grey), overflow: TextOverflow.ellipsis),
+                            Text(
+                                'Start: ${DateFormat.yMMMd().format(tournament.startDate)}',
+                                style: const TextStyle(fontSize: 14)),
+                            Text(
+                                'End: ${DateFormat.yMMMd().format(tournament.endDate)}',
+                                style: const TextStyle(fontSize: 14)),
+                            Text(tournament.description,
+                                style: const TextStyle(
+                                    fontSize: 12, color: Colors.grey),
+                                overflow: TextOverflow.ellipsis),
                           ],
                         ),
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => TournamentDetailsScreen(tournament: tournament, game: tournament.game,),
+                              builder: (context) => TournamentDetailsScreen(
+                                tournament: tournament,
+                                game: tournament.game,
+                              ),
                             ),
                           );
                         },
@@ -159,7 +178,8 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 409) {
         final errorResponse = e.response?.data;
-        final errorMessage = errorResponse['error'] ?? 'Failed to leave the team';
+        final errorMessage =
+            errorResponse['error'] ?? 'Failed to leave the team';
         _showToast(errorMessage, Colors.red);
       } else {
         _showToast('Failed to leave the team: $e', Colors.red);
