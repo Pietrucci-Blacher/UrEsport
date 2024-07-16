@@ -468,6 +468,19 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                 ),
               ],
             ),
+            Row(
+              children: [
+                const Icon(Icons.person, color: Colors.grey),
+                const SizedBox(width: 5),
+                Expanded(
+                  child: Text(
+                    'Nombre joueurs par teams: ${widget.tournament.nbPlayers}',
+                    style: const TextStyle(fontSize: 16),
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
             const SizedBox(height: 16),
             const Divider(),
             const SizedBox(height: 16),

@@ -16,7 +16,6 @@ import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
-import 'package:uresport/shared/teams/my_teams_screen.dart';
 import 'package:uresport/shared/utils/image_util.dart';
 import 'package:uresport/tournament/screens/tournament_screen.dart';
 
@@ -38,8 +37,8 @@ class MainScreenState extends State<MainScreen> {
   late int _selectedIndex;
   late final List<Widget> _widgetOptions;
   String? _profileImageUrl;
-  final ValueNotifier<String?> _profileImageNotifier = ValueNotifier<String?>(null);
-  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final ValueNotifier<String?> _profileImageNotifier =
+  ValueNotifier<String?>(null);
 
   @override
   void initState() {
@@ -74,7 +73,8 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (context) => AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      create: (context) =>
+      AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: Consumer<NotificationProvider>(
         builder: (context, notificationProvider, child) {
           return BlocBuilder<AuthBloc, AuthState>(
@@ -85,7 +85,8 @@ class MainScreenState extends State<MainScreen> {
                 );
               } else {
                 bool isLoggedIn = state is AuthAuthenticated;
-                if (isLoggedIn && state.user.profileImageUrl != _profileImageUrl) {
+                if (isLoggedIn &&
+                    state.user.profileImageUrl != _profileImageUrl) {
                   _profileImageUrl = state.user.profileImageUrl;
                 }
                 return ValueListenableBuilder<String?>(
@@ -95,51 +96,78 @@ class MainScreenState extends State<MainScreen> {
                       _profileImageUrl = value;
                     }
                     return Scaffold(
-                      key: _scaffoldKey,
                       appBar: AppBar(
-                        leading: IconButton(
-                          icon: isLoggedIn && _profileImageUrl != null
-                              ? Stack(
-                            children: [
-                              ClipOval(
-                                child: CachedImageWidget(
-                                  url: _profileImageUrl!,
-                                  size: 40,
-                                ),
-                              ),
-                              if (notificationProvider.notificationCount > 0)
-                                Positioned(
-                                  right: 0,
-                                  top: 0,
-                                  child: Container(
-                                    padding: const EdgeInsets.all(2),
-                                    decoration: BoxDecoration(
-                                      color: Colors.red,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    constraints: const BoxConstraints(
-                                      minWidth: 18,
-                                      minHeight: 18,
-                                    ),
-                                    child: Text(
-                                      '${notificationProvider.notificationCount}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                      ),
-                                      textAlign: TextAlign.center,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          )
-                              : const Icon(Icons.person),
-                          onPressed: () {
-                            _scaffoldKey.currentState?.openDrawer();
-                          },
-                        ),
                         title: Row(
                           children: [
+                            if (!kIsWeb)
+                              IconButton(
+                                icon: isLoggedIn && _profileImageUrl != null
+                                    ? Stack(
+                                  children: [
+                                    ClipOval(
+                                      child: CachedImageWidget(
+                                        url: _profileImageUrl!,
+                                        size: 40,
+                                      ),
+                                    ),
+                                    if (notificationProvider
+                                        .notificationCount >
+                                        0)
+                                      Positioned(
+                                        right: 0,
+                                        top: 0,
+                                        child: Container(
+                                          padding:
+                                          const EdgeInsets.all(2),
+                                          decoration: BoxDecoration(
+                                            color: Colors.red,
+                                            borderRadius:
+                                            BorderRadius.circular(6),
+                                          ),
+                                          constraints:
+                                          const BoxConstraints(
+                                            minWidth: 18,
+                                            minHeight: 18,
+                                          ),
+                                          child: Text(
+                                            '${notificationProvider.notificationCount}',
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                            ),
+                                            textAlign: TextAlign.center,
+                                          ),
+                                        ),
+                                      ),
+                                  ],
+                                )
+                                    : const Icon(Icons.person),
+                                onPressed: () async {
+                                  if (isLoggedIn) {
+                                    await Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => ProfileScreen(
+                                          authService: widget.authService,
+                                          profileImageNotifier:
+                                          _profileImageNotifier,
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => AuthScreen(
+                                          authService: widget.authService,
+                                          showLogin: true,
+                                          showRegister: !kIsWeb,
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                              ),
                             const SizedBox(width: 8),
                             Text(
                               _getTitleForIndex(context, _selectedIndex),
@@ -155,105 +183,6 @@ class MainScreenState extends State<MainScreen> {
                           ),
                         ],
                       ),
-                      drawer: Drawer(
-                        child: ListView(
-                          padding: EdgeInsets.zero,
-                          children: [
-                            DrawerHeader(
-                              decoration: BoxDecoration(
-                                color: Theme.of(context).primaryColor,
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  if (isLoggedIn && _profileImageUrl != null)
-                                    CircleAvatar(
-                                      radius: 40,
-                                      backgroundImage: NetworkImage(_profileImageUrl!),
-                                    )
-                                  else if (isLoggedIn)
-                                    CircleAvatar(
-                                      radius: 40,
-                                      child: Text(
-                                        state.user.username[0].toUpperCase(),
-                                        style: const TextStyle(fontSize: 24),
-                                      ),
-                                    )
-                                  else
-                                    const CircleAvatar(
-                                      radius: 40,
-                                      child: Icon(Icons.person),
-                                    ),
-                                  const SizedBox(height: 8),
-                                  if (isLoggedIn)
-                                    Text(
-                                      state.user.username,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 18,
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                            ListTile(
-                              leading: const Icon(Icons.person),
-                              title: const Text('Profile'),
-                              onTap: () async {
-                                Navigator.pop(context); // Close the drawer
-                                if (isLoggedIn) {
-                                  await Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => ProfileScreen(
-                                        authService: widget.authService,
-                                        profileImageNotifier: _profileImageNotifier,
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) => AuthScreen(
-                                        authService: widget.authService,
-                                        showLogin: true,
-                                        showRegister: !kIsWeb,
-                                      ),
-                                    ),
-                                  );
-                                }
-                              },
-                            ),
-                            ListTile(
-                              leading: const Icon(Icons.group),
-                              title: const Text('My Teams'),
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const MyTeamsScreen(),
-                                  ),
-                                );
-                              },
-                            ),
-                            ListTile(
-                              leading: const Icon(Icons.settings),
-                              title: const Text('Settings'),
-                              onTap: () {
-                                // Implement the navigation to Settings screen here
-                              },
-                            ),
-                            ListTile(
-                              leading: const Icon(Icons.logout),
-                              title: const Text('Logout'),
-                              onTap: () {
-                                // Implement the logout functionality here
-                              },
-                            ),
-                          ],
-                        ),
-                      ),
                       body: IndexedStack(
                         index: _selectedIndex,
                         children: _widgetOptions,
@@ -264,7 +193,8 @@ class MainScreenState extends State<MainScreen> {
                         isLoggedIn: isLoggedIn,
                         selectedIndex: _selectedIndex,
                         onTap: _onItemTapped,
-                        notificationCount: notificationProvider.notificationCount,
+                        notificationCount:
+                        notificationProvider.notificationCount,
                       ),
                     );
                   },
