@@ -1,4 +1,3 @@
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -37,33 +36,32 @@ class AddTournamentPageState extends State<AddTournamentPage> {
     return DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(dateTime.toUtc());
   }
 
-  Future<DateTime?> _selectDateTime(
-      BuildContext context, DateTime? initialDate) async {
-    final DateTime? date = await showDatePicker(
+  Future<void> _selectDateTime(BuildContext context, bool isStartDate) async {
+    DateTime? date = await showDatePicker(
       context: context,
-      initialDate: initialDate ?? DateTime.now(),
+      initialDate: DateTime.now(),
       firstDate: DateTime(2000),
       lastDate: DateTime(2100),
     );
 
-    if (date == null) return null;
+    if (date != null && context.mounted) {
+      TimeOfDay? time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.fromDateTime(date),
+      );
 
-    if (!context.mounted) return null;
-
-    final TimeOfDay? time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(initialDate ?? DateTime.now()),
-    );
-
-    return time == null
-        ? null
-        : DateTime(
-            date.year,
-            date.month,
-            date.day,
-            time.hour,
-            time.minute,
-          );
+      if (time != null) {
+        DateTime selectedDateTime =
+            DateTime(date.year, date.month, date.day, time.hour, time.minute);
+        setState(() {
+          if (isStartDate) {
+            _startDateTime = selectedDateTime;
+          } else {
+            _endDateTime = selectedDateTime;
+          }
+        });
+      }
+    }
   }
 
   Future<void> _saveTournament() async {
@@ -191,37 +189,31 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                         return null;
                       },
                     ),
-                    DateTimeField(
-                      format: _dateFormat,
-                      decoration:
-                          const InputDecoration(labelText: 'Start Date & Time'),
-                      onShowPicker: (context, currentValue) =>
-                          _selectDateTime(context, currentValue),
-                      onChanged: (date) => setState(() {
-                        _startDateTime = date;
-                      }),
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Please enter the start date and time';
-                        }
-                        return null;
-                      },
+                    GestureDetector(
+                      onTap: () => _selectDateTime(context, true),
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Start Date & Time',
+                            hintText: _startDateTime != null
+                                ? _dateFormat.format(_startDateTime!)
+                                : '',
+                          ),
+                        ),
+                      ),
                     ),
-                    DateTimeField(
-                      format: _dateFormat,
-                      decoration:
-                          const InputDecoration(labelText: 'End Date & Time'),
-                      onShowPicker: (context, currentValue) =>
-                          _selectDateTime(context, currentValue),
-                      onChanged: (date) => setState(() {
-                        _endDateTime = date;
-                      }),
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Please enter the end date and time';
-                        }
-                        return null;
-                      },
+                    GestureDetector(
+                      onTap: () => _selectDateTime(context, false),
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'End Date & Time',
+                            hintText: _endDateTime != null
+                                ? _dateFormat.format(_endDateTime!)
+                                : '',
+                          ),
+                        ),
+                      ),
                     ),
                     TextFormField(
                       controller: _locationController,
