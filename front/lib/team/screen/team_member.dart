@@ -5,20 +5,28 @@ import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 
 class TeamMembersPage extends StatelessWidget {
-  final String teamName;
+  final int teamId;
   final List<User> members;
+  final int ownerId;
+  final int currentId;
+  final String teamName;
 
-  TeamMembersPage({required this.teamName, required this.members});
+  TeamMembersPage({
+    required this.teamId,
+    required this.members,
+    required this.ownerId,
+    required this.currentId,
+    required this.teamName,
+  });
 
-  Future<void> _kickUser(BuildContext context, String username) async {
+  Future<void> _kickUser(BuildContext context, int teamId, String username) async {
     final teamService = Provider.of<ITeamService>(context, listen: false);
     try {
-      await teamService.kickUserFromTeam(teamName, username);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('$username has been kicked from the team')),
-      );
+      await teamService.kickUserFromTeam(teamId, username);
+      _showToast(context, '$username à bien était kick de la team', Colors.green);
     } catch (e) {
-      _showToast(context, 'Failed to kick the user: $e', Colors.red);
+      debugPrint('Erreur lors du kick du user: $e');
+      _showToast(context, 'Erreur lors du kick du user: $e', Colors.red);
     }
   }
 
@@ -83,31 +91,57 @@ class TeamMembersPage extends StatelessWidget {
         itemCount: members.length,
         itemBuilder: (context, index) {
           final member = members[index];
-          return Dismissible(
+          return ownerId == currentId
+              ? Dismissible(
             key: Key(member.id.toString()),
             direction: DismissDirection.endToStart,
             confirmDismiss: (direction) async {
               return await _confirmKickUser(context, member.username);
             },
             onDismissed: (direction) async {
-              await _kickUser(context, member.username);
+              await _kickUser(context, teamId, member.username);
             },
             background: Container(
               color: Colors.red,
               alignment: Alignment.centerRight,
-              padding: EdgeInsets.only(right: 20.0),
-              child: Icon(
+              padding: const EdgeInsets.only(right: 20.0),
+              child: const Icon(
                 Icons.delete,
                 color: Colors.white,
               ),
             ),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundImage: NetworkImage(member.profileImageUrl ?? 'https://via.placeholder.com/150'),
+                backgroundImage: NetworkImage(
+                    member.profileImageUrl ?? 'https://via.placeholder.com/150'),
               ),
-              title: Text(member.username),
+              title: Row(
+                children: [
+                  Text(member.username),
+                  if (member.id == ownerId) ...[
+                    const SizedBox(width: 5),
+                    const Icon(Icons.verified, color: Colors.amber, size: 20),
+                  ],
+                ],
+              ),
               subtitle: Text('${member.firstname} ${member.lastname}'),
             ),
+          )
+              : ListTile(
+            leading: CircleAvatar(
+              backgroundImage: NetworkImage(
+                  member.profileImageUrl ?? 'https://via.placeholder.com/150'),
+            ),
+            title: Row(
+              children: [
+                Text(member.username),
+                if (member.id == ownerId) ...[
+                  const SizedBox(width: 5),
+                  const Icon(Icons.verified, color: Colors.amber, size: 20),
+                ],
+              ],
+            ),
+            subtitle: Text('${member.firstname} ${member.lastname}'),
           );
         },
       ),

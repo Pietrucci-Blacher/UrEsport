@@ -10,7 +10,7 @@ abstract class ITeamService {
   Future<void> createTeam(Map<String, dynamic> teamData);
   Future<void> leaveTeam(int userId, int teamId);
   Future<void> deleteTeam(int teamId);
-  Future<void> kickUserFromTeam(String teamName, String username);
+  Future<void> kickUserFromTeam(int teamId, String username);
 }
 
 class TeamService implements ITeamService {
@@ -139,11 +139,11 @@ class TeamService implements ITeamService {
   }
 
   @override
-  Future<void> kickUserFromTeam(String teamName, String username) async {
+  Future<void> kickUserFromTeam(int teamId, String username) async {
     final token = await _cacheService.getString('token');
     try {
       final response = await _dio.delete(
-        '${dotenv.env['API_ENDPOINT']}/teams/$teamName/kick',
+        '${dotenv.env['API_ENDPOINT']}/teams/$teamId/kick',
         data: {'username': username},
         options: Options(
           headers: {

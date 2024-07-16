@@ -126,8 +126,11 @@ class TournamentScreenState extends State<TournamentScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => TeamMembersPage(
-                              teamName: team.name,
+                              teamId: team.id, // passez l'identifiant de l'équipe ici
+                              teamName: team.name, // passez le nom de l'équipe ici
                               members: userMembers,
+                              ownerId: team.ownerId,
+                              currentId: _currentUser!.id,
                             ),
                           ),
                         );
@@ -135,8 +138,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                       background: Container(
                         color: Colors.blue,
                         alignment: Alignment.centerLeft,
-                        padding: EdgeInsets.only(left: 20.0),
-                        child: Icon(
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: const Icon(
                           Icons.person,
                           color: Colors.white,
                         ),
