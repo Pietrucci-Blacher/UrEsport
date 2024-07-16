@@ -84,7 +84,6 @@ class Tournament {
   }
 }
 
-
 class Owner {
   final int id;
   final String username;

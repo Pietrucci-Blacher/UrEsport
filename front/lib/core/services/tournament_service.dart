@@ -29,7 +29,8 @@ class TournamentService implements ITournamentService {
   TournamentService(this._dio);
 
   @override
-  Future<List<Tournament>> fetchTournaments({int? limit, int? page, int? ownerId}) async {
+  Future<List<Tournament>> fetchTournaments(
+      {int? limit, int? page, int? ownerId}) async {
     try {
       final Map<String, dynamic> queryParameters = {};
       if (limit != null) {
@@ -43,7 +44,7 @@ class TournamentService implements ITournamentService {
       }
 
       final response = await _dio.get(
-        "${dotenv.env['API_ENDPOINT']}/tournaments",
+        "${dotenv.env['API_ENDPOINT']}/tournaments/",
         queryParameters: queryParameters,
       );
 

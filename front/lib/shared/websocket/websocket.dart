@@ -13,7 +13,5 @@ void connected(socket, message) {
 }
 
 void error(socket, message) {
-
   debugPrint('Error: $message');
-
 }

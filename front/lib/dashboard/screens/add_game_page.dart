@@ -9,10 +9,10 @@ class AddGamePage extends StatefulWidget {
   const AddGamePage({super.key});
 
   @override
-  _AddGamePageState createState() => _AddGamePageState();
+  AddGamePageState createState() => AddGamePageState();
 }
 
-class _AddGamePageState extends State<AddGamePage> {
+class AddGamePageState extends State<AddGamePage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -22,7 +22,6 @@ class _AddGamePageState extends State<AddGamePage> {
 
   Future<void> _saveGame() async {
     if (_formKey.currentState!.validate()) {
-      // Utiliser une expression régulière pour extraire les tags
       final tags = _tagsController.text
           .split(RegExp(r'[\s,]+'))
           .where((tag) => tag.isNotEmpty)
@@ -55,7 +54,9 @@ class _AddGamePageState extends State<AddGamePage> {
         }
 
         if (response.statusCode == 201) {
+          if (!mounted) return;
           BlocProvider.of<DashboardBloc>(context).add(FetchGames());
+          if (!mounted) return;
           Navigator.of(context).pop(true);
           _showAlertDialog('Jeux ajouté');
         } else {
@@ -129,7 +130,8 @@ class _AddGamePageState extends State<AddGamePage> {
                     ),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration: const InputDecoration(labelText: 'Description'),
+                      decoration:
+                          const InputDecoration(labelText: 'Description'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the game description';
@@ -149,7 +151,8 @@ class _AddGamePageState extends State<AddGamePage> {
                     ),
                     TextFormField(
                       controller: _tagsController,
-                      decoration: const InputDecoration(labelText: 'Tags (comma or space separated)'),
+                      decoration: const InputDecoration(
+                          labelText: 'Tags (comma or space separated)'),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the tags';

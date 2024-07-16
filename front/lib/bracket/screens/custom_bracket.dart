@@ -203,7 +203,7 @@ class BracketContentState extends State<BracketContent> {
                 onContainerTapDown:
                     (Match? model, TapDownDetails tapDownDetails) {
                   if (model == null) {
-                      debugPrint(null);
+                    debugPrint(null);
                   } else {
                     if (kDebugMode) {
                       debugPrint(model.id as String?);

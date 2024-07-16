@@ -1,20 +1,20 @@
+import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:uresport/core/models/tournament.dart';
 
 class EditTournamentPage extends StatefulWidget {
   final Tournament? tournament;
 
-  const EditTournamentPage({Key? key, this.tournament}) : super(key: key);
+  const EditTournamentPage({super.key, this.tournament});
 
   @override
-  _EditTournamentPageState createState() => _EditTournamentPageState();
+  EditTournamentPageState createState() => EditTournamentPageState();
 }
 
-class _EditTournamentPageState extends State<EditTournamentPage> {
+class EditTournamentPageState extends State<EditTournamentPage> {
   late TextEditingController nameController;
   late TextEditingController descriptionController;
   late TextEditingController locationController;
@@ -36,17 +36,26 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.tournament?.name ?? '');
-    descriptionController = TextEditingController(text: widget.tournament?.description ?? '');
+    descriptionController =
+        TextEditingController(text: widget.tournament?.description ?? '');
     _startDateTime = widget.tournament?.startDate;
     _endDateTime = widget.tournament?.endDate;
-    locationController = TextEditingController(text: widget.tournament?.location ?? '');
-    latitudeController = TextEditingController(text: widget.tournament?.latitude.toString() ?? '');
-    longitudeController = TextEditingController(text: widget.tournament?.longitude.toString() ?? '');
-    ownerIdController = TextEditingController(text: widget.tournament?.ownerId.toString() ?? '');
-    imageController = TextEditingController(text: widget.tournament?.image ?? '');
-    privateController = TextEditingController(text: widget.tournament?.isPrivate.toString() ?? '');
-    nbPlayerController = TextEditingController(text: widget.tournament?.teams.length.toString() ?? '');
-    upvotesController = TextEditingController(text: widget.tournament?.upvotes.toString() ?? '');
+    locationController =
+        TextEditingController(text: widget.tournament?.location ?? '');
+    latitudeController = TextEditingController(
+        text: widget.tournament?.latitude.toString() ?? '');
+    longitudeController = TextEditingController(
+        text: widget.tournament?.longitude.toString() ?? '');
+    ownerIdController = TextEditingController(
+        text: widget.tournament?.ownerId.toString() ?? '');
+    imageController =
+        TextEditingController(text: widget.tournament?.image ?? '');
+    privateController = TextEditingController(
+        text: widget.tournament?.isPrivate.toString() ?? '');
+    nbPlayerController = TextEditingController(
+        text: widget.tournament?.nbPlayers.toString() ?? '');
+    upvotesController = TextEditingController(
+        text: widget.tournament?.upvotes.toString() ?? '');
   }
 
   @override
@@ -82,10 +91,11 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
         image: imageController.text,
         isPrivate: privateController.text.toLowerCase() == 'true',
         owner: widget.tournament!.owner,
-        teams: widget.tournament!.teams,
+        nbPlayers: int.parse(nbPlayerController.text),
         upvotes: int.parse(upvotesController.text),
         game: widget.tournament!.game,
-        nbPlayers: int.parse(nbPlayerController.text),
+        teams: [],
+        //teams: widget.tournament!.teams,
       );
 
       try {
@@ -93,21 +103,26 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
           '${dotenv.env['API_ENDPOINT']}/tournaments/${updatedTournament.id}',
           data: updatedTournament.toJson(),
         );
-
+        if (!mounted) return;
         if (response.statusCode == 200) {
-          // Successfully updated the tournament
-          Navigator.of(context).pop(updatedTournament);
+          if (mounted) {
+            Navigator.of(context).pop(updatedTournament);
+          }
         } else {
-          // Handle error
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update tournament: ${response.statusMessage}')),
-          );
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                  content: Text(
+                      'Failed to update tournament: ${response.statusMessage}')),
+            );
+          }
         }
       } catch (e) {
-        // Handle error
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update tournament: $e')),
-        );
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Failed to update tournament: $e')),
+          );
+        }
       }
     }
   }
@@ -116,7 +131,8 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.tournament == null ? 'Add Tournament' : 'Edit Tournament'),
+        title: Text(
+            widget.tournament == null ? 'Add Tournament' : 'Edit Tournament'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -134,7 +150,8 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
               DateTimeField(
                 format: _dateFormat,
                 initialValue: _startDateTime,
-                decoration: const InputDecoration(labelText: 'Start Date & Time'),
+                decoration:
+                    const InputDecoration(labelText: 'Start Date & Time'),
                 onShowPicker: (context, currentValue) async {
                   final date = await showDatePicker(
                     context: context,
@@ -142,10 +159,11 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
                     initialDate: currentValue ?? DateTime.now(),
                     lastDate: DateTime(2100),
                   );
-                  if (date != null) {
+                  if (date != null && context.mounted) {
                     final time = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                      initialTime: TimeOfDay.fromDateTime(
+                          currentValue ?? DateTime.now()),
                     );
                     return DateTimeField.combine(date, time);
                   } else {
@@ -173,10 +191,11 @@ class _EditTournamentPageState extends State<EditTournamentPage> {
                     initialDate: currentValue ?? DateTime.now(),
                     lastDate: DateTime(2100),
                   );
-                  if (date != null) {
+                  if (date != null && context.mounted) {
                     final time = await showTimePicker(
                       context: context,
-                      initialTime: TimeOfDay.fromDateTime(currentValue ?? DateTime.now()),
+                      initialTime: TimeOfDay.fromDateTime(
+                          currentValue ?? DateTime.now()),
                     );
                     return DateTimeField.combine(date, time);
                   } else {

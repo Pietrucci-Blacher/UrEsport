@@ -5,10 +5,11 @@ import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'edit_tournament_page.dart';
-import 'edit_game_page.dart';
+
 import 'add_game_page.dart';
 import 'add_tournament_page.dart';
+import 'edit_game_page.dart';
+import 'edit_tournament_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -99,39 +100,46 @@ class _DashboardState extends State<Dashboard> {
       ),
       floatingActionButton: _selectedIndex == 2
           ? FloatingActionButton(
-        onPressed: () async {
-          final result = await showDialog<bool>(
-            context: context,
-            builder: (BuildContext context) {
-              return const AddTournamentPage();
-            },
-          );
+              onPressed: () async {
+                final currentContext = context;
+                final result = await showDialog<bool>(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return const AddTournamentPage();
+                  },
+                );
 
-          if (result == true) {
-            // Fetch updated tournaments
-            BlocProvider.of<DashboardBloc>(context).add(FetchTournaments());
-          }
-        },
-        child: const Icon(Icons.add),
-      )
+                if (result == true) {
+                  // Fetch updated tournaments
+                  if (currentContext.mounted) {
+                    BlocProvider.of<DashboardBloc>(context)
+                        .add(FetchTournaments());
+                  }
+                }
+              },
+              child: const Icon(Icons.add),
+            )
           : _selectedIndex == 3
-          ? FloatingActionButton(
-        onPressed: () async {
-          final result = await showDialog<bool>(
-            context: context,
-            builder: (BuildContext context) {
-              return const AddGamePage();
-            },
-          );
+              ? FloatingActionButton(
+                  onPressed: () async {
+                    final currentContext = context;
+                    final result = await showDialog<bool>(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return const AddGamePage();
+                      },
+                    );
 
-          if (result == true) {
-            // Fetch updated games
-            BlocProvider.of<DashboardBloc>(context).add(FetchGames());
-          }
-        },
-        child: const Icon(Icons.add),
-      )
-          : null,
+                    if (result == true) {
+                      if (currentContext.mounted) {
+                        BlocProvider.of<DashboardBloc>(context)
+                            .add(FetchGames());
+                      }
+                    }
+                  },
+                  child: const Icon(Icons.add),
+                )
+              : null,
     );
   }
 
@@ -201,7 +209,7 @@ class _DashboardState extends State<Dashboard> {
                   DataCell(Text(tournament.ownerId.toString())),
                   DataCell(Text(tournament.image)),
                   DataCell(Text(tournament.isPrivate.toString())),
-                  DataCell(Text(tournament.teams.length.toString())),
+                  DataCell(Text(tournament.nbPlayers.toString())),
                   DataCell(Text(tournament.startDate.toIso8601String())),
                   DataCell(Text(tournament.endDate.toIso8601String())),
                   DataCell(Text(tournament.upvotes.toString())),
@@ -229,14 +237,17 @@ class _DashboardState extends State<Dashboard> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => EditTournamentPage(tournament: tournament)),
+                              MaterialPageRoute(
+                                  builder: (context) => EditTournamentPage(
+                                      tournament: tournament)),
                             );
                           },
                         ),
                         IconButton(
                           icon: const Icon(Icons.delete),
                           onPressed: () {
-                            _showDeleteConfirmationDialog(context, tournament.id);
+                            _showDeleteConfirmationDialog(
+                                context, tournament.id);
                           },
                         ),
                       ],
@@ -304,7 +315,9 @@ class _DashboardState extends State<Dashboard> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => EditGamePage(game: game)),
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      EditGamePage(game: game)),
                             );
                           },
                         ),
@@ -343,7 +356,8 @@ class _DashboardState extends State<Dashboard> {
                 TextButton(
                   onPressed: () {
                     // Utilisez innerContext pour accéder à DashboardBloc
-                    BlocProvider.of<DashboardBloc>(innerContext).add(DeleteGameEvent(gameId));
+                    BlocProvider.of<DashboardBloc>(innerContext)
+                        .add(DeleteGameEvent(gameId));
                     Navigator.of(dialogContext).pop();
                   },
                   child: const Text('Delete'),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/widgets/custom_toast.dart';
 
 class AddTournamentPage extends StatefulWidget {
   const AddTournamentPage({super.key});
@@ -46,11 +47,10 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
         final tournamentService =
         Provider.of<ITournamentService>(context, listen: false);
         await tournamentService.createTournament(tournamentData);
+        showCustomToast('Tournoi créé avec succès', Colors.green);
         Navigator.pop(context);
       } catch (e) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error creating tournament: $e')),
-        );
+        showCustomToast('Erreur lors de la création du tournoi: $e', Colors.red);
       }
     }
   }
@@ -75,6 +75,26 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
         });
       }
     }
+  }
+
+  void showCustomToast(String message, Color backgroundColor) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => CustomToast(
+        message: message,
+        backgroundColor: backgroundColor,
+        onClose: () {
+          overlayEntry.remove();
+        },
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
   }
 
   @override

@@ -18,6 +18,7 @@ import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/core/models/team.dart';
+import 'package:flutter/foundation.dart';
 
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});

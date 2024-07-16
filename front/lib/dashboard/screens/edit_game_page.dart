@@ -9,10 +9,10 @@ class EditGamePage extends StatefulWidget {
   const EditGamePage({super.key, this.game});
 
   @override
-  _EditGamePageState createState() => _EditGamePageState();
+  EditGamePageState createState() => EditGamePageState();
 }
 
-class _EditGamePageState extends State<EditGamePage> {
+class EditGamePageState extends State<EditGamePage> {
   late TextEditingController nameController;
   late TextEditingController descriptionController;
   late TextEditingController imageUrlController;
@@ -24,9 +24,12 @@ class _EditGamePageState extends State<EditGamePage> {
   void initState() {
     super.initState();
     nameController = TextEditingController(text: widget.game?.name ?? '');
-    descriptionController = TextEditingController(text: widget.game?.description ?? '');
-    imageUrlController = TextEditingController(text: widget.game?.imageUrl ?? '');
-    tagsController = TextEditingController(text: widget.game?.tags.join(', ') ?? '');
+    descriptionController =
+        TextEditingController(text: widget.game?.description ?? '');
+    imageUrlController =
+        TextEditingController(text: widget.game?.imageUrl ?? '');
+    tagsController =
+        TextEditingController(text: widget.game?.tags.join(', ') ?? '');
   }
 
   @override
@@ -62,23 +65,26 @@ class _EditGamePageState extends State<EditGamePage> {
 
         if (response.statusCode == 200) {
           // Successfully updated the game
-          Navigator.of(context).pop(true);  // Return true to indicate success
+          if (!mounted) return;
+          Navigator.of(context).pop(true); // Return true to indicate success
         } else {
           // Handle error
+          if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update game: ${response.statusMessage}')),
+            SnackBar(
+                content:
+                    Text('Failed to update game: ${response.statusMessage}')),
           );
         }
       } catch (e) {
         // Handle error
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Failed to update game: $e')),
         );
       }
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {
