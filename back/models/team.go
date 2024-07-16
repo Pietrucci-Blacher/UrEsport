@@ -30,7 +30,8 @@ type SanitizedTeam struct {
 }
 
 type CreateTeamDto struct {
-	Name string `json:"name" validate:"required"`
+	Name    string `json:"name" validate:"required"`
+	Private bool   `json:"private" validate:"required"`
 }
 
 type UpdateTeamDto struct {
@@ -72,12 +73,6 @@ func FindTeamsByUserID(userID int) ([]Team, error) {
 		Find(&teams).Error
 
 	return teams, err
-}
-
-func IsTeamExists(name string) bool {
-	var team Team
-	DB.Where("name", name).First(&team)
-	return team.ID != 0
 }
 
 func (t *Team) TogglePrivate() {

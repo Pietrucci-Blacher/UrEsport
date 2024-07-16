@@ -25,9 +25,9 @@ class Team {
     return Team(
       id: json['id'],
       name: json['name'],
-      members: json['members'] ?? [], // Assurer une liste vide si null
-      tournaments: json['tournaments'] ?? [], // Assurer une liste vide si null
-      owner: json['owner'] ?? {}, // Assurer une map vide si null
+      members: json['members'] ?? [],
+      tournaments: json['tournaments'] ?? [],
+      owner: json['owner'] ?? {},
       ownerId: json['owner_id'],
       isPrivate: json['private'],
       createdAt: DateTime.parse(json['created_at']),

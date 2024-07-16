@@ -97,14 +97,10 @@ func CreateTeam(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	body, _ := c.MustGet("body").(models.CreateTeamDto)
 
-	if models.IsTeamExists(body.Name) {
-		c.JSON(http.StatusConflict, gin.H{"error": "Team already exists"})
-		return
-	}
-
 	team := models.Team{
 		Name:    body.Name,
 		OwnerID: connectedUser.ID,
+		Private: body.Private,
 	}
 
 	if err := team.Save(); err != nil {
