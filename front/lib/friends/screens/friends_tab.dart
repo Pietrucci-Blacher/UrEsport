@@ -13,7 +13,7 @@ import 'package:uresport/friends/bloc/friends_state.dart';
 
 import 'package:uresport/core/models/user.dart';
 
-import '../../core/services/auth_service.dart';
+import 'package:uresport/core/services/auth_service.dart';
 
 class FriendsTab extends StatefulWidget {
   final int userId;
