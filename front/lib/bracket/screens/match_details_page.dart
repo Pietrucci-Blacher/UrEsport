@@ -1,11 +1,24 @@
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
-// import 'package:uresport/bracket/screens/custom_schedule.dart' as custom_schedule;
 import 'package:uresport/core/models/match.dart';
+import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/match_service.dart';
+import 'package:uresport/widgets/custom_toast.dart';
+import 'package:dio/dio.dart';
+
+class MatchNotifier extends ChangeNotifier {
+  Match match;
+
+  MatchNotifier(this.match);
+
+  void updateMatch(Match updatedMatch) {
+    match = updatedMatch;
+    notifyListeners();
+  }
+}
 
 class MatchDetailsPage extends StatefulWidget  {
   final Match match;
@@ -17,12 +30,15 @@ class MatchDetailsPage extends StatefulWidget  {
 }
 
 class MatchDetailsPageState extends State<MatchDetailsPage>  {
+  final List<String> _statusList = ['waiting', 'playing', 'finished'];
+  final TextEditingController _score = TextEditingController();
+  final TextEditingController _score1 = TextEditingController();
+  final TextEditingController _score2 = TextEditingController();
+  Team? _selectedTeam = null;
+  String? _selectedStatus = null;
   final Websocket ws = Websocket.getInstance();
-  late Match match;
+  late MatchNotifier matchNotifier;
   User? _currentUser;
-  // bool _isTeamOwner = false;
-  // bool _isTeam1Owner = false;
-  // bool _isTeam2Owner = false;
 
   Future<void> _loadCurrentUser() async {
     final authService = Provider.of<IAuthService>(context, listen: false);
@@ -39,9 +55,9 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
 
   void websocket() {
     ws.on('match:update', (socket, data) async {
-      setState(() {
-        match = Match.fromJson(data);
-      });
+      if (data['id'] == matchNotifier.match.id) {
+        matchNotifier.updateMatch(Match.fromJson(data));
+      }
     });
 
     ws.emit('tournament:add-to-room', {
@@ -52,21 +68,17 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
   @override
   void initState() {
     super.initState();
+    matchNotifier = MatchNotifier(widget.match);
     _loadCurrentUser();
     websocket();
-    // setState(() {
-    //   _isTeam1Owner = _currentUser?.id == match.team1?.ownerId;
-    //   _isTeam2Owner = _currentUser?.id == match.team2?.ownerId;
-    //   _isTeamOwner = _isTeam1Owner || _isTeam2Owner;
-    // });
   }
 
   @override
   Widget build(BuildContext context) {
-    match = widget.match;
-    var isTeam1Owner = _currentUser?.id == match.team1?.ownerId;
-    var isTeam2Owner = _currentUser?.id == match.team2?.ownerId;
+    var isTeam1Owner = _currentUser?.id == matchNotifier.match.team1?.ownerId;
+    var isTeam2Owner = _currentUser?.id == matchNotifier.match.team2?.ownerId;
     var isTeamOwner = isTeam1Owner || isTeam2Owner;
+    var isTournamentOwner = _currentUser?.id == matchNotifier.match.tournament?.ownerId;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Match Details'),
@@ -89,30 +101,56 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    children: [
-                      _buildTeamHeader(match.team1?.name ?? '', match.team2?.name ?? ''),
-                      // const Divider(thickness: 2),
-                      // _buildStatColumn('Date', match.date),
-                      // _buildStatColumn('Time', match.time),
-                      const Divider(thickness: 2),
-                      _buildCustomScoreRow(
-                          'Score', match.score1.toString(), match.score2.toString()),
-                      if (isTeamOwner)
-                        const Divider(thickness: 2),
-                      if (isTeamOwner)
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              _addPointToTeam(isTeam1Owner ? match.team1Id ?? 0 : match.team2Id ?? 0);
-                            },
-                            child: Text(isTeam1Owner
-                              ? 'Ajouter un point pour ${match.team1?.name}'
-                              : 'Ajouter un point pour ${match.team2?.name}'
+                  child: ListenableBuilder(
+                    listenable: matchNotifier,
+                    builder: (context, child) {
+                      return Column(
+                        children: [
+                          _buildTeamHeader(matchNotifier.match.team1?.name ?? '', matchNotifier.match.team2?.name ?? ''),
+                          const Divider(thickness: 2),
+                          _buildCustomScoreRow(
+                            'Score', matchNotifier.match.score1.toString(), matchNotifier.match.score2.toString()),
+                          const Divider(thickness: 2),
+                          _buildStatColumn('Status', matchNotifier.match.status),
+                          _buildStatColumn('Winner', matchNotifier.match.getWinner()?.name ?? 'No winner yet'),
+                          if (matchNotifier.match.team1Close)
+                            _buildStatColumn(matchNotifier.match.team1?.name ?? '', matchNotifier.match.team1Close ? 'Propose de cloturer' : ''),
+                          if (matchNotifier.match.team2Close)
+                            _buildStatColumn(matchNotifier.match.team2?.name ?? '', matchNotifier.match.team2Close ? 'Propose de cloturer' : ''),
+                          if (isTeamOwner)
+                            const Divider(thickness: 2),
+                          if (isTeamOwner)
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _openScoreModal(isTeam1Owner ? matchNotifier.match.team1Id ?? 0 : matchNotifier.match.team2Id ?? 0);
+                                },
+                                child: Text(
+                                  'Mettre à jour le score de ${isTeam1Owner ? matchNotifier.match.team1?.name : matchNotifier.match.team2?.name}'
+                                ),
+                              ),
                             ),
-                          ),
-                        )
-                    ],
+                          if (isTeamOwner)
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _closeMatch(isTeam1Owner ? matchNotifier.match.team1Id ?? 0 : matchNotifier.match.team2Id ?? 0);
+                                },
+                                child: Text(isTeam1Owner && matchNotifier.match.team1Close || isTeam2Owner && matchNotifier.match.team2Close ? 'Annuler la cloture' : 'Cloturer le match'),
+                              ),
+                            ),
+                          if (isTournamentOwner)
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  _openUpdateModal();
+                                },
+                                child: const Text('Mettre a jour'),
+                              ),
+                            ),
+                        ],
+                      );
+                    },
                   ),
                 ),
               ),
@@ -123,11 +161,161 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
     );
   }
 
-  Future<void> _addPointToTeam(int teamId) async {
+  void _closeMatch(int teamId) async {
     final teamService = Provider.of<IMatchService>(context, listen: false);
-    final updatedMatch = await teamService.setScore(match.id, teamId, 1);
-    setState(() {
-      match = updatedMatch;
+    try {
+      final updatedMatch = await teamService.closeMatch(matchNotifier.match.id, teamId);
+      matchNotifier.updateMatch(updatedMatch);
+    } catch (e) {
+      if (e is DioException) {
+        showNotificationToast(
+          context,
+          e.error.toString(),
+          backgroundColor: Colors.red
+        );
+      }
+    }
+  }
+
+  void _openUpdateModal() {
+    final teamService = Provider.of<IMatchService>(context, listen: false);
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Mettre à jour le match'),
+          content: Column(
+            children: [
+              TextFormField(
+                controller: _score1,
+                decoration: const InputDecoration(labelText: 'Score team 1'),
+                keyboardType: TextInputType.number,
+              ),
+              TextFormField(
+                controller: _score2,
+                decoration: const InputDecoration(labelText: 'Score team 2'),
+                keyboardType: TextInputType.number,
+              ),
+              DropdownButton<Team>(
+                value: matchNotifier.match.team1,
+                onChanged: (Team? newValue) {
+                  setState(() {
+                    _selectedTeam = newValue;
+                  });
+                },
+                items: [matchNotifier.match.team1, matchNotifier.match.team2]
+                    .map<DropdownMenuItem<Team>>((Team? value) {
+                  return DropdownMenuItem<Team>(
+                    value: value,
+                    child: Text(value?.name ?? ''),
+                  );
+                }).toList(),
+              ),
+              DropdownButton<String>(
+                value: 'waiting',
+                onChanged: (String? newValue) {
+                  setState(() {
+                    _selectedStatus = newValue ?? '';
+                  });
+                },
+                items: _statusList.map<DropdownMenuItem<String>>((String value) {
+                  return DropdownMenuItem<String>(
+                    value: value,
+                    child: Text(value),
+                  );
+                }).toList(),
+              ),
+            ],
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                final inputScore1 = int.tryParse(_score1.text) ?? 0;
+                final inputScore2 = int.tryParse(_score2.text) ?? 0;
+                try {
+                  final updatedMatch = await teamService.updateMatch(matchNotifier.match.id, {
+                    'score1': inputScore1,
+                    'score2': inputScore2,
+                    'status': _selectedStatus,
+                    'winner_id': _selectedTeam?.id,
+                  });
+                  matchNotifier.updateMatch(updatedMatch);
+                } catch (e) {
+                  if (e is DioException) {
+                    showNotificationToast(
+                      context,
+                      e.error.toString(),
+                      backgroundColor: Colors.red
+                    );
+                  }
+                }
+              },
+              child: const Text('Mettre à jour le score'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _openScoreModal(int teamId) {
+    final teamService = Provider.of<IMatchService>(context, listen: false);
+    showDialog<void>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Mettre à jour le score'),
+          content: TextFormField(
+            controller: _score,
+            decoration: const InputDecoration(labelText: 'Score'),
+            keyboardType: TextInputType.number,
+          ),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () async {
+                final inputScore = int.tryParse(_score.text) ?? 0;
+                try {
+                  final updatedMatch = await teamService.setScore(matchNotifier.match.id, teamId, inputScore);
+                  matchNotifier.updateMatch(updatedMatch);
+                } catch (e) {
+                  if (e is DioException) {
+                    showNotificationToast(
+                      context,
+                      e.error.toString(),
+                      backgroundColor: Colors.red
+                    );
+                  }
+                }
+                _score.clear();
+                Navigator.pop(context);
+              },
+              child: const Text('Mettre à jour le score'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void showNotificationToast(BuildContext context, String message,
+      {Color? backgroundColor, Color? textColor}) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => CustomToast(
+        message: message,
+        backgroundColor: backgroundColor ?? Colors.blue,
+        textColor: textColor ?? Colors.white,
+        onClose: () {
+          overlayEntry.remove();
+        },
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
     });
   }
 
@@ -193,29 +381,29 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
     );
   }
 
-  // Widget _buildStatColumn(String statName, String statValue) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 8.0),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         Text(
-  //           statName,
-  //           style: const TextStyle(
-  //             fontSize: 16,
-  //             fontWeight: FontWeight.bold,
-  //           ),
-  //         ),
-  //         Text(
-  //           statValue,
-  //           style: const TextStyle(
-  //             fontSize: 16,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
+  Widget _buildStatColumn(String statName, String statValue) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 8.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            statName,
+            style: const TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          Text(
+            statValue,
+            style: const TextStyle(
+              fontSize: 16,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   // Widget _buildStatRow(String statName, String statValue1, String statValue2) {
   //   return Padding(

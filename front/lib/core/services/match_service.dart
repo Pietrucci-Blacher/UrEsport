@@ -6,7 +6,9 @@ import 'cache_service.dart';
 abstract class IMatchService {
   Future<List<Match>> fetchMatches({int? limit, int? page, int? tournamentId});
   Future<Match> fetchMatch(int matchId);
+  Future<Match> updateMatch(int matchId, Map<String, dynamic> data);
   Future<Match> setScore(int matchId, int teamId, int score);
+  Future<Match> closeMatch(int matchId, int teamId);
 }
 
 class MatchService implements IMatchService {
@@ -39,7 +41,7 @@ class MatchService implements IMatchService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to load matches',
+          error: response.data['error'] ?? 'Failed to load matches',
           type: DioExceptionType.badResponse,
         );
       }
@@ -67,7 +69,45 @@ class MatchService implements IMatchService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to load match',
+          error: response.data['error'] ?? 'Failed to load match',
+          type: DioExceptionType.badResponse,
+        );
+      }
+
+      return Match.fromJson(response.data);
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
+  @override
+  Future<Match> updateMatch(int matchId, Map<String, dynamic> data) async {
+    try {
+      final token = await _cacheService.getString('token');
+      if (token == null) throw Exception('No token found');
+      final response = await _dio.patch(
+        "${dotenv.env['API_ENDPOINT']}/matches/$matchId",
+        data: data,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to update match',
           type: DioExceptionType.badResponse,
         );
       }
@@ -107,7 +147,7 @@ class MatchService implements IMatchService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to set score',
+          error: response.data['error'] ?? 'Failed to set score',
           type: DioExceptionType.badResponse,
         );
       }
@@ -120,5 +160,34 @@ class MatchService implements IMatchService {
         throw Exception('Unexpected error occurred');
       }
     }
+  }
+
+  @override
+  Future<Match> closeMatch(int matchId, int teamId) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+    final response = await _dio.patch(
+      "${dotenv.env['API_ENDPOINT']}/matches/$matchId/team/$teamId/close",
+      options: Options(
+        headers: {
+          'Authorization' : 'Bearer $token',
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        validateStatus: (status) {
+          return status != null && status < 500;
+        },
+      ),
+    );
+
+    if (response.statusCode != 200) {
+      throw DioException(
+        requestOptions: response.requestOptions,
+        response: response,
+        error: response.data['error'] ?? 'Failed to close match',
+        type: DioExceptionType.badResponse,
+      );
+    }
+
+    return Match.fromJson(response.data);
   }
 }

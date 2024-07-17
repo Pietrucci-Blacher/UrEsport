@@ -24,12 +24,14 @@ type Match struct {
 	Team1        Team       `json:"team1" gorm:"foreignKey:Team1ID"`
 	Team2ID      *int       `json:"team2_id"`
 	Team2        Team       `json:"team2" gorm:"foreignKey:Team2ID"`
-	Winner       int        `json:"winner"`
+	WinnerID     *int       `json:"winner_id"`
 	Status       string     `json:"status"`
 	Score1       int        `json:"score1"`
 	Score2       int        `json:"score2"`
 	NextMatchID  *int       `json:"next_match_id"`
 	Depth        int        `json:"depth"`
+	Team1Close   bool       `json:"team1_close" gorm:"default:false"`
+	Team2Close   bool       `json:"team2_close" gorm:"default:false"`
 	CreatedAt    time.Time  `json:"created_at"`
 	UpdatedAt    time.Time  `json:"updated_at"`
 }
@@ -39,7 +41,7 @@ type UpdateMatchDto struct {
 	Team2ID     *int   `json:"team2_id"`
 	Score1      int    `json:"score1"`
 	Score2      int    `json:"score2"`
-	Winner      int    `json:"winner"`
+	WinnerID    *int   `json:"winner_id"`
 	Status      string `json:"status"`
 	NextMatchID *int   `json:"next_match_id"`
 }
@@ -53,10 +55,12 @@ func NewMatch(tournamentID int, next *int, depth int) Match {
 		TournamentID: tournamentID,
 		Team1ID:      nil,
 		Team2ID:      nil,
-		Winner:       NONE,
-		Status:       PLAYING,
+		WinnerID:     nil,
+		Status:       WAITING,
 		NextMatchID:  next,
 		Depth:        depth,
+		Team1Close:   false,
+		Team2Close:   false,
 		Score1:       0,
 		Score2:       0,
 	}
@@ -119,17 +123,32 @@ func (m *Match) SetScore(team Team, score int) {
 	m.Score2 = score
 }
 
+func (m *Match) TeamWantToClose(teamID int) {
+	if teamID == *m.Team1ID {
+		m.Team1Close = !m.Team1Close
+		return
+	}
+
+	m.Team2Close = !m.Team2Close
+}
+
 func (m *Match) Close() {
 	if m.Score1 > m.Score2 {
-		m.Winner = TEAM1_WIN
-		return
+		m.WinnerID = m.Team1ID
 	} else if m.Score1 < m.Score2 {
-		m.Winner = TEAM2_WIN
-	} else {
-		m.Winner = DRAW
+		m.WinnerID = m.Team2ID
 	}
 
 	m.Status = FINISHED
+}
+
+func (m *Match) SetWinnerToMatch(winnerID *int) {
+	if m.Team1ID == nil {
+		m.Team1ID = winnerID
+		return
+	}
+
+	m.Team2ID = winnerID
 }
 
 func (m *Match) HasTeam(team Team) bool {
