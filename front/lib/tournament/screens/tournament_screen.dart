@@ -126,8 +126,10 @@ class TournamentScreenState extends State<TournamentScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => TeamMembersPage(
-                              teamId: team.id, // passez l'identifiant de l'équipe ici
-                              teamName: team.name, // passez le nom de l'équipe ici
+                              teamId: team
+                                  .id, // passez l'identifiant de l'équipe ici
+                              teamName:
+                                  team.name, // passez le nom de l'équipe ici
                               members: userMembers,
                               ownerId: team.ownerId,
                               currentId: _currentUser!.id,
@@ -150,16 +152,19 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 fontSize: 18, fontWeight: FontWeight.bold)),
                         subtitle: Text(
                             'Members: ${team.members.length} | Tournaments: ${team.tournaments.length}',
-                            style: const TextStyle(fontSize: 14, color: Colors.grey)),
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.grey)),
                         trailing: IconButton(
                           icon: Icon(
                             isOwner ? Icons.delete : Icons.exit_to_app,
                             color: Colors.red,
                           ),
-                          onPressed: () => _confirmLeaveTeam(team.id, team.name, isOwner),
+                          onPressed: () =>
+                              _confirmLeaveTeam(team.id, team.name, isOwner),
                         ),
                         children: team.tournaments.map((tournamentJson) {
-                          Tournament tournament = Tournament.fromJson(tournamentJson);
+                          Tournament tournament =
+                              Tournament.fromJson(tournamentJson);
                           return Card(
                             margin: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
@@ -169,7 +174,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   width: 50, height: 50, fit: BoxFit.cover),
                               title: Text(tournament.name,
                                   style: const TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.w600)),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
@@ -189,7 +195,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => TournamentDetailsScreen(
+                                    builder: (context) =>
+                                        TournamentDetailsScreen(
                                       tournament: tournament,
                                       game: tournament.game,
                                     ),
@@ -228,10 +235,8 @@ class TournamentScreenState extends State<TournamentScreen> {
     );
   }
 
-
-
-
-  Future<void> _confirmLeaveTeam(int teamId, String teamName, bool isOwner) async {
+  Future<void> _confirmLeaveTeam(
+      int teamId, String teamName, bool isOwner) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -405,7 +410,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                      const AddTournamentPage(),
+                                          const AddTournamentPage(),
                                     ),
                                   );
                                 },
@@ -430,7 +435,7 @@ class TournamentScreenState extends State<TournamentScreen> {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-    DateFormat.yMMMd(Localizations.localeOf(context).toString());
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return GestureDetector(
       onTap: () {
