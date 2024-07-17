@@ -20,6 +20,9 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
   final Websocket ws = Websocket.getInstance();
   late Match match;
   User? _currentUser;
+  // bool _isTeamOwner = false;
+  // bool _isTeam1Owner = false;
+  // bool _isTeam2Owner = false;
 
   Future<void> _loadCurrentUser() async {
     final authService = Provider.of<IAuthService>(context, listen: false);
@@ -51,12 +54,19 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
     super.initState();
     _loadCurrentUser();
     websocket();
+    // setState(() {
+    //   _isTeam1Owner = _currentUser?.id == match.team1?.ownerId;
+    //   _isTeam2Owner = _currentUser?.id == match.team2?.ownerId;
+    //   _isTeamOwner = _isTeam1Owner || _isTeam2Owner;
+    // });
   }
 
   @override
   Widget build(BuildContext context) {
     match = widget.match;
-    var isTeamOwner = _currentUser?.id == match.team1?.ownerId || _currentUser?.id == match.team2?.ownerId;
+    var isTeam1Owner = _currentUser?.id == match.team1?.ownerId;
+    var isTeam2Owner = _currentUser?.id == match.team2?.ownerId;
+    var isTeamOwner = isTeam1Owner || isTeam2Owner;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Match Details'),
@@ -88,14 +98,18 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                       const Divider(thickness: 2),
                       _buildCustomScoreRow(
                           'Score', match.score1.toString(), match.score2.toString()),
-                      const Divider(thickness: 2),
+                      if (isTeamOwner)
+                        const Divider(thickness: 2),
                       if (isTeamOwner)
                         Center(
                           child: ElevatedButton(
                             onPressed: () {
-                              _openScoreModal();
+                              _addPointToTeam(isTeam1Owner ? match.team1Id ?? 0 : match.team2Id ?? 0);
                             },
-                            child: const Text('Enter le score'),
+                            child: Text(isTeam1Owner
+                              ? 'Ajouter un point pour ${match.team1?.name}'
+                              : 'Ajouter un point pour ${match.team2?.name}'
+                            ),
                           ),
                         )
                     ],
@@ -109,39 +123,12 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
     );
   }
 
-  void _openScoreModal() {
+  Future<void> _addPointToTeam(int teamId) async {
     final teamService = Provider.of<IMatchService>(context, listen: false);
-    showModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext context) {
-        return SizedBox(
-          height: 200,
-          child: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                const Text('Entrer the score'),
-                const SizedBox(height: 20),
-                ElevatedButton(
-                  onPressed: () async {
-                    final updatedMatch = await teamService.setScore(
-                      match.id,
-                      match.team1Id ?? 0,
-                      1,
-                    );
-                    setState(() {
-                      match = updatedMatch;
-                    });
-                  },
-                  child: const Text('1'),
-                ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
+    final updatedMatch = await teamService.setScore(match.id, teamId, 1);
+    setState(() {
+      match = updatedMatch;
+    });
   }
 
   Widget _buildTeamHeader(String team1, String team2) {

@@ -88,7 +88,7 @@ class MatchService implements IMatchService {
       final token = await _cacheService.getString('token');
       if (token == null) throw Exception('No token found');
       final response = await _dio.patch(
-        "${dotenv.env['API_ENDPOINT']}/matches/$matchId/team/$teamId/score/",
+        "${dotenv.env['API_ENDPOINT']}/matches/$matchId/team/$teamId/score",
         data: {
           'score': score,
         },
@@ -96,6 +96,9 @@ class MatchService implements IMatchService {
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500;
           },
         ),
       );
