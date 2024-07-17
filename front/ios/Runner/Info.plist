@@ -71,5 +71,27 @@
     <string>Allow access to speech recognition</string>
     <key>NSLocationAlwaysUsageDescription</key>
     <string>Allow access to location</string>
+    <key>CFBundleIcons~ipad</key>
+    <dict>
+        <key>CFBundlePrimaryIcon</key>
+        <dict>
+            <key>CFBundleIconFiles</key>
+            <array>
+                <string>29.png</string>
+                <string>40.png</string>
+                <string>57.png</string>
+                <string>58.png</string>
+                <string>60.png</string>
+                <string>80.png</string>
+                <string>87.png</string>
+                <string>114.png</string>
+                <string>120.png</string>
+                <string>152.png</string>
+                <string>167.png</string>
+                <string>180.png</string>
+                <string>1024.png</string>
+            </array>
+        </dict>
+    </dict>
 </dict>
 </plist>
