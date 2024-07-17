@@ -1,9 +1,9 @@
 class Team {
   final int id;
   final String name;
-  final List<dynamic> members; // Utiliser List<dynamic> pour les membres
-  final List<dynamic> tournaments; // Utiliser List<dynamic> pour les tournois
-  final Map<String, dynamic> owner; // Utiliser Map pour le propriétaire
+  final List<dynamic> members;
+  final List<dynamic> tournaments;
+  final Map<String, dynamic> owner;
   final int ownerId;
   final bool isPrivate;
   final DateTime createdAt;
@@ -25,9 +25,9 @@ class Team {
     return Team(
       id: json['id'],
       name: json['name'],
-      members: json['members'] ?? [], // Assurer une liste vide si null
-      tournaments: json['tournaments'] ?? [], // Assurer une liste vide si null
-      owner: json['owner'] ?? {}, // Assurer une map vide si null
+      members: json['members'] ?? [],
+      tournaments: json['tournaments'] ?? [],
+      owner: json['owner'] ?? {},
       ownerId: json['owner_id'],
       isPrivate: json['private'],
       createdAt: DateTime.parse(json['created_at']),
@@ -39,9 +39,9 @@ class Team {
     return {
       'id': id,
       'name': name,
-      'members': members, // Pas besoin de transformer en JSON
-      'tournaments': tournaments, // Pas besoin de transformer en JSON
-      'owner': owner, // Pas besoin de transformer en JSON
+      'members': members,
+      'tournaments': tournaments,
+      'owner': owner,
       'owner_id': ownerId,
       'private': isPrivate,
       'created_at': createdAt.toIso8601String(),

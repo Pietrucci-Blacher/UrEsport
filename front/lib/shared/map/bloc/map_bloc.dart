@@ -1,6 +1,6 @@
-import 'dart:convert';
-import 'dart:developer' as developer;
+import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -13,10 +13,16 @@ import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/shared/map/bloc/map_event.dart';
 import 'package:uresport/shared/map/bloc/map_state.dart';
 
-extension PointExtension on MapBloc {
-  Point? createPoint(double? longitude, double? latitude) {
-    if (longitude == null || latitude == null) return null;
-    return Point(coordinates: Position(longitude, latitude));
+class CustomPointAnnotationClickListener
+    extends OnPointAnnotationClickListener {
+  final bool Function(PointAnnotation) onTap;
+
+  CustomPointAnnotationClickListener({required this.onTap});
+
+  @override
+  bool onPointAnnotationClick(PointAnnotation annotation) {
+    debugPrint('Annotation cliquée : ${annotation.id}');
+    return onTap(annotation);
   }
 }
 
@@ -46,7 +52,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       final puckPosition = await mapService.getPuckPosition();
       final currentPoint = puckPosition ??
           await mapService.getCurrentLocation().then((loc) {
-            return createPoint(loc['longitude'], loc['latitude']);
+            return Point(
+                coordinates: Position(loc['longitude']!, loc['latitude']!));
           });
 
       if (currentPoint == null) {
@@ -64,6 +71,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
         CameraOptions(center: currentPoint, zoom: 14.0),
         MapAnimationOptions(duration: 2000, startDelay: 0),
       );
+      debugPrint(
+          "Camera moved to: Lat ${currentPoint.coordinates.lat}, Lon ${currentPoint.coordinates.lng}");
 
       if (_mapboxMap != null) {
         add(UpdateMarkers(event.tournaments, event.onMarkerTapped));
@@ -73,34 +82,49 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     }
   }
 
-  Future<String> _createMaterialIconAsBase64() async {
-    final pictureRecorder = ui.PictureRecorder();
-    final canvas = Canvas(pictureRecorder);
-    const size = ui.Size(48, 48);
-    const iconData = Icons.location_on;
-    final textPainter = TextPainter(textDirection: TextDirection.ltr);
+  Future<Uint8List> _createCustomMarker(String name) async {
+    final recorder = ui.PictureRecorder();
+    final canvas = Canvas(recorder);
+    const size = ui.Size(200, 80);
 
-    textPainter.text = TextSpan(
-      text: String.fromCharCode(iconData.codePoint),
-      style: TextStyle(
-        fontSize: 48,
-        fontFamily: iconData.fontFamily,
-        color: Colors.red,
+    final backgroundPaint = Paint()..color = Colors.white;
+    canvas.drawRRect(
+        RRect.fromRectAndRadius(Offset.zero & size, const Radius.circular(10)),
+        backgroundPaint);
+
+    final iconPainter = TextPainter(
+      text: TextSpan(
+        text: String.fromCharCode(Icons.emoji_events.codePoint),
+        style: TextStyle(
+          fontSize: 40,
+          color: Colors.yellow,
+          fontFamily: Icons.emoji_events.fontFamily,
+        ),
       ),
+      textDirection: TextDirection.ltr,
     );
+    iconPainter.layout();
+    iconPainter.paint(
+        canvas, Offset(10, (size.height - iconPainter.height) / 2));
 
-    textPainter.layout();
-    final xCenter = (size.width - textPainter.width) / 2;
-    final yCenter = (size.height - textPainter.height) / 2;
-    textPainter.paint(canvas, Offset(xCenter, yCenter));
+    final textPainter = TextPainter(
+      text: TextSpan(
+        text: name,
+        style: const TextStyle(
+            color: Colors.black, fontSize: 14, fontWeight: FontWeight.bold),
+      ),
+      textDirection: TextDirection.ltr,
+    );
+    textPainter.layout(maxWidth: size.width - 60);
+    textPainter.paint(
+        canvas, Offset(60, (size.height - textPainter.height) / 2));
 
-    final picture = pictureRecorder.endRecording();
+    final picture = recorder.endRecording();
     final image =
         await picture.toImage(size.width.toInt(), size.height.toInt());
-    final byteData = await image.toByteData(format: ui.ImageByteFormat.png);
-    final buffer = byteData!.buffer.asUint8List();
+    final pngBytes = await image.toByteData(format: ui.ImageByteFormat.png);
 
-    return base64Encode(buffer);
+    return pngBytes!.buffer.asUint8List();
   }
 
   void _onUpdateMarkers(UpdateMarkers event, Emitter<MapState> emit) async {
@@ -110,42 +134,41 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             await _mapboxMap!.annotations.createPointAnnotationManager();
         await pointAnnotationManager.deleteAll();
 
-        final iconImage = await _createMaterialIconAsBase64();
-
-        var options = <PointAnnotationOptions>[];
         for (var tournament in event.tournaments) {
-          final point = Point(
-              coordinates: Position(tournament.longitude, tournament.latitude));
-          const iconSize = 1.5;
-          options.add(PointAnnotationOptions(
-            geometry: point,
-            iconImage: 'data:image/png;base64,$iconImage',
-            iconSize: iconSize,
-            iconOffset: [0, -20],
-            textField: tournament.name,
-            textOffset: [0, 2],
-            textColor: Colors.black.value,
-            textSize: 12,
-          ));
+          final markerImage = await _createCustomMarker(tournament.name);
+
+          final options = PointAnnotationOptions(
+            geometry: Point(
+                coordinates:
+                    Position(tournament.longitude, tournament.latitude)),
+            image: markerImage,
+            iconSize: 1.0,
+          );
+
+          final annotation = await pointAnnotationManager.create(options);
+
+          // Créer un listener unique pour chaque marqueur
+          final listener = CustomPointAnnotationClickListener(
+            onTap: (PointAnnotation clickedAnnotation) {
+              if (clickedAnnotation.id == annotation.id) {
+                debugPrint(
+                    'Annotation correcte cliquée : ${clickedAnnotation.id}');
+                event.onMarkerTapped(tournament);
+                return true;
+              }
+              return false;
+            },
+          );
+
+          pointAnnotationManager.addOnPointAnnotationClickListener(listener);
         }
-
-        if (options.isNotEmpty) {
-          final createdAnnotations =
-              await pointAnnotationManager.createMulti(options);
-          developer.log("Created ${createdAnnotations.length} annotations");
-        }
-
-        pointAnnotationManager.addOnPointAnnotationClickListener(
-          PointAnnotationClickListener(event.tournaments, this),
-        );
-
-        emit(MarkersUpdated(mapMarkers: options));
+        emit(MarkersUpdated(mapMarkers: event.tournaments));
       } catch (e) {
-        developer.log("Error updating markers: $e");
+        debugPrint("Error updating markers: $e");
         emit(MapError("Failed to update markers: $e"));
       }
     } else {
-      developer.log("MapboxMap is null");
+      debugPrint("MapboxMap is null");
       emit(const MapError("MapboxMap is not initialized"));
     }
   }
@@ -183,10 +206,10 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
   void _onCenterOnCurrentLocation(
       CenterOnCurrentLocation event, Emitter<MapState> emit) async {
-    developer.log('Début de _onCenterOnCurrentLocation');
+    debugPrint('Début de _onCenterOnCurrentLocation');
 
     if (!mapService.isMapInitialized() || _mapboxMap == null) {
-      developer.log('La carte n\'est pas initialisée');
+      debugPrint('La carte n\'est pas initialisée');
       emit(const MapError('La carte n\'est pas initialisée'));
       return;
     }
@@ -197,7 +220,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
 
       serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        developer.log('Les services de localisation ne sont pas activés.');
+        debugPrint('Les services de localisation ne sont pas activés.');
         emit(const MapError(
             'Les services de localisation ne sont pas activés.'));
         return;
@@ -207,7 +230,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       if (permission == geo.LocationPermission.denied) {
         permission = await geo.Geolocator.requestPermission();
         if (permission == geo.LocationPermission.denied) {
-          developer.log('Les permissions de localisation sont refusées.');
+          debugPrint('Les permissions de localisation sont refusées.');
           emit(
               const MapError('Les permissions de localisation sont refusées.'));
           return;
@@ -215,8 +238,7 @@ class MapBloc extends Bloc<MapEvent, MapState> {
       }
 
       if (permission == geo.LocationPermission.deniedForever) {
-        developer
-            .log('Les permissions de localisation sont refusées à jamais.');
+        debugPrint('Les permissions de localisation sont refusées à jamais.');
         emit(const MapError(
             'Les permissions de localisation sont refusées à jamais.'));
         return;
@@ -237,10 +259,12 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           CameraOptions(center: currentPoint, zoom: 14.0),
           MapAnimationOptions(duration: 2000, startDelay: 0),
         );
+        debugPrint(
+            "Camera moved to: Lat ${currentPoint.coordinates.lat}, Lon ${currentPoint.coordinates.lng}");
         emit(MapCentered());
       }
     } catch (e) {
-      developer.log('Erreur lors du centrage de la carte : $e');
+      debugPrint('Erreur lors du centrage de la carte : $e');
       emit(MapError('Erreur lors du centrage de la carte: ${e.toString()}'));
     }
   }
@@ -303,23 +327,5 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     buffer.writeln('</trkseg></trk>');
     buffer.writeln('</gpx>');
     return buffer.toString();
-  }
-}
-
-class PointAnnotationClickListener implements OnPointAnnotationClickListener {
-  final List tournaments;
-  final MapBloc mapBloc;
-
-  PointAnnotationClickListener(this.tournaments, this.mapBloc);
-
-  @override
-  bool onPointAnnotationClick(PointAnnotation annotation) {
-    final tournament = tournaments.firstWhere(
-      (t) =>
-          t.longitude == annotation.geometry.coordinates[0] &&
-          t.latitude == annotation.geometry.coordinates[1],
-    );
-    mapBloc.add(MarkerTapped(tournament));
-    return true;
   }
 }

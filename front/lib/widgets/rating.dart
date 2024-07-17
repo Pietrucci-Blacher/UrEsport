@@ -38,7 +38,7 @@ class RatingWidgetState extends State<RatingWidget> {
           'Fetching rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}');
       final ratingData = await ratingService.fetchRatingDetails(
           widget.tournamentId, widget.userId);
-      if (!mounted) return; // Check if the widget is still in the widget tree
+      if (!mounted) return;
       setState(() {
         _currentRating = ratingData['rating'];
         _ratingId = ratingData['ratingId'];
@@ -53,7 +53,7 @@ class RatingWidgetState extends State<RatingWidget> {
       }
     } catch (e) {
       debugPrint('Error while fetching rating: $e');
-      if (!mounted) return; // Check if the widget is still in the widget tree
+      if (!mounted) return;
       widget.showCustomToast(
           context, 'Erreur lors de la récupération de la note',
           backgroundColor: Colors.red);
@@ -82,7 +82,7 @@ class RatingWidgetState extends State<RatingWidget> {
         await ratingService.submitRating(
             widget.tournamentId, widget.userId, rating);
       }
-      if (!mounted) return; // Check if the widget is still in the widget tree
+      if (!mounted) return;
       widget.showCustomToast(context, 'Note enregistrée avec succès',
           backgroundColor: Colors.green);
       setState(() {
@@ -90,7 +90,7 @@ class RatingWidgetState extends State<RatingWidget> {
       });
     } catch (e) {
       debugPrint('Error while submitting or updating rating: $e');
-      if (!mounted) return; // Check if the widget is still in the widget tree
+      if (!mounted) return;
       widget.showCustomToast(
           context, 'Erreur lors de l\'enregistrement de la note',
           backgroundColor: Colors.red);

@@ -1,19 +1,22 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uresport/core/models/game.dart';
+import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
+import 'package:uresport/core/services/auth_service.dart'; // Ensure this import is correct
+import 'package:uresport/core/services/game_service.dart';
+import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/core/services/game_service.dart';
-import 'package:uresport/core/models/tournament.dart';
-import 'package:uresport/core/models/game.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final Websocket _websocket;
+  final AuthService _authService;
   final TournamentService _tournamentService;
   final GameService _gameService;
 
-  DashboardBloc(this._websocket, this._tournamentService, this._gameService)
+  DashboardBloc(this._websocket, this._authService, this._tournamentService,
+      this._gameService)
       : super(DashboardInitial()) {
     on<ConnectWebSocket>(_onConnectWebSocket);
     on<DisconnectWebSocket>(_onDisconnectWebSocket);
@@ -29,7 +32,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   Future<void> _onFetchAllUsers(
       FetchAllUsers event, Emitter<DashboardState> emit) async {
     try {
-      List<User> users = await fetchUsersFromApiOrDatabase();
+      List<User> users = await _authService
+          .fetchUsers(); // Assuming this is a method in AuthService
       if (state is DashboardLoaded) {
         final currentState = state as DashboardLoaded;
         emit(currentState.copyWith(users: users));
@@ -37,20 +41,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     } catch (e) {
       emit(DashboardError(e.toString()));
     }
-  }
-
-  Future<List<User>> fetchUsersFromApiOrDatabase() async {
-    await Future.delayed(const Duration(seconds: 2)); // Correction ici
-    return [
-      User(
-          id: 1,
-          username: 'user1',
-          firstname: 'First',
-          lastname: 'User',
-          email: 'user1@example.com',
-          roles: ['user'],
-          teams: []),
-    ];
   }
 
   Future<void> _onConnectWebSocket(
@@ -123,10 +113,10 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           await _tournamentService.fetchTournaments();
       emit(DashboardLoaded(
         message: 'Tournaments loaded',
-        activeUsers: 0, // mettez à jour selon vos besoins
+        activeUsers: 0, // update as needed
         activeTournaments: tournaments.length,
-        totalGames: 0, // mettez à jour selon vos besoins
-        recentLogs: const [], // mettez à jour selon vos besoins
+        totalGames: 0, // update as needed
+        recentLogs: const [], // update as needed
         tournaments: tournaments,
       ));
     } catch (e) {
