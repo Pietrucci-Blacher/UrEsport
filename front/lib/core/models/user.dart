@@ -31,8 +31,8 @@ class User {
       profileImageUrl: json['profile_image_url'],
       roles: json['roles'] ?? [],
       teams: (json['teams'] as List<dynamic>?)
-          ?.map((teamJson) => Team.fromJson(teamJson))
-          .toList() ??
+              ?.map((teamJson) => Team.fromJson(teamJson))
+              .toList() ??
           [], // Ajoutez cette ligne
     );
   }

@@ -22,7 +22,7 @@ class TeamService implements ITeamService {
   Future<List<Team>> getUserTeams(int userId) async {
     try {
       final response =
-      await _dio.get('${dotenv.env['API_ENDPOINT']}/teams/user/$userId');
+          await _dio.get('${dotenv.env['API_ENDPOINT']}/teams/user/$userId');
       if (response.statusCode == 200) {
         final data = response.data as List;
         return data.map((json) => Team.fromJson(json)).toList();
@@ -156,7 +156,8 @@ class TeamService implements ITeamService {
         ),
       );
       if (response.statusCode != 204) {
-        final errorMessage = response.data['error'] ?? 'Failed to kick the user';
+        final errorMessage =
+            response.data['error'] ?? 'Failed to kick the user';
         throw DioException(
           requestOptions: response.requestOptions,
           response: Response(

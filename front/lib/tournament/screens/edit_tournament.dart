@@ -6,7 +6,6 @@ import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 
-
 class EditTournamentScreen extends StatefulWidget {
   final Tournament tournament;
 
@@ -34,15 +33,23 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.tournament.name);
-    _descriptionController = TextEditingController(text: widget.tournament.description);
-    _startDateController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(widget.tournament.startDate));
-    _endDateController = TextEditingController(text: DateFormat('yyyy-MM-dd').format(widget.tournament.endDate));
-    _locationController = TextEditingController(text: widget.tournament.location);
-    _latitudeController = TextEditingController(text: widget.tournament.latitude.toString());
-    _longitudeController = TextEditingController(text: widget.tournament.longitude.toString());
+    _descriptionController =
+        TextEditingController(text: widget.tournament.description);
+    _startDateController = TextEditingController(
+        text: DateFormat('yyyy-MM-dd').format(widget.tournament.startDate));
+    _endDateController = TextEditingController(
+        text: DateFormat('yyyy-MM-dd').format(widget.tournament.endDate));
+    _locationController =
+        TextEditingController(text: widget.tournament.location);
+    _latitudeController =
+        TextEditingController(text: widget.tournament.latitude.toString());
+    _longitudeController =
+        TextEditingController(text: widget.tournament.longitude.toString());
     _imageController = TextEditingController(text: widget.tournament.image);
-    _gameIdController = TextEditingController(text: widget.tournament.game.id.toString());
-    _nbPlayerController = TextEditingController(text: widget.tournament.nbPlayers.toString());
+    _gameIdController =
+        TextEditingController(text: widget.tournament.game.id.toString());
+    _nbPlayerController =
+        TextEditingController(text: widget.tournament.nbPlayers.toString());
     _isPrivate = widget.tournament.isPrivate;
   }
 
@@ -61,7 +68,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     super.dispose();
   }
 
-  void showNotificationToast(BuildContext context, String message, {Color? backgroundColor, Color? textColor}) {
+  void showNotificationToast(BuildContext context, String message,
+      {Color? backgroundColor, Color? textColor}) {
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
@@ -82,14 +90,15 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     });
   }
 
-
   Future<void> _saveTournament() async {
     if (_formKey.currentState!.validate()) {
       final name = _nameController.text;
       final description = _descriptionController.text;
       final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss'Z'");
-      final startDate = dateFormat.format(DateTime.parse(_startDateController.text));
-      final endDate = dateFormat.format(DateTime.parse(_endDateController.text));
+      final startDate =
+          dateFormat.format(DateTime.parse(_startDateController.text));
+      final endDate =
+          dateFormat.format(DateTime.parse(_endDateController.text));
       final location = _locationController.text;
       final latitude = double.parse(_latitudeController.text);
       final longitude = double.parse(_longitudeController.text);
@@ -115,13 +124,16 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       final tournamentJson = updatedTournament.toJson();
       debugPrint('Tournament JSON: ${jsonEncode(tournamentJson)}');
 
-      final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+      final tournamentService =
+          Provider.of<ITournamentService>(context, listen: false);
       try {
         await tournamentService.updateTournament(updatedTournament);
-        showNotificationToast(context, 'Tournament updated successfully', backgroundColor: Colors.green);
+        showNotificationToast(context, 'Tournament updated successfully',
+            backgroundColor: Colors.green);
         Navigator.pop(context, updatedTournament);
       } catch (e) {
-        showNotificationToast(context, 'Failed to update tournament: $e', backgroundColor: Colors.red);
+        showNotificationToast(context, 'Failed to update tournament: $e',
+            backgroundColor: Colors.red);
       }
     }
   }
@@ -245,7 +257,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               ),
               TextFormField(
                 controller: _nbPlayerController,
-                decoration: const InputDecoration(labelText: 'Number of Players'),
+                decoration:
+                    const InputDecoration(labelText: 'Number of Players'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter the number of players';
