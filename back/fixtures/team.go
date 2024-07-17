@@ -7,39 +7,13 @@ import (
 )
 
 var ESPORT_TEAM_NAMES = []string{
-	"Gentle Mates",
-	"Karmin Corp",
-	"Team Liquid",
-	"Fnatic",
-	"Cloud9",
-	"SK Telecom T1",
-	"Virtus.pro",
-	"Na'Vi",
-	"G2 Esports",
-	"OG",
-	"Evil Geniuses",
-	"TSM",
-	"Team SoloMid",
-	"Team Envy",
-	"FaZe Clan",
-	"Ninjas in Pyjamas",
-	"Astralis",
-	"Complexity Gaming",
-	"100 Thieves",
-	"Gen.G",
-	"Invictus Gaming",
-	"Royal Never Give Up",
-	"PSG.LGD",
-	"Vici Gaming",
-	"T1",
-	"Team Secret",
-	"Alliance",
-	"Newbee",
-	"Team Spirit",
-	"BIG",
-	"Heroic",
-	"MAD Lions",
-	"Team Vitality",
+	"Gentle Mates", "Karmine Corp", "Team Liquid", "Fnatic", "Cloud9",
+	"SK Telecom T1", "Virtus.pro", "Na'Vi", "G2 Esports", "OG",
+	"Evil Geniuses", "TSM", "Team SoloMid", "Team Envy", "FaZe Clan",
+	"Ninjas in Pyjamas", "Astralis", "Complexity Gaming", "100 Thieves", "Gen.G",
+	"Invictus Gaming", "Royal Never Give Up", "PSG.LGD", "Vici Gaming", "T1",
+	"Team Secret", "Alliance", "Newbee", "Team Spirit", "BIG",
+	"Heroic", "MAD Lions", "Team Vitality",
 }
 
 func LoadTeams() error {
@@ -55,7 +29,7 @@ func LoadTeams() error {
 			return err
 		}
 
-		teamName := ESPORT_TEAM_NAMES[i%len(ESPORT_TEAM_NAMES)] // Assurez-vous de ne pas dépasser le nombre d'éléments dans ESPORT_TEAM_NAMES
+		teamName := ESPORT_TEAM_NAMES[i%len(ESPORT_TEAM_NAMES)]
 		team := models.Team{
 			Name:    teamName,
 			OwnerID: ownerID,
@@ -71,7 +45,7 @@ func LoadTeams() error {
 
 		fmt.Printf("Team %s created\n", team.Name)
 
-		for j := 0; j < TEAM_MEMBERS_NB; j++ {
+		for j := 0; j < TEAM_MEMBERS_NB-1; j++ {
 			if err := addMemberToTeam(team.ID); err != nil {
 				return err
 			}
