@@ -8,10 +8,10 @@ class AddTournamentPage extends StatefulWidget {
   const AddTournamentPage({super.key});
 
   @override
-  _AddTournamentPageState createState() => _AddTournamentPageState();
+  AddTournamentPageState createState() => AddTournamentPageState();
 }
 
-class _AddTournamentPageState extends State<AddTournamentPage> {
+class AddTournamentPageState extends State<AddTournamentPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
@@ -48,6 +48,7 @@ class _AddTournamentPageState extends State<AddTournamentPage> {
             Provider.of<ITournamentService>(context, listen: false);
         await tournamentService.createTournament(tournamentData);
         showCustomToast('Tournoi créé avec succès', Colors.green);
+        if (!mounted) return;
         Navigator.pop(context);
       } catch (e) {
         showCustomToast(

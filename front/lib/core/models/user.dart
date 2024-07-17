@@ -23,16 +23,17 @@ class User {
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      firstname: json['firstname'],
-      lastname: json['lastname'],
-      username: json['username'],
-      email: json['email'],
+      id: json['id'] ?? 0,
+      firstname: json['firstname'] ?? '',
+      lastname: json['lastname'] ?? '',
+      username: json['username'] ?? '',
+      email: json['email'] ?? '',
       profileImageUrl: json['profile_image_url'],
-      roles: json['roles'],
-      teams: (json['teams'] as List<dynamic>)
-          .map((teamJson) => Team.fromJson(teamJson))
-          .toList(), // Ajoutez cette ligne
+      roles: json['roles'] ?? [],
+      teams: (json['teams'] as List<dynamic>?)
+              ?.map((teamJson) => Team.fromJson(teamJson))
+              .toList() ??
+          [], // Ajoutez cette ligne
     );
   }
 

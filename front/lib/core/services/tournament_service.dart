@@ -21,6 +21,8 @@ abstract class ITournamentService {
   Future<void> generateBracket(int tournamentId);
   Future<void> joinTournamentWithTeam(int tournamentId, int teamId);
   Future<void> createTournament(Map<String, dynamic> tournamentData);
+  Future<void> leaveTournament(int tournamentId, int teamId);
+  Future<void> updateTournament(Tournament tournament);
 }
 
 class TournamentService implements ITournamentService {
@@ -469,6 +471,79 @@ class TournamentService implements ITournamentService {
         rethrow;
       } else {
         debugPrint('Exception: ${e.toString()}');
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
+  @override
+  Future<void> leaveTournament(int tournamentId, int teamId) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    try {
+      final response = await _dio.delete(
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/leave",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+
+      if (response.statusCode != 204) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to leave the tournament',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
+  @override
+  Future<void> updateTournament(Tournament tournament) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    try {
+      final response = await _dio.patch(
+        "${dotenv.env['API_ENDPOINT']}/tournaments/${tournament.id}",
+        data: tournament.toJson(),
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to update tournament',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
         throw Exception('Unexpected error occurred');
       }
     }

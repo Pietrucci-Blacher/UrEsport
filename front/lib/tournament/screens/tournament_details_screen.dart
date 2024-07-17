@@ -16,6 +16,8 @@ import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/models/team.dart' as team_model;
 
+import 'package:uresport/tournament/screens/edit_tournament.dart';
+
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
   final Game? game;
@@ -310,6 +312,118 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     }
   }
 
+  void _showLeaveTeamsModal() {
+    if (_currentUser == null || _currentUser!.teams.isEmpty) {
+      showNotificationToast(context, 'No teams available for the current user.',
+          backgroundColor: Colors.red);
+      return;
+    }
+
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Select a Team to Leave'),
+          content: _currentUser!.teams.isEmpty
+              ? const Text('No teams available.')
+              : Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: _currentUser!.teams.map((team) {
+                    return ListTile(
+                      title: Text(team.name),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _confirmLeaveTournament(
+                            context, widget.tournament.id, team.id);
+                      },
+                    );
+                  }).toList(),
+                ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text('Cancel'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _confirmLeaveTournament(
+      BuildContext context, int tournamentId, int teamId) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Leave'),
+          content:
+              const Text('Are you sure you want to leave this tournament?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+            ),
+            TextButton(
+              child: const Text('Leave'),
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirm == true) {
+      await _leaveTournament(tournamentId, teamId);
+    }
+  }
+
+  Future<void> _leaveTournament(int tournamentId, int teamId) async {
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
+
+    try {
+      await tournamentService.leaveTournament(tournamentId, teamId);
+      if (!mounted) return;
+      showNotificationToast(context, 'Vous avez quitté le tournoi',
+          backgroundColor: Colors.green);
+      setState(() {
+        _hasJoined = false;
+      });
+    } catch (e) {
+      if (!mounted) return;
+
+      if (e is DioException) {
+        if (e.response?.statusCode == 404) {
+          // Vérifiez si le message d'erreur concerne une équipe non inscrite
+          final errorMessage = e.response?.data['error'] ?? '';
+          if (errorMessage.contains('not registered') ||
+              errorMessage.contains('not found')) {
+            showNotificationToast(
+                context, 'Cette team n\'est pas inscrite dans le tournoi',
+                backgroundColor: Colors.red);
+          } else {
+            showNotificationToast(context, 'Ressource non trouvée (404)',
+                backgroundColor: Colors.red);
+          }
+        } else {
+          showNotificationToast(
+              context, 'Erreur lors du départ du tournoi: ${e.message}',
+              backgroundColor: Colors.red);
+        }
+      } else {
+        showNotificationToast(context, 'Erreur inconnue: $e',
+            backgroundColor: Colors.red);
+      }
+    }
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -318,11 +432,34 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
+    var isOwner = widget.tournament.ownerId == _currentUser?.id;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.tournament.name),
+          title: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                  child: Text(
+                widget.tournament.name,
+                overflow: TextOverflow.ellipsis,
+              )),
+              if (isOwner)
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            EditTournamentScreen(tournament: widget.tournament),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Details'),
@@ -556,8 +693,10 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                       ),
                       const SizedBox(height: 4),
                       Column(
-                        children: List.generate(widget.tournament.teams.length,
-                            (index) {
+                        children: List.generate(
+                            widget.tournament.teams.length > 3
+                                ? 3
+                                : widget.tournament.teams.length, (index) {
                           final team = widget.tournament.teams[index];
                           return Padding(
                             padding: const EdgeInsets.symmetric(vertical: 4.0),
@@ -582,38 +721,39 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                         }),
                       ),
                       const SizedBox(height: 8),
-                      GestureDetector(
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) =>
-                                  TournamentParticipantsScreen(
-                                      tournament: widget.tournament),
-                            ),
-                          );
-                        },
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              'Voir tous les participants',
-                              style: TextStyle(
-                                color: Theme.of(context)
-                                    .primaryColor, // Couleur du texte cliquable
-                                decoration: TextDecoration
-                                    .underline, // Souligner le texte
+                      if (widget.tournament.teams.length > 3)
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    TournamentParticipantsScreen(
+                                        tournament: widget.tournament),
                               ),
-                            ),
-                            const SizedBox(width: 8),
-                            Icon(
-                              Icons.arrow_forward,
-                              color: Theme.of(context)
-                                  .primaryColor, // Couleur de l'icône
-                            ),
-                          ],
+                            );
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                'Voir tous les participants',
+                                style: TextStyle(
+                                  color: Theme.of(context)
+                                      .primaryColor, // Couleur du texte cliquable
+                                  decoration: TextDecoration
+                                      .underline, // Souligner le texte
+                                ),
+                              ),
+                              const SizedBox(width: 8),
+                              Icon(
+                                Icons.arrow_forward,
+                                color: Theme.of(context)
+                                    .primaryColor, // Couleur de l'icône
+                              ),
+                            ],
+                          ),
                         ),
-                      ),
                     ],
                   ),
                 ),
@@ -652,6 +792,23 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                         horizontal: 32, vertical: 16),
                   ),
                   child: const Text('Rejoindre le tournoi'),
+                ),
+              ),
+            const SizedBox(height: 16),
+            if (!_hasJoined &&
+                widget.tournament.ownerId != _currentUser?.id &&
+                !widget.tournament.isPrivate)
+              Center(
+                child: ElevatedButton(
+                  onPressed: _showLeaveTeamsModal,
+                  style: ElevatedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                    ),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
+                  ),
+                  child: const Text('Quitter le tournoi'),
                 ),
               ),
             const SizedBox(height: 16),
