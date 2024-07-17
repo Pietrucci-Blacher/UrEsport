@@ -433,7 +433,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
               ),
               if (isOwner)
                 IconButton(
-                  icon: Icon(Icons.edit),
+                  icon: const Icon(Icons.edit),
                   onPressed: () {
                     Navigator.push(
                       context,

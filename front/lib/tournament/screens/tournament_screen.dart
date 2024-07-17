@@ -334,7 +334,6 @@ class TournamentScreenState extends State<TournamentScreen> {
       throw Exception('User is not logged in');
     }
 
-    final userId = _currentUser!.id;
     final teamService = Provider.of<ITeamService>(context, listen: false);
     return await teamService.getUserTeams(_currentUser!.id);
   }

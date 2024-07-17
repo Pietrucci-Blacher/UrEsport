@@ -13,10 +13,10 @@ class EditTournamentScreen extends StatefulWidget {
   const EditTournamentScreen({super.key, required this.tournament});
 
   @override
-  _EditTournamentScreenState createState() => _EditTournamentScreenState();
+  EditTournamentScreenState createState() => EditTournamentScreenState();
 }
 
-class _EditTournamentScreenState extends State<EditTournamentScreen> {
+class EditTournamentScreenState extends State<EditTournamentScreen> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
@@ -113,7 +113,7 @@ class _EditTournamentScreenState extends State<EditTournamentScreen> {
       );
 
       final tournamentJson = updatedTournament.toJson();
-      print('Tournament JSON: ${jsonEncode(tournamentJson)}');
+      debugPrint('Tournament JSON: ${jsonEncode(tournamentJson)}');
 
       final tournamentService = Provider.of<ITournamentService>(context, listen: false);
       try {
