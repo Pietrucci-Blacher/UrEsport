@@ -17,6 +17,26 @@ class Game {
     required this.updatedAt,
   });
 
+  Game copyWith({
+    int? id,
+    String? name,
+    String? description,
+    String? imageUrl,
+    List<String>? tags,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    return Game(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      imageUrl: imageUrl ?? this.imageUrl,
+      tags: tags ?? this.tags,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
   factory Game.fromJson(Map<String, dynamic> json) {
     return Game(
       id: json['id'],

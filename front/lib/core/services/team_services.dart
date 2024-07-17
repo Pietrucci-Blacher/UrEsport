@@ -6,7 +6,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'cache_service.dart';
 
 abstract class ITeamService {
-  Future<List<Team>> getUserTeams(int userId);
+  Future<List<Team>> getUserTeams(int current);
   Future<void> createTeam(Map<String, dynamic> teamData);
   Future<void> leaveTeam(int userId, int teamId);
   Future<void> deleteTeam(int teamId);

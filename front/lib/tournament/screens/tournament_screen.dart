@@ -336,7 +336,7 @@ class TournamentScreenState extends State<TournamentScreen> {
 
     final userId = _currentUser!.id;
     final teamService = Provider.of<ITeamService>(context, listen: false);
-    return await teamService.getUserTeams(userId);
+    return await teamService.getUserTeams(_currentUser!.id);
   }
 
   Widget _buildTournamentList(BuildContext context, bool isOwner) {

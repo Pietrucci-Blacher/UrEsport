@@ -16,12 +16,13 @@ import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/models/team.dart' as team_model;
 
+import 'package:uresport/tournament/screens/edit_tournament.dart';
+
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
   final Game? game;
 
-  const TournamentDetailsScreen(
-      {super.key, required this.tournament, this.game});
+  const TournamentDetailsScreen({super.key, required this.tournament, this.game});
 
   @override
   TournamentDetailsScreenState createState() => TournamentDetailsScreenState();
@@ -65,8 +66,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
   Future<void> _checkIfUpvoted() async {
     if (_currentUser == null) return;
-    final tournamentService =
-    Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
       final hasUpvoted = await tournamentService.hasUpvoted(
           widget.tournament.id, _currentUser!.id);
@@ -94,8 +94,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
   Future<void> _checkIfJoined() async {
     if (_currentUser == null) return;
-    final tournamentService =
-    Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
       final hasJoined = await tournamentService.hasJoinedTournament(
           widget.tournament.id, _currentUser!.id.toString());
@@ -420,11 +419,32 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
   @override
   Widget build(BuildContext context) {
+    var isOwner = widget.tournament.ownerId == _currentUser?.id;
     return DefaultTabController(
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text(widget.tournament.name),
+          title:
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                  child: Text(widget.tournament.name,overflow: TextOverflow.ellipsis,)
+              ),
+              if (isOwner)
+                IconButton(
+                  icon: Icon(Icons.edit),
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => EditTournamentScreen(tournament: widget.tournament),
+                      ),
+                    );
+                  },
+                ),
+            ],
+          ),
           bottom: const TabBar(
             tabs: [
               Tab(text: 'Details'),
@@ -449,6 +469,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
           child: const Icon(Icons.list),
         )
             : null,
+
       ),
     );
   }
@@ -657,7 +678,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                       ),
                       const SizedBox(height: 4),
                       Column(
-                        children: List.generate(widget.tournament.teams.length,
+                        children: List.generate(
+                            widget.tournament.teams.length > 3 ? 3 : widget.tournament.teams.length,
                                 (index) {
                               final team = widget.tournament.teams[index];
                               return Padding(
@@ -683,6 +705,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                             }),
                       ),
                       const SizedBox(height: 8),
+                      if (widget.tournament.teams.length > 3)
                       GestureDetector(
                         onTap: () {
                           Navigator.push(
@@ -755,6 +778,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                   child: const Text('Rejoindre le tournoi'),
                 ),
               ),
+            const SizedBox(height: 16),
             if (!_hasJoined &&
                 widget.tournament.ownerId != _currentUser?.id &&
                 !widget.tournament.isPrivate)

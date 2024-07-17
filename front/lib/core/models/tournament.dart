@@ -38,6 +38,44 @@ class Tournament {
     required this.game,
   });
 
+  Tournament copyWith({
+    int? id,
+    String? name,
+    String? description,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? location,
+    double? latitude,
+    double? longitude,
+    String? image,
+    bool? isPrivate,
+    int? ownerId,
+    Owner? owner,
+    List<Team>? teams,
+    int? nbPlayers,
+    int? upvotes,
+    Game? game,
+  }) {
+    return Tournament(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      location: location ?? this.location,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      image: image ?? this.image,
+      isPrivate: isPrivate ?? this.isPrivate,
+      ownerId: ownerId ?? this.ownerId,
+      owner: owner ?? this.owner,
+      teams: teams ?? this.teams,
+      nbPlayers: nbPlayers ?? this.nbPlayers,
+      upvotes: upvotes ?? this.upvotes,
+      game: game ?? this.game,
+    );
+  }
+
   factory Tournament.fromJson(Map<String, dynamic> json) {
     return Tournament(
       id: json['id'],
@@ -52,10 +90,7 @@ class Tournament {
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams: (json['teams'] as List?)
-              ?.map((team) => Team.fromJson(team))
-              .toList() ??
-          [],
+      teams: (json['teams'] as List?)?.map((team) => Team.fromJson(team)).toList() ?? [],
       nbPlayers: json['nb_player'] ?? 1,
       upvotes: json['upvotes'] ?? 0,
       game: Game.fromJson(json['game']),
@@ -109,8 +144,7 @@ class Owner {
       username: json['username'],
       firstname: json['firstname'],
       lastname: json['lastname'],
-      teams:
-          (json['teams'] as List?)?.map((team) => Team.fromJson(team)).toList(),
+      teams: (json['teams'] as List?)?.map((team) => Team.fromJson(team)).toList(),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );

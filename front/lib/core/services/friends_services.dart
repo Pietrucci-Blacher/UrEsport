@@ -5,7 +5,7 @@ import 'package:uresport/core/models/friend.dart';
 import 'package:uresport/core/services/cache_service.dart';
 
 abstract class IFriendService {
-  Future<List<Friend>> fetchFriends(int userId);
+  Future<List<Friend>> fetchFriends(int currentUserId);
   Future<void> addFriend(int currentUserId, int friendId);
   Future<void> updateFavoriteStatus(int userId, int friendId, bool isFavorite);
   Future<void> deleteFriend(int currentUserId, int id);
@@ -18,12 +18,12 @@ class FriendService implements IFriendService {
   FriendService(this._dio);
 
   @override
-  Future<List<Friend>> fetchFriends(int userId) async {
+  Future<List<Friend>> fetchFriends(int currentUserId) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
     final response = await _dio.get(
-      "${dotenv.env['API_ENDPOINT']}/users/$userId/friends",
+      "${dotenv.env['API_ENDPOINT']}/users/$currentUserId/friends",
       options: Options(headers: {
         'Authorization': 'Bearer $token',
       }),
