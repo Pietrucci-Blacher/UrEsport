@@ -1,17 +1,16 @@
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:provider/provider.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
-import 'package:uresport/core/services/auth_service.dart'; // Ensure this import is correct
+import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'package:uresport/dashboard/screens/users_screen.dart';
+import 'package:uresport/dashboard/screens/users_screen.dart'; // Assurez-vous que ce fichier existe
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -27,6 +26,30 @@ class _DashboardState extends State<Dashboard> {
   int _annonUsers = 0;
   int _totalUsers = 0;
   int touchedIndex = -1;
+  late final DashboardBloc _dashboardBloc;
+
+  @override
+  void initState() {
+    super.initState();
+    _websocket();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final authService = context.read<IAuthService>();
+    final tournamentService = context.read<ITournamentService>();
+    final gameService = context.read<IGameService>();
+
+    _dashboardBloc = DashboardBloc(
+      Websocket.getInstance(),
+      authService as AuthService,
+      tournamentService as TournamentService,
+      gameService as GameService,
+    )..add(ConnectWebSocket());
+
+    BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
+  }
 
   void _websocket() {
     ws.on('user:connected', (socket, data) {
@@ -41,23 +64,9 @@ class _DashboardState extends State<Dashboard> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
-    _websocket();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    final tournamentService = Provider.of<TournamentService>(context);
-    final gameService = Provider.of<GameService>(context);
-    final authService =
-        Provider.of<AuthService>(context); // Ensure this line is added
-
-    return BlocProvider(
-      create: (context) => DashboardBloc(
-          Websocket.getInstance(), authService, tournamentService, gameService)
-        ..add(ConnectWebSocket()),
+    return BlocProvider.value(
+      value: _dashboardBloc,
       child: Scaffold(
         body: Row(
           children: [
@@ -74,6 +83,11 @@ class _DashboardState extends State<Dashboard> {
                   icon: Icon(Icons.dashboard),
                   selectedIcon: Icon(Icons.dashboard),
                   label: Text('Dashboard'),
+                ),
+                NavigationRailDestination(
+                  icon: Icon(Icons.tune),
+                  selectedIcon: Icon(Icons.dashboard),
+                  label: Text('Feature Flipping'),
                 ),
                 NavigationRailDestination(
                   icon: Icon(Icons.list),
@@ -131,7 +145,7 @@ class _DashboardState extends State<Dashboard> {
       case 3:
         return _buildGamesContent(state);
       case 4:
-        return const UsersPage();
+        return const UsersPage(); // Assurez-vous que cette classe existe
       default:
         return const Center(child: Text('Unknown page'));
     }

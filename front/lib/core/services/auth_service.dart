@@ -228,7 +228,7 @@ class AuthService implements IAuthService {
 
   @override
   Future<List<User>> fetchUsers() async {
-    final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
+    final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users/');
     if (response.statusCode == 200) {
       List jsonResponse = json.decode(response.data.toString());
       return jsonResponse.map((user) => User.fromJson(user)).toList();
