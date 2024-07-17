@@ -1,19 +1,19 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
-import 'package:uresport/auth/screens/auth_screen.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/cubit/locale_cubit.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/main_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
-import 'package:uresport/shared/utils/image_util.dart';
+import 'package:uresport/shared/utils/image_util.dart'
+    as image_util; // Renommer l'importation conflictuelle
 
 class ProfileScreen extends StatefulWidget {
   final IAuthService authService;
@@ -30,15 +30,11 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class ProfileScreenState extends State<ProfileScreen>
-    with AutomaticKeepAliveClientMixin {
-  bool _isEditing = false;
-  bool _isModified = false;
-  final Map<String, dynamic> _updatedFields = {};
+    with AutomaticKeepAliveClientMixin<ProfileScreen> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _usernameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
-  String? _profileImageUrl;
   User? _user;
 
   @override
@@ -64,7 +60,7 @@ class ProfileScreenState extends State<ProfileScreen>
           title: Text(AppLocalizations.of(context).profileScreenTitle),
           leading: IconButton(
             icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context, _profileImageUrl),
+            onPressed: () => Navigator.pop(context),
           ),
           actions: [
             LocaleSwitcher(
@@ -94,6 +90,16 @@ class ProfileScreenState extends State<ProfileScreen>
               );
             } else if (state is AuthAuthenticated) {
               _initializeControllers(state.user);
+            } else if (state is AuthUnauthenticated) {
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MainScreen(authService: widget.authService),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+              });
             }
           },
           child: BlocBuilder<AuthBloc, AuthState>(
@@ -115,7 +121,7 @@ class ProfileScreenState extends State<ProfileScreen>
                 }
                 return _buildProfileScreen(context);
               } else {
-                return _buildLoginRegisterButtons(context);
+                return const Center(child: CircularProgressIndicator());
               }
             },
           ),
@@ -125,56 +131,20 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> _initializeControllers(User user) async {
-    setState(() {
+    _performIfMounted(() {
       _user = user;
       _firstNameController.text = user.firstname;
       _lastNameController.text = user.lastname;
       _usernameController.text = user.username;
       _emailController.text = user.email;
-      _profileImageUrl = user.profileImageUrl;
+      widget.profileImageNotifier.value = user.profileImageUrl;
     });
   }
 
-  Widget _buildLoginRegisterButtons(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Text(
-            AppLocalizations.of(context).youAreNotLoggedIn,
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 20),
-          ElevatedButton(
-            onPressed: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => AuthScreen(
-                    authService: widget.authService,
-                    showLogin: true,
-                    showRegister: !kIsWeb,
-                  ),
-                ),
-              ).then((_) {
-                if (mounted) {
-                  context.read<AuthBloc>().add(AuthCheckRequested());
-                }
-              });
-            },
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.blue,
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 12),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(20),
-              ),
-            ),
-            child: Text(AppLocalizations.of(context).logIn),
-          ),
-        ],
-      ),
-    );
+  void _performIfMounted(void Function() action) {
+    if (mounted) {
+      setState(action);
+    }
   }
 
   Widget _buildProfileScreen(BuildContext context) {
@@ -183,19 +153,8 @@ class ProfileScreenState extends State<ProfileScreen>
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          ProfileAvatarWidget(
-            user: _user,
-            onImageUpdated: (imageUrl) {
-              setState(() {
-                _user = _user?.copyWith(profileImageUrl: imageUrl);
-                _profileImageUrl =
-                    '$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}';
-              });
-              widget.profileImageNotifier.value = _profileImageUrl;
-              context
-                  .read<AuthBloc>()
-                  .add(ProfileImageUpdated(_profileImageUrl!));
-            },
+          ProfileAvatarSection(
+            profileImageNotifier: widget.profileImageNotifier,
           ),
           const SizedBox(height: 20),
           Text(
@@ -208,7 +167,11 @@ class ProfileScreenState extends State<ProfileScreen>
             style: const TextStyle(fontSize: 16, color: Colors.grey),
           ),
           const Divider(height: 40),
-          _buildEditableFields(context),
+          if (_user != null)
+            EditableFieldsSection(
+              user: _user!,
+              onSave: _saveProfile,
+            ),
           const Divider(height: 40),
           _buildDangerZone(context, _user?.id ?? 0),
         ],
@@ -216,113 +179,34 @@ class ProfileScreenState extends State<ProfileScreen>
     );
   }
 
-  Widget _buildEditableFields(BuildContext context) {
-    return Column(
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              AppLocalizations.of(context).editProfile,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-            ),
-            IconButton(
-              icon: Icon(_isEditing ? Icons.close : Icons.edit),
-              onPressed: () {
-                setState(() {
-                  _isEditing = !_isEditing;
-                  _isModified = false;
-                  if (!_isEditing && _user != null) {
-                    _initializeControllers(_user!);
-                  }
-                });
-              },
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        _buildEditableField(_firstNameController,
-            AppLocalizations.of(context).firstName, 'firstname'),
-        const SizedBox(height: 10),
-        _buildEditableField(_lastNameController,
-            AppLocalizations.of(context).lastName, 'lastname'),
-        const SizedBox(height: 10),
-        _buildEditableField(_usernameController,
-            AppLocalizations.of(context).username, 'username'),
-        const SizedBox(height: 10),
-        _buildEditableField(
-            _emailController, AppLocalizations.of(context).email, 'email'),
-        const SizedBox(height: 20),
-        if (_isEditing)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              ElevatedButton(
-                onPressed: _isModified ? () => _saveProfile() : null,
-                child: Text(AppLocalizations.of(context).save),
-              ),
-              ElevatedButton(
-                onPressed: () => _cancelEditing(context),
-                child: Text(AppLocalizations.of(context).cancel),
-              ),
-            ],
-          ),
-      ],
-    );
-  }
-
-  Widget _buildEditableField(
-      TextEditingController controller, String label, String fieldName) {
-    return TextField(
-      controller: controller,
-      decoration: InputDecoration(labelText: label),
-      enabled: _isEditing,
-      onChanged: (value) {
-        _updatedFields[fieldName] = value;
-        _setModified();
-      },
-    );
-  }
-
-  Future<void> _saveProfile() async {
-    final updatedFields = Map<String, dynamic>.from(_updatedFields);
+  Future<void> _saveProfile(Map<String, dynamic> updatedFields) async {
     final authBloc = context.read<AuthBloc>();
+
     try {
       await authBloc.authService.updateUserInfo(_user!.id, updatedFields);
-      if (!mounted) return; // Ajout de cette ligne
-      authBloc.add(UserFieldUpdated(updatedFields));
-      setState(() {
-        _isEditing = false;
-        _isModified = false;
+      _performIfMounted(() {
+        _user = _user!.copyWith(
+          firstname: updatedFields['firstname'] ?? _user!.firstname,
+          lastname: updatedFields['lastname'] ?? _user!.lastname,
+          username: updatedFields['username'] ?? _user!.username,
+          email: updatedFields['email'] ?? _user!.email,
+        );
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).profileUpdated)),
-      );
+      authBloc.add(UserFieldUpdated(updatedFields));
+      _performIfMounted(() {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context).profileUpdated)),
+        );
+      });
     } catch (e) {
       debugPrint('Error saving profile: $e');
-      if (!mounted) return; // Ajout de cette ligne
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-            content: Text(AppLocalizations.of(context).errorSavingProfile)),
-      );
+      _performIfMounted(() {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(AppLocalizations.of(context).errorSavingProfile)),
+        );
+      });
     }
-  }
-
-  void _cancelEditing(BuildContext context) {
-    setState(() {
-      _isEditing = false;
-      _isModified = false;
-      final authState = context.read<AuthBloc>().state;
-      if (authState is AuthAuthenticated) {
-        _initializeControllers(authState.user);
-      }
-    });
-  }
-
-  void _setModified() {
-    setState(() {
-      _isModified = true;
-    });
   }
 
   Widget _buildDangerZone(BuildContext context, int userId) {
@@ -343,35 +227,50 @@ class ProfileScreenState extends State<ProfileScreen>
             context,
             title: AppLocalizations.of(context).logout,
             content: AppLocalizations.of(context).logoutConfirmation,
-            confirmAction: () => context.read<AuthBloc>().add(AuthLoggedOut()),
+            confirmAction: () {
+              context.read<AuthBloc>().add(AuthLoggedOut());
+              WidgetsBinding.instance.addPostFrameCallback((_) {
+                Navigator.of(context).pushAndRemoveUntil(
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        MainScreen(authService: widget.authService),
+                  ),
+                  (Route<dynamic> route) => false,
+                );
+              });
+            },
           ),
         ),
         _buildDangerZoneTile(
           context,
           icon: Icons.delete,
           label: AppLocalizations.of(context).deleteAccount,
-          onTap: () => _showConfirmationDialog(
-            context,
-            title: AppLocalizations.of(context).deleteAccount,
-            content: AppLocalizations.of(context).deleteAccountConfirmation,
-            confirmAction: () async {
-              final authBloc = context.read<AuthBloc>();
-              final scaffoldMessenger = ScaffoldMessenger.of(context);
-              try {
-                authBloc.authService.deleteAccount(userId);
-                if (!mounted) return;
-                authBloc.add(AuthLoggedOut());
-              } catch (e) {
-                debugPrint('Error deleting account: $e');
-                if (!mounted) return;
-                scaffoldMessenger.showSnackBar(
-                  SnackBar(
-                      content: Text(
-                          AppLocalizations.of(context).errorDeletingAccount)),
-                );
-              }
-            },
-          ),
+          onTap: () {
+            final authBloc = context.read<AuthBloc>();
+
+            _showConfirmationDialog(
+              context,
+              title: AppLocalizations.of(context).deleteAccount,
+              content: AppLocalizations.of(context).deleteAccountConfirmation,
+              confirmAction: () async {
+                try {
+                  await authBloc.authService.deleteAccount(userId);
+                  _performIfMounted(() {
+                    authBloc.add(AuthLoggedOut());
+                  });
+                } catch (e) {
+                  debugPrint('Error deleting account: $e');
+                  _performIfMounted(() {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(AppLocalizations.of(context)
+                              .errorDeletingAccount)),
+                    );
+                  });
+                }
+              },
+            );
+          },
         ),
       ],
     );
@@ -426,13 +325,38 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 }
 
+class ProfileAvatarSection extends StatelessWidget {
+  final ValueNotifier<String?> profileImageNotifier;
+
+  const ProfileAvatarSection({
+    super.key,
+    required this.profileImageNotifier,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<String?>(
+      valueListenable: profileImageNotifier,
+      builder: (context, profileImageUrl, _) {
+        return ProfileAvatarWidget(
+          profileImageUrl: profileImageUrl,
+          onImageUpdated: (imageUrl) {
+            profileImageNotifier.value = imageUrl;
+            context.read<AuthBloc>().add(ProfileImageUpdated(imageUrl));
+          },
+        );
+      },
+    );
+  }
+}
+
 class ProfileAvatarWidget extends StatefulWidget {
-  final User? user;
+  final String? profileImageUrl;
   final ValueChanged<String> onImageUpdated;
 
   const ProfileAvatarWidget({
     super.key,
-    required this.user,
+    required this.profileImageUrl,
     required this.onImageUpdated,
   });
 
@@ -441,15 +365,13 @@ class ProfileAvatarWidget extends StatefulWidget {
 }
 
 class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
-  final ImagePicker _picker = ImagePicker();
-  File? _imageFile;
-  String? _profileImageUrl;
   bool _isUpdatingImage = false;
+  String? _localProfileImageUrl;
 
   @override
   void initState() {
     super.initState();
-    _profileImageUrl = widget.user?.profileImageUrl;
+    _localProfileImageUrl = widget.profileImageUrl;
   }
 
   @override
@@ -465,10 +387,16 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
                     backgroundColor: Colors.grey,
                     child: CircularProgressIndicator(),
                   )
-                : CachedImageWidget(
-                    url: _profileImageUrl ?? '',
-                    size: 100,
-                  ),
+                : _localProfileImageUrl != null
+                    ? image_util.CachedImageWidget(
+                        // Utilisation de l'import renommé
+                        url: _localProfileImageUrl!,
+                        size: 100,
+                      )
+                    : const CircleAvatar(
+                        radius: 50,
+                        child: Icon(Icons.person),
+                      ),
           ),
           Positioned(
             bottom: 0,
@@ -504,16 +432,16 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
                 leading: const Icon(Icons.photo_library),
                 title: Text(AppLocalizations.of(context).photoLibrary),
                 onTap: () {
-                  _pickImage(ImageSource.gallery);
                   Navigator.of(context).pop();
+                  _pickImage(context, ImageSource.gallery);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.photo_camera),
                 title: Text(AppLocalizations.of(context).camera),
                 onTap: () {
-                  _pickImage(ImageSource.camera);
                   Navigator.of(context).pop();
+                  _pickImage(context, ImageSource.camera);
                 },
               ),
             ],
@@ -523,55 +451,282 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
     );
   }
 
-  Future<void> _pickImage(ImageSource source) async {
+  Future<void> _pickImage(BuildContext context, ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
     final scaffoldMessenger = ScaffoldMessenger.of(context);
-    try {
-      final pickedFile = await _picker.pickImage(source: source);
+    final localizations = AppLocalizations.of(context);
 
-      if (pickedFile != null) {
+    try {
+      setState(() {
+        _isUpdatingImage = true;
+      });
+
+      final XFile? pickedFile = await picker.pickImage(source: source);
+
+      if (pickedFile == null) {
+        debugPrint('No image selected.');
         setState(() {
-          _imageFile = File(pickedFile.path);
+          _isUpdatingImage = false;
         });
-        await _updateProfileImage(scaffoldMessenger);
+        return;
       }
+
+      final File imageFile = File(pickedFile.path);
+      if (!await imageFile.exists()) {
+        debugPrint('Selected image file does not exist: ${pickedFile.path}');
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text(localizations.errorPickingImage)),
+        );
+        setState(() {
+          _isUpdatingImage = false;
+        });
+        return;
+      }
+
+      if (!mounted) return;
+
+      final user = await _getAuthenticatedUser();
+      if (user == null) {
+        debugPrint('User is not authenticated');
+        scaffoldMessenger.showSnackBar(
+          SnackBar(content: Text(localizations.anErrorOccurred)),
+        );
+        setState(() {
+          _isUpdatingImage = false;
+        });
+        return;
+      }
+
+      await _updateProfileImage(
+        imageFile,
+        user.id,
+        scaffoldMessenger,
+        localizations,
+        widget.onImageUpdated,
+      );
     } catch (e) {
       debugPrint('Error picking image: $e');
-      if (!mounted) return;
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text(AppLocalizations.of(context).errorPickingImage)),
+        SnackBar(content: Text('${localizations.errorPickingImage}: $e')),
       );
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isUpdatingImage = false;
+        });
+      }
     }
   }
 
-  Future<void> _updateProfileImage(
-      ScaffoldMessengerState scaffoldMessenger) async {
-    setState(() {
-      _isUpdatingImage = true;
-    });
-
+  Future<User?> _getAuthenticatedUser() async {
     final authBloc = context.read<AuthBloc>();
-    final userId = widget.user!.id;
+    final state = authBloc.state;
+    if (state is AuthAuthenticated) {
+      return state.user;
+    }
+    return null;
+  }
+
+  Future<void> _updateProfileImage(
+    File imageFile,
+    int userId,
+    ScaffoldMessengerState scaffoldMessenger,
+    AppLocalizations localizations,
+    ValueChanged<String> onImageUpdated,
+  ) async {
+    final authBloc = context.read<AuthBloc>();
+
     try {
+      debugPrint('Uploading image file: ${imageFile.path}');
       final imageUrl =
-          await authBloc.authService.uploadProfileImage(userId, _imageFile!);
-      if (!mounted) return;
-      setState(() {
-        _profileImageUrl =
-            '$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}';
-        _isUpdatingImage = false;
-      });
-      widget.onImageUpdated(_profileImageUrl!);
+          await authBloc.authService.uploadProfileImage(userId, imageFile);
+      debugPrint('Image uploaded successfully. URL: $imageUrl');
+
+      final updatedImageUrl =
+          '$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}';
+      onImageUpdated(updatedImageUrl);
+
+      if (mounted) {
+        setState(() {
+          _localProfileImageUrl = updatedImageUrl;
+        });
+      }
+
+      scaffoldMessenger.showSnackBar(
+        const SnackBar(content: Text('Profile image updated')),
+      );
     } catch (e) {
       debugPrint('Error uploading profile image: $e');
-      if (!mounted) return;
-      setState(() {
-        _isUpdatingImage = false;
-      });
       scaffoldMessenger.showSnackBar(
         SnackBar(
-            content:
-                Text(AppLocalizations.of(context).errorUploadingProfileImage)),
+            content: Text('${localizations.errorUploadingProfileImage}: $e')),
       );
     }
+  }
+}
+
+class EditableFieldsSection extends StatefulWidget {
+  final User user;
+  final Function(Map<String, dynamic>) onSave;
+
+  const EditableFieldsSection({
+    super.key,
+    required this.user,
+    required this.onSave,
+  });
+
+  @override
+  EditableFieldsSectionState createState() => EditableFieldsSectionState();
+}
+
+class EditableFieldsSectionState extends State<EditableFieldsSection> {
+  bool _isEditing = false;
+  bool _isModified = false;
+  final Map<String, dynamic> _updatedFields = {};
+  late final TextEditingController _firstNameController;
+  late final TextEditingController _lastNameController;
+  late final TextEditingController _usernameController;
+  late final TextEditingController _emailController;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeControllers();
+  }
+
+  void _initializeControllers() {
+    _firstNameController = TextEditingController(text: widget.user.firstname);
+    _lastNameController = TextEditingController(text: widget.user.lastname);
+    _usernameController = TextEditingController(text: widget.user.username);
+    _emailController = TextEditingController(text: widget.user.email);
+  }
+
+  void _resetControllers() {
+    _firstNameController.text = widget.user.firstname;
+    _lastNameController.text = widget.user.lastname;
+    _usernameController.text = widget.user.username;
+    _emailController.text = widget.user.email;
+  }
+
+  @override
+  void dispose() {
+    _firstNameController.dispose();
+    _lastNameController.dispose();
+    _usernameController.dispose();
+    _emailController.dispose();
+    super.dispose();
+  }
+
+  void _setModified() {
+    setState(() {
+      _isModified = true;
+    });
+  }
+
+  Future<void> _saveProfile() async {
+    final updatedFields = Map<String, dynamic>.from(_updatedFields);
+    widget.onSave(updatedFields);
+    setState(() {
+      _isEditing = false;
+      _isModified = false;
+    });
+  }
+
+  void _cancelEditing() {
+    setState(() {
+      _isEditing = false;
+      _isModified = false;
+      _resetControllers();
+    });
+  }
+
+  Widget _buildEditableField(
+      TextEditingController controller, String label, String fieldName) {
+    return TextField(
+      controller: controller,
+      decoration: InputDecoration(labelText: label),
+      enabled: _isEditing,
+      onChanged: (value) {
+        _updatedFields[fieldName] = value;
+        _setModified();
+      },
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              AppLocalizations.of(context).editProfile,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            ),
+            IconButton(
+              icon: Icon(_isEditing ? Icons.close : Icons.edit),
+              onPressed: () {
+                setState(() {
+                  _isEditing = !_isEditing;
+                  _isModified = false;
+                  if (!_isEditing) {
+                    _resetControllers();
+                  }
+                });
+              },
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
+        _buildEditableField(_firstNameController,
+            AppLocalizations.of(context).firstName, 'firstname'),
+        const SizedBox(height: 10),
+        _buildEditableField(_lastNameController,
+            AppLocalizations.of(context).lastName, 'lastname'),
+        const SizedBox(height: 10),
+        _buildEditableField(_usernameController,
+            AppLocalizations.of(context).username, 'username'),
+        const SizedBox(height: 10),
+        _buildEditableField(
+            _emailController, AppLocalizations.of(context).email, 'email'),
+        const SizedBox(height: 20),
+        if (_isEditing)
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              ElevatedButton(
+                onPressed: _isModified ? _saveProfile : null,
+                child: Text(AppLocalizations.of(context).save),
+              ),
+              ElevatedButton(
+                onPressed: _cancelEditing,
+                child: Text(AppLocalizations.of(context).cancel),
+              ),
+            ],
+          ),
+      ],
+    );
+  }
+}
+
+class CachedImageWidget extends StatelessWidget {
+  final String url;
+  final double size;
+
+  const CachedImageWidget({
+    super.key,
+    required this.url,
+    required this.size,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Image.network(
+      url,
+      width: size,
+      height: size,
+      fit: BoxFit.cover,
+    );
   }
 }
