@@ -214,7 +214,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => AddTeamPage(),
+                          builder: (context) => const AddTeamPage(),
                         ),
                       );
                     },

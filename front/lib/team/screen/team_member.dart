@@ -11,7 +11,8 @@ class TeamMembersPage extends StatelessWidget {
   final int currentId;
   final String teamName;
 
-  TeamMembersPage({
+  const TeamMembersPage({
+    super.key,
     required this.teamId,
     required this.members,
     required this.ownerId,
@@ -23,6 +24,7 @@ class TeamMembersPage extends StatelessWidget {
     final teamService = Provider.of<ITeamService>(context, listen: false);
     try {
       await teamService.kickUserFromTeam(teamId, username);
+      if(!context.mounted) return;
       _showToast(context, '$username à bien était kick de la team', Colors.green);
     } catch (e) {
       debugPrint('Erreur lors du kick du user: $e');
@@ -60,17 +62,17 @@ class TeamMembersPage extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Kick'),
+          title: const Text('Confirm Kick'),
           content: Text('Are you sure you want to kick $username from the team?'),
           actions: <Widget>[
             TextButton(
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop(false);
               },
             ),
             TextButton(
-              child: Text('Kick'),
+              child: const Text('Kick'),
               onPressed: () {
                 Navigator.of(context).pop(true);
               },

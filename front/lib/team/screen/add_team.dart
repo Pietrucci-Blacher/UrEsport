@@ -6,11 +6,9 @@ import 'package:uresport/widgets/custom_toast.dart';
 class AddTeamPage extends StatefulWidget {
   const AddTeamPage({super.key});
 
-  @override
-  _AddTeamPageState createState() => _AddTeamPageState();
-}
+  @override AddTeamPageState createState() => AddTeamPageState();}
 
-class _AddTeamPageState extends State<AddTeamPage> {
+class AddTeamPageState extends State<AddTeamPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
   bool _isPrivate = false;
@@ -26,6 +24,7 @@ class _AddTeamPageState extends State<AddTeamPage> {
         final teamService = Provider.of<ITeamService>(context, listen: false);
         await teamService.createTeam(teamData);
         showCustomToast('Équipe créée avec succès', Colors.green);
+        if(!mounted) return;
         Navigator.pop(context);
       } catch (e) {
         showCustomToast('Erreur lors de la création de l\'équipe: $e', Colors.red);
