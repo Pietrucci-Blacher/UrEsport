@@ -13,7 +13,7 @@ import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
-import 'package:uresport/tournament/bloc/tournament_statee.dart';
+import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 
 class HomeScreen extends StatelessWidget {
