@@ -128,7 +128,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
           Provider.of<ITournamentService>(context, listen: false);
       try {
         await tournamentService.updateTournament(updatedTournament);
-        if(!mounted) return;
+        if (!mounted) return;
         showNotificationToast(context, 'Tournament updated successfully',
             backgroundColor: Colors.green);
         Navigator.pop(context, updatedTournament);
