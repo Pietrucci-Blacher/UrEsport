@@ -1,13 +1,13 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
-import 'package:uresport/l10n/app_localizations.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:uresport/main_screen.dart';
 import 'package:uresport/dashboard/screens/dashboard.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/main_screen.dart';
 
 class LoginScreen extends StatefulWidget {
   final IAuthService authService;
@@ -106,30 +106,50 @@ class LoginScreenState extends State<LoginScreen> {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(24.0),
         decoration: BoxDecoration(
-          border: Border.all(color: Colors.grey),
-          borderRadius: BorderRadius.circular(8),
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.grey.withOpacity(0.1),
+              spreadRadius: 0,
+              blurRadius: 10,
+              offset: const Offset(0, 0),
+            ),
+          ],
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const SizedBox(height: 24),
             _buildTextField(
               controller: _emailController,
-              label: AppLocalizations.of(context).email,
+              label: 'Email',
               hint: AutofillHints.email,
               keyboardType: TextInputType.emailAddress,
             ),
+            const SizedBox(height: 16),
             _buildPasswordField(),
-            const SizedBox(height: 20),
+            const SizedBox(height: 24),
             BlocBuilder<AuthBloc, AuthState>(
               builder: (context, state) {
                 if (state is AuthLoading) {
-                  return const CircularProgressIndicator();
+                  return const Center(child: CircularProgressIndicator());
                 }
                 return ElevatedButton(
                   onPressed: () => _onLoginButtonPressed(context),
-                  child: Text(AppLocalizations.of(context).login),
+                  child: const Text('Login'),
+                  style: ElevatedButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(vertical: 12),
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    elevation: 0,
+                  ),
                 );
               },
             ),
