@@ -94,8 +94,8 @@ void main() async {
                 AuthBloc(authService)..add(AuthCheckRequested()),
           ),
           BlocProvider<DashboardBloc>(
-            create: (context) => DashboardBloc(Websocket.getInstance(),
-                tournamentService, gameService, logService)
+            create: (context) => DashboardBloc(
+                tournamentService, gameService, authService, logService)
               ..add(FetchTournaments())
               ..add(FetchGames())
               ..add(FetchLogs()),
