@@ -1,19 +1,20 @@
-import 'package:flutter/material.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:uresport/core/models/game.dart';
+import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/services/game_service.dart';
+import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/game/bloc/game_bloc.dart';
 import 'package:uresport/game/bloc/game_event.dart';
 import 'package:uresport/game/bloc/game_state.dart';
-import 'package:uresport/tournament/bloc/tournament_bloc.dart';
-import 'package:uresport/tournament/bloc/tournament_event.dart';
-import 'package:uresport/tournament/bloc/tournament_state.dart';
-import 'package:uresport/core/models/tournament.dart';
-import 'package:uresport/core/models/game.dart';
-import 'package:uresport/core/services/game_service.dart';
-import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/tournament/bloc/tournament_bloc.dart';
+import 'package:uresport/tournament/bloc/tournament_event.dart';
+import 'package:uresport/tournament/bloc/tournament_statee.dart';
+import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
@@ -151,14 +152,8 @@ class HomeScreen extends StatelessWidget {
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => Scaffold(
-                  appBar: AppBar(
-                    title: Text(mainTournament.name),
-                  ),
-                  body: Center(
-                    child: Text('Détails du tournoi ${mainTournament.name}'),
-                  ),
-                ),
+                builder: (context) =>
+                    TournamentDetailsScreen(tournament: mainTournament),
               ),
             );
           },
@@ -177,8 +172,8 @@ class HomeScreen extends StatelessWidget {
         ),
         const SizedBox(height: 10),
         Divider(
-          color: Colors.grey.shade300, // Couleur discrète
-          thickness: 1, // Épaisseur fine
+          color: Colors.grey.shade300,
+          thickness: 1,
         ),
         const SizedBox(height: 10),
         SizedBox(
@@ -193,14 +188,8 @@ class HomeScreen extends StatelessWidget {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => Scaffold(
-                        appBar: AppBar(
-                          title: Text(tournament.name),
-                        ),
-                        body: Center(
-                          child: Text('Détails du tournoi ${tournament.name}'),
-                        ),
-                      ),
+                      builder: (context) =>
+                          TournamentDetailsScreen(tournament: tournament),
                     ),
                   );
                 },
