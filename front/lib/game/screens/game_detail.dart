@@ -49,7 +49,7 @@ class GameDetailPageState extends State<GameDetailPage> {
       setState(() {
         _currentUser = user;
       });
-      print('Current user loaded: ${_currentUser!.id}');
+      debugPrint('Current user loaded: ${_currentUser!.id}');
       _checkIfLiked(); // Appeler _checkIfLiked après avoir chargé l'utilisateur
     } catch (e) {
       debugPrint('Error loading current user: $e');
@@ -58,14 +58,14 @@ class GameDetailPageState extends State<GameDetailPage> {
 
   Future<void> _checkIfLiked() async {
     if (_currentUser == null) {
-      print('Current user is null, cannot check like status');
+      debugPrint('Current user is null, cannot check like status');
       return;
     }
 
     try {
-      print('Checking if liked for user: ${_currentUser!.id} and game: ${widget.game.id}');
-      final likes = await _likeService.GetLikesByUserIDAndGameID(_currentUser!.id, widget.game.id);
-      print('Response from GetLikesByUserIDAndGameID: $likes');
+      debugPrint('Checking if liked for user: ${_currentUser!.id} and game: ${widget.game.id}');
+      final likes = await _likeService.getLikesByUserIdAndGameId(_currentUser!.id, widget.game.id);
+      debugPrint('Response from GetLikesByUserIDAndGameID: $likes');
       setState(() {
         if (likes.isNotEmpty) {
           _currentLike = likes.first;
@@ -74,7 +74,7 @@ class GameDetailPageState extends State<GameDetailPage> {
           _currentLike = null;
           _isLiked = false;
         }
-        print('Like status updated: $_isLiked');
+        debugPrint('Like status updated: $_isLiked');
       });
     } catch (e) {
       debugPrint('Error checking if liked: $e');
@@ -95,6 +95,7 @@ class GameDetailPageState extends State<GameDetailPage> {
         _isLiked = true;
         _currentLike = createdLike; // Update the current like
       });
+      if(!mounted) return;
       _showToast(context, 'Ajout du jeux dans votre liste', Colors.green);
     } catch (e) {
       debugPrint('Error: $e');
@@ -115,6 +116,7 @@ class GameDetailPageState extends State<GameDetailPage> {
         _isLiked = false;
         _currentLike = null; // Clear the current like
       });
+      if(!mounted) return;
       _showToast(context, 'Suppression du jeux de votre liste', Colors.red);
     } catch (e) {
       debugPrint('Error: $e');

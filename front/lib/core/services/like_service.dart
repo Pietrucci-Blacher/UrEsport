@@ -8,7 +8,7 @@ abstract class ILikeService {
   Future<List<Like>> fetchLikes();
   Future<Like> getLikeById(int id);
   Future<List<Like>> getLikesByUserID(int userId);
-  Future<List<Like>> GetLikesByUserIDAndGameID(int userId, int gameId);
+  Future<List<Like>> getLikesByUserIdAndGameId(int userId, int gameId);
   Future<void> createLike(Like like);
   Future<void> deleteLike(int id);
 }
@@ -109,7 +109,7 @@ class LikeService implements ILikeService {
 
 
   @override
-  Future<List<Like>> GetLikesByUserIDAndGameID(int userId, int gameId) async {
+  Future<List<Like>> getLikesByUserIdAndGameId(int userId, int gameId) async {
     try {
       final response = await _dio.get(
         "${dotenv.env['API_ENDPOINT']}/likes/user/$userId/game/$gameId",

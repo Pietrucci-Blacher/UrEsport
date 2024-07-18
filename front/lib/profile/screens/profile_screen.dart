@@ -197,7 +197,6 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 
   Widget _buildLikedGamesScreen(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context);
     return LikedGamesList(userId: _user?.id);
   }
 
@@ -759,6 +758,7 @@ class LikedGamesList extends StatelessWidget {
                   await likeService.deleteLike(like.id!);
 
                   // Montrer un message de confirmation
+                  if(!context.mounted) return;
                   _showToast(context, '${game.name} supprimé de vos likes', Colors.red);
                 },
                 background: Container(

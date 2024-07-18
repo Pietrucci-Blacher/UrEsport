@@ -66,6 +66,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       lastDate: DateTime(2101),
     );
     if (picked != null) {
+      if(!context.mounted) return;
       final TimeOfDay? time = await showTimePicker(
         context: context,
         initialTime: TimeOfDay.now(),
