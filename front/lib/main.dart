@@ -22,7 +22,6 @@ import 'package:uresport/shared/websocket/websocket.dart';
 import 'app.dart';
 import 'auth/bloc/auth_event.dart';
 import 'core/services/team_services.dart';
-import 'core/websocket/websocket.dart';
 import 'dashboard/bloc/dashboard_event.dart';
 
 void main() async {
