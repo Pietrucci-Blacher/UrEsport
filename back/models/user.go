@@ -102,6 +102,12 @@ func CountUsersByUsername(username string) (int64, error) {
 	return count, err
 }
 
+func CountUsers() (int64, error) {
+	var count int64
+	err := DB.Model(&User{}).Count(&count).Error
+	return count, err
+}
+
 // FindTeamsByUserID returns all tournaments that the user is part of
 func (u *User) FindTournaments() ([]Tournament, error) {
 	var tournaments []Tournament
