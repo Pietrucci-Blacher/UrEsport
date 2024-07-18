@@ -9,6 +9,7 @@ import 'package:geolocator/geolocator.dart' as geo;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/shared/map/bloc/map_event.dart';
 import 'package:uresport/shared/map/bloc/map_state.dart';
@@ -21,7 +22,6 @@ class CustomPointAnnotationClickListener
 
   @override
   bool onPointAnnotationClick(PointAnnotation annotation) {
-    debugPrint('Annotation cliquée : ${annotation.id}');
     return onTap(annotation);
   }
 }
@@ -29,6 +29,9 @@ class CustomPointAnnotationClickListener
 class MapBloc extends Bloc<MapEvent, MapState> {
   final MapService mapService;
   MapboxMap? _mapboxMap;
+  final Map<String, Tournament> _annotationIdToTournament = {};
+  bool _isProcessingTap = false;
+  Timer? _debounceTimer;
 
   MapBloc({required this.mapService}) : super(MapInitial()) {
     on<LoadMap>(_onLoadMap);
@@ -134,6 +137,8 @@ class MapBloc extends Bloc<MapEvent, MapState> {
             await _mapboxMap!.annotations.createPointAnnotationManager();
         await pointAnnotationManager.deleteAll();
 
+        _annotationIdToTournament.clear();
+
         for (var tournament in event.tournaments) {
           final markerImage = await _createCustomMarker(tournament.name);
 
@@ -146,22 +151,32 @@ class MapBloc extends Bloc<MapEvent, MapState> {
           );
 
           final annotation = await pointAnnotationManager.create(options);
+          _annotationIdToTournament[annotation.id] = tournament;
+        }
 
-          // Créer un listener unique pour chaque marqueur
-          final listener = CustomPointAnnotationClickListener(
-            onTap: (PointAnnotation clickedAnnotation) {
-              if (clickedAnnotation.id == annotation.id) {
+        final listener = CustomPointAnnotationClickListener(
+          onTap: (PointAnnotation clickedAnnotation) {
+            if (_isProcessingTap) return false;
+            _isProcessingTap = true;
+
+            _debounceTimer?.cancel();
+            _debounceTimer = Timer(const Duration(milliseconds: 300), () {
+              debugPrint('Annotation cliquée : ${clickedAnnotation.id}');
+              final tournament =
+                  _annotationIdToTournament[clickedAnnotation.id];
+              if (tournament != null) {
                 debugPrint(
                     'Annotation correcte cliquée : ${clickedAnnotation.id}');
                 event.onMarkerTapped(tournament);
-                return true;
               }
-              return false;
-            },
-          );
+              _isProcessingTap = false;
+            });
+            return true;
+          },
+        );
 
-          pointAnnotationManager.addOnPointAnnotationClickListener(listener);
-        }
+        pointAnnotationManager.addOnPointAnnotationClickListener(listener);
+
         emit(MarkersUpdated(mapMarkers: event.tournaments));
       } catch (e) {
         debugPrint("Error updating markers: $e");
@@ -327,5 +342,11 @@ class MapBloc extends Bloc<MapEvent, MapState> {
     buffer.writeln('</trkseg></trk>');
     buffer.writeln('</gpx>');
     return buffer.toString();
+  }
+
+  @override
+  Future<void> close() {
+    _debounceTimer?.cancel();
+    return super.close();
   }
 }
