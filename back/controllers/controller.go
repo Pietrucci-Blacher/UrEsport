@@ -465,5 +465,21 @@ func RegisterRoutes(r *gin.Engine) {
 				GetInvitTeam,
 			)
 		}
+
+		logs := api.Group("/logs")
+		{
+			logs.GET("/",
+				middlewares.IsLoggedIn(true),
+				middlewares.IsAdmin(),
+				middlewares.QueryFilter(),
+				GetLogs,
+			)
+			logs.GET("/:log",
+				middlewares.IsLoggedIn(true),
+				middlewares.IsAdmin(),
+				middlewares.Get[*models.Log]("log"),
+				GetLog,
+			)
+		}
 	}
 }

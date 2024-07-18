@@ -27,6 +27,7 @@ func IsLoggedIn(mandatory bool) gin.HandlerFunc {
 		}
 
 		if accessToken == "" {
+			models.ErrorLogf([]string{"middlewares", "IsLoggedIn"}, "No token provided")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
@@ -37,6 +38,7 @@ func IsLoggedIn(mandatory bool) gin.HandlerFunc {
 		}
 
 		if err := token.FindOne("access_token", accessToken); err != nil {
+			models.ErrorLogf([]string{"middlewares", "IsLoggedIn"}, "Token not found: %s", err.Error())
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
@@ -44,12 +46,14 @@ func IsLoggedIn(mandatory bool) gin.HandlerFunc {
 
 		userClaim, err := models.ParseJWTToken(accessToken)
 		if err != nil {
+			models.ErrorLogf([]string{"middlewares", "IsLoggedIn"}, "Error while parsing token: %s", err.Error())
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 			c.Abort()
 			return
 		}
 
 		if err := user.FindOneById(userClaim.UserID); err != nil {
+			models.ErrorLogf([]string{"middlewares", "IsLoggedIn"}, "User not found: %s", err.Error())
 			c.JSON(http.StatusNotFound, gin.H{"error": "User not Found"})
 			c.Abort()
 			return

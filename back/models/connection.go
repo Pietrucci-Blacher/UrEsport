@@ -56,6 +56,7 @@ func CloseDB() error {
 
 func Migration() error {
 	return DB.AutoMigrate(
+		&Log{},
 		&User{},
 		&Feature{},
 		&Token{},
@@ -88,6 +89,7 @@ func DropTables() error {
 		&Upvote{},
 		&Rating{},
 		"game_tournaments",
+		&Log{},
 	)
 }
 

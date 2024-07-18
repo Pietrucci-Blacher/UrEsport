@@ -25,6 +25,7 @@ func GetUsers(c *gin.Context) {
 
 	users, err := models.FindAllUsers(query)
 	if err != nil {
+		models.ErrorLogf([]string{"user", "GetUsers"}, "Error while fetching users: %s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -33,6 +34,7 @@ func GetUsers(c *gin.Context) {
 		sanitized = append(sanitized, user.Sanitize(true))
 	}
 
+	models.PrintLogf([]string{"user", "GetUsers"}, "Fetched %d users", len(sanitized))
 	c.JSON(http.StatusOK, sanitized)
 }
 
@@ -53,6 +55,7 @@ func GetUser(c *gin.Context) {
 
 	sanitized := user.Sanitize(true)
 
+	models.PrintLogf([]string{"user", "GetUser"}, "Fetched user %d", user.ID)
 	c.JSON(http.StatusOK, sanitized)
 }
 
@@ -90,11 +93,13 @@ func UpdateUser(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.UpdateUserDto)
 
 	if count, err := models.CountUsersByEmail(body.Email); err != nil || count > 0 {
+		models.ErrorLogf([]string{"user", "UpdateUser"}, "Email %s already exists", body.Email)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email already exists"})
 		return
 	}
 
 	if count, err := models.CountUsersByUsername(body.Username); err != nil || count > 0 {
+		models.ErrorLogf([]string{"user", "UpdateUser"}, "Username %s already exists", body.Username)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Username already exists"})
 		return
 	}
@@ -113,11 +118,13 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	if err := user.Save(); err != nil {
+		models.ErrorLogf([]string{"user", "UpdateUser"}, "Error while updating user: %s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	sanitized := user.Sanitize(true)
+	models.PrintLogf([]string{"user", "UpdateUser"}, "User %d updated", user.ID)
 	c.JSON(http.StatusOK, sanitized)
 }
 
@@ -143,10 +150,12 @@ func UploadUserImage(c *gin.Context) {
 	user.ProfileImageUrl = files[0]
 
 	if err := user.Save(); err != nil {
+		models.ErrorLogf([]string{"user", "UploadUserImage"}, "Error while updating user image: %s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"user", "UploadUserImage"}, "User %d image updated", user.ID)
 	c.JSON(http.StatusOK, user.Sanitize(false))
 }
 
@@ -168,9 +177,11 @@ func DeleteUser(c *gin.Context) {
 	user, _ := c.MustGet("user").(*models.User)
 
 	if err := user.Delete(); err != nil {
+		models.ErrorLogf([]string{"user", "DeleteUser"}, "Error while deleting user: %s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"user", "DeleteUser"}, "User %d deleted", user.ID)
 	c.JSON(http.StatusNoContent, nil)
 }
