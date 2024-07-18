@@ -646,7 +646,6 @@ class AppLocalizations {
       name: 'profileTab',
       desc: 'Profile tab text',
     );
-
   }
 
   String get likedGamesTab {

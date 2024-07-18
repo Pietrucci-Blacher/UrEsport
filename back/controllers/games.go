@@ -3,8 +3,9 @@ package controllers
 import (
 	"challenge/models"
 	"challenge/services"
-	"github.com/gin-gonic/gin"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // GetGames godoc

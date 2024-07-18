@@ -63,8 +63,10 @@ class GameDetailPageState extends State<GameDetailPage> {
     }
 
     try {
-      debugPrint('Checking if liked for user: ${_currentUser!.id} and game: ${widget.game.id}');
-      final likes = await _likeService.getLikesByUserIdAndGameId(_currentUser!.id, widget.game.id);
+      debugPrint(
+          'Checking if liked for user: ${_currentUser!.id} and game: ${widget.game.id}');
+      final likes = await _likeService.getLikesByUserIdAndGameId(
+          _currentUser!.id, widget.game.id);
       debugPrint('Response from GetLikesByUserIDAndGameID: $likes');
       setState(() {
         if (likes.isNotEmpty) {
@@ -83,26 +85,27 @@ class GameDetailPageState extends State<GameDetailPage> {
 
   Future<void> _createLike() async {
     if (_currentUser == null) {
-      _showToast(context, 'Vous devez être connecté pour suivre ce jeu', Colors.red);
+      _showToast(
+          context, 'Vous devez être connecté pour suivre ce jeu', Colors.red);
       return;
     }
 
     try {
-      Like newLike = Like(userId: _currentUser!.id, gameId: widget.game.id, game: widget.game);
+      Like newLike = Like(
+          userId: _currentUser!.id, gameId: widget.game.id, game: widget.game);
       debugPrint('Creating like with data: ${newLike.toJson()}');
       final createdLike = await _likeService.createLike(newLike);
       setState(() {
         _isLiked = true;
         _currentLike = createdLike; // Update the current like
       });
-      if(!mounted) return;
+      if (!mounted) return;
       _showToast(context, 'Ajout du jeux dans votre liste', Colors.green);
     } catch (e) {
       debugPrint('Error: $e');
       _showToast(context, 'Erreur lors du suivi du jeu : $e', Colors.red);
     }
   }
-
 
   Future<void> _deleteLike() async {
     if (_currentLike == null) {
@@ -116,11 +119,12 @@ class GameDetailPageState extends State<GameDetailPage> {
         _isLiked = false;
         _currentLike = null; // Clear the current like
       });
-      if(!mounted) return;
+      if (!mounted) return;
       _showToast(context, 'Suppression du jeux de votre liste', Colors.red);
     } catch (e) {
       debugPrint('Error: $e');
-      _showToast(context, 'Erreur lors de la suppression du suivi du jeu : $e', Colors.red);
+      _showToast(context, 'Erreur lors de la suppression du suivi du jeu : $e',
+          Colors.red);
     }
   }
 
@@ -152,7 +156,8 @@ class GameDetailPageState extends State<GameDetailPage> {
         title: Text(widget.game.name),
         actions: [
           IconButton(
-            icon: Icon(_isLiked ? Icons.favorite : Icons.favorite_border, color: _isLiked ? Colors.red : null),
+            icon: Icon(_isLiked ? Icons.favorite : Icons.favorite_border,
+                color: _isLiked ? Colors.red : null),
             onPressed: () {
               if (_isLiked) {
                 _deleteLike(); // Supprimer le like s'il existe déjà
@@ -182,8 +187,8 @@ class GameDetailPageState extends State<GameDetailPage> {
               Text(
                 'Description du Jeu',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 10),
               Text(
@@ -194,8 +199,8 @@ class GameDetailPageState extends State<GameDetailPage> {
               Text(
                 'Tags',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 10),
               Wrap(
@@ -215,8 +220,8 @@ class GameDetailPageState extends State<GameDetailPage> {
               Text(
                 'Tournois',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 10),
               FutureBuilder<List<Tournament>>(
@@ -244,8 +249,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                                   .textTheme
                                   .headlineSmall
                                   ?.copyWith(
-                                color: Colors.grey,
-                              ),
+                                    color: Colors.grey,
+                                  ),
                             ),
                           ],
                         ),
@@ -292,11 +297,11 @@ class GameDetailPageState extends State<GameDetailPage> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
                                             child: Text(
@@ -305,8 +310,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                                                   .textTheme
                                                   .titleLarge
                                                   ?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),

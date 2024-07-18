@@ -28,9 +28,8 @@ class LikeService implements ILikeService {
 
       if (response.statusCode == 200) {
         debugPrint('Likes fetched successfully: ${response.data}');
-        final likes = (response.data as List)
-            .map((json) => Like.fromJson(json))
-            .toList();
+        final likes =
+            (response.data as List).map((json) => Like.fromJson(json)).toList();
         return likes;
       } else {
         throw DioException(
@@ -107,7 +106,6 @@ class LikeService implements ILikeService {
     }
   }
 
-
   @override
   Future<List<Like>> getLikesByUserIdAndGameId(int userId, int gameId) async {
     try {
@@ -153,7 +151,8 @@ class LikeService implements ILikeService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json',
           },
-          followRedirects: false,  // Important pour suivre les redirections manuellement
+          followRedirects:
+              false, // Important pour suivre les redirections manuellement
         ),
       );
 
@@ -175,7 +174,8 @@ class LikeService implements ILikeService {
     } catch (e) {
       debugPrint('Error during createLike: $e');
       if (e is DioException) {
-        debugPrint('DioException details: ${e.response?.statusCode}, ${e.response?.data}, ${e.response?.headers}');
+        debugPrint(
+            'DioException details: ${e.response?.statusCode}, ${e.response?.data}, ${e.response?.headers}');
         rethrow;
       } else {
         throw Exception('Unexpected error occurred');
@@ -214,4 +214,3 @@ class LikeService implements ILikeService {
     }
   }
 }
-
