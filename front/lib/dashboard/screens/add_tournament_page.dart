@@ -149,7 +149,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         if (response.statusCode == 201) {
           _handleSuccessfulResponse();
         } else {
-          _showAlertDialog('${l.errorAddingTournament}: ${response.statusMessage}');
+          _showAlertDialog(
+              '${l.errorAddingTournament}: ${response.statusMessage}');
         }
       } catch (e) {
         if (kDebugMode) {
@@ -259,7 +260,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                     ),
                     TextFormField(
                       controller: _locationController,
-                      decoration: InputDecoration(labelText: l.location.toString()),
+                      decoration:
+                          InputDecoration(labelText: l.location.toString()),
                     ),
                     TextFormField(
                       controller: _latitudeController,
@@ -273,8 +275,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                     ),
                     TextFormField(
                       controller: _privateController,
-                      decoration: InputDecoration(
-                          labelText: l.private),
+                      decoration: InputDecoration(labelText: l.private),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return l.pleaseEnterIfTournamentIsPrivate;

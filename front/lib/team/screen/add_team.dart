@@ -26,12 +26,14 @@ class AddTeamPageState extends State<AddTeamPage> {
       try {
         final teamService = Provider.of<ITeamService>(context, listen: false);
         await teamService.createTeam(teamData);
-        showCustomToast(AppLocalizations.of(context).teamCreatedSuccessfully, Colors.green);
+        showCustomToast(
+            AppLocalizations.of(context).teamCreatedSuccessfully, Colors.green);
         if (!mounted) return;
         Navigator.pop(context);
       } catch (e) {
         showCustomToast(
-            AppLocalizations.of(context).failedToCreateTeam(e.toString()), Colors.red);
+            AppLocalizations.of(context).failedToCreateTeam(e.toString()),
+            Colors.red);
       }
     }
   }
