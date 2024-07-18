@@ -10,6 +10,7 @@ import 'package:uresport/core/models/match.dart';
 import 'package:uresport/core/services/bracket_service.dart';
 import 'package:uresport/core/services/match_service.dart';
 import 'package:uresport/core/websocket/websocket.dart';
+import 'package:uresport/bracket/screens/match_details_page.dart';
 
 class TournamentBracketPage extends StatelessWidget {
   final int tournamentId;
@@ -197,18 +198,18 @@ class BracketContentState extends State<BracketContent> {
                       text: '$team1 (${m.score1})\n$team2 (${m.score2})',
                       textStyle: const TextStyle(
                         color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.normal,
                       ));
                 },
                 onContainerTapDown:
                     (Match? model, TapDownDetails tapDownDetails) {
-                  if (model == null) {
-                    debugPrint(null);
-                  } else {
-                    if (kDebugMode) {
-                      debugPrint(model.id as String?);
-                    }
-                  }
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MatchDetailsPage(match: model as Match),
+                    ),
+                  );
                 },
                 onLineIconPress: (match1, match2, tapDownDetails) {
                   if (match1 != null && match2 != null) {
