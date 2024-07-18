@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class TournamentParticipantsScreen extends StatelessWidget {
   final Tournament tournament;
@@ -8,9 +9,11 @@ class TournamentParticipantsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Participants du tournoi'),
+        title: Text(l.tournamentParticipants),
       ),
       body: ListView.builder(
         padding: const EdgeInsets.all(16.0),
@@ -27,8 +30,10 @@ class TournamentParticipantsScreen extends StatelessWidget {
                   style: const TextStyle(color: Colors.white),
                 ),
               ),
-              title:
-                  Text(team.name, style: Theme.of(context).textTheme.bodyLarge),
+              title: Text(
+                team.name,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
             ),
           );
         },

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class AddTournamentPage extends StatefulWidget {
   const AddTournamentPage({super.key});
@@ -38,11 +39,12 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   }
 
   Future<void> _selectDateTime(BuildContext context, bool isStartDate) async {
+    AppLocalizations l = AppLocalizations.of(context);
     await showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(isStartDate ? 'Select Start Date' : 'Select End Date'),
+          title: Text(isStartDate ? l.selectStartDate : l.selectEndDate),
           content: SizedBox(
             height: 300,
             width: 300,
@@ -104,6 +106,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   }
 
   Future<void> _saveTournament() async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (_formKey.currentState!.validate() &&
         _startDateTime != null &&
         _endDateTime != null) {
@@ -146,26 +149,25 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         if (response.statusCode == 201) {
           _handleSuccessfulResponse();
         } else {
-          _showAlertDialog(
-              'Erreur ajout du tournoi: ${response.statusMessage}');
+          _showAlertDialog('${l.errorAddingTournament}: ${response.statusMessage}');
         }
       } catch (e) {
         if (kDebugMode) {
           print('Exception: $e');
         }
         if (!mounted) return;
-        _showAlertDialog('Erreur ajout du tournoi: $e');
+        _showAlertDialog('${l.errorAddingTournament}: $e');
       }
     } else {
-      _showAlertDialog(
-          'Please fill in all required fields and select dates and times');
+      _showAlertDialog(l.pleaseFillRequiredFields);
     }
   }
 
   void _handleSuccessfulResponse() {
+    AppLocalizations l = AppLocalizations.of(context);
     Navigator.of(context).pop(true);
     ScaffoldMessenger.of(context)
-        .showSnackBar(const SnackBar(content: Text('Tournoi ajouté')));
+        .showSnackBar(SnackBar(content: Text(l.tournamentAdded)));
     context.read<DashboardBloc>().add(FetchTournaments());
   }
 
@@ -193,6 +195,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Dialog(
       insetPadding: const EdgeInsets.all(20),
       child: Container(
@@ -201,7 +205,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Add Tournament', style: TextStyle(fontSize: 24)),
+            Text(l.addTournament, style: const TextStyle(fontSize: 24)),
             Form(
               key: _formKey,
               child: SingleChildScrollView(
@@ -209,21 +213,20 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                   children: [
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(labelText: 'Name'),
+                      decoration: InputDecoration(labelText: l.name),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the tournament name';
+                          return l.pleaseEnterTournamentName;
                         }
                         return null;
                       },
                     ),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration:
-                          const InputDecoration(labelText: 'Description'),
+                      decoration: InputDecoration(labelText: l.description),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the tournament description';
+                          return l.pleaseEnterTournamentDescription;
                         }
                         return null;
                       },
@@ -233,7 +236,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                       child: AbsorbPointer(
                         child: TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'Start Date & Time',
+                            labelText: l.startDateTime,
                             hintText: _startDateTime != null
                                 ? _dateFormat.format(_startDateTime!)
                                 : '',
@@ -246,7 +249,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                       child: AbsorbPointer(
                         child: TextFormField(
                           decoration: InputDecoration(
-                            labelText: 'End Date & Time',
+                            labelText: l.endDateTime,
                             hintText: _endDateTime != null
                                 ? _dateFormat.format(_endDateTime!)
                                 : '',
@@ -256,48 +259,47 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                     ),
                     TextFormField(
                       controller: _locationController,
-                      decoration: const InputDecoration(labelText: 'Location'),
+                      decoration: InputDecoration(labelText: l.location.toString()),
                     ),
                     TextFormField(
                       controller: _latitudeController,
-                      decoration: const InputDecoration(labelText: 'Latitude'),
+                      decoration: InputDecoration(labelText: l.latitude),
                       keyboardType: TextInputType.number,
                     ),
                     TextFormField(
                       controller: _longitudeController,
-                      decoration: const InputDecoration(labelText: 'Longitude'),
+                      decoration: InputDecoration(labelText: l.longitude),
                       keyboardType: TextInputType.number,
                     ),
                     TextFormField(
                       controller: _privateController,
-                      decoration: const InputDecoration(
-                          labelText: 'Private (true/false)'),
+                      decoration: InputDecoration(
+                          labelText: l.private),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter if the tournament is private';
+                          return l.pleaseEnterIfTournamentIsPrivate;
                         }
                         return null;
                       },
                     ),
                     TextFormField(
                       controller: _gameIdController,
-                      decoration: const InputDecoration(labelText: 'Game ID'),
+                      decoration: InputDecoration(labelText: l.gameId),
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the game ID';
+                          return l.pleaseEnterGameId;
                         }
                         return null;
                       },
                     ),
                     TextFormField(
                       controller: _nbPlayerController,
-                      decoration:
-                          const InputDecoration(labelText: 'Number of Players'),
+                      decoration: InputDecoration(labelText: l.numberOfPlayers),
                       keyboardType: TextInputType.number,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the number of players';
+                          return l.pleaseEnterNumberOfPlayers;
                         }
                         return null;
                       },
@@ -312,11 +314,11 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(l.cancel),
                 ),
                 ElevatedButton(
                   onPressed: _saveTournament,
-                  child: const Text('Save'),
+                  child: Text(l.save),
                 ),
               ],
             ),

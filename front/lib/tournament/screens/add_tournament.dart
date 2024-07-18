@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/widgets/custom_toast.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class AddTournamentPage extends StatefulWidget {
   const AddTournamentPage({super.key});
@@ -45,14 +46,14 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
       try {
         final tournamentService =
-            Provider.of<ITournamentService>(context, listen: false);
+        Provider.of<ITournamentService>(context, listen: false);
         await tournamentService.createTournament(tournamentData);
-        showCustomToast('Tournoi créé avec succès', Colors.green);
+        showCustomToast(AppLocalizations.of(context).tournamentCreatedSuccessfully, Colors.green);
         if (!mounted) return;
         Navigator.pop(context);
       } catch (e) {
         showCustomToast(
-            'Erreur lors de la création du tournoi: $e', Colors.red);
+            AppLocalizations.of(context).failedToCreateTournament(e.toString()), Colors.red);
       }
     }
   }
@@ -74,7 +75,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         final DateTime fullDateTime = DateTime(
             picked.year, picked.month, picked.day, time.hour, time.minute);
         final formattedDate =
-            DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
+        DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
         setState(() {
           controller.text = formattedDate;
         });
@@ -104,8 +105,10 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Tournament')),
+      appBar: AppBar(title: Text(l.addTournament)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -114,87 +117,86 @@ class AddTournamentPageState extends State<AddTournamentPage> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(labelText: l.name),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Name is required';
+                    return l.nameIsRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(labelText: l.description),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Description is required';
+                    return l.descriptionIsRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _startDateController,
-                decoration: const InputDecoration(labelText: 'Start Date'),
+                decoration: InputDecoration(labelText: l.startDate.toString()),
                 readOnly: true,
                 onTap: () => _selectDateTime(context, _startDateController),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Start Date is required';
+                    return l.startDateIsRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _endDateController,
-                decoration: const InputDecoration(labelText: 'End Date'),
+                decoration: InputDecoration(labelText: l.endDate.toString()),
                 readOnly: true,
                 onTap: () => _selectDateTime(context, _endDateController),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'End Date is required';
+                    return l.endDateIsRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                decoration: InputDecoration(labelText: l.location.toString()),
               ),
               TextFormField(
                 controller: _latitudeController,
-                decoration: const InputDecoration(labelText: 'Latitude'),
+                decoration: InputDecoration(labelText: l.latitude),
                 keyboardType: TextInputType.number,
               ),
               TextFormField(
                 controller: _longitudeController,
-                decoration: const InputDecoration(labelText: 'Longitude'),
+                decoration: InputDecoration(labelText: l.longitude),
                 keyboardType: TextInputType.number,
               ),
               TextFormField(
                 controller: _gameIdController,
-                decoration: const InputDecoration(labelText: 'Game ID'),
+                decoration: InputDecoration(labelText: l.gameId),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Game ID is required';
+                    return l.gameIdIsRequired;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _nbPlayerController,
-                decoration: const InputDecoration(
-                    labelText: 'Number of Players per Team'),
+                decoration: InputDecoration(labelText: l.numberOfPlayersPerTeam),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Number of Players is required';
+                    return l.numberOfPlayersIsRequired;
                   }
                   return null;
                 },
               ),
               SwitchListTile(
-                title: const Text('Private'),
+                title: Text(l.private),
                 value: _isPrivate,
                 onChanged: (bool value) {
                   setState(() {
@@ -205,7 +207,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: const Text('Create Tournament'),
+                child: Text(l.createTournament),
               ),
             ],
           ),

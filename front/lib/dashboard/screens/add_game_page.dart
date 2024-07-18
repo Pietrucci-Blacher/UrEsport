@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class AddGamePage extends StatefulWidget {
   const AddGamePage({super.key});
@@ -21,6 +22,7 @@ class AddGamePageState extends State<AddGamePage> {
   final Dio _dio = Dio();
 
   Future<void> _saveGame() async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (_formKey.currentState!.validate()) {
       final tags = _tagsController.text
           .split(RegExp(r'[\s,]+'))
@@ -58,21 +60,22 @@ class AddGamePageState extends State<AddGamePage> {
           BlocProvider.of<DashboardBloc>(context).add(FetchGames());
           if (!mounted) return;
           Navigator.of(context).pop(true);
-          _showAlertDialog('Jeux ajouté');
+          _showAlertDialog(l.gameAdded);
         } else {
-          _showAlertDialog('Erreur ajout du jeux: ${response.statusMessage}');
+          _showAlertDialog('${l.errorAddingGame}: ${response.statusMessage}');
         }
       } catch (e) {
         // Log de l'exception complète
         if (kDebugMode) {
           print('Exception: $e');
         }
-        _showAlertDialog('Erreur ajout du jeux: $e');
+        _showAlertDialog('${l.errorAddingGame}: $e');
       }
     }
   }
 
   void _showAlertDialog(String message) {
+    AppLocalizations l = AppLocalizations.of(context);
     if (kDebugMode) {
       print(message);
     } // Afficher le message dans la console
@@ -80,12 +83,12 @@ class AddGamePageState extends State<AddGamePage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Info'),
+          title: Text(l.gameAdded),
           content: Text(message),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('OK'),
+              child: Text(l.ok),
             ),
           ],
         );
@@ -104,6 +107,8 @@ class AddGamePageState extends State<AddGamePage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Dialog(
       insetPadding: const EdgeInsets.all(20),
       child: Container(
@@ -112,7 +117,7 @@ class AddGamePageState extends State<AddGamePage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Text('Add Game', style: TextStyle(fontSize: 24)),
+            Text(l.addGame, style: const TextStyle(fontSize: 24)),
             Form(
               key: _formKey,
               child: SingleChildScrollView(
@@ -120,42 +125,40 @@ class AddGamePageState extends State<AddGamePage> {
                   children: [
                     TextFormField(
                       controller: _nameController,
-                      decoration: const InputDecoration(labelText: 'Name'),
+                      decoration: InputDecoration(labelText: l.name),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the game name';
+                          return l.pleaseEnterGameName;
                         }
                         return null;
                       },
                     ),
                     TextFormField(
                       controller: _descriptionController,
-                      decoration:
-                          const InputDecoration(labelText: 'Description'),
+                      decoration: InputDecoration(labelText: l.description),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the game description';
+                          return l.pleaseEnterGameDescription;
                         }
                         return null;
                       },
                     ),
                     TextFormField(
                       controller: _imageController,
-                      decoration: const InputDecoration(labelText: 'Image URL'),
+                      decoration: InputDecoration(labelText: l.imageUrl),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the image URL';
+                          return l.pleaseEnterImageUrl;
                         }
                         return null;
                       },
                     ),
                     TextFormField(
                       controller: _tagsController,
-                      decoration: const InputDecoration(
-                          labelText: 'Tags (comma or space separated)'),
+                      decoration: InputDecoration(labelText: l.tags),
                       validator: (value) {
                         if (value == null || value.isEmpty) {
-                          return 'Please enter the tags';
+                          return l.pleaseEnterTags;
                         }
                         return null;
                       },
@@ -170,11 +173,11 @@ class AddGamePageState extends State<AddGamePage> {
               children: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text('Cancel'),
+                  child: Text(l.cancel),
                 ),
                 ElevatedButton(
                   onPressed: _saveGame,
-                  child: const Text('Save'),
+                  child: Text(l.save),
                 ),
               ],
             ),

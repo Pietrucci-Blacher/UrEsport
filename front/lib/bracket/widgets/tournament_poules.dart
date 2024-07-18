@@ -8,12 +8,15 @@ import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class TournamentScreen extends StatelessWidget {
   const TournamentScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Scaffold(
       body: RefreshIndicator(
         onRefresh: () async {
@@ -45,12 +48,12 @@ class TournamentScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const TournamentBracketPage(
-                                              tournamentId: 1),
+                                      const TournamentBracketPage(
+                                          tournamentId: 1),
                                     ),
                                   );
                                 },
-                                child: const Text('Custom Bracket'),
+                                child: Text(l.customBracket),
                               ),
                               ElevatedButton(
                                 onPressed: () {
@@ -58,11 +61,11 @@ class TournamentScreen extends StatelessWidget {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const CustomPoulesPage(),
+                                      const CustomPoulesPage(),
                                     ),
                                   );
                                 },
-                                child: const Text('Custom Poules'),
+                                child: Text(l.customPoules),
                               ),
                             ],
                           ),
@@ -92,7 +95,7 @@ class TournamentScreen extends StatelessWidget {
                 ],
               );
             } else if (state is TournamentLoadFailure) {
-              return const Center(child: Text('Failed to load tournaments'));
+              return Center(child: Text(l.failedToLoadTournaments));
             }
             return const Center(child: Text('Unknown state'));
           },
@@ -102,8 +105,9 @@ class TournamentScreen extends StatelessWidget {
   }
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
+    AppLocalizations l = AppLocalizations.of(context);
     final DateFormat dateFormat =
-        DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
@@ -123,30 +127,30 @@ class TournamentScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              'Location: ${tournament.location}',
+              '${l.location}: ${tournament.location}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 5),
             Text(
-              'Start Date: ${dateFormat.format(tournament.startDate)}',
+              '${l.startDate}: ${dateFormat.format(tournament.startDate)}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 5),
             Text(
-              'End Date: ${dateFormat.format(tournament.endDate)}',
+              '${l.endDate}: ${dateFormat.format(tournament.endDate)}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 5),
-            const Text(
-              'Participants:',
-              style: TextStyle(fontSize: 16),
+            Text(
+              l.participants,
+              style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 15),
             ElevatedButton(
               onPressed: () {
                 // Handle view details action
               },
-              child: const Text('View Details'),
+              child: Text(l.viewDetails),
             ),
           ],
         ),

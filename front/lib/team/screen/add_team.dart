@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/widgets/custom_toast.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class AddTeamPage extends StatefulWidget {
   const AddTeamPage({super.key});
@@ -25,12 +26,12 @@ class AddTeamPageState extends State<AddTeamPage> {
       try {
         final teamService = Provider.of<ITeamService>(context, listen: false);
         await teamService.createTeam(teamData);
-        showCustomToast('Équipe créée avec succès', Colors.green);
+        showCustomToast(AppLocalizations.of(context).teamCreatedSuccessfully, Colors.green);
         if (!mounted) return;
         Navigator.pop(context);
       } catch (e) {
         showCustomToast(
-            'Erreur lors de la création de l\'équipe: $e', Colors.red);
+            AppLocalizations.of(context).failedToCreateTeam(e.toString()), Colors.red);
       }
     }
   }
@@ -57,8 +58,10 @@ class AddTeamPageState extends State<AddTeamPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Add Team')),
+      appBar: AppBar(title: Text(l.addTeam)),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Form(
@@ -67,16 +70,16 @@ class AddTeamPageState extends State<AddTeamPage> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(labelText: l.name),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Name is required';
+                    return l.nameIsRequired;
                   }
                   return null;
                 },
               ),
               SwitchListTile(
-                title: const Text('Private'),
+                title: Text(l.private),
                 value: _isPrivate,
                 onChanged: (bool value) {
                   setState(() {
@@ -87,7 +90,7 @@ class AddTeamPageState extends State<AddTeamPage> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _submitForm,
-                child: const Text('Create Team'),
+                child: Text(l.createTeam),
               ),
             ],
           ),
