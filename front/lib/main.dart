@@ -92,7 +92,7 @@ void main() async {
           ),
           BlocProvider<DashboardBloc>(
             create: (context) => DashboardBloc(
-                Websocket.getInstance(), tournamentService, gameService)
+                Websocket.getInstance(), tournamentService, gameService, authService)
               ..add(FetchTournaments())
               ..add(FetchGames()),
           ),

@@ -8,12 +8,15 @@ import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 
+import 'package:uresport/core/services/auth_service.dart';
+
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final Websocket _websocket;
   final TournamentService _tournamentService;
   final GameService _gameService;
+  final AuthService _authService;  // Déclaration du service
 
-  DashboardBloc(this._websocket, this._tournamentService, this._gameService)
+  DashboardBloc(this._websocket, this._tournamentService, this._gameService, this._authService)
       : super(DashboardInitial()) {
     on<ConnectWebSocket>(_onConnectWebSocket);
     on<DisconnectWebSocket>(_onDisconnectWebSocket);
@@ -26,10 +29,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<DeleteGameEvent>(_onDeleteGame);
   }
 
-  Future<void> _onFetchAllUsers(
-      FetchAllUsers event, Emitter<DashboardState> emit) async {
+  Future<void> _onFetchAllUsers(FetchAllUsers event, Emitter<DashboardState> emit) async {
     try {
-      List<User> users = await fetchUsersFromApiOrDatabase();
+      List<User> users = await _authService.fetchUsers();  // Utilisation du service
       if (state is DashboardLoaded) {
         final currentState = state as DashboardLoaded;
         emit(currentState.copyWith(users: users));
@@ -37,20 +39,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     } catch (e) {
       emit(DashboardError(e.toString()));
     }
-  }
-
-  Future<List<User>> fetchUsersFromApiOrDatabase() async {
-    await Future.delayed(const Duration(seconds: 2)); // Correction ici
-    return [
-      User(
-          id: 1,
-          username: 'user1',
-          firstname: 'First',
-          lastname: 'User',
-          email: 'user1@example.com',
-          roles: ['user'],
-          teams: []),
-    ];
   }
 
   Future<void> _onConnectWebSocket(

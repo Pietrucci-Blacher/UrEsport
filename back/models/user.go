@@ -41,7 +41,6 @@ type UpdateUserDto struct {
 	Lastname  string `json:"lastname"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
-	Password  string `json:"password"`
 }
 
 type SanitizedUser struct {
@@ -49,6 +48,9 @@ type SanitizedUser struct {
 	Username        string          `json:"username"`
 	Firstname       string          `json:"firstname"`
 	Lastname        string          `json:"lastname"`
+	Email           string          `json:"email"`
+	Roles           []string        `json:"roles"`
+	Verified        bool            `json:"verified"`
 	ProfileImageUrl string          `json:"profile_image_url"`
 	Teams           []SanitizedTeam `json:"teams"`
 	CreatedAt       time.Time       `json:"created_at"`
@@ -138,6 +140,9 @@ func (u *User) Sanitize(getTeam bool) SanitizedUser {
 		Username:        u.Username,
 		Firstname:       u.Firstname,
 		Lastname:        u.Lastname,
+		Email:           u.Email,
+		Roles:           u.Roles,
+		Verified:        u.Verified,
 		ProfileImageUrl: u.ProfileImageUrl,
 		CreatedAt:       u.CreatedAt,
 		UpdatedAt:       u.UpdatedAt,

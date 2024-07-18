@@ -1,9 +1,13 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
+import 'package:uresport/core/services/auth_service.dart'; // Assurez-vous d'importer le service
+
+import 'edit_user.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
@@ -17,6 +21,7 @@ class UsersPageState extends State<UsersPage> {
   String _sortColumn = 'username';
   bool _sortAscending = true;
   final List<String> _selectedRoles = [];
+  final AuthService _authService = AuthService(Dio()); // Instancier le service avec Dio
 
   @override
   void initState() {
@@ -69,7 +74,7 @@ class UsersPageState extends State<UsersPage> {
   }
 
   Widget _buildFilterChips() {
-    List<String> allRoles = ['admin', 'user', 'moderator'];
+    List<String> allRoles = ['admin', 'user'];
     return Wrap(
       spacing: 8.0,
       children: allRoles.map((role) {
@@ -95,7 +100,7 @@ class UsersPageState extends State<UsersPage> {
       scrollDirection: Axis.horizontal,
       child: DataTable(
         sortColumnIndex:
-            ['username', 'firstname', 'lastname', 'email'].indexOf(_sortColumn),
+        ['username', 'firstname', 'lastname', 'email'].indexOf(_sortColumn),
         sortAscending: _sortAscending,
         columns: [
           DataColumn(
@@ -151,15 +156,15 @@ class UsersPageState extends State<UsersPage> {
   List<User> _filterAndSortUsers(List<User> users) {
     List<User> filteredUsers = users.where((user) {
       return (user.username
-                  .toLowerCase()
-                  .contains(_searchQuery.toLowerCase()) ||
-              user.firstname
-                  .toLowerCase()
-                  .contains(_searchQuery.toLowerCase()) ||
-              user.lastname
-                  .toLowerCase()
-                  .contains(_searchQuery.toLowerCase()) ||
-              user.email.toLowerCase().contains(_searchQuery.toLowerCase())) &&
+          .toLowerCase()
+          .contains(_searchQuery.toLowerCase()) ||
+          user.firstname
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ||
+          user.lastname
+              .toLowerCase()
+              .contains(_searchQuery.toLowerCase()) ||
+          user.email.toLowerCase().contains(_searchQuery.toLowerCase())) &&
           (_selectedRoles.isEmpty ||
               _selectedRoles.any((role) => user.roles.contains(role)));
     }).toList();
@@ -228,8 +233,15 @@ class UsersPageState extends State<UsersPage> {
   }
 
   void _editUser(User user) {
-    // Implement edit user functionality
-    // This could open a new page or dialog for editing user details
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => EditUserPage(user: user),
+      ),
+    ).then((result) {
+      if (result == true) {
+        _fetchUsers(); // Refresh the list after editing a user
+      }
+    });
   }
 
   void _deleteUser(User user) {
@@ -245,9 +257,17 @@ class UsersPageState extends State<UsersPage> {
           ),
           TextButton(
             child: const Text('Delete'),
-            onPressed: () {
-              // Implement delete functionality
-              Navigator.of(context).pop();
+            onPressed: () async {
+              try {
+                await _authService.deleteAccount(user.id);
+                Navigator.of(context).pop();
+                _fetchUsers(); // Refresh the list after deleting a user
+              } catch (e) {
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text('Failed to delete user: $e')),
+                );
+              }
             },
           ),
         ],

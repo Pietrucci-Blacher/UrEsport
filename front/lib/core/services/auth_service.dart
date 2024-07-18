@@ -228,11 +228,24 @@ class AuthService implements IAuthService {
 
   @override
   Future<List<User>> fetchUsers() async {
-    final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
-    if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.data.toString());
-      return jsonResponse.map((user) => User.fromJson(user)).toList();
-    } else {
+    try {
+      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users/');
+      if (response.statusCode == 200) {
+        print('Response data: ${response.data}'); // Ajout d'instruction de débogage
+        List<dynamic> jsonResponse;
+        if (response.data is String) {
+          jsonResponse = json.decode(response.data);
+        } else if (response.data is List) {
+          jsonResponse = response.data;
+        } else {
+          throw Exception('Unexpected response format');
+        }
+        return jsonResponse.map((user) => User.fromJson(user)).toList();
+      } else {
+        throw Exception('Failed to load users');
+      }
+    } catch (e) {
+      print('Error: $e'); // Imprimez l'erreur pour le débogage
       throw Exception('Failed to load users');
     }
   }
