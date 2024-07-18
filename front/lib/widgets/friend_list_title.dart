@@ -12,9 +12,7 @@ class FriendListTile extends StatelessWidget {
         child: Text(name[0]),
       ),
       title: Text(name),
-      onTap: () {
-        // Action to perform on friends click
-      },
+      onTap: () {},
     );
   }
 }

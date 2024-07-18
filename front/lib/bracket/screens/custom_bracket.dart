@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:tournament_bracket/tournament_bracket.dart';
@@ -5,9 +6,8 @@ import 'package:uresport/bracket/bloc/custom_bracket/custom_bracket_bloc.dart';
 import 'package:uresport/bracket/bloc/custom_bracket/custom_bracket_event.dart';
 import 'package:uresport/bracket/bloc/custom_bracket/custom_bracket_state.dart';
 import 'package:uresport/core/models/match.dart';
-import 'package:uresport/core/services/match_service.dart';
-import 'package:dio/dio.dart';
 import 'package:uresport/core/services/bracket_service.dart';
+import 'package:uresport/core/services/match_service.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/bracket/screens/match_details_page.dart';
 
@@ -236,7 +236,7 @@ class BracketContentState extends State<BracketContent> {
 
   void _scrollToLevel(int index) {
     final double screenWidth = MediaQuery.of(context).size.width;
-    const double itemWidth = 250; // La largeur de chaque stage
+    const double itemWidth = 250;
     final double position =
         index * itemWidth - (screenWidth / 2) + (itemWidth / 2);
 

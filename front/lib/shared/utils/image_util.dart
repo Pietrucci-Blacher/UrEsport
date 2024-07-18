@@ -33,7 +33,7 @@ class CachedImageWidget extends StatelessWidget {
             future: _cleanSvg(url),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
-                return const CircularProgressIndicator(); // Affiche un indicateur de chargement pendant le nettoyage SVG
+                return const CircularProgressIndicator();
               } else if (snapshot.hasError || !snapshot.hasData) {
                 return const Text('Erreur lors du chargement de l\'image SVG');
               } else {

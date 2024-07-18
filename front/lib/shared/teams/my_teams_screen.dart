@@ -1,15 +1,15 @@
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:uresport/core/services/auth_service.dart';
-import 'package:uresport/core/models/user.dart';
-import 'package:uresport/l10n/app_localizations.dart';
-import 'package:intl/intl.dart';
-import 'package:uresport/tournament/screens/tournament_details_screen.dart';
-import 'package:uresport/core/models/tournament.dart';
-import 'package:uresport/core/models/team.dart';
-import 'package:uresport/core/services/team_services.dart';
 import 'package:dio/dio.dart';
-import 'package:uresport/widgets/custom_toast.dart'; // Importer le CustomToast
+import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
+import 'package:uresport/core/models/team.dart';
+import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/user.dart';
+import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/team_services.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/tournament/screens/tournament_details_screen.dart';
+import 'package:uresport/widgets/custom_toast.dart';
 
 class MyTeamsScreen extends StatefulWidget {
   const MyTeamsScreen({super.key});
@@ -171,7 +171,6 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
     try {
       await teamService.leaveTeam(userId, teamId);
       setState(() {
-        // Reload the teams after leaving a team
         _loadUserTeams();
       });
       _showToast('Vous avez bien quitté la team $teamName', Colors.green);
