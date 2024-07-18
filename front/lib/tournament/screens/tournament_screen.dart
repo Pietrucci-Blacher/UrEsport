@@ -150,8 +150,10 @@ class TournamentScreenState extends State<TournamentScreen> {
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold)),
                         subtitle: Text(
-                          l.membersAndTournaments(team.members.length, team.tournaments.length),
-                          style: const TextStyle(fontSize: 14, color: Colors.grey),
+                          l.membersAndTournaments(
+                              team.members.length, team.tournaments.length),
+                          style:
+                              const TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                         trailing: IconButton(
                           icon: Icon(
@@ -163,7 +165,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                         ),
                         children: team.tournaments.map((tournamentJson) {
                           Tournament tournament =
-                          Tournament.fromJson(tournamentJson);
+                              Tournament.fromJson(tournamentJson);
                           return Card(
                             margin: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
@@ -173,12 +175,14 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   width: 50, height: 50, fit: BoxFit.cover),
                               title: Text(tournament.name,
                                   style: const TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.w600)),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      l.tournamentStartDate(tournament.startDate),
+                                      l.tournamentStartDate(
+                                          tournament.startDate),
                                       style: const TextStyle(fontSize: 14)),
                                   Text(l.tournamentEndDate(tournament.endDate),
                                       style: const TextStyle(fontSize: 14)),
@@ -194,9 +198,9 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         TournamentDetailsScreen(
-                                          tournament: tournament,
-                                          game: tournament.game,
-                                        ),
+                                      tournament: tournament,
+                                      game: tournament.game,
+                                    ),
                                   ),
                                 );
                               },
@@ -278,9 +282,11 @@ class TournamentScreenState extends State<TournamentScreen> {
         // Reload the teams after deleting a team
         _loadUserTeams();
       });
-      _showToast(AppLocalizations.of(context).teamDeleted(teamName), Colors.green);
+      _showToast(
+          AppLocalizations.of(context).teamDeleted(teamName), Colors.green);
     } catch (e) {
-      _showToast(AppLocalizations.of(context).failedToDeleteTeam(e.toString()), Colors.red);
+      _showToast(AppLocalizations.of(context).failedToDeleteTeam(e.toString()),
+          Colors.red);
     }
   }
 
@@ -299,8 +305,8 @@ class TournamentScreenState extends State<TournamentScreen> {
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 409) {
         final errorResponse = e.response?.data;
-        final errorMessage =
-            errorResponse['error'] ?? AppLocalizations.of(context).failedToLeaveTeam;
+        final errorMessage = errorResponse['error'] ??
+            AppLocalizations.of(context).failedToLeaveTeam;
         _showToast(errorMessage, Colors.red);
       } else {
         _showToast(AppLocalizations.of(context).failedToLeaveTeam, Colors.red);
@@ -410,7 +416,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                      const AddTournamentPage(),
+                                          const AddTournamentPage(),
                                     ),
                                   );
                                 },

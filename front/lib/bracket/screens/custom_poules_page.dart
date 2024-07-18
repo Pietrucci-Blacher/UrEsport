@@ -55,7 +55,7 @@ class TournamentPoules extends StatelessWidget {
             itemBuilder: (context, index) {
               final poule = poules[index];
               poule.teams.sort(
-                      (a, b) => int.parse(b.score).compareTo(int.parse(a.score)));
+                  (a, b) => int.parse(b.score).compareTo(int.parse(a.score)));
               return Card(
                 margin: const EdgeInsets.all(10),
                 child: ExpansionTile(
@@ -126,7 +126,7 @@ class TournamentPoules extends StatelessWidget {
             ],
           ),
           ...poule.teams.map(
-                (team) => TableRow(
+            (team) => TableRow(
               children: [
                 TableCell(
                   child: Padding(

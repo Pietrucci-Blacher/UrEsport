@@ -56,9 +56,9 @@ class BracketContent extends StatefulWidget {
 
   const BracketContent(
       {required this.bracket,
-        required this.roundNames,
-        required this.tournamentId,
-        super.key});
+      required this.roundNames,
+      required this.tournamentId,
+      super.key});
 
   @override
   BracketContentState createState() => BracketContentState();

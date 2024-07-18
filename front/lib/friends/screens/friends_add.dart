@@ -50,10 +50,10 @@ class AddFriendPageState extends State<AddFriendPage> {
       if (query.isNotEmpty) {
         filteredUsers = allUsers
             .where((user) =>
-        user['firstname']
-            ?.toLowerCase()
-            .contains(query.toLowerCase()) ??
-            false)
+                user['firstname']
+                    ?.toLowerCase()
+                    .contains(query.toLowerCase()) ??
+                false)
             .toList();
       } else {
         filteredUsers = List.from(allUsers);
@@ -127,7 +127,7 @@ class AddFriendPageState extends State<AddFriendPage> {
                       showNotificationToast(context, l.friendAddedSuccessfully);
                       Provider.of<NotificationProvider>(context, listen: false)
                           .addNotification(
-                          '$currentUser vous a ajouté en ami: ${user['firstname']}');
+                              '$currentUser vous a ajouté en ami: ${user['firstname']}');
                     } catch (e) {
                       String errorMessage;
                       if (e is DioException) {

@@ -24,7 +24,8 @@ class NotificationsTab extends StatelessWidget {
                   direction: DismissDirection.endToStart,
                   onDismissed: (direction) {
                     notificationProvider.removeNotification(index);
-                    showNotificationToast(context, AppLocalizations.of(context).notificationDeleted);
+                    showNotificationToast(context,
+                        AppLocalizations.of(context).notificationDeleted);
                   },
                   background: Container(
                     color: Colors.red,
