@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/team.dart';
+import 'package:uresport/core/models/tournament.dart';
 
 import 'cache_service.dart';
 
@@ -52,7 +52,6 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode == 200) {
-        debugPrint('Data fetched successfully: ${response.data}');
         final tournaments = (response.data as List)
             .map((json) => Tournament.fromJson(json))
             .toList();
