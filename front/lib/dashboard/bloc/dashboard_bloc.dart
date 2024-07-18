@@ -57,7 +57,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       ConnectWebSocket event, Emitter<DashboardState> emit) async {
     emit(DashboardLoading());
     try {
-      _websocket.connect();
       emit(const DashboardLoaded(
         message: 'Connected',
         activeUsers: 0,
@@ -73,7 +72,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   Future<void> _onDisconnectWebSocket(
       DisconnectWebSocket event, Emitter<DashboardState> emit) async {
     try {
-      _websocket.disconnect();
       emit(const DashboardLoaded(
         message: 'Disconnected',
         activeUsers: 0,
