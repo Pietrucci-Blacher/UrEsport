@@ -164,6 +164,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
       matchNotifier.updateMatch(updatedMatch);
     } catch (e) {
       if (e is DioException) {
+        if (!mounted) return;
         showNotificationToast(
           context,
           e.error.toString(),
@@ -207,7 +208,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                   });
                   matchNotifier.updateMatch(updatedMatch);
                 } catch (e) {
-                  if (e is DioException) {
+                  if (e is DioException && context.mounted) {
                     showNotificationToast(
                       context,
                       e.error.toString(),
@@ -217,6 +218,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                 }
                 _score1.clear();
                 _score2.clear();
+                if (!context.mounted) return;
                 Navigator.pop(context);
               },
               child: const Text('Mettre à jour le score'),
@@ -247,7 +249,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                   final updatedMatch = await teamService.setScore(matchNotifier.match.id, teamId, inputScore);
                   matchNotifier.updateMatch(updatedMatch);
                 } catch (e) {
-                  if (e is DioException) {
+                  if (e is DioException && context.mounted) {
                     showNotificationToast(
                       context,
                       e.error.toString(),
@@ -256,6 +258,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                   }
                 }
                 _score.clear();
+                if (!context.mounted) return;
                 Navigator.pop(context);
               },
               child: const Text('Mettre à jour le score'),

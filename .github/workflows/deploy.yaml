@@ -81,7 +81,7 @@ jobs:
 
       - name: Retrieve secrets from Doppler
         env:
-          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN }}
+          DOPPLER_TOKEN: ${{ secrets.DOPPLER_TOKEN_FRONT_PROD }}
         run: doppler secrets download --no-file --format env > .env
 
       - name: Generate .netrc file

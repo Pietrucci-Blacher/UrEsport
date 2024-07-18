@@ -209,7 +209,7 @@ class _DashboardState extends State<Dashboard> {
                   DataCell(Text(tournament.ownerId.toString())),
                   DataCell(Text(tournament.image)),
                   DataCell(Text(tournament.isPrivate.toString())),
-                  DataCell(Text(tournament.nbPlayer.toString())),
+                  DataCell(Text(tournament.nbPlayers.toString())),
                   DataCell(Text(tournament.startDate.toIso8601String())),
                   DataCell(Text(tournament.endDate.toIso8601String())),
                   DataCell(Text(tournament.upvotes.toString())),

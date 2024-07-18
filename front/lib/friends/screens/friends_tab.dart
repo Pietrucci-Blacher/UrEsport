@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
 import 'package:uresport/core/services/friends_services.dart';
 import 'package:uresport/core/models/friend.dart';
 import 'package:uresport/widgets/friend_list_title.dart';
@@ -9,6 +10,10 @@ import 'package:dio/dio.dart';
 import 'package:uresport/friends/bloc/friends_bloc.dart';
 import 'package:uresport/friends/bloc/friends_event.dart';
 import 'package:uresport/friends/bloc/friends_state.dart';
+
+import 'package:uresport/core/models/user.dart';
+
+import 'package:uresport/core/services/auth_service.dart';
 
 class FriendsTab extends StatefulWidget {
   final int userId;
@@ -24,14 +29,15 @@ class FriendsTab extends StatefulWidget {
 
 class FriendsTabState extends State<FriendsTab> {
   late FriendsBloc _friendsBloc;
+  User? _currentUser;
 
   @override
   void initState() {
     super.initState();
+    _loadCurrentUser();
     _friendsBloc = FriendsBloc(FriendService(Dio(BaseOptions(
       baseUrl: dotenv.env['API_ENDPOINT']!,
     ))));
-    _friendsBloc.add(LoadFriends(widget.userId));
   }
 
   @override
@@ -40,18 +46,32 @@ class FriendsTabState extends State<FriendsTab> {
     super.dispose();
   }
 
+  Future<void> _loadCurrentUser() async {
+    final authService = Provider.of<IAuthService>(context, listen: false);
+    try {
+      final user = await authService.getUser();
+      if (!mounted) return;
+      setState(() {
+        _currentUser = user;
+      });
+      _friendsBloc.add(LoadFriends(
+          user.id)); // Load friends after the current user is loaded
+    } catch (e) {
+      debugPrint('Error loading current user: $e');
+    }
+  }
+
   Future<void> _navigateAndRefresh(BuildContext context) async {
-    // Naviguer vers AddFriendPage et attendre jusqu'à ce que la page soit fermée
     await Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) =>
-            AddFriendPage(userId: widget.userId, currentUser: 'ilies'),
+        builder: (context) => AddFriendPage(
+            userId: _currentUser!.id, currentUser: _currentUser!.username),
       ),
     );
 
     // Recharger les amis après être revenu de AddFriendPage
-    _friendsBloc.add(LoadFriends(widget.userId));
+    _friendsBloc.add(LoadFriends(_currentUser!.id));
   }
 
   @override
@@ -128,9 +148,8 @@ class FriendsTabState extends State<FriendsTab> {
                               key: UniqueKey(),
                               direction: DismissDirection.endToStart,
                               onDismissed: (direction) {
-                                context
-                                    .read<FriendsBloc>()
-                                    .add(ToggleFavorite(friend, widget.userId));
+                                context.read<FriendsBloc>().add(
+                                    ToggleFavorite(friend, _currentUser!.id));
                               },
                               background: Container(
                                 color: Colors.red,
@@ -205,11 +224,12 @@ class FriendsTabState extends State<FriendsTab> {
                                     if (direction ==
                                         DismissDirection.endToStart) {
                                       context.read<FriendsBloc>().add(
-                                          DeleteFriend(friend, widget.userId));
+                                          DeleteFriend(
+                                              friend, _currentUser!.id));
                                     } else {
                                       context.read<FriendsBloc>().add(
                                           ToggleFavorite(
-                                              friend, widget.userId));
+                                              friend, _currentUser!.id));
                                     }
                                   },
                                   background: Container(

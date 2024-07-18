@@ -1,3 +1,4 @@
+import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
 
 class Match {

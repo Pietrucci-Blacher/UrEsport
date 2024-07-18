@@ -54,6 +54,33 @@ func GetTeam(c *gin.Context) {
 	c.JSON(http.StatusOK, sanitized)
 }
 
+// GetUserTeams godoc
+//
+//	@Summary		get user teams
+//	@Description	get user teams
+//	@Tags			team
+//	@Accept			json
+//	@Produce		json
+//	@Success		200	{object}	[]models.SanitizedTeam
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/teams/user/{userid} [get]
+func GetUserTeams(c *gin.Context) {
+	user, _ := c.MustGet("user").(*models.User)
+
+	teams, err := models.FindTeamsByUserId(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	var sanitizedTeams []models.SanitizedTeam
+	for _, team := range teams {
+		sanitizedTeams = append(sanitizedTeams, team.Sanitize())
+	}
+
+	c.JSON(http.StatusOK, sanitizedTeams)
+}
+
 // CreateTeam godoc
 //
 //	@Summary		create team
@@ -70,14 +97,10 @@ func CreateTeam(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	body, _ := c.MustGet("body").(models.CreateTeamDto)
 
-	if models.IsTeamExists(body.Name) {
-		c.JSON(http.StatusConflict, gin.H{"error": "Team already exists"})
-		return
-	}
-
 	team := models.Team{
 		Name:    body.Name,
 		OwnerID: connectedUser.ID,
+		Private: body.Private,
 	}
 
 	if err := team.Save(); err != nil {

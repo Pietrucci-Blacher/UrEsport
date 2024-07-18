@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -5,14 +6,20 @@ import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
+import 'package:uresport/tournament/screens/add_tournament.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
+import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
+import 'package:uresport/core/models/team.dart';
+import 'package:uresport/team/screen/add_team.dart';
+import 'package:uresport/team/screen/team_member.dart';
 
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
@@ -48,13 +55,14 @@ class TournamentScreenState extends State<TournamentScreen> {
     AppLocalizations l = AppLocalizations.of(context);
 
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         appBar: AppBar(
           title: TabBar(
             tabs: [
               Tab(text: l.listAllTournaments),
               Tab(text: l.listMyTournaments),
+              Tab(text: l.listMyTeamsJoined),
             ],
           ),
         ),
@@ -62,10 +70,277 @@ class TournamentScreenState extends State<TournamentScreen> {
           children: [
             _buildTournamentList(context, false),
             _buildTournamentList(context, true),
+            _buildTeamList(context),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildTeamList(BuildContext context) {
+    if (_currentUser == null) {
+      AppLocalizations l = AppLocalizations.of(context);
+      return Center(child: Text(l.mustBeLoggedIn));
+    }
+
+    return FutureBuilder(
+      future: _loadUserTeams(),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          debugPrint('Error in FutureBuilder: ${snapshot.error}');
+          return const Center(child: Text('Failed to load user teams'));
+        } else if (!snapshot.hasData || (snapshot.data as List<Team>).isEmpty) {
+          return const Center(child: Text('No teams found for the user'));
+        } else {
+          final teams = snapshot.data as List<Team>;
+          debugPrint('Teams data: $teams');
+          return Stack(
+            children: [
+              RefreshIndicator(
+                onRefresh: () async {
+                  setState(() {}); // Trigger FutureBuilder to reload data
+                  await _loadUserTeams(); // Load teams again
+                },
+                child: ListView.builder(
+                  itemCount: teams.length,
+                  itemBuilder: (context, index) {
+                    final team = teams[index];
+                    final isOwner = team.ownerId == _currentUser!.id;
+                    return Dismissible(
+                      key: Key(team.id.toString()),
+                      direction: DismissDirection.startToEnd,
+                      onDismissed: (direction) {
+                        // Log the data being sent to TeamMembersPage
+                        debugPrint('Navigating to TeamMembersPage with:');
+                        debugPrint('Team Name: ${team.name}');
+                        debugPrint('Members: ${team.members}');
+
+                        // Convert members to User objects
+                        List<User> userMembers = team.members.map((memberJson) {
+                          return User.fromJson(memberJson);
+                        }).toList();
+
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => TeamMembersPage(
+                              teamId: team
+                                  .id, // passez l'identifiant de l'équipe ici
+                              teamName:
+                                  team.name, // passez le nom de l'équipe ici
+                              members: userMembers,
+                              ownerId: team.ownerId,
+                              currentId: _currentUser!.id,
+                            ),
+                          ),
+                        );
+                      },
+                      background: Container(
+                        color: Colors.blue,
+                        alignment: Alignment.centerLeft,
+                        padding: const EdgeInsets.only(left: 20.0),
+                        child: const Icon(
+                          Icons.person,
+                          color: Colors.white,
+                        ),
+                      ),
+                      child: ExpansionTile(
+                        title: Text(team.name,
+                            style: const TextStyle(
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        subtitle: Text(
+                            'Members: ${team.members.length} | Tournaments: ${team.tournaments.length}',
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.grey)),
+                        trailing: IconButton(
+                          icon: Icon(
+                            isOwner ? Icons.delete : Icons.exit_to_app,
+                            color: Colors.red,
+                          ),
+                          onPressed: () =>
+                              _confirmLeaveTeam(team.id, team.name, isOwner),
+                        ),
+                        children: team.tournaments.map((tournamentJson) {
+                          Tournament tournament =
+                              Tournament.fromJson(tournamentJson);
+                          return Card(
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(10.0),
+                              leading: Image.network(tournament.image,
+                                  width: 50, height: 50, fit: BoxFit.cover),
+                              title: Text(tournament.name,
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      'Start: ${DateFormat.yMMMd().format(tournament.startDate)}',
+                                      style: const TextStyle(fontSize: 14)),
+                                  Text(
+                                      'End: ${DateFormat.yMMMd().format(tournament.endDate)}',
+                                      style: const TextStyle(fontSize: 14)),
+                                  Text(tournament.description,
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                      overflow: TextOverflow.ellipsis),
+                                ],
+                              ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        TournamentDetailsScreen(
+                                      tournament: tournament,
+                                      game: tournament.game,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              if (_currentUser != null)
+                Positioned(
+                  bottom: 16.0,
+                  right: 16.0,
+                  child: FloatingActionButton(
+                    heroTag: 'add-team',
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AddTeamPage(),
+                        ),
+                      );
+                    },
+                    child: const Icon(Icons.add),
+                  ),
+                ),
+            ],
+          );
+        }
+      },
+    );
+  }
+
+  Future<void> _confirmLeaveTeam(
+      int teamId, String teamName, bool isOwner) async {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirm Action'),
+          content: Text(isOwner
+              ? 'Are you sure you want to delete the team $teamName?'
+              : 'Are you sure you want to leave the team $teamName?'),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(isOwner ? 'Delete' : 'Leave'),
+              onPressed: () {
+                Navigator.of(context).pop();
+                if (isOwner) {
+                  _deleteTeam(teamId, teamName);
+                } else {
+                  _leaveTeam(teamId, teamName);
+                }
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteTeam(int teamId, String teamName) async {
+    if (_currentUser == null) return;
+
+    final teamService = Provider.of<ITeamService>(context, listen: false);
+    try {
+      await teamService.deleteTeam(teamId);
+      setState(() {
+        // Reload the teams after deleting a team
+        _loadUserTeams();
+      });
+      _showToast('Vous avez bien supprimé la team $teamName', Colors.green);
+    } catch (e) {
+      _showToast('Failed to delete the team: $e', Colors.red);
+    }
+  }
+
+  Future<void> _leaveTeam(int teamId, String teamName) async {
+    if (_currentUser == null) return;
+
+    final userId = _currentUser!.id;
+    final teamService = Provider.of<ITeamService>(context, listen: false);
+    try {
+      await teamService.leaveTeam(userId, teamId);
+      setState(() {
+        // Reload the teams after leaving a team
+        _loadUserTeams();
+      });
+      _showToast('Vous avez bien quitté la team $teamName', Colors.green);
+    } catch (e) {
+      if (e is DioException && e.response?.statusCode == 409) {
+        final errorResponse = e.response?.data;
+        final errorMessage =
+            errorResponse['error'] ?? 'Failed to leave the team';
+        _showToast(errorMessage, Colors.red);
+      } else {
+        _showToast('Failed to leave the team: $e', Colors.red);
+      }
+    }
+  }
+
+  void _showToast(String message, Color backgroundColor) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => Positioned(
+        top: 50.0,
+        left: MediaQuery.of(context).size.width * 0.1,
+        width: MediaQuery.of(context).size.width * 0.8,
+        child: CustomToast(
+          message: message,
+          backgroundColor: backgroundColor,
+          onClose: () {
+            overlayEntry.remove();
+          },
+        ),
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
+  }
+
+  Future<List<Team>> _loadUserTeams() async {
+    if (_currentUser == null) {
+      throw Exception('User is not logged in');
+    }
+
+    final teamService = Provider.of<ITeamService>(context, listen: false);
+    return await teamService.getUserTeams(_currentUser!.id);
   }
 
   Widget _buildTournamentList(BuildContext context, bool isOwner) {
@@ -105,21 +380,43 @@ class TournamentScreenState extends State<TournamentScreen> {
                         return _buildTournamentCard(context, tournament);
                       },
                     ),
-                    Positioned(
-                      bottom: 16,
-                      right: 16,
-                      child: FloatingActionButton(
-                        heroTag: 'map-fab',
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TournamentMapWidget(
-                                  tournaments: state.tournaments),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            FloatingActionButton(
+                              heroTag: 'map-fab',
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => TournamentMapWidget(
+                                        tournaments: state.tournaments),
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.map),
                             ),
-                          );
-                        },
-                        child: const Icon(Icons.map),
+                            const SizedBox(height: 16),
+                            if (_currentUser != null)
+                              FloatingActionButton(
+                                heroTag: 'create tournament',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AddTournamentPage(),
+                                    ),
+                                  );
+                                },
+                                child: const Icon(Icons.add),
+                              ),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -144,8 +441,8 @@ class TournamentScreenState extends State<TournamentScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) =>
-                TournamentDetailsScreen(tournament: tournament),
+            builder: (context) => TournamentDetailsScreen(
+                tournament: tournament, game: tournament.game),
           ),
         );
       },
@@ -268,6 +565,19 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 ),
                               ],
                             ),
+                            Row(
+                              children: [
+                                const Icon(Icons.person, color: Colors.grey),
+                                const SizedBox(width: 5),
+                                Expanded(
+                                  child: Text(
+                                    'Nombre joueurs par teams: ${tournament.nbPlayers}',
+                                    style: const TextStyle(fontSize: 16),
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            )
                           ],
                         ),
                       ),
@@ -284,8 +594,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     Colors.red.withOpacity(0.7),
                                     Colors.orange,
                                     Colors.yellow,
-                                    Colors
-                                        .green, // Nouvelle couleur ajoutée à la fin
+                                    Colors.green,
                                   ],
                                   stops: const [0.0, 0.25, 0.5, 0.75, 1.0],
                                   begin: Alignment.topLeft,

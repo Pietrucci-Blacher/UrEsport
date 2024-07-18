@@ -55,6 +55,7 @@ type UpdateTournamentDto struct {
 	Image       string    `json:"image"`
 	NbPlayer    int       `json:"nb_player"`
 	GameID      int       `json:"game_id"`
+	Private     bool      `json:"private"`
 }
 
 type SanitizedTournament struct {
