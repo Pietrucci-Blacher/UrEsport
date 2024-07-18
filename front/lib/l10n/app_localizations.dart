@@ -639,6 +639,39 @@ class AppLocalizations {
       desc: 'My Teams button text',
     );
   }
+
+  String get profileTab {
+    return Intl.message(
+      'Profile',
+      name: 'profileTab',
+      desc: 'Profile tab text',
+    );
+
+  }
+
+  String get likedGamesTab {
+    return Intl.message(
+      'Liked Games',
+      name: 'likedGamesTab',
+      desc: 'Liked Games tab text',
+    );
+  }
+
+  String get errorFetchingLikedGames {
+    return Intl.message(
+      'Error fetching liked games',
+      name: 'errorFetchingLikedGames',
+      desc: 'Error message when fetching liked games fails',
+    );
+  }
+
+  String get noLikedGames {
+    return Intl.message(
+      'No liked games',
+      name: 'noLikedGames',
+      desc: 'Message when no liked games are available',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

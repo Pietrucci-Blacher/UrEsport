@@ -7,6 +7,7 @@ import 'package:uresport/core/models/like.dart';
 abstract class ILikeService {
   Future<List<Like>> fetchLikes();
   Future<Like> getLikeById(int id);
+  Future<List<Like>> getLikesByUserID(int userId);
   Future<List<Like>> GetLikesByUserIDAndGameID(int userId, int gameId);
   Future<void> createLike(Like like);
   Future<void> deleteLike(int id);
@@ -76,6 +77,36 @@ class LikeService implements ILikeService {
       }
     }
   }
+
+  @override
+  Future<List<Like>> getLikesByUserID(int userId) async {
+    try {
+      final response = await _dio.get(
+        "${dotenv.env['API_ENDPOINT']}/likes/user/$userId",
+      );
+
+      if (response.statusCode == 200) {
+        debugPrint('Likes fetched successfully: ${response.data}');
+        List<dynamic> likesJson = response.data;
+        return likesJson.map((json) => Like.fromJson(json)).toList();
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to load likes',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error fetching likes: $e');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
 
   @override
   Future<List<Like>> GetLikesByUserIDAndGameID(int userId, int gameId) async {

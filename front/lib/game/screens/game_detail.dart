@@ -10,6 +10,7 @@ import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/like_service.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/core/models/like.dart';
+import 'package:uresport/widgets/custom_toast.dart'; // Assurez-vous d'importer le fichier CustomToast
 
 class GameDetailPage extends StatefulWidget {
   final Game game;
@@ -82,36 +83,29 @@ class GameDetailPageState extends State<GameDetailPage> {
 
   Future<void> _createLike() async {
     if (_currentUser == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Vous devez être connecté pour suivre ce jeu')),
-      );
+      _showToast(context, 'Vous devez être connecté pour suivre ce jeu', Colors.red);
       return;
     }
 
     try {
-      Like newLike = Like(userId: _currentUser!.id, gameId: widget.game.id);
+      Like newLike = Like(userId: _currentUser!.id, gameId: widget.game.id, game: widget.game);
       debugPrint('Creating like with data: ${newLike.toJson()}');
       final createdLike = await _likeService.createLike(newLike);
       setState(() {
         _isLiked = true;
         _currentLike = createdLike; // Update the current like
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Jeu suivi avec succès')),
-      );
+      _showToast(context, 'Ajout du jeux dans votre liste', Colors.green);
     } catch (e) {
       debugPrint('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors du suivi du jeu : $e')),
-      );
+      _showToast(context, 'Erreur lors du suivi du jeu : $e', Colors.red);
     }
   }
 
+
   Future<void> _deleteLike() async {
     if (_currentLike == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Aucun like à supprimer')),
-      );
+      _showToast(context, 'Aucun like à supprimer', Colors.red);
       return;
     }
 
@@ -121,15 +115,32 @@ class GameDetailPageState extends State<GameDetailPage> {
         _isLiked = false;
         _currentLike = null; // Clear the current like
       });
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Jeu non suivi avec succès')),
-      );
+      _showToast(context, 'Suppression du jeux de votre liste', Colors.red);
     } catch (e) {
       debugPrint('Error: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Erreur lors de la suppression du suivi du jeu : $e')),
-      );
+      _showToast(context, 'Erreur lors de la suppression du suivi du jeu : $e', Colors.red);
     }
+  }
+
+  void _showToast(BuildContext context, String message, Color backgroundColor) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => CustomToast(
+        message: message,
+        backgroundColor: backgroundColor,
+        textColor: Colors.white,
+        onClose: () {
+          overlayEntry.remove();
+        },
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
   }
 
   @override

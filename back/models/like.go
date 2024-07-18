@@ -10,6 +10,7 @@ type Like struct {
 	ID        int       `json:"id" gorm:"primaryKey"`
 	UserID    int       `json:"user_id"`
 	GameID    int       `json:"game_id"`
+	Game      Game      `json:"game" gorm:"foreignKey:GameID"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -68,6 +69,9 @@ func LikeExists(userID int, gameID int) (bool, error) {
 
 func GetLikesByUserID(userID int) ([]Like, error) {
 	var likes []Like
-	err := DB.Where("user_id = ?", userID).Find(&likes).Error
+	err := DB.Where("user_id = ?", userID).
+		Preload("Game").
+		Find(&likes).
+		Error
 	return likes, err
 }
