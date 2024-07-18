@@ -68,12 +68,12 @@ class VerificationScreenState extends State<VerificationScreen> {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(state.error)));
             } else if (state is AuthUnauthenticated) {
-              Navigator.pushReplacement(
-                context,
+              Navigator.of(context).pushAndRemoveUntil(
                 MaterialPageRoute(
                   builder: (context) =>
                       MainScreen(authService: widget.authService),
                 ),
+                (Route<dynamic> route) => false,
               );
             }
           },
