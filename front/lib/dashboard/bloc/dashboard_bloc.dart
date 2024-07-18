@@ -1,12 +1,12 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uresport/core/models/game.dart';
+import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
+import 'package:uresport/core/services/game_service.dart';
+import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/core/services/game_service.dart';
-import 'package:uresport/core/models/tournament.dart';
-import 'package:uresport/core/models/game.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final Websocket _websocket;
@@ -59,10 +59,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     try {
       emit(const DashboardLoaded(
         message: 'Connected',
-        activeUsers: 0,
-        activeTournaments: 0,
-        totalGames: 0,
-        recentLogs: [],
       ));
     } catch (e) {
       emit(DashboardError(e.toString()));
@@ -74,10 +70,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     try {
       emit(const DashboardLoaded(
         message: 'Disconnected',
-        activeUsers: 0,
-        activeTournaments: 0,
-        totalGames: 0,
-        recentLogs: [],
       ));
     } catch (e) {
       emit(DashboardError(e.toString()));
@@ -97,10 +89,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     if (state is DashboardLoaded) {
       final currentState = state as DashboardLoaded;
       emit(currentState.copyWith(
-        activeUsers: event.stats['activeUsers'] ?? currentState.activeUsers,
-        activeTournaments:
-            event.stats['activeTournaments'] ?? currentState.activeTournaments,
-        totalGames: event.stats['totalGames'] ?? currentState.totalGames,
+        loggedInUsers:
+            event.stats['loggedInUsers'] ?? currentState.loggedInUsers,
+        anonymousUsers:
+            event.stats['anonymousUsers'] ?? currentState.anonymousUsers,
+        subscribedUsers:
+            event.stats['subscribedUsers'] ?? currentState.subscribedUsers,
       ));
     }
   }
@@ -121,10 +115,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           await _tournamentService.fetchTournaments();
       emit(DashboardLoaded(
         message: 'Tournaments loaded',
-        activeUsers: 0, // mettez à jour selon vos besoins
-        activeTournaments: tournaments.length,
-        totalGames: 0, // mettez à jour selon vos besoins
-        recentLogs: const [], // mettez à jour selon vos besoins
+        loggedInUsers: 0, // mettez à jour selon vos besoins
+        anonymousUsers: 0,
+        subscribedUsers: 0,
         tournaments: tournaments,
       ));
     } catch (e) {
@@ -142,12 +135,9 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       } else {
         emit(DashboardLoaded(
           message: 'Games loaded',
-          activeUsers: 0,
-          activeTournaments: 0,
-          totalGames: games.length,
-          recentLogs: const [],
-          users: const [],
-          tournaments: const [],
+          loggedInUsers: 0,
+          anonymousUsers: 0,
+          subscribedUsers: 0,
           games: games,
         ));
       }

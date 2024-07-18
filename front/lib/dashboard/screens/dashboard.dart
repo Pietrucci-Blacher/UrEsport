@@ -1,16 +1,15 @@
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
-// import 'package:uresport/core/services/tournament_service.dart';
-// import 'package:provider/provider.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
+import 'package:uresport/core/websocket/websocket.dart';
+import 'package:uresport/cubit/locale_cubit.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 import 'package:uresport/dashboard/screens/users_screen.dart';
-// import 'package:fl_chart_app/presentation/resources/app_resources.dart';
-import 'package:fl_chart/fl_chart.dart';
-// import 'package:fl_chart_app/presentation/widgets/indicator.dart';
+import 'package:uresport/shared/locale_switcher.dart';
 
 import 'add_game_page.dart';
 import 'add_tournament_page.dart';
@@ -49,343 +48,302 @@ class _DashboardState extends State<Dashboard> {
     super.initState();
     BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
     _websocket();
+    BlocProvider.of<DashboardBloc>(context).add(ConnectWebSocket());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[100],
       body: Row(
         children: [
-          NavigationRail(
-            selectedIndex: _selectedIndex,
-            onDestinationSelected: (int index) {
-              setState(() {
-                _selectedIndex = index;
-              });
-            },
-            labelType: NavigationRailLabelType.selected,
-            destinations: const <NavigationRailDestination>[
-              NavigationRailDestination(
-                icon: Icon(Icons.dashboard),
-                selectedIcon: Icon(Icons.dashboard),
-                label: Text('Dashboard'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.list),
-                selectedIcon: Icon(Icons.list),
-                label: Text('Logs'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.emoji_events),
-                selectedIcon: Icon(Icons.emoji_events),
-                label: Text('Tournaments'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.games),
-                selectedIcon: Icon(Icons.games),
-                label: Text('Games'),
-              ),
-              NavigationRailDestination(
-                icon: Icon(Icons.people),
-                selectedIcon: Icon(Icons.people),
-                label: Text('Users'),
-              ),
-            ],
-          ),
-          const VerticalDivider(thickness: 1, width: 1),
+          _buildSidebar(),
           Expanded(
-            child: BlocBuilder<DashboardBloc, DashboardState>(
-              builder: (context, state) {
-                if (state is DashboardLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is DashboardLoaded) {
-                  switch (_selectedIndex) {
-                    case 0:
-                      return _buildDashboardContent(state);
-                    case 1:
-                      return _buildLogsContent(state);
-                    case 2:
-                      return _buildTournamentsContent(state);
-                    case 3:
-                      return _buildGamesContent(state);
-                    case 4:
-                      return _buildUsersContent(state);
-                    default:
-                      return const Center(child: Text('Unknown page'));
-                  }
-                } else if (state is DashboardError) {
-                  return Center(child: Text('Error: ${state.error}'));
-                }
-                return const Center(child: Text('Unknown state'));
-              },
+            child: Column(
+              children: [
+                _buildHeader(),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24.0),
+                    child: _buildContent(),
+                  ),
+                ),
+              ],
             ),
           ),
         ],
       ),
-      floatingActionButton: _selectedIndex == 2
-          ? FloatingActionButton(
-              onPressed: () async {
-                final currentContext = context;
-                final result = await showDialog<bool>(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return const AddTournamentPage();
-                  },
-                );
+      floatingActionButton: _buildFloatingActionButton(),
+    );
+  }
 
-                if (result == true) {
-                  // Fetch updated tournaments
-                  if (currentContext.mounted) {
-                    BlocProvider.of<DashboardBloc>(context)
-                        .add(FetchTournaments());
-                  }
-                }
-              },
-              child: const Icon(Icons.add),
-            )
-          : _selectedIndex == 3
-              ? FloatingActionButton(
-                  onPressed: () async {
-                    final currentContext = context;
-                    final result = await showDialog<bool>(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return const AddGamePage();
-                      },
-                    );
+  Widget _buildSidebar() {
+    return Container(
+      width: 250,
+      color: Colors.white,
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Admin Dashboard',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              children: [
+                _buildNavItem(0, 'Dashboard', Icons.dashboard),
+                _buildNavItem(1, 'Feature Flipping', Icons.tune),
+                _buildNavItem(2, 'Logs', Icons.list),
+                _buildNavItem(3, 'Tournaments', Icons.emoji_events),
+                _buildNavItem(4, 'Games', Icons.games),
+                _buildNavItem(5, 'Users', Icons.people),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
-                    if (result == true) {
-                      if (currentContext.mounted) {
-                        BlocProvider.of<DashboardBloc>(context)
-                            .add(FetchGames());
-                      }
-                    }
-                  },
-                  child: const Icon(Icons.add),
-                )
-              : null,
+  Widget _buildNavItem(int index, String title, IconData icon) {
+    bool isSelected = _selectedIndex == index;
+    return ListTile(
+      leading: Icon(icon, color: isSelected ? Colors.blue : Colors.grey),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isSelected ? Colors.blue : Colors.black,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      onTap: () => setState(() => _selectedIndex = index),
+      selected: isSelected,
+      selectedTileColor: Colors.blue.withOpacity(0.1),
+    );
+  }
+
+  Widget _buildHeader() {
+    return Container(
+      padding: const EdgeInsets.all(16),
+      color: Colors.white,
+      child: Row(
+        children: [
+          Text(
+            'Dashboard',
+            style: Theme.of(context)
+                .textTheme
+                .headlineSmall
+                ?.copyWith(color: Colors.black),
+          ),
+          const Spacer(),
+          LocaleSwitcher(
+            onLocaleChanged: (locale) {
+              context.read<LocaleCubit>().setLocale(locale);
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContent() {
+    return BlocBuilder<DashboardBloc, DashboardState>(
+      builder: (context, state) {
+        if (state is DashboardLoading) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (state is DashboardLoaded) {
+          switch (_selectedIndex) {
+            case 0:
+              return _buildDashboardContent(state);
+            case 1:
+              return _buildFeatureFlippingConten(state);
+            case 2:
+              return _buildLogsContent(state);
+            case 3:
+              return _buildTournamentsContent(state);
+            case 4:
+              return _buildGamesContent(state);
+            case 5:
+              return const UsersPage();
+            default:
+              return const Center(child: Text('Unknown page'));
+          }
+        } else if (state is DashboardError) {
+          return Center(child: Text('Error: ${state.error}'));
+        }
+        return const Center(child: Text('Unknown state'));
+      },
     );
   }
 
   Widget _buildDashboardContent(DashboardLoaded state) {
-    return Center(
-      child: GridView.count(
-        crossAxisCount: 4,
-        crossAxisSpacing: 10,
-        mainAxisSpacing: 10,
-        padding: const EdgeInsets.all(10),
-        children: [
-          Container(
-            padding: const EdgeInsets.all(10),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Column(
-              children: [
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Logged Users'),
-                    Text(
-                      '$_loggedUsers',
-                      style: const TextStyle(fontSize: 24),
-                    )
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Annonymous Users'),
-                    Text(
-                      '$_annonUsers',
-                      style: const TextStyle(fontSize: 24),
-                    )
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    const Text('Subscribed Users'),
-                    Text(
-                      '$_totalUsers',
-                      style: const TextStyle(fontSize: 24),
-                    )
-                  ],
-                ),
-              ],
-            ),
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SizedBox(height: 24),
+        Row(
+          children: [
+            Expanded(
+                child: _buildStatCard(
+                    'Logged Users', state.loggedInUsers, Colors.blue)),
+            const SizedBox(width: 16),
+            Expanded(
+                child: _buildStatCard(
+                    'Anonymous Users', state.anonymousUsers, Colors.green)),
+            const SizedBox(width: 16),
+            Expanded(
+                child: _buildStatCard(
+                    'Subscribed Users', state.subscribedUsers, Colors.purple)),
+          ],
+        ),
+        const SizedBox(height: 24),
+        Expanded(
+          child: Row(
+            children: [
+              Expanded(child: _buildUserChart(state)),
+              const SizedBox(width: 16),
+              Expanded(child: _buildRecentActivityCard(state)),
+            ],
           ),
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildStatCard(String title, int value, Color color) {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: TextStyle(
+                  fontSize: 18, fontWeight: FontWeight.bold, color: color),
             ),
-            child: Column(
-              children: [
-                Expanded(
-                  child: AspectRatio(
-                    aspectRatio: 1,
-                    child: PieChart(
-                      PieChartData(
-                        pieTouchData: PieTouchData(
-                          touchCallback: (FlTouchEvent event, pieTouchResponse) {
-                            setState(() {
-                              if (!event.isInterestedForInteractions ||
-                                pieTouchResponse == null ||
-                                pieTouchResponse.touchedSection == null) {
-                                touchedIndex = -1;
-                                return;
-                              }
-                              touchedIndex = pieTouchResponse
-                                  .touchedSection!.touchedSectionIndex;
-                            });
-                          },
-                        ),
-                        borderData: FlBorderData(
-                          show: false,
-                        ),
-                        sectionsSpace: 0,
-                        centerSpaceRadius: 40,
-                        sections: showingSections(),
-                      ),
-                    ),
-                  ),
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: <Widget>[
-                    Row(
-                      children: [
-                        Container(
-                          width: 10,
-                          height: 10,
-                          color: Colors.blue,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Logged User',
-                          style: TextStyle(fontSize: 10),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Container(
-                          width: 10,
-                          height: 10,
-                          color: Colors.green,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Annonymous User',
-                          style: TextStyle(fontSize: 10),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                    Row(
-                      children: [
-                        Container(
-                          width: 10,
-                          height: 10,
-                          color: Colors.purple,
-                        ),
-                        const SizedBox(width: 8),
-                        const Text(
-                          'Subscribed User',
-                          style: TextStyle(fontSize: 10),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 4),
-                  ],
-                ),
-              ],
+            const SizedBox(height: 8),
+            Text(
+              '$value',
+              style: TextStyle(
+                  fontSize: 24, fontWeight: FontWeight.bold, color: color),
             ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Column(
-              children: [
-                Text('test'),
-              ],
-            ),
-          ),
-          Container(
-            padding: const EdgeInsets.all(16.0),
-            decoration: BoxDecoration(
-              border: Border.all(color: Colors.grey),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: const Column(
-              children: [
-                Text('test'),
-              ],
-            ),
-          )
-        ],
+          ],
+        ),
       ),
     );
   }
 
-  List<PieChartSectionData> showingSections() {
-    var total = _loggedUsers + _annonUsers + _totalUsers;
-    var loggedUsersPercentage = double.parse((_loggedUsers / total * 100).toStringAsFixed(2));
-    var annonUsersPercentage = double.parse((_annonUsers / total * 100).toStringAsFixed(2));
-    var totalUsersPercentage = double.parse((_totalUsers / total * 100).toStringAsFixed(2));
-    return List.generate(3, (i) {
-      final isTouched = i == touchedIndex;
-      final fontSize = isTouched ? 25.0 : 16.0;
-      final radius = isTouched ? 60.0 : 50.0;
-      switch (i) {
-        case 0:
-          return PieChartSectionData(
-            color: Colors.blue,
-            value: loggedUsersPercentage,
-            title: '$loggedUsersPercentage%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+  Widget _buildUserChart(DashboardLoaded state) {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'User Distribution',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          );
-        case 1:
-          return PieChartSectionData(
-            color: Colors.green,
-            value: annonUsersPercentage,
-            title: '$annonUsersPercentage%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+            const SizedBox(height: 8),
+            Expanded(
+              child: PieChart(
+                PieChartData(
+                  sectionsSpace: 0,
+                  centerSpaceRadius: 40,
+                  sections: showingSections(state),
+                ),
+              ),
             ),
-          );
-        case 2:
-          return PieChartSectionData(
-            color: Colors.purple,
-            value: totalUsersPercentage,
-            title: '$totalUsersPercentage%',
-            radius: radius,
-            titleStyle: TextStyle(
-              fontSize: fontSize,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+            const SizedBox(height: 16),
+            _buildLegend(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLegend() {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      children: [
+        _buildLegendItem(Colors.blue, 'Logged Users'),
+        _buildLegendItem(Colors.green, 'Anonymous Users'),
+        _buildLegendItem(Colors.purple, 'Subscribed Users'),
+      ],
+    );
+  }
+
+  Widget _buildLegendItem(Color color, String text) {
+    return Row(
+      children: [
+        Container(
+          width: 16,
+          height: 16,
+          color: color,
+        ),
+        const SizedBox(width: 8),
+        Text(text),
+      ],
+    );
+  }
+
+  Widget _buildRecentActivityCard(DashboardLoaded state) {
+    return Card(
+      elevation: 4,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text(
+              'Recent Activity',
+              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
-          );
-        default:
-          throw Error();
-      }
-    });
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemCount: state.recentLogs.length,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text(state.recentLogs[index]),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  List<PieChartSectionData> showingSections(DashboardLoaded state) {
+    return [
+      _buildPieChartSection(Colors.blue, state.loggedInUsers),
+      _buildPieChartSection(Colors.green, state.anonymousUsers),
+      _buildPieChartSection(Colors.purple, state.subscribedUsers),
+    ];
+  }
+
+  PieChartSectionData _buildPieChartSection(Color color, int value) {
+    final double fontSize = value > 0 ? 16 : 0;
+    final double radius = value > 0 ? 50 : 0;
+
+    return PieChartSectionData(
+      color: color,
+      value: value.toDouble(),
+      title: value > 0 ? '$value' : '',
+      radius: radius,
+      titleStyle: TextStyle(
+        fontSize: fontSize,
+        fontWeight: FontWeight.bold,
+        color: Colors.white,
+      ),
+    );
   }
 
   Widget _buildLogsContent(DashboardLoaded state) {
@@ -586,7 +544,6 @@ class _DashboardState extends State<Dashboard> {
                 ),
                 TextButton(
                   onPressed: () {
-                    // Utilisez innerContext pour accéder à DashboardBloc
                     BlocProvider.of<DashboardBloc>(innerContext)
                         .add(DeleteGameEvent(gameId));
                     Navigator.of(dialogContext).pop();
@@ -602,6 +559,46 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildUsersContent(DashboardLoaded state) {
-    return const Center(child: Text('Users Content'));
+    return const UsersPage();
+  }
+
+  Widget _buildFeatureFlippingConten(DashboardLoaded state) {
+    return const Center(child: Text('Feature Flipping'));
+  }
+
+  Widget _buildFloatingActionButton() {
+    return _selectedIndex == 2
+        ? FloatingActionButton(
+            onPressed: () async {
+              final result = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return const AddTournamentPage();
+                },
+              );
+
+              if (result == true && mounted) {
+                BlocProvider.of<DashboardBloc>(context).add(FetchTournaments());
+              }
+            },
+            child: const Icon(Icons.add),
+          )
+        : _selectedIndex == 3
+            ? FloatingActionButton(
+                onPressed: () async {
+                  final result = await showDialog<bool>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const AddGamePage();
+                    },
+                  );
+
+                  if (result == true && mounted) {
+                    BlocProvider.of<DashboardBloc>(context).add(FetchGames());
+                  }
+                },
+                child: const Icon(Icons.add),
+              )
+            : Container();
   }
 }

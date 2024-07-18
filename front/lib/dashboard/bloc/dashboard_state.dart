@@ -1,8 +1,7 @@
 import 'package:equatable/equatable.dart';
-import 'package:uresport/core/models/user.dart';
-
-import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/game.dart';
+import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/user.dart';
 
 abstract class DashboardState extends Equatable {
   const DashboardState();
@@ -17,9 +16,9 @@ class DashboardLoading extends DashboardState {}
 
 class DashboardLoaded extends DashboardState {
   final String message;
-  final int activeUsers;
-  final int activeTournaments;
-  final int totalGames;
+  final int loggedInUsers;
+  final int anonymousUsers;
+  final int subscribedUsers;
   final List<String> recentLogs;
   final List<User> users;
   final List<Tournament> tournaments;
@@ -27,9 +26,9 @@ class DashboardLoaded extends DashboardState {
 
   const DashboardLoaded({
     required this.message,
-    this.activeUsers = 0,
-    this.activeTournaments = 0,
-    this.totalGames = 0,
+    this.loggedInUsers = 0,
+    this.anonymousUsers = 0,
+    this.subscribedUsers = 0,
     this.recentLogs = const [],
     this.users = const [],
     this.tournaments = const [],
@@ -39,9 +38,9 @@ class DashboardLoaded extends DashboardState {
   @override
   List<Object> get props => [
         message,
-        activeUsers,
-        activeTournaments,
-        totalGames,
+        loggedInUsers,
+        anonymousUsers,
+        subscribedUsers,
         recentLogs,
         users,
         tournaments,
@@ -50,9 +49,9 @@ class DashboardLoaded extends DashboardState {
 
   DashboardLoaded copyWith({
     String? message,
-    int? activeUsers,
-    int? activeTournaments,
-    int? totalGames,
+    int? loggedInUsers,
+    int? anonymousUsers,
+    int? subscribedUsers,
     List<String>? recentLogs,
     List<User>? users,
     List<Tournament>? tournaments,
@@ -60,9 +59,9 @@ class DashboardLoaded extends DashboardState {
   }) {
     return DashboardLoaded(
       message: message ?? this.message,
-      activeUsers: activeUsers ?? this.activeUsers,
-      activeTournaments: activeTournaments ?? this.activeTournaments,
-      totalGames: totalGames ?? this.totalGames,
+      loggedInUsers: loggedInUsers ?? this.loggedInUsers,
+      anonymousUsers: anonymousUsers ?? this.anonymousUsers,
+      subscribedUsers: subscribedUsers ?? this.subscribedUsers,
       recentLogs: recentLogs ?? this.recentLogs,
       users: users ?? this.users,
       tournaments: tournaments ?? this.tournaments,
