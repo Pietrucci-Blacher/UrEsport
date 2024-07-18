@@ -216,7 +216,7 @@ func CloseMatch(c *gin.Context) {
 
 		_ = ws.Room(roomName).Emit("match:update", match)
 		_ = ws.Room(roomName).Emit("match:update", nextMatch)
-		c.JSON(http.StatusOK, nextMatch)
+		c.JSON(http.StatusOK, match)
 		return
 	}
 
