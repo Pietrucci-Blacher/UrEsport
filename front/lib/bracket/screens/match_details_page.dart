@@ -2,7 +2,6 @@ import 'package:uresport/core/services/auth_service.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:uresport/core/models/match.dart';
-import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/match_service.dart';
@@ -30,12 +29,9 @@ class MatchDetailsPage extends StatefulWidget  {
 }
 
 class MatchDetailsPageState extends State<MatchDetailsPage>  {
-  final List<String> _statusList = ['waiting', 'playing', 'finished'];
   final TextEditingController _score = TextEditingController();
   final TextEditingController _score1 = TextEditingController();
   final TextEditingController _score2 = TextEditingController();
-  Team? _selectedTeam = null;
-  String? _selectedStatus = null;
   final Websocket ws = Websocket.getInstance();
   late MatchNotifier matchNotifier;
   User? _currentUser;
@@ -117,9 +113,9 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                             _buildStatColumn(matchNotifier.match.team1?.name ?? '', matchNotifier.match.team1Close ? 'Propose de cloturer' : ''),
                           if (matchNotifier.match.team2Close)
                             _buildStatColumn(matchNotifier.match.team2?.name ?? '', matchNotifier.match.team2Close ? 'Propose de cloturer' : ''),
-                          if (isTeamOwner)
+                          if ((isTeamOwner || isTournamentOwner) && matchNotifier.match.winnerId == null)
                             const Divider(thickness: 2),
-                          if (isTeamOwner)
+                          if (isTeamOwner && matchNotifier.match.winnerId == null)
                             Center(
                               child: ElevatedButton(
                                 onPressed: () {
@@ -130,7 +126,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                                 ),
                               ),
                             ),
-                          if (isTeamOwner)
+                          if (isTeamOwner && matchNotifier.match.winnerId == null)
                             Center(
                               child: ElevatedButton(
                                 onPressed: () {
@@ -185,6 +181,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
         return AlertDialog(
           title: const Text('Mettre à jour le match'),
           content: Column(
+            mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
                 controller: _score1,
@@ -196,48 +193,17 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                 decoration: const InputDecoration(labelText: 'Score team 2'),
                 keyboardType: TextInputType.number,
               ),
-              DropdownButton<Team>(
-                value: matchNotifier.match.team1,
-                onChanged: (Team? newValue) {
-                  setState(() {
-                    _selectedTeam = newValue;
-                  });
-                },
-                items: [matchNotifier.match.team1, matchNotifier.match.team2]
-                    .map<DropdownMenuItem<Team>>((Team? value) {
-                  return DropdownMenuItem<Team>(
-                    value: value,
-                    child: Text(value?.name ?? ''),
-                  );
-                }).toList(),
-              ),
-              DropdownButton<String>(
-                value: 'waiting',
-                onChanged: (String? newValue) {
-                  setState(() {
-                    _selectedStatus = newValue ?? '';
-                  });
-                },
-                items: _statusList.map<DropdownMenuItem<String>>((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
-                  );
-                }).toList(),
-              ),
             ],
           ),
           actions: <Widget>[
             TextButton(
               onPressed: () async {
-                final inputScore1 = int.tryParse(_score1.text) ?? 0;
-                final inputScore2 = int.tryParse(_score2.text) ?? 0;
+                final inputScore1 = int.tryParse(_score1.text);
+                final inputScore2 = int.tryParse(_score2.text);
                 try {
                   final updatedMatch = await teamService.updateMatch(matchNotifier.match.id, {
                     'score1': inputScore1,
                     'score2': inputScore2,
-                    'status': _selectedStatus,
-                    'winner_id': _selectedTeam?.id,
                   });
                   matchNotifier.updateMatch(updatedMatch);
                 } catch (e) {
@@ -249,6 +215,9 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                     );
                   }
                 }
+                _score1.clear();
+                _score2.clear();
+                Navigator.pop(context);
               },
               child: const Text('Mettre à jour le score'),
             ),
@@ -405,57 +374,6 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
     );
   }
 
-  // Widget _buildStatRow(String statName, String statValue1, String statValue2) {
-  //   return Padding(
-  //     padding: const EdgeInsets.symmetric(vertical: 8.0),
-  //     child: Row(
-  //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-  //       children: [
-  //         Expanded(
-  //           child: Text(
-  //             statValue1,
-  //             style: const TextStyle(
-  //               fontSize: 16,
-  //               fontWeight: FontWeight.bold,
-  //             ),
-  //             textAlign: TextAlign.center,
-  //           ),
-  //         ),
-  //         Container(
-  //           width: 1,
-  //           height: 24,
-  //           color: Colors.grey,
-  //         ),
-  //         Expanded(
-  //           child: Text(
-  //             statName,
-  //             style: const TextStyle(
-  //               fontSize: 16,
-  //               fontWeight: FontWeight.bold,
-  //             ),
-  //             textAlign: TextAlign.center,
-  //           ),
-  //         ),
-  //         Container(
-  //           width: 1,
-  //           height: 24,
-  //           color: Colors.grey,
-  //         ),
-  //         Expanded(
-  //           child: Text(
-  //             statValue2,
-  //             style: const TextStyle(
-  //               fontSize: 16,
-  //               fontWeight: FontWeight.bold,
-  //             ),
-  //             textAlign: TextAlign.center,
-  //           ),
-  //         ),
-  //       ],
-  //     ),
-  //   );
-  // }
-
   // Méthode pour créer la ligne personnalisée du score
   Widget _buildCustomScoreRow(
       String statName, String statValue1, String statValue2) {
@@ -526,11 +444,4 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
       ),
     );
   }
-
-  // Widget _buildVerticalDivider() {
-  //   return const Padding(
-  //     padding: EdgeInsets.symmetric(vertical: 4.0),
-  //     child: Divider(thickness: 1, color: Colors.grey),
-  //   );
-  // }
 }

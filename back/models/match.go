@@ -140,6 +140,8 @@ func (m *Match) Close() {
 	}
 
 	m.Status = FINISHED
+	m.Team1Close = false
+	m.Team2Close = false
 }
 
 func (m *Match) SetWinnerToMatch(winnerID *int) {
