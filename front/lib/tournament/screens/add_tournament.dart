@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/widgets/custom_toast.dart';
 
 class AddTournamentPage extends StatefulWidget {
   const AddTournamentPage({super.key});
@@ -46,15 +46,18 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
       try {
         final tournamentService =
-        Provider.of<ITournamentService>(context, listen: false);
+            Provider.of<ITournamentService>(context, listen: false);
         await tournamentService.createTournament(tournamentData);
-        if(!mounted) return;
-        showCustomToast(AppLocalizations.of(context).tournamentCreatedSuccessfully, Colors.green);
+        if (!mounted) return;
+        showCustomToast(
+            AppLocalizations.of(context).tournamentCreatedSuccessfully,
+            Colors.green);
         if (!mounted) return;
         Navigator.pop(context);
       } catch (e) {
         showCustomToast(
-            AppLocalizations.of(context).failedToCreateTournament(e.toString()), Colors.red);
+            AppLocalizations.of(context).failedToCreateTournament(e.toString()),
+            Colors.red);
       }
     }
   }
@@ -76,7 +79,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         final DateTime fullDateTime = DateTime(
             picked.year, picked.month, picked.day, time.hour, time.minute);
         final formattedDate =
-        DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
+            DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
         setState(() {
           controller.text = formattedDate;
         });
@@ -187,7 +190,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               ),
               TextFormField(
                 controller: _nbPlayerController,
-                decoration: InputDecoration(labelText: l.numberOfPlayersPerTeam),
+                decoration:
+                    InputDecoration(labelText: l.numberOfPlayersPerTeam),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {

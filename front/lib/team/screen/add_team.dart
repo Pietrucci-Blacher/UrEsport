@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/services/team_services.dart';
-import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/widgets/custom_toast.dart';
 
 class AddTeamPage extends StatefulWidget {
   const AddTeamPage({super.key});
@@ -26,13 +26,15 @@ class AddTeamPageState extends State<AddTeamPage> {
       try {
         final teamService = Provider.of<ITeamService>(context, listen: false);
         await teamService.createTeam(teamData);
-        if(!mounted) return;
-        showCustomToast(AppLocalizations.of(context).teamCreatedSuccessfully, Colors.green);
+        if (!mounted) return;
+        showCustomToast(
+            AppLocalizations.of(context).teamCreatedSuccessfully, Colors.green);
         if (!mounted) return;
         Navigator.pop(context);
       } catch (e) {
         showCustomToast(
-            AppLocalizations.of(context).failedToCreateTeam(e.toString()), Colors.red);
+            AppLocalizations.of(context).failedToCreateTeam(e.toString()),
+            Colors.red);
       }
     }
   }

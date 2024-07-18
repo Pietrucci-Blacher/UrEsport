@@ -5,11 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:uresport/core/services/cache_service.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/l10n/app_localizations.dart';
-
-import 'package:uresport/core/services/cache_service.dart';
 
 class AddTournamentPage extends StatefulWidget {
   const AddTournamentPage({super.key});
@@ -28,7 +27,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   final _imageController = TextEditingController();
   final _gameIdController = TextEditingController();
   final _nbPlayerController = TextEditingController();
-  final TextEditingController _startDateTimeController = TextEditingController();
+  final TextEditingController _startDateTimeController =
+      TextEditingController();
   final TextEditingController _endDateTimeController = TextEditingController();
   final Dio _dio = Dio();
   bool _isPrivate = false;
@@ -40,13 +40,16 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   DateTime? _startDateTime;
   DateTime? _endDateTime;
 
-
   void _updateDateTimeField(bool isStartDate) {
     setState(() {
       if (isStartDate) {
-        _startDateTimeController.text = _startDateTime != null ? _displayDateFormat.format(_startDateTime!) : '';
+        _startDateTimeController.text = _startDateTime != null
+            ? _displayDateFormat.format(_startDateTime!)
+            : '';
       } else {
-        _endDateTimeController.text = _endDateTime != null ? _displayDateFormat.format(_endDateTime!) : '';
+        _endDateTimeController.text = _endDateTime != null
+            ? _displayDateFormat.format(_endDateTime!)
+            : '';
       }
     });
   }
@@ -68,17 +71,23 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               selectionMode: DateRangePickerSelectionMode.single,
               minDate: isStartDate
                   ? today
-                  : (_startDateTime != null ? _startDateTime!.add(const Duration(minutes: 1)) : today),
+                  : (_startDateTime != null
+                      ? _startDateTime!.add(const Duration(minutes: 1))
+                      : today),
               showActionButtons: true,
               onSubmit: (Object? value) {
                 if (value is DateTime) {
                   if (isStartDate) {
                     // Update start date with selected time
                     _startDateTime = value;
-                    if (_endDateTime != null && _endDateTime!.isBefore(_startDateTime!.add(const Duration(minutes: 1)))) {
+                    if (_endDateTime != null &&
+                        _endDateTime!.isBefore(
+                            _startDateTime!.add(const Duration(minutes: 1)))) {
                       // If end date is before start date + 1 minute, adjust it
-                      _endDateTime = _startDateTime!.add(const Duration(minutes: 1));
-                      _endDateTimeController.text = _displayDateFormat.format(_endDateTime!);
+                      _endDateTime =
+                          _startDateTime!.add(const Duration(minutes: 1));
+                      _endDateTimeController.text =
+                          _displayDateFormat.format(_endDateTime!);
                     }
                   } else {
                     // Update end date with selected time
@@ -119,10 +128,13 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               time.minute,
             );
 
-            if (_endDateTime != null && _endDateTime!.isBefore(_startDateTime!.add(const Duration(minutes: 1)))) {
+            if (_endDateTime != null &&
+                _endDateTime!.isBefore(
+                    _startDateTime!.add(const Duration(minutes: 1)))) {
               // If end date is before start date + 1 minute, adjust it
               _endDateTime = _startDateTime!.add(const Duration(minutes: 1));
-              _endDateTimeController.text = _displayDateFormat.format(_endDateTime!);
+              _endDateTimeController.text =
+                  _displayDateFormat.format(_endDateTime!);
             }
           } else {
             // Update end date with selected time
@@ -135,9 +147,13 @@ class AddTournamentPageState extends State<AddTournamentPage> {
             );
 
             // Check if end date is before start date, adjust if necessary
-            if (_startDateTime != null && _endDateTime != null && _endDateTime!.isBefore(_startDateTime!)) {
-              _endDateTime = _startDateTime!.add(const Duration(minutes: 1)); // Set end date to one minute after start date
-              _endDateTimeController.text = _displayDateFormat.format(_endDateTime!);
+            if (_startDateTime != null &&
+                _endDateTime != null &&
+                _endDateTime!.isBefore(_startDateTime!)) {
+              _endDateTime = _startDateTime!.add(const Duration(
+                  minutes: 1)); // Set end date to one minute after start date
+              _endDateTimeController.text =
+                  _displayDateFormat.format(_endDateTime!);
             }
           }
 
@@ -156,8 +172,10 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       final newTournament = {
         'name': _nameController.text,
         'description': _descriptionController.text,
-        'start_date': _apiDateFormat.format(_startDateTime!), // Use API format for start date
-        'end_date': _apiDateFormat.format(_endDateTime!),     // Use API format for end date
+        'start_date': _apiDateFormat
+            .format(_startDateTime!), // Use API format for start date
+        'end_date':
+            _apiDateFormat.format(_endDateTime!), // Use API format for end date
         'location': _locationController.text.isNotEmpty
             ? _locationController.text
             : null,
@@ -197,7 +215,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         if (response.statusCode == 201) {
           _handleSuccessfulResponse();
         } else {
-          _showAlertDialog('${l.errorAddingTournament}: ${response.statusMessage}');
+          _showAlertDialog(
+              '${l.errorAddingTournament}: ${response.statusMessage}');
         }
       } catch (e) {
         if (kDebugMode) {
@@ -210,7 +229,6 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       _showAlertDialog(l.pleaseFillRequiredFields);
     }
   }
-
 
   void _handleSuccessfulResponse() {
     AppLocalizations l = AppLocalizations.of(context);
