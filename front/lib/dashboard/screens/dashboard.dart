@@ -31,10 +31,10 @@ class _DashboardState extends State<Dashboard> {
   void _websocket() {
     ws.on('user:connected', (socket, data) {
       context.read<DashboardBloc>().add(UpdateDashboardStats({
-            'loggedInUsers': data['loggedUsers'],
-            'anonymousUsers': data['annonUsers'],
-            'subscribedUsers': data['totalUsers'],
-          }));
+        'loggedInUsers': data['loggedUsers'],
+        'anonymousUsers': data['annonUsers'],
+        'subscribedUsers': data['totalUsers'],
+      }));
     });
 
     ws.emit('user:get-nb', null);
@@ -44,8 +44,8 @@ class _DashboardState extends State<Dashboard> {
   void initState() {
     super.initState();
     BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
-    _websocket();
     BlocProvider.of<DashboardBloc>(context).add(ConnectWebSocket());
+    _websocket();
   }
 
   @override
@@ -307,7 +307,7 @@ class _DashboardState extends State<Dashboard> {
                 itemCount: state.recentLogs.length,
                 itemBuilder: (context, index) {
                   return ListTile(
-                    title: Text(state.recentLogs[index]),
+                    title: Text(state.recentLogs[index].text),
                   );
                 },
               ),
@@ -364,7 +364,7 @@ class _DashboardState extends State<Dashboard> {
                   Container(
                     padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
-                      color: log.type == 'error' ? Colors.red : Colors.green,
+                      color: log.type == 'ERROR' ? Colors.red : Colors.green,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(
