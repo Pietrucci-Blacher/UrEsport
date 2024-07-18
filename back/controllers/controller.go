@@ -317,6 +317,10 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Get[*models.Team]("team"),
 				GetTeam,
 			)
+			teams.GET("/user/:user",
+				middlewares.Get[*models.User]("user"),
+				GetUserTeams,
+			)
 			teams.PATCH("/:team",
 				middlewares.IsLoggedIn(true),
 				middlewares.Get[*models.Team]("team"),
@@ -439,6 +443,14 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsTeamInMatch(),
 				middlewares.Validate[models.ScoreMatchDto](),
 				ScoreMatch,
+			)
+			matches.PATCH("/:match/team/:team/close",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Match]("match"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				middlewares.IsTeamInMatch(),
+				CloseMatch,
 			)
 		}
 

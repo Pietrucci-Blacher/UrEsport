@@ -1,4 +1,3 @@
-import 'dart:developer' as developer;
 import 'dart:ui' as ui;
 
 import 'package:flutter/material.dart';
@@ -9,11 +8,13 @@ import 'package:mapbox_api_pro/mapbox_api_pro.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:speech_to_text/speech_recognition_result.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/shared/map/bloc/map_bloc.dart';
 import 'package:uresport/shared/map/bloc/map_event.dart';
 import 'package:uresport/shared/map/bloc/map_state.dart';
+import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 
 class TournamentMapWidget extends StatefulWidget {
   final List<Tournament> tournaments;
@@ -52,7 +53,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
         accessToken: token,
       );
     } else {
-      developer.log('SDK_REGISTRY_TOKEN is null');
+      debugPrint('SDK_REGISTRY_TOKEN is null');
     }
   }
 
@@ -64,14 +65,14 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
 
   void _initializeSpeechToText() async {
     bool available = await _speechToText.initialize(
-      onStatus: (status) => developer.log('Speech recognition status: $status'),
+      onStatus: (status) => debugPrint('Speech recognition status: $status'),
       onError: (errorNotification) =>
-          developer.log('Speech recognition error: $errorNotification'),
+          debugPrint('Speech recognition error: $errorNotification'),
     );
     if (available) {
-      developer.log('Speech recognition initialized successfully');
+      debugPrint('Speech recognition initialized successfully');
     } else {
-      developer.log('Speech recognition not available');
+      debugPrint('Speech recognition not available');
     }
   }
 
@@ -89,7 +90,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     if (accessToken != null) {
       MapboxOptions.setAccessToken(accessToken);
     } else {
-      developer.log('SDK_REGISTRY_TOKEN is null');
+      debugPrint('SDK_REGISTRY_TOKEN is null');
     }
   }
 
@@ -243,6 +244,27 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                         child: Column(
                           children: [
                             ElevatedButton.icon(
+                              icon: const Icon(Icons.add),
+                              label: const Text('Voir la fiche du tournoi'),
+                              style: ElevatedButton.styleFrom(
+                                foregroundColor: Colors.white,
+                                backgroundColor: Colors.red,
+                                minimumSize: const ui.Size(double.infinity, 50),
+                              ),
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        TournamentDetailsScreen(
+                                      tournament: tournament,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                            ElevatedButton.icon(
                               icon: const Icon(Icons.directions),
                               label: const Text('Obtenir l\'itinéraire'),
                               style: ElevatedButton.styleFrom(
@@ -366,14 +388,14 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     try {
       bool available = await _speechToText.initialize(
         onStatus: (val) {
-          developer.log('Speech recognition status: $val');
+          debugPrint('Speech recognition status: $val');
           if (mounted) {
             setState(() {
               _isListening = val == 'listening';
             });
           }
         },
-        onError: (val) => developer.log('Speech recognition error: $val'),
+        onError: (val) => debugPrint('Speech recognition error: $val'),
       );
       if (available) {
         if (mounted) {
@@ -395,10 +417,10 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
           ),
         );
       } else {
-        developer.log('Speech recognition not available');
+        debugPrint('Speech recognition not available');
       }
     } catch (e) {
-      developer.log('Error starting speech recognition: $e');
+      debugPrint('Error starting speech recognition: $e');
     }
   }
 
@@ -415,7 +437,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
 
     serviceEnabled = await geo.Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      developer.log('Les services de localisation ne sont pas activés.');
+      debugPrint('Les services de localisation ne sont pas activés.');
       return;
     }
 
@@ -423,13 +445,13 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
     if (permission == geo.LocationPermission.denied) {
       permission = await geo.Geolocator.requestPermission();
       if (permission == geo.LocationPermission.denied) {
-        developer.log('Les permissions de localisation sont refusées.');
+        debugPrint('Les permissions de localisation sont refusées.');
         return;
       }
     }
 
     if (permission == geo.LocationPermission.deniedForever) {
-      developer.log('Les permissions de localisation sont refusées à jamais.');
+      debugPrint('Les permissions de localisation sont refusées à jamais.');
       return;
     }
 
@@ -448,6 +470,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
         CameraOptions(center: currentPoint, zoom: 14.0),
         MapAnimationOptions(duration: 2000, startDelay: 0),
       );
+      debugPrint(
+          "Camera moved to: Lat ${currentPoint.coordinates.lat}, Lon ${currentPoint.coordinates.lng}");
     }
   }
 
@@ -468,6 +492,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                 ),
                 MapAnimationOptions(duration: 2000, startDelay: 0),
               );
+              debugPrint(
+                  "Camera moved to: Lat ${state.position.coordinates.lat}, Lon ${state.position.coordinates.lng}");
             }
           } else if (state is DirectionsLoaded) {
             context
@@ -535,6 +561,11 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                   onMapCreated: (MapboxMap controller) {
                     _mapboxMap = controller;
                     context.read<MapBloc>().add(SetMapController(controller));
+                    controller.style.getStyleURI().then((_) {
+                      debugPrint("Map style fully loaded");
+                      context.read<MapBloc>().add(UpdateMarkers(
+                          widget.tournaments, _showTournamentDetails));
+                    });
                   },
                 ),
                 if (_searching)
@@ -590,6 +621,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                                                       duration: 2000,
                                                       startDelay: 0),
                                                 );
+                                                debugPrint(
+                                                    "Added test marker at Lat ${tournament.latitude}, Lon ${tournament.longitude}");
                                                 setState(() {
                                                   _searching = false;
                                                 });

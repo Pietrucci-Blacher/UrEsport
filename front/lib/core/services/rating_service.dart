@@ -35,8 +35,7 @@ class RatingService implements IRatingService {
             'Content-Type': 'application/json; charset=UTF-8',
           },
           validateStatus: (status) {
-            return status != null &&
-                status < 500; // Accepter les codes de statut < 500
+            return status != null && status < 500;
           },
         ),
       );
@@ -198,7 +197,7 @@ class RatingService implements IRatingService {
         };
       } else if (response.statusCode == 404) {
         return {
-          'rating': 0.0, // Indiquer qu'aucune note n'a été trouvée
+          'rating': 0.0,
           'ratingId': null,
         };
       } else {

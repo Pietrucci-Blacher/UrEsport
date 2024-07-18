@@ -4,6 +4,8 @@ import 'package:intl/intl.dart';
 import 'package:uresport/generated/l10n/intl/messages_all.dart';
 
 class AppLocalizations {
+  String get myTeams => 'My Teams';
+
   static Future<AppLocalizations> load(Locale locale) {
     final String name = locale.countryCode?.isEmpty ?? false
         ? locale.languageCode
@@ -616,7 +618,7 @@ class AppLocalizations {
 
   String get listAllTournaments {
     return Intl.message(
-      'List tournaments',
+      'List Tournaments',
       name: 'listAllTournaments ',
       desc: 'List Tournaments button text',
     );
@@ -624,9 +626,17 @@ class AppLocalizations {
 
   String get listMyTournaments {
     return Intl.message(
-      'My tournaments',
+      'My Tournaments',
       name: 'listMyTournaments',
       desc: 'My Tournaments button text',
+    );
+  }
+
+  String get listMyTeamsJoined {
+    return Intl.message(
+      'My Teams',
+      name: 'listMyTeamsJoined',
+      desc: 'My Teams button text',
     );
   }
 }

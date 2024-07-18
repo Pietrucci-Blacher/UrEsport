@@ -49,7 +49,6 @@ class GameDetailPageState extends State<GameDetailPage> {
                       ),
                       TextButton(
                         onPressed: () {
-                          // Implement follow logic here
                           Navigator.pop(context);
                         },
                         child: const Text('Follow'),

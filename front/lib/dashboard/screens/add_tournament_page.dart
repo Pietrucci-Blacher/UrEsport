@@ -1,10 +1,10 @@
-import 'package:datetime_picker_formfield/datetime_picker_formfield.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 
@@ -37,33 +37,70 @@ class AddTournamentPageState extends State<AddTournamentPage> {
     return DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(dateTime.toUtc());
   }
 
-  Future<DateTime?> _selectDateTime(
-      BuildContext context, DateTime? initialDate) async {
-    final DateTime? date = await showDatePicker(
+  Future<void> _selectDateTime(BuildContext context, bool isStartDate) async {
+    await showDialog(
       context: context,
-      initialDate: initialDate ?? DateTime.now(),
-      firstDate: DateTime(2000),
-      lastDate: DateTime(2100),
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(isStartDate ? 'Select Start Date' : 'Select End Date'),
+          content: SizedBox(
+            height: 300,
+            width: 300,
+            child: SfDateRangePicker(
+              view: DateRangePickerView.month,
+              selectionMode: DateRangePickerSelectionMode.single,
+              showActionButtons: true,
+              onSubmit: (Object? value) {
+                if (value is DateTime) {
+                  setState(() {
+                    if (isStartDate) {
+                      _startDateTime = value;
+                    } else {
+                      _endDateTime = value;
+                    }
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              onCancel: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        );
+      },
     );
 
-    if (date == null) return null;
+    // After selecting the date, show time picker
+    if ((isStartDate && _startDateTime != null && context.mounted) ||
+        (!isStartDate && _endDateTime != null && context.mounted)) {
+      TimeOfDay? time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
 
-    if (!context.mounted) return null;
-
-    final TimeOfDay? time = await showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.fromDateTime(initialDate ?? DateTime.now()),
-    );
-
-    return time == null
-        ? null
-        : DateTime(
-            date.year,
-            date.month,
-            date.day,
-            time.hour,
-            time.minute,
-          );
+      if (time != null) {
+        setState(() {
+          if (isStartDate) {
+            _startDateTime = DateTime(
+              _startDateTime!.year,
+              _startDateTime!.month,
+              _startDateTime!.day,
+              time.hour,
+              time.minute,
+            );
+          } else {
+            _endDateTime = DateTime(
+              _endDateTime!.year,
+              _endDateTime!.month,
+              _endDateTime!.day,
+              time.hour,
+              time.minute,
+            );
+          }
+        });
+      }
+    }
   }
 
   Future<void> _saveTournament() async {
@@ -191,37 +228,31 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                         return null;
                       },
                     ),
-                    DateTimeField(
-                      format: _dateFormat,
-                      decoration:
-                          const InputDecoration(labelText: 'Start Date & Time'),
-                      onShowPicker: (context, currentValue) =>
-                          _selectDateTime(context, currentValue),
-                      onChanged: (date) => setState(() {
-                        _startDateTime = date;
-                      }),
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Please enter the start date and time';
-                        }
-                        return null;
-                      },
+                    GestureDetector(
+                      onTap: () => _selectDateTime(context, true),
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Start Date & Time',
+                            hintText: _startDateTime != null
+                                ? _dateFormat.format(_startDateTime!)
+                                : '',
+                          ),
+                        ),
+                      ),
                     ),
-                    DateTimeField(
-                      format: _dateFormat,
-                      decoration:
-                          const InputDecoration(labelText: 'End Date & Time'),
-                      onShowPicker: (context, currentValue) =>
-                          _selectDateTime(context, currentValue),
-                      onChanged: (date) => setState(() {
-                        _endDateTime = date;
-                      }),
-                      validator: (value) {
-                        if (value == null) {
-                          return 'Please enter the end date and time';
-                        }
-                        return null;
-                      },
+                    GestureDetector(
+                      onTap: () => _selectDateTime(context, false),
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'End Date & Time',
+                            hintText: _endDateTime != null
+                                ? _dateFormat.format(_endDateTime!)
+                                : '',
+                          ),
+                        ),
+                      ),
                     ),
                     TextFormField(
                       controller: _locationController,

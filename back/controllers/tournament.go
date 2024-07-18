@@ -157,6 +157,8 @@ func UpdateTournament(c *gin.Context) {
 		tournament.NbPlayer = body.NbPlayer
 	}
 
+	tournament.Private = body.Private
+
 	if body.GameID != 0 {
 		var game models.Game
 		if err := game.FindOneById(body.GameID); err != nil {
