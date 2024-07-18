@@ -35,12 +35,17 @@ func FindAllGames(query services.QueryFilter) ([]Game, error) {
 
 	value := DB.Model(&Game{}).
 		Offset(query.GetSkip()).
-		Limit(query.GetLimit()).
+		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
 		Where(query.GetSearch()).
 		Order(query.GetSort()).
-		Preload("Tournaments").
-		Find(&games)
+		Preload("Tournaments")
+
+	if query.GetLimit() != 0 {
+		value.Limit(query.GetLimit())
+	}
+
+	value.Find(&games)
 
 	return games, value.Error
 }

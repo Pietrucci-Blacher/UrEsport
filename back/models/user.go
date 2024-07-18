@@ -73,7 +73,7 @@ func FindAllUsers(query services.QueryFilter) ([]User, error) {
 
 	err := DB.Model(&User{}).
 		Offset(query.GetSkip()).
-		Limit(query.GetLimit()).
+		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
 		Order(query.GetSort()).
 		Preload("Teams").

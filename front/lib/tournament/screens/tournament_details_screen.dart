@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -17,7 +15,6 @@ import 'package:uresport/bracket/screens/custom_bracket.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/models/team.dart' as team_model;
-
 import 'package:uresport/tournament/screens/edit_tournament.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
@@ -750,13 +747,16 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                'Voir tous les participants',
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .primaryColor, // Couleur du texte cliquable
-                                  decoration: TextDecoration
-                                      .underline, // Souligner le texte
+                              Flexible(
+                                child: Text(
+                                  'Voir tous les participants',
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .primaryColor, // Couleur du texte cliquable
+                                    decoration: TextDecoration
+                                        .underline, // Souligner le texte
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               const SizedBox(width: 8),
