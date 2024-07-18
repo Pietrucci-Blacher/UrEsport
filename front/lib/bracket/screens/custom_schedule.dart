@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:uresport/bracket/screens/match_details_page.dart';
 
 class Match {
   final String team1;

@@ -197,7 +197,7 @@ class BracketContentState extends State<BracketContent> {
                       text: '$team1 (${m.score1})\n$team2 (${m.score2})',
                       textStyle: const TextStyle(
                         color: Colors.black,
-                        fontWeight: FontWeight.bold,
+                        fontWeight: FontWeight.normal,
                       ));
                 },
                 onContainerTapDown:
