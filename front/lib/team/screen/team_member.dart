@@ -59,11 +59,11 @@ class TeamMembersPage extends StatelessWidget {
           future: authService.fetchUsers(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
-              return Center(child: CircularProgressIndicator());
+              return const Center(child: CircularProgressIndicator());
             } else if (snapshot.hasError) {
               return Center(child: Text('Erreur: ${snapshot.error}'));
             } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return Center(child: Text('Aucun utilisateur trouvé'));
+              return const Center(child: Text('Aucun utilisateur trouvé'));
             } else {
               final users = snapshot.data!;
               return ListView.builder(

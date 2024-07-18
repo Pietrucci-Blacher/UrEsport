@@ -174,6 +174,7 @@ class TeamService implements ITeamService {
     }
   }
 
+  @override
   Future<void> inviteUserToTeam(int teamId, String username) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
