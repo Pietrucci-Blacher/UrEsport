@@ -26,18 +26,15 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
   final Websocket ws = Websocket.getInstance();
-  int _loggedUsers = 0;
-  int _annonUsers = 0;
-  int _totalUsers = 0;
   int touchedIndex = -1;
 
   void _websocket() {
     ws.on('user:connected', (socket, data) {
-      setState(() {
-        _loggedUsers = data['loggedUsers'];
-        _annonUsers = data['annonUsers'];
-        _totalUsers = data['totalUsers'];
-      });
+      context.read<DashboardBloc>().add(UpdateDashboardStats({
+            'loggedInUsers': data['loggedUsers'],
+            'anonymousUsers': data['annonUsers'],
+            'subscribedUsers': data['totalUsers'],
+          }));
     });
 
     ws.emit('user:get-nb', null);
@@ -558,10 +555,6 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  Widget _buildUsersContent(DashboardLoaded state) {
-    return const UsersPage();
-  }
-
   Widget _buildFeatureFlippingConten(DashboardLoaded state) {
     return const Center(child: Text('Feature Flipping'));
   }
@@ -569,36 +562,37 @@ class _DashboardState extends State<Dashboard> {
   Widget _buildFloatingActionButton() {
     return _selectedIndex == 4
         ? FloatingActionButton(
-      onPressed: () async {
-        final result = await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return const AddGamePage();
-          },
-        );
+            onPressed: () async {
+              final result = await showDialog<bool>(
+                context: context,
+                builder: (BuildContext context) {
+                  return const AddGamePage();
+                },
+              );
 
-        if (result == true && mounted) {
-          BlocProvider.of<DashboardBloc>(context).add(FetchGames());
-        }
-      },
-      child: const Icon(Icons.add),
-    )
+              if (result == true && mounted) {
+                BlocProvider.of<DashboardBloc>(context).add(FetchGames());
+              }
+            },
+            child: const Icon(Icons.add),
+          )
         : _selectedIndex == 3
-        ? FloatingActionButton(
-      onPressed: () async {
-        final result = await showDialog<bool>(
-          context: context,
-          builder: (BuildContext context) {
-            return const AddTournamentPage();
-          },
-        );
+            ? FloatingActionButton(
+                onPressed: () async {
+                  final result = await showDialog<bool>(
+                    context: context,
+                    builder: (BuildContext context) {
+                      return const AddTournamentPage();
+                    },
+                  );
 
-        if (result == true && mounted) {
-          BlocProvider.of<DashboardBloc>(context).add(FetchTournaments());
-        }
-      },
-      child: const Icon(Icons.add),
-    )
-        : Container();
+                  if (result == true && mounted) {
+                    BlocProvider.of<DashboardBloc>(context)
+                        .add(FetchTournaments());
+                  }
+                },
+                child: const Icon(Icons.add),
+              )
+            : Container();
   }
 }

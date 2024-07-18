@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:provider/provider.dart';
+import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
@@ -9,6 +10,8 @@ import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/map/map.dart';
+import 'package:uresport/team/screen/add_team.dart';
+import 'package:uresport/team/screen/team_member.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
@@ -16,9 +19,6 @@ import 'package:uresport/tournament/screens/add_tournament.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
-import 'package:uresport/core/models/team.dart';
-import 'package:uresport/team/screen/add_team.dart';
-import 'package:uresport/team/screen/team_member.dart';
 
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
@@ -150,8 +150,10 @@ class TournamentScreenState extends State<TournamentScreen> {
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold)),
                         subtitle: Text(
-                          l.membersAndTournaments(team.members.length, team.tournaments.length),
-                          style: const TextStyle(fontSize: 14, color: Colors.grey),
+                          l.membersAndTournaments(
+                              team.members.length, team.tournaments.length),
+                          style:
+                              const TextStyle(fontSize: 14, color: Colors.grey),
                         ),
                         trailing: IconButton(
                           icon: Icon(
@@ -163,7 +165,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                         ),
                         children: team.tournaments.map((tournamentJson) {
                           Tournament tournament =
-                          Tournament.fromJson(tournamentJson);
+                              Tournament.fromJson(tournamentJson);
                           return Card(
                             margin: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
@@ -173,12 +175,14 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   width: 50, height: 50, fit: BoxFit.cover),
                               title: Text(tournament.name,
                                   style: const TextStyle(
-                                      fontSize: 16, fontWeight: FontWeight.w600)),
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      l.tournamentStartDate(tournament.startDate),
+                                      l.tournamentStartDate(
+                                          tournament.startDate),
                                       style: const TextStyle(fontSize: 14)),
                                   Text(l.tournamentEndDate(tournament.endDate),
                                       style: const TextStyle(fontSize: 14)),
@@ -194,9 +198,9 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         TournamentDetailsScreen(
-                                          tournament: tournament,
-                                          game: tournament.game,
-                                        ),
+                                      tournament: tournament,
+                                      game: tournament.game,
+                                    ),
                                   ),
                                 );
                               },
@@ -278,9 +282,12 @@ class TournamentScreenState extends State<TournamentScreen> {
         // Reload the teams after deleting a team
         _loadUserTeams();
       });
-      _showToast(AppLocalizations.of(context).teamDeleted(teamName), Colors.green);
+      if (!mounted) return;
+      _showToast(
+          AppLocalizations.of(context).teamDeleted(teamName), Colors.green);
     } catch (e) {
-      _showToast(AppLocalizations.of(context).failedToDeleteTeam(e.toString()), Colors.red);
+      _showToast(AppLocalizations.of(context).failedToDeleteTeam(e.toString()),
+          Colors.red);
     }
   }
 
@@ -295,14 +302,16 @@ class TournamentScreenState extends State<TournamentScreen> {
         // Reload the teams after leaving a team
         _loadUserTeams();
       });
+      if (!mounted) return;
       _showToast(AppLocalizations.of(context).teamLeft(teamName), Colors.green);
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 409) {
         final errorResponse = e.response?.data;
-        final errorMessage =
-            errorResponse['error'] ?? AppLocalizations.of(context).failedToLeaveTeam;
+        final errorMessage = errorResponse['error'] ??
+            AppLocalizations.of(context).failedToLeaveTeam;
         _showToast(errorMessage, Colors.red);
       } else {
+        if (!mounted) return;
         _showToast(AppLocalizations.of(context).failedToLeaveTeam, Colors.red);
       }
     }
@@ -410,7 +419,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                      const AddTournamentPage(),
+                                          const AddTournamentPage(),
                                     ),
                                   );
                                 },
