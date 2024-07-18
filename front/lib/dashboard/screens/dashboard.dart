@@ -7,10 +7,12 @@ import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/core/websocket/websocket.dart';
+import 'package:uresport/cubit/locale_cubit.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'package:uresport/dashboard/screens/users_screen.dart'; // Assurez-vous que ce fichier existe
+import 'package:uresport/dashboard/screens/users_screen.dart';
+import 'package:uresport/shared/locale_switcher.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -26,11 +28,15 @@ class _DashboardState extends State<Dashboard> {
   int _annonUsers = 0;
   int _totalUsers = 0;
   int touchedIndex = -1;
+  List<Game> _topGames = [];
+  int _activeTournaments = 0;
+  int _topGamesCount = 5;
   late final DashboardBloc _dashboardBloc;
 
   @override
   void initState() {
     super.initState();
+    BlocProvider.of<AuthBloc>(context).add(AuthCheckRequested());
     _websocket();
   }
 
@@ -60,7 +66,21 @@ class _DashboardState extends State<Dashboard> {
       });
     });
 
+    ws.on('games:top', (socket, data) {
+      setState(() {
+        _topGames = (data as List).map((game) => Game.fromJson(game)).toList();
+      });
+    });
+
+    ws.on('tournaments:active', (socket, data) {
+      setState(() {
+        _activeTournaments = data['count'];
+      });
+    });
+
     ws.emit('user:get-nb', null);
+    ws.emit('games:get-top', {'limit': _topGamesCount});
+    ws.emit('tournaments:get-active', null);
   }
 
   @override
@@ -68,69 +88,94 @@ class _DashboardState extends State<Dashboard> {
     return BlocProvider.value(
       value: _dashboardBloc,
       child: Scaffold(
-        body: Row(
-          children: [
-            NavigationRail(
-              selectedIndex: _selectedIndex,
-              onDestinationSelected: (int index) {
-                setState(() {
-                  _selectedIndex = index;
-                });
-              },
-              labelType: NavigationRailLabelType.selected,
-              destinations: const <NavigationRailDestination>[
-                NavigationRailDestination(
-                  icon: Icon(Icons.dashboard),
-                  selectedIcon: Icon(Icons.dashboard),
-                  label: Text('Dashboard'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.tune),
-                  selectedIcon: Icon(Icons.dashboard),
-                  label: Text('Feature Flipping'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.list),
-                  selectedIcon: Icon(Icons.list),
-                  label: Text('Logs'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.emoji_events),
-                  selectedIcon: Icon(Icons.emoji_events),
-                  label: Text('Tournaments'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.games),
-                  selectedIcon: Icon(Icons.games),
-                  label: Text('Games'),
-                ),
-                NavigationRailDestination(
-                  icon: Icon(Icons.people),
-                  selectedIcon: Icon(Icons.people),
-                  label: Text('Users'),
-                ),
-              ],
-            ),
-            const VerticalDivider(thickness: 1, width: 1),
-            Expanded(
-              child: BlocBuilder<DashboardBloc, DashboardState>(
-                builder: (context, state) {
-                  if (state is DashboardInitial) {
-                    return const Center(child: Text('Initializing...'));
-                  } else if (state is DashboardLoading) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (state is DashboardLoaded) {
-                    return _buildContent(state);
-                  } else if (state is DashboardError) {
-                    return Center(child: Text('Error: ${state.error}'));
-                  }
-                  return const Center(child: Text('Unknown state'));
+        backgroundColor: Colors.grey[100],
+        appBar: AppBar(
+          backgroundColor: Colors.transparent,
+          elevation: 0,
+          actions: [
+            Padding(
+              padding: const EdgeInsets.only(right: 16.0),
+              child: LocaleSwitcher(
+                onLocaleChanged: (locale) {
+                  context.read<LocaleCubit>().setLocale(locale);
                 },
               ),
             ),
           ],
         ),
+        body: Row(
+          children: [
+            const VerticalDivider(thickness: 1, width: 1),
+            _buildSidebar(),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.all(24.0),
+                child: BlocBuilder<DashboardBloc, DashboardState>(
+                  builder: (context, state) {
+                    if (state is DashboardInitial) {
+                      return const Center(child: Text('Initializing...'));
+                    } else if (state is DashboardLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is DashboardLoaded) {
+                      return _buildContent(state);
+                    } else if (state is DashboardError) {
+                      return Center(child: Text('Error: ${state.error}'));
+                    }
+                    return const Center(child: Text('Unknown state'));
+                  },
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
+    );
+  }
+
+  Widget _buildSidebar() {
+    return Container(
+      width: 250,
+      color: Colors.white,
+      child: Column(
+        children: [
+          const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Text(
+              'Admin Dashboard',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+          ),
+          Expanded(
+            child: ListView(
+              children: [
+                _buildNavItem(0, 'Dashboard', Icons.dashboard),
+                _buildNavItem(1, 'Feature Flippings', Icons.tune),
+                _buildNavItem(2, 'Logs', Icons.list),
+                _buildNavItem(3, 'Tournaments', Icons.emoji_events),
+                _buildNavItem(4, 'Games', Icons.games),
+                _buildNavItem(5, 'Users', Icons.people),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildNavItem(int index, String title, IconData icon) {
+    bool isSelected = _selectedIndex == index;
+    return ListTile(
+      leading: Icon(icon, color: isSelected ? Colors.blue : Colors.grey),
+      title: Text(
+        title,
+        style: TextStyle(
+          color: isSelected ? Colors.blue : Colors.black,
+          fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+        ),
+      ),
+      onTap: () => setState(() => _selectedIndex = index),
+      selected: isSelected,
+      selectedTileColor: Colors.blue.withOpacity(0.1),
     );
   }
 
@@ -145,7 +190,7 @@ class _DashboardState extends State<Dashboard> {
       case 3:
         return _buildGamesContent(state);
       case 4:
-        return const UsersPage(); // Assurez-vous que cette classe existe
+        return const UsersPage();
       default:
         return const Center(child: Text('Unknown page'));
     }
@@ -393,5 +438,124 @@ class _DashboardState extends State<Dashboard> {
 
   Widget _buildGamesContent(DashboardLoaded state) {
     return const Center(child: Text('Games Content'));
+  }
+
+  Widget _buildTopGamesCard() {
+    return Card(
+      elevation: 2,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text('Top Games',
+                    style:
+                        TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+                DropdownButton<int>(
+                  value: _topGamesCount,
+                  items: [5, 10, 15, 20].map((int value) {
+                    return DropdownMenuItem<int>(
+                      value: value,
+                      child: Text('Top $value'),
+                    );
+                  }).toList(),
+                  onChanged: (int? newValue) {
+                    if (newValue != null) {
+                      setState(() {
+                        _topGamesCount = newValue;
+                        ws.emit('games:get-top', {'limit': _topGamesCount});
+                      });
+                    }
+                  },
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _topGames.length,
+                itemBuilder: (context, index) {
+                  final game = _topGames[index];
+                  return ListTile(
+                    leading: Text('${index + 1}',
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    title: Text(game.name),
+                    trailing: Chip(
+                      label: Text('${game.upvotes} upvotes'),
+                      backgroundColor: Colors.blue[100],
+                    ),
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class Game {
+  final String name;
+  final int upvotes;
+
+  Game({required this.name, required this.upvotes});
+
+  factory Game.fromJson(Map<String, dynamic> json) {
+    return Game(
+      name: json['name'],
+      upvotes: json['upvotes'],
+    );
+  }
+}
+
+class _Badge extends StatelessWidget {
+  final String title;
+  final double size;
+  final Color borderColor;
+
+  const _Badge(
+    this.title, {
+    required this.size,
+    required this.borderColor,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedContainer(
+      duration: PieChart.defaultDuration,
+      width: size,
+      height: size,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        shape: BoxShape.circle,
+        border: Border.all(
+          color: borderColor,
+          width: 2,
+        ),
+        boxShadow: <BoxShadow>[
+          BoxShadow(
+            color: Colors.black.withOpacity(.5),
+            offset: const Offset(3, 3),
+            blurRadius: 3,
+          ),
+        ],
+      ),
+      padding: EdgeInsets.all(size * .15),
+      child: Center(
+        child: Text(
+          title[0].toUpperCase(),
+          style: TextStyle(
+            fontSize: size * .3,
+            fontWeight: FontWeight.bold,
+            color: borderColor,
+          ),
+        ),
+      ),
+    );
   }
 }
