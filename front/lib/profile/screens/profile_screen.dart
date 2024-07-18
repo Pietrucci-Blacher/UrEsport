@@ -12,8 +12,7 @@ import 'package:uresport/cubit/locale_cubit.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/main_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
-import 'package:uresport/shared/utils/image_util.dart'
-    as image_util; // Renommer l'importation conflictuelle
+import 'package:uresport/shared/utils/image_util.dart' as image_util;
 
 class ProfileScreen extends StatefulWidget {
   final IAuthService authService;
@@ -389,7 +388,6 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
                   )
                 : _localProfileImageUrl != null
                     ? image_util.CachedImageWidget(
-                        // Utilisation de l'import renommé
                         url: _localProfileImageUrl!,
                         size: 100,
                       )
