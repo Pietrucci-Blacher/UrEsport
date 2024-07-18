@@ -58,7 +58,8 @@ class ProfileScreenState extends State<ProfileScreen>
     AppLocalizations l = AppLocalizations.of(context);
     super.build(context);
     return BlocProvider(
-      create: (context) => AuthBloc(widget.authService)..add(AuthCheckRequested()),
+      create: (context) =>
+          AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: DefaultTabController(
         length: 2, // Number of tabs
         child: Scaffold(
@@ -90,11 +91,15 @@ class ProfileScreenState extends State<ProfileScreen>
                 );
               } else if (state is PasswordResetEmailSent) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context).passwordResetEmailSent)),
+                  SnackBar(
+                      content: Text(
+                          AppLocalizations.of(context).passwordResetEmailSent)),
                 );
               } else if (state is PasswordResetConfirmed) {
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context).passwordResetSuccessful)),
+                  SnackBar(
+                      content: Text(AppLocalizations.of(context)
+                          .passwordResetSuccessful)),
                 );
               } else if (state is AuthAuthenticated) {
                 _initializeControllers(state.user);
@@ -102,9 +107,10 @@ class ProfileScreenState extends State<ProfileScreen>
                 WidgetsBinding.instance.addPostFrameCallback((_) {
                   Navigator.of(context).pushAndRemoveUntil(
                     MaterialPageRoute(
-                      builder: (context) => MainScreen(authService: widget.authService),
+                      builder: (context) =>
+                          MainScreen(authService: widget.authService),
                     ),
-                        (Route<dynamic> route) => false,
+                    (Route<dynamic> route) => false,
                   );
                 });
               }
@@ -118,8 +124,10 @@ class ProfileScreenState extends State<ProfileScreen>
                     return FutureBuilder<void>(
                       future: _initializeControllers(state.user),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState == ConnectionState.waiting) {
-                          return const Center(child: CircularProgressIndicator());
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
                         } else {
                           return _buildTabBarView(context);
                         }
@@ -223,7 +231,8 @@ class ProfileScreenState extends State<ProfileScreen>
       debugPrint('Error saving profile: $e');
       _performIfMounted(() {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context).errorSavingProfile)),
+          SnackBar(
+              content: Text(AppLocalizations.of(context).errorSavingProfile)),
         );
       });
     }
@@ -235,7 +244,8 @@ class ProfileScreenState extends State<ProfileScreen>
       children: [
         Text(
           AppLocalizations.of(context).dangerZone,
-          style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
+          style: const TextStyle(
+              fontSize: 18, fontWeight: FontWeight.bold, color: Colors.red),
         ),
         const SizedBox(height: 10),
         _buildDangerZoneTile(
@@ -251,9 +261,10 @@ class ProfileScreenState extends State<ProfileScreen>
               WidgetsBinding.instance.addPostFrameCallback((_) {
                 Navigator.of(context).pushAndRemoveUntil(
                   MaterialPageRoute(
-                    builder: (context) => MainScreen(authService: widget.authService),
+                    builder: (context) =>
+                        MainScreen(authService: widget.authService),
                   ),
-                      (Route<dynamic> route) => false,
+                  (Route<dynamic> route) => false,
                 );
               });
             },
@@ -280,7 +291,9 @@ class ProfileScreenState extends State<ProfileScreen>
                   debugPrint('Error deleting account: $e');
                   _performIfMounted(() {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(AppLocalizations.of(context).errorDeletingAccount)),
+                      SnackBar(
+                          content: Text(AppLocalizations.of(context)
+                              .errorDeletingAccount)),
                     );
                   });
                 }
@@ -293,11 +306,11 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 
   Widget _buildDangerZoneTile(
-      BuildContext context, {
-        required IconData icon,
-        required String label,
-        required VoidCallback onTap,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
     return ListTile(
       leading: Icon(icon, color: Colors.red),
       title: Text(
@@ -309,11 +322,11 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> _showConfirmationDialog(
-      BuildContext context, {
-        required String title,
-        required String content,
-        required VoidCallback confirmAction,
-      }) {
+    BuildContext context, {
+    required String title,
+    required String content,
+    required VoidCallback confirmAction,
+  }) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -399,19 +412,19 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
           ClipOval(
             child: _isUpdatingImage
                 ? const CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.grey,
-              child: CircularProgressIndicator(),
-            )
+                    radius: 50,
+                    backgroundColor: Colors.grey,
+                    child: CircularProgressIndicator(),
+                  )
                 : _localProfileImageUrl != null
-                ? image_util.CachedImageWidget(
-              url: _localProfileImageUrl!,
-              size: 100,
-            )
-                : const CircleAvatar(
-              radius: 50,
-              child: Icon(Icons.person),
-            ),
+                    ? image_util.CachedImageWidget(
+                        url: _localProfileImageUrl!,
+                        size: 100,
+                      )
+                    : const CircleAvatar(
+                        radius: 50,
+                        child: Icon(Icons.person),
+                      ),
           ),
           Positioned(
             bottom: 0,
@@ -543,18 +556,18 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
   }
 
   Future<void> _updateProfileImage(
-      File imageFile,
-      int userId,
-      ScaffoldMessengerState scaffoldMessenger,
-      AppLocalizations localizations,
-      ValueChanged<String> onImageUpdated,
-      ) async {
+    File imageFile,
+    int userId,
+    ScaffoldMessengerState scaffoldMessenger,
+    AppLocalizations localizations,
+    ValueChanged<String> onImageUpdated,
+  ) async {
     final authBloc = context.read<AuthBloc>();
 
     try {
       debugPrint('Uploading image file: ${imageFile.path}');
       final imageUrl =
-      await authBloc.authService.uploadProfileImage(userId, imageFile);
+          await authBloc.authService.uploadProfileImage(userId, imageFile);
       debugPrint('Image uploaded successfully. URL: $imageUrl');
 
       final updatedImageUrl =
@@ -573,7 +586,8 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
     } catch (e) {
       debugPrint('Error uploading profile image: $e');
       scaffoldMessenger.showSnackBar(
-        SnackBar(content: Text('${localizations.errorUploadingProfileImage}: $e')),
+        SnackBar(
+            content: Text('${localizations.errorUploadingProfileImage}: $e')),
       );
     }
   }
@@ -654,7 +668,8 @@ class EditableFieldsSectionState extends State<EditableFieldsSection> {
     });
   }
 
-  Widget _buildEditableField(TextEditingController controller, String label, String fieldName) {
+  Widget _buildEditableField(
+      TextEditingController controller, String label, String fieldName) {
     return TextField(
       controller: controller,
       decoration: InputDecoration(labelText: label),
@@ -692,13 +707,17 @@ class EditableFieldsSectionState extends State<EditableFieldsSection> {
           ],
         ),
         const SizedBox(height: 10),
-        _buildEditableField(_firstNameController, AppLocalizations.of(context).firstName, 'firstname'),
+        _buildEditableField(_firstNameController,
+            AppLocalizations.of(context).firstName, 'firstname'),
         const SizedBox(height: 10),
-        _buildEditableField(_lastNameController, AppLocalizations.of(context).lastName, 'lastname'),
+        _buildEditableField(_lastNameController,
+            AppLocalizations.of(context).lastName, 'lastname'),
         const SizedBox(height: 10),
-        _buildEditableField(_usernameController, AppLocalizations.of(context).username, 'username'),
+        _buildEditableField(_usernameController,
+            AppLocalizations.of(context).username, 'username'),
         const SizedBox(height: 10),
-        _buildEditableField(_emailController, AppLocalizations.of(context).email, 'email'),
+        _buildEditableField(
+            _emailController, AppLocalizations.of(context).email, 'email'),
         const SizedBox(height: 20),
         if (_isEditing)
           Row(
@@ -758,8 +777,9 @@ class LikedGamesList extends StatelessWidget {
                   await likeService.deleteLike(like.id!);
 
                   // Montrer un message de confirmation
-                  if(!context.mounted) return;
-                  _showToast(context, '${game.name} supprimé de vos likes', Colors.red);
+                  if (!context.mounted) return;
+                  _showToast(context, '${game.name} supprimé de vos likes',
+                      Colors.red);
                 },
                 background: Container(
                   color: Colors.red,
@@ -777,7 +797,8 @@ class LikedGamesList extends StatelessWidget {
                     );
                   },
                   child: ListTile(
-                    leading: Image.network(game.imageUrl, width: 50, height: 50, fit: BoxFit.cover),
+                    leading: Image.network(game.imageUrl,
+                        width: 50, height: 50, fit: BoxFit.cover),
                     title: Text(game.name),
                     subtitle: Text(game.description),
                   ),
@@ -817,9 +838,6 @@ class LikedGamesList extends StatelessWidget {
     });
   }
 }
-
-
-
 
 class CachedImageWidget extends StatelessWidget {
   final String url;
