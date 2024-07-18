@@ -77,7 +77,8 @@ class AuthService implements IAuthService {
       await setToken(token);
       return token;
     } catch (e) {
-      throw Exception('Failed to login: $e');
+      throw Exception(
+          'Une erreur est survenue lors de la connexion. Veuillez réessayer.');
     }
   }
 
