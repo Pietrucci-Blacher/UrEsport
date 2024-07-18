@@ -170,7 +170,7 @@ class MatchService implements IMatchService {
       "${dotenv.env['API_ENDPOINT']}/matches/$matchId/team/$teamId/close",
       options: Options(
         headers: {
-          'Authorization' : 'Bearer $token',
+          'Authorization': 'Bearer $token',
           'Content-Type': 'application/json; charset=UTF-8',
         },
         validateStatus: (status) {
