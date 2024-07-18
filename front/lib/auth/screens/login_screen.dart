@@ -140,7 +140,6 @@ class LoginScreenState extends State<LoginScreen> {
                 }
                 return ElevatedButton(
                   onPressed: () => _onLoginButtonPressed(context),
-                  child: const Text('Login'),
                   style: ElevatedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     backgroundColor: Colors.blue,
@@ -150,6 +149,7 @@ class LoginScreenState extends State<LoginScreen> {
                     ),
                     elevation: 0,
                   ),
+                  child: const Text('Login'),
                 );
               },
             ),
