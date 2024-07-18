@@ -23,7 +23,7 @@ class CustomPoulesPage extends StatelessWidget {
         body: BlocBuilder<PouleBloc, PouleState>(
           builder: (context, state) {
             if (state is PouleLoading) {
-              return Center(child: Text(l.loading));
+              return const Center(child: CircularProgressIndicator());
             } else if (state is PouleLoaded) {
               return TournamentPoules(poules: state.poules);
             } else if (state is PouleError) {

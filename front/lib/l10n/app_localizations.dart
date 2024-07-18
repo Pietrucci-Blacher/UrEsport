@@ -621,7 +621,7 @@ class AppLocalizations {
   String get listAllTournaments {
     return Intl.message(
       'List Tournaments',
-      name: 'listAllTournaments ',
+      name: 'listAllTournaments',
       desc: 'List Tournaments button text',
     );
   }
@@ -2313,8 +2313,7 @@ class AppLocalizations {
     );
   }
 
-
-    }
+}
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
   const AppLocalizationsDelegate();

@@ -49,7 +49,7 @@ class PouleBracketViewState extends State<PouleBracketView> {
                       child: Table(
                         border: TableBorder.all(),
                         defaultColumnWidth: const FixedColumnWidth(120.0),
-                        children: _buildRoundRobinTableRows(poule.teams, l),
+                        children: _buildRoundRobinTableRows(poule.teams),
                       ),
                     ),
                   ),
@@ -62,7 +62,7 @@ class PouleBracketViewState extends State<PouleBracketView> {
     );
   }
 
-  List<TableRow> _buildRoundRobinTableRows(List<Team> teams, AppLocalizations l) {
+  List<TableRow> _buildRoundRobinTableRows(List<Team> teams) {
     List<TableRow> rows = [];
 
     // Add header row
@@ -111,12 +111,12 @@ class PouleBracketViewState extends State<PouleBracketView> {
           cells.add(
             GestureDetector(
               onTap: () {
-                _showResultDialog(context, teams[i], teams[j], l);
+                _showResultDialog(context, teams[i], teams[j]);
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  matchResults[teams[i].name]?[teams[j].name] ?? l.vs,
+                  matchResults[teams[i].name]?[teams[j].name] ?? 'VS',
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                       color: Colors.blue, decoration: TextDecoration.underline),
@@ -133,7 +133,7 @@ class PouleBracketViewState extends State<PouleBracketView> {
     return rows;
   }
 
-  void _showResultDialog(BuildContext context, Team team1, Team team2, AppLocalizations l) {
+  void _showResultDialog(BuildContext context, Team team1, Team team2) {
     final TextEditingController scoreController1 = TextEditingController();
     final TextEditingController scoreController2 = TextEditingController();
 
@@ -141,21 +141,21 @@ class PouleBracketViewState extends State<PouleBracketView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('${l.enterResult} ${team1.name} vs ${team2.name}'),
+          title: Text('Enter result for ${team1.name} vs ${team2.name}'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
                 controller: scoreController1,
                 decoration: InputDecoration(
-                  labelText: '${team1.name} ${l.score}',
+                  labelText: '${team1.name} Score',
                 ),
                 keyboardType: TextInputType.number,
               ),
               TextFormField(
                 controller: scoreController2,
                 decoration: InputDecoration(
-                  labelText: '${team2.name} ${l.score}',
+                  labelText: '${team2.name} Score',
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -163,13 +163,13 @@ class PouleBracketViewState extends State<PouleBracketView> {
           ),
           actions: [
             TextButton(
-              child: Text(l.cancel),
+              child: const Text('Cancel'),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             ElevatedButton(
-              child: Text(l.save),
+              child: const Text('Save'),
               onPressed: () {
                 setState(() {
                   matchResults[team1.name] = matchResults[team1.name] ?? {};
