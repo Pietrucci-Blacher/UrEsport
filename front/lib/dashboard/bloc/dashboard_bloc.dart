@@ -16,7 +16,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final GameService _gameService;
   final LogService _logService;
 
-  DashboardBloc(this._websocket, this._tournamentService, this._gameService, this._logService)
+  DashboardBloc(this._websocket, this._tournamentService, this._gameService,
+      this._logService)
       : super(DashboardInitial()) {
     on<ConnectWebSocket>(_onConnectWebSocket);
     on<DisconnectWebSocket>(_onDisconnectWebSocket);
@@ -120,7 +121,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   //   }
   // }
 
-  Future<void> _onFetchLogs(FetchLogs event, Emitter<DashboardState> emit) async {
+  Future<void> _onFetchLogs(
+      FetchLogs event, Emitter<DashboardState> emit) async {
     try {
       final List<Log> logs = await _logService.fetchLogs(sort: 'id desc');
       emit(DashboardLoaded(

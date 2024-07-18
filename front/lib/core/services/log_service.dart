@@ -46,9 +46,7 @@ class LogService implements ILogService {
         );
       }
 
-      return (response.data as List)
-          .map((log) => Log.fromJson(log))
-          .toList();
+      return (response.data as List).map((log) => Log.fromJson(log)).toList();
     } catch (e) {
       debugPrint(e.toString());
       if (e is DioException) {
