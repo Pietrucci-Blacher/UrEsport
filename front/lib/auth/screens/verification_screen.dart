@@ -75,7 +75,6 @@ class VerificationScreenState extends State<VerificationScreen> {
                       MainScreen(authService: widget.authService),
                 ),
               );
-              // Redirection ou autre action après vérification réussie
             }
           },
           child: Padding(

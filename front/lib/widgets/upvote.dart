@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:uresport/tournament/bloc/tournament_bloc.dart';
-import 'package:uresport/tournament/bloc/tournament_state.dart';
-import 'package:uresport/tournament/bloc/tournament_event.dart';
-import 'package:uresport/core/models/tournament.dart';
 import 'package:intl/intl.dart';
-import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/bracket/screens/custom_poules_page.dart';
 import 'package:uresport/bracket/screens/custom_bracket.dart';
+import 'package:uresport/bracket/screens/custom_poules_page.dart';
+import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/tournament/bloc/tournament_bloc.dart';
+import 'package:uresport/tournament/bloc/tournament_event.dart';
+import 'package:uresport/tournament/bloc/tournament_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 
 class TournamentScreen extends StatelessWidget {
@@ -173,8 +173,7 @@ class TournamentScreen extends StatelessWidget {
                   children: [
                     const Icon(Icons.thumb_up),
                     const SizedBox(width: 4),
-                    Text(
-                        '${tournament.upvotes}'), // Affiche le nombre de upvotes
+                    Text('${tournament.upvotes}'),
                   ],
                 ),
               ],
