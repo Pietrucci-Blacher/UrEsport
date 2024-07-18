@@ -36,12 +36,12 @@ type CreateTournamentDto struct {
 	Description string    `json:"description" validate:"required"`
 	StartDate   time.Time `json:"start_date" validate:"required"`
 	EndDate     time.Time `json:"end_date" validate:"required"`
-	Location    string    `json:"location" validate:"required"`
-	Latitude    float64   `json:"latitude" validate:"required"`
-	Longitude   float64   `json:"longitude" validate:"required"`
+	Location    string    `json:"location"`
+	Latitude    float64   `json:"latitude"`
+	Longitude   float64   `json:"longitude"`
 	Private     bool      `json:"private"`
-	NbPlayer    int       `json:"nb_player" validate:"required"`
 	GameID      int       `json:"game_id" validate:"required"`
+	NbPlayer    int       `json:"nb_player" validate:"required"`
 }
 
 type UpdateTournamentDto struct {
@@ -55,6 +55,7 @@ type UpdateTournamentDto struct {
 	Image       string    `json:"image"`
 	NbPlayer    int       `json:"nb_player"`
 	GameID      int       `json:"game_id"`
+	Private     bool      `json:"private"`
 }
 
 type SanitizedTournament struct {
@@ -118,6 +119,7 @@ func InTournamentArray(array []Tournament, value Tournament) bool {
 
 func (t *Tournament) GenerateBraketTree() ([]Match, error) {
 	var matches []Match
+	var ids []int
 
 	chErr := make(chan error)
 	chMatch := make(chan Match)
@@ -141,26 +143,31 @@ func (t *Tournament) GenerateBraketTree() ([]Match, error) {
 		matches = append(matches, match)
 	}
 
-	var i int
-	for _, match := range matches {
+	for i, match := range matches {
 		if match.Depth != 0 {
 			continue
 		}
+		ids = append(ids, i)
+	}
 
-		if i < len(t.Teams) {
-			match.Team1ID = &t.Teams[i].ID
-			match.Team1 = t.Teams[i]
+	for i, team := range t.Teams {
+		match := &matches[ids[i/2]]
+
+		if match.Team1ID == nil {
+			match.Team1ID = &team.ID
+			match.Team1 = team
+		} else {
+			match.Team2ID = &team.ID
+			match.Team2 = team
 		}
-		if i+1 < len(t.Teams) {
-			match.Team2ID = &t.Teams[i+1].ID
-			match.Team2 = t.Teams[i+1]
+
+		if match.Team1ID != nil && match.Team2ID != nil {
+			match.Status = PLAYING
 		}
 
 		if err := match.Save(); err != nil {
 			return nil, err
 		}
-
-		i += 2
 	}
 
 	return matches, nil
@@ -298,4 +305,10 @@ func (t *Tournament) CountUpvotes() (int64, error) {
 	var count int64
 	err := DB.Model(&Upvote{}).Where("tournament_id = ?", t.ID).Count(&count).Error
 	return count, err
+}
+
+func GetUpvoteByUserAndTournament(userID, tournamentID uint) (*Upvote, error) {
+	var upvote Upvote
+	err := DB.Where("user_id = ? AND tournament_id = ?", userID, tournamentID).First(&upvote).Error
+	return &upvote, err
 }

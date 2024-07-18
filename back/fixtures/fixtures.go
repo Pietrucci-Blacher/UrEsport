@@ -16,18 +16,16 @@ var (
 		"game":       "Allow user to play game",
 	}
 
-	USER_PASSWORD = "password"
-	USER_NB       = 20
+	USER_PASSWORD = "pZlozyNYBqPwazH5TGSu"
+	USER_NB       = 30
 	USER_ROLES    = []string{models.ROLE_USER, models.ROLE_ADMIN}
 
 	GAME_TAGS = []string{"RPG", "Aventure", "Action", "FPS", "MMORPG", "Survival", "Horror", "Simulation", "Sport", "Battle Royale"}
 
-	TOURNAMENT_NB      = 10
-	TOURNAMENT_TEAM_NB = 5
+	TOURNAMENT_NB       = 30
+	TOURNAMENT_TEAMS_NB = 8
 
-	TEAM_NB = 10
-
-	GAME_NB         = 40
+	TEAM_NB         = 33
 	TEAM_MEMBERS_NB = 4
 
 	FRIEND_NB = 10

@@ -6,8 +6,7 @@ import 'package:uresport/core/models/tournament.dart';
 
 abstract class IGameService {
   Future<List<Game>> fetchGames({int? limit, List<String>? tags});
-  Future<List<Tournament>> fetchTournamentsByGameId(
-      int gameId); // Nouvelle méthode
+  Future<List<Tournament>> fetchTournamentsByGameId(int gameId);
 }
 
 class GameService implements IGameService {
@@ -24,7 +23,7 @@ class GameService implements IGameService {
       };
 
       final response = await _dio.get(
-        "${dotenv.env['API_ENDPOINT']}/games",
+        "${dotenv.env['API_ENDPOINT']}/games/",
         queryParameters: queryParams,
       );
 
@@ -67,7 +66,7 @@ class GameService implements IGameService {
       if (response.statusCode == 200) {
         final data = response.data;
         if (kDebugMode) {
-          print('Response data: $data'); // Log the data
+          print('Response data: $data');
         }
         if (data != null) {
           if (data is List) {
@@ -82,7 +81,7 @@ class GameService implements IGameService {
           if (kDebugMode) {
             print('Data is null');
           }
-          return []; // Return an empty list if data is null
+          return [];
         }
       } else {
         throw DioException(
@@ -103,6 +102,14 @@ class GameService implements IGameService {
         }
         throw Exception('Unexpected error occurred');
       }
+    }
+  }
+
+  Future<void> deleteGame(int gameId) async {
+    final response =
+        await _dio.delete('${dotenv.env['API_ENDPOINT']}/games/$gameId');
+    if (response.statusCode != 204) {
+      throw Exception('Failed to delete game');
     }
   }
 }

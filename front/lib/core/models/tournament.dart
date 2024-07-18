@@ -1,19 +1,21 @@
+import 'package:uresport/core/models/team.dart';
 import 'game.dart';
 
 class Tournament {
   final int id;
-  final String name;
-  final String description;
-  final DateTime startDate;
-  final DateTime endDate;
-  final String location;
-  final double latitude;
-  final double longitude;
-  final String image;
-  final bool isPrivate;
-  final int ownerId;
+  late final String name;
+  late final String description;
+  late final DateTime startDate;
+  late final DateTime endDate;
+  late final String location;
+  late final double latitude;
+  late final double longitude;
+  late final String image;
+  late final bool isPrivate;
+  late final int ownerId;
   final Owner owner;
-  final List<Team> teams;
+  late final List<Team> teams;
+  late final int nbPlayers;
   final int upvotes;
   final Game game;
 
@@ -31,9 +33,48 @@ class Tournament {
     required this.ownerId,
     required this.owner,
     required this.teams,
+    required this.nbPlayers,
     required this.upvotes,
     required this.game,
   });
+
+  Tournament copyWith({
+    int? id,
+    String? name,
+    String? description,
+    DateTime? startDate,
+    DateTime? endDate,
+    String? location,
+    double? latitude,
+    double? longitude,
+    String? image,
+    bool? isPrivate,
+    int? ownerId,
+    Owner? owner,
+    List<Team>? teams,
+    int? nbPlayers,
+    int? upvotes,
+    Game? game,
+  }) {
+    return Tournament(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      startDate: startDate ?? this.startDate,
+      endDate: endDate ?? this.endDate,
+      location: location ?? this.location,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      image: image ?? this.image,
+      isPrivate: isPrivate ?? this.isPrivate,
+      ownerId: ownerId ?? this.ownerId,
+      owner: owner ?? this.owner,
+      teams: teams ?? this.teams,
+      nbPlayers: nbPlayers ?? this.nbPlayers,
+      upvotes: upvotes ?? this.upvotes,
+      game: game ?? this.game,
+    );
+  }
 
   factory Tournament.fromJson(Map<String, dynamic> json) {
     return Tournament(
@@ -49,11 +90,12 @@ class Tournament {
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams: (json['teams'] as List?)
+      teams: ((json['teams'] ?? []) as List?)
               ?.map((team) => Team.fromJson(team))
               .toList() ??
           [],
-      upvotes: json['upvote'] ?? 0,
+      nbPlayers: json['nb_player'] ?? 1,
+      upvotes: json['upvotes'] ?? 0,
       game: Game.fromJson(json['game']),
     );
   }
@@ -73,6 +115,7 @@ class Tournament {
       'owner_id': ownerId,
       'owner': owner.toJson(),
       'teams': teams.map((team) => team.toJson()).toList(),
+      'nb_player': nbPlayers,
       'upvotes': upvotes,
       'game': game.toJson(),
     };
@@ -118,58 +161,6 @@ class Owner {
       'firstname': firstname,
       'lastname': lastname,
       'teams': teams?.map((team) => team.toJson()).toList(),
-      'created_at': createdAt.toIso8601String(),
-      'updated_at': updatedAt.toIso8601String(),
-    };
-  }
-}
-
-class Team {
-  final int id;
-  final String name;
-  final List<dynamic> members; // Utiliser List<dynamic> pour les membres
-  final List<dynamic> tournaments; // Utiliser List<dynamic> pour les tournois
-  final Map<String, dynamic> owner; // Utiliser Map pour le propriétaire
-  final int ownerId;
-  final bool isPrivate;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-
-  Team({
-    required this.id,
-    required this.name,
-    required this.members,
-    required this.tournaments,
-    required this.owner,
-    required this.ownerId,
-    required this.isPrivate,
-    required this.createdAt,
-    required this.updatedAt,
-  });
-
-  factory Team.fromJson(Map<String, dynamic> json) {
-    return Team(
-      id: json['id'],
-      name: json['name'],
-      members: json['members'] ?? [], // Assurer une liste vide si null
-      tournaments: json['tournaments'] ?? [], // Assurer une liste vide si null
-      owner: json['owner'] ?? {}, // Assurer une map vide si null
-      ownerId: json['owner_id'],
-      isPrivate: json['private'],
-      createdAt: DateTime.parse(json['created_at']),
-      updatedAt: DateTime.parse(json['updated_at']),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'id': id,
-      'name': name,
-      'members': members, // Pas besoin de transformer en JSON
-      'tournaments': tournaments, // Pas besoin de transformer en JSON
-      'owner': owner, // Pas besoin de transformer en JSON
-      'owner_id': ownerId,
-      'private': isPrivate,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
     };

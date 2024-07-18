@@ -16,7 +16,7 @@ import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
-import 'package:uresport/shared/utils/image_util.dart';
+import 'package:uresport/shared/utils/image_util.dart' as image_util;
 import 'package:uresport/tournament/screens/tournament_screen.dart';
 
 class MainScreen extends StatefulWidget {
@@ -105,7 +105,7 @@ class MainScreenState extends State<MainScreen> {
                                     ? Stack(
                                         children: [
                                           ClipOval(
-                                            child: CachedImageWidget(
+                                            child: image_util.CachedImageWidget(
                                               url: _profileImageUrl!,
                                               size: 40,
                                             ),

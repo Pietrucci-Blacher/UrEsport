@@ -16,9 +16,7 @@ class NotificationCard extends StatelessWidget {
         child: Material(
           color: Colors.transparent,
           child: InkWell(
-            onTap: () {
-              // Action to perform on notification block click
-            },
+            onTap: () {},
             borderRadius: BorderRadius.circular(16.0),
             child: Card(
               shape: RoundedRectangleBorder(

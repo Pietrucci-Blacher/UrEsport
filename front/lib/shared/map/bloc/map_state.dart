@@ -16,7 +16,7 @@ class MapInitialized extends MapState {}
 class MapLoaded extends MapState {
   final Point position;
   final List<Tournament> tournaments;
-  final List<PointAnnotationOptions> mapMarkers;
+  final List<Tournament> mapMarkers;
 
   const MapLoaded(
       {required this.position,
@@ -29,7 +29,7 @@ class MapLoaded extends MapState {
 
 class DirectionsLoaded extends MapState {
   final List<List<double>> polylinePoints;
-  final List<PointAnnotationOptions> mapMarkers;
+  final List<Tournament> mapMarkers;
 
   const DirectionsLoaded(
       {required this.polylinePoints, required this.mapMarkers});
@@ -39,7 +39,7 @@ class DirectionsLoaded extends MapState {
 }
 
 class MarkersUpdated extends MapState {
-  final List<PointAnnotationOptions> mapMarkers;
+  final List<Tournament> mapMarkers;
 
   const MarkersUpdated({required this.mapMarkers});
 
@@ -55,3 +55,16 @@ class MapError extends MapState {
   @override
   List<Object?> get props => [error];
 }
+
+class MarkerTappedState extends MapState {
+  final Tournament tournament;
+
+  const MarkerTappedState({required this.tournament});
+
+  @override
+  List<Object?> get props => [tournament];
+}
+
+class DirectionsExported extends MapState {}
+
+class MapCentered extends MapState {}

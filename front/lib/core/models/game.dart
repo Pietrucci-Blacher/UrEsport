@@ -1,9 +1,11 @@
 class Game {
   final int id;
-  final String name;
-  final String description;
-  final String imageUrl;
-  final List<String> tags;
+  late final String name;
+  late final String description;
+  late final String imageUrl;
+  late final List<String> tags;
+  late final String createdAt;
+  late final String updatedAt;
 
   Game({
     required this.id,
@@ -11,7 +13,29 @@ class Game {
     required this.description,
     required this.imageUrl,
     required this.tags,
+    required this.createdAt,
+    required this.updatedAt,
   });
+
+  Game copyWith({
+    int? id,
+    String? name,
+    String? description,
+    String? imageUrl,
+    List<String>? tags,
+    String? createdAt,
+    String? updatedAt,
+  }) {
+    return Game(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      description: description ?? this.description,
+      imageUrl: imageUrl ?? this.imageUrl,
+      tags: tags ?? this.tags,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
 
   factory Game.fromJson(Map<String, dynamic> json) {
     return Game(
@@ -20,6 +44,8 @@ class Game {
       description: json['description'],
       imageUrl: json['image'],
       tags: List<String>.from(json['tags'] ?? []),
+      createdAt: json['created_at'],
+      updatedAt: json['updated_at'],
     );
   }
 
@@ -30,6 +56,8 @@ class Game {
       'description': description,
       'image': imageUrl,
       'tags': tags,
+      'created_at': createdAt,
+      'updated_at': updatedAt,
     };
   }
 }

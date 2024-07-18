@@ -1,3 +1,5 @@
+import 'package:uresport/core/models/team.dart';
+
 class User {
   final int id;
   final String firstname;
@@ -6,6 +8,7 @@ class User {
   final String email;
   final String? profileImageUrl;
   final List<dynamic> roles;
+  final List<Team> teams;
 
   User({
     required this.id,
@@ -15,17 +18,22 @@ class User {
     required this.email,
     this.profileImageUrl,
     required this.roles,
+    required this.teams,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
-      id: json['id'],
-      firstname: json['firstname'],
-      lastname: json['lastname'],
-      username: json['username'],
-      email: json['email'],
+      id: json['id'] ?? 0,
+      firstname: json['firstname'] ?? '',
+      lastname: json['lastname'] ?? '',
+      username: json['username'] ?? '',
+      email: json['email'] ?? '',
       profileImageUrl: json['profile_image_url'],
-      roles: json['roles'],
+      roles: json['roles'] ?? [],
+      teams: (json['teams'] as List<dynamic>?)
+              ?.map((teamJson) => Team.fromJson(teamJson))
+              .toList() ??
+          [],
     );
   }
 
@@ -36,6 +44,8 @@ class User {
     String? username,
     String? email,
     String? profileImageUrl,
+    List<dynamic>? roles,
+    List<Team>? teams,
   }) {
     return User(
       id: id ?? this.id,
@@ -44,7 +54,8 @@ class User {
       username: username ?? this.username,
       email: email ?? this.email,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
-      roles: roles,
+      roles: roles ?? this.roles,
+      teams: teams ?? this.teams,
     );
   }
 }

@@ -1,0 +1,328 @@
+import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
+import 'package:syncfusion_flutter_datepicker/datepicker.dart';
+import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
+import 'package:uresport/dashboard/bloc/dashboard_event.dart';
+
+class AddTournamentPage extends StatefulWidget {
+  const AddTournamentPage({super.key});
+
+  @override
+  AddTournamentPageState createState() => AddTournamentPageState();
+}
+
+class AddTournamentPageState extends State<AddTournamentPage> {
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
+  final _descriptionController = TextEditingController();
+  final _locationController = TextEditingController();
+  final _latitudeController = TextEditingController();
+  final _longitudeController = TextEditingController();
+  final _imageController = TextEditingController();
+  final _privateController = TextEditingController();
+  final _gameIdController = TextEditingController();
+  final _nbPlayerController = TextEditingController();
+  final Dio _dio = Dio();
+
+  final DateFormat _dateFormat = DateFormat("yyyy-MM-dd HH:mm");
+
+  DateTime? _startDateTime;
+  DateTime? _endDateTime;
+
+  String _formatDateToUtcWithoutMilliseconds(DateTime dateTime) {
+    return DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(dateTime.toUtc());
+  }
+
+  Future<void> _selectDateTime(BuildContext context, bool isStartDate) async {
+    await showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(isStartDate ? 'Select Start Date' : 'Select End Date'),
+          content: SizedBox(
+            height: 300,
+            width: 300,
+            child: SfDateRangePicker(
+              view: DateRangePickerView.month,
+              selectionMode: DateRangePickerSelectionMode.single,
+              showActionButtons: true,
+              onSubmit: (Object? value) {
+                if (value is DateTime) {
+                  setState(() {
+                    if (isStartDate) {
+                      _startDateTime = value;
+                    } else {
+                      _endDateTime = value;
+                    }
+                  });
+                  Navigator.pop(context);
+                }
+              },
+              onCancel: () {
+                Navigator.pop(context);
+              },
+            ),
+          ),
+        );
+      },
+    );
+
+    // After selecting the date, show time picker
+    if ((isStartDate && _startDateTime != null && context.mounted) ||
+        (!isStartDate && _endDateTime != null && context.mounted)) {
+      TimeOfDay? time = await showTimePicker(
+        context: context,
+        initialTime: TimeOfDay.now(),
+      );
+
+      if (time != null) {
+        setState(() {
+          if (isStartDate) {
+            _startDateTime = DateTime(
+              _startDateTime!.year,
+              _startDateTime!.month,
+              _startDateTime!.day,
+              time.hour,
+              time.minute,
+            );
+          } else {
+            _endDateTime = DateTime(
+              _endDateTime!.year,
+              _endDateTime!.month,
+              _endDateTime!.day,
+              time.hour,
+              time.minute,
+            );
+          }
+        });
+      }
+    }
+  }
+
+  Future<void> _saveTournament() async {
+    if (_formKey.currentState!.validate() &&
+        _startDateTime != null &&
+        _endDateTime != null) {
+      final newTournament = {
+        'name': _nameController.text,
+        'description': _descriptionController.text,
+        'start_date': _formatDateToUtcWithoutMilliseconds(_startDateTime!),
+        'end_date': _formatDateToUtcWithoutMilliseconds(_endDateTime!),
+        'location': _locationController.text.isNotEmpty
+            ? _locationController.text
+            : null,
+        'latitude': _latitudeController.text.isNotEmpty
+            ? double.tryParse(_latitudeController.text)
+            : null,
+        'longitude': _longitudeController.text.isNotEmpty
+            ? double.tryParse(_longitudeController.text)
+            : null,
+        'private': _privateController.text.toLowerCase() == 'true',
+        'game_id': int.tryParse(_gameIdController.text) ?? 0,
+        'nb_player': int.tryParse(_nbPlayerController.text) ?? 0,
+      };
+
+      if (kDebugMode) {
+        print('Sending data: $newTournament');
+      }
+
+      try {
+        final response = await _dio.post(
+          '${dotenv.env['API_ENDPOINT']}/tournaments',
+          data: newTournament,
+        );
+
+        if (kDebugMode) {
+          print('Response status: ${response.statusCode}');
+          print('Response data: ${response.data}');
+        }
+
+        if (!mounted) return;
+
+        if (response.statusCode == 201) {
+          _handleSuccessfulResponse();
+        } else {
+          _showAlertDialog(
+              'Erreur ajout du tournoi: ${response.statusMessage}');
+        }
+      } catch (e) {
+        if (kDebugMode) {
+          print('Exception: $e');
+        }
+        if (!mounted) return;
+        _showAlertDialog('Erreur ajout du tournoi: $e');
+      }
+    } else {
+      _showAlertDialog(
+          'Please fill in all required fields and select dates and times');
+    }
+  }
+
+  void _handleSuccessfulResponse() {
+    Navigator.of(context).pop(true);
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('Tournoi ajouté')));
+    context.read<DashboardBloc>().add(FetchTournaments());
+  }
+
+  void _showAlertDialog(String message) {
+    if (kDebugMode) {
+      print(message);
+    }
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(message)));
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    _locationController.dispose();
+    _latitudeController.dispose();
+    _longitudeController.dispose();
+    _imageController.dispose();
+    _privateController.dispose();
+    _gameIdController.dispose();
+    _nbPlayerController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Dialog(
+      insetPadding: const EdgeInsets.all(20),
+      child: Container(
+        width: MediaQuery.of(context).size.width * 0.8,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text('Add Tournament', style: TextStyle(fontSize: 24)),
+            Form(
+              key: _formKey,
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    TextFormField(
+                      controller: _nameController,
+                      decoration: const InputDecoration(labelText: 'Name'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the tournament name';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: _descriptionController,
+                      decoration:
+                          const InputDecoration(labelText: 'Description'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the tournament description';
+                        }
+                        return null;
+                      },
+                    ),
+                    GestureDetector(
+                      onTap: () => _selectDateTime(context, true),
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'Start Date & Time',
+                            hintText: _startDateTime != null
+                                ? _dateFormat.format(_startDateTime!)
+                                : '',
+                          ),
+                        ),
+                      ),
+                    ),
+                    GestureDetector(
+                      onTap: () => _selectDateTime(context, false),
+                      child: AbsorbPointer(
+                        child: TextFormField(
+                          decoration: InputDecoration(
+                            labelText: 'End Date & Time',
+                            hintText: _endDateTime != null
+                                ? _dateFormat.format(_endDateTime!)
+                                : '',
+                          ),
+                        ),
+                      ),
+                    ),
+                    TextFormField(
+                      controller: _locationController,
+                      decoration: const InputDecoration(labelText: 'Location'),
+                    ),
+                    TextFormField(
+                      controller: _latitudeController,
+                      decoration: const InputDecoration(labelText: 'Latitude'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    TextFormField(
+                      controller: _longitudeController,
+                      decoration: const InputDecoration(labelText: 'Longitude'),
+                      keyboardType: TextInputType.number,
+                    ),
+                    TextFormField(
+                      controller: _privateController,
+                      decoration: const InputDecoration(
+                          labelText: 'Private (true/false)'),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter if the tournament is private';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: _gameIdController,
+                      decoration: const InputDecoration(labelText: 'Game ID'),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the game ID';
+                        }
+                        return null;
+                      },
+                    ),
+                    TextFormField(
+                      controller: _nbPlayerController,
+                      decoration:
+                          const InputDecoration(labelText: 'Number of Players'),
+                      keyboardType: TextInputType.number,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter the number of players';
+                        }
+                        return null;
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: 20),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(
+                  onPressed: () => Navigator.of(context).pop(),
+                  child: const Text('Cancel'),
+                ),
+                ElevatedButton(
+                  onPressed: _saveTournament,
+                  child: const Text('Save'),
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
