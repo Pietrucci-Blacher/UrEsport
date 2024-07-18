@@ -26,6 +26,7 @@ class AddTeamPageState extends State<AddTeamPage> {
       try {
         final teamService = Provider.of<ITeamService>(context, listen: false);
         await teamService.createTeam(teamData);
+        if(!mounted) return;
         showCustomToast(AppLocalizations.of(context).teamCreatedSuccessfully, Colors.green);
         if (!mounted) return;
         Navigator.pop(context);

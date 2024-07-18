@@ -4,19 +4,17 @@ import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 
 import 'package:uresport/core/services/auth_service.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
-  final Websocket _websocket;
   final TournamentService _tournamentService;
   final GameService _gameService;
   final AuthService _authService;  // Déclaration du service
 
-  DashboardBloc(this._websocket, this._tournamentService, this._gameService, this._authService)
+  DashboardBloc(this._tournamentService, this._gameService, this._authService, AuthService authService)
       : super(DashboardInitial()) {
     on<ConnectWebSocket>(_onConnectWebSocket);
     on<DisconnectWebSocket>(_onDisconnectWebSocket);

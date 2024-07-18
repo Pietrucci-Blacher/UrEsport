@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -231,7 +232,7 @@ class AuthService implements IAuthService {
     try {
       final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users/');
       if (response.statusCode == 200) {
-        print('Response data: ${response.data}'); // Ajout d'instruction de débogage
+        debugPrint('Response data: ${response.data}'); // Ajout d'instruction de débogage
         List<dynamic> jsonResponse;
         if (response.data is String) {
           jsonResponse = json.decode(response.data);
@@ -245,7 +246,7 @@ class AuthService implements IAuthService {
         throw Exception('Failed to load users');
       }
     } catch (e) {
-      print('Error: $e'); // Imprimez l'erreur pour le débogage
+      debugPrint('Error: $e'); // Imprimez l'erreur pour le débogage
       throw Exception('Failed to load users');
     }
   }

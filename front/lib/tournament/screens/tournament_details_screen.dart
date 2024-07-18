@@ -72,6 +72,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       await _loadTeams();
     } catch (e) {
       if (kDebugMode) {
+        if(!mounted) return;
         debugPrint(AppLocalizations.of(context).errorLoadingCurrentUser);
       }
     }
@@ -849,7 +850,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
     try {
       await tournamentService.joinTournament(tournamentId, teamId);
-      if (!mounted) return;
+      if (!context.mounted) return;
       _showNotificationToast(AppLocalizations.of(context).joinedTournament, Colors.green);
       setState(() {
         _hasJoined = true;

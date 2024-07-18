@@ -48,6 +48,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         final tournamentService =
         Provider.of<ITournamentService>(context, listen: false);
         await tournamentService.createTournament(tournamentData);
+        if(!mounted) return;
         showCustomToast(AppLocalizations.of(context).tournamentCreatedSuccessfully, Colors.green);
         if (!mounted) return;
         Navigator.pop(context);

@@ -260,6 +260,7 @@ class UsersPageState extends State<UsersPage> {
             onPressed: () async {
               try {
                 await _authService.deleteAccount(user.id);
+                if(!context.mounted) return;
                 Navigator.of(context).pop();
                 _fetchUsers(); // Refresh the list after deleting a user
               } catch (e) {

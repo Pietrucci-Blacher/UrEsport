@@ -26,17 +26,11 @@ class Dashboard extends StatefulWidget {
 class _DashboardState extends State<Dashboard> {
   int _selectedIndex = 0;
   final Websocket ws = Websocket.getInstance();
-  int _loggedUsers = 0;
-  int _annonUsers = 0;
-  int _totalUsers = 0;
   int touchedIndex = -1;
 
   void _websocket() {
     ws.on('user:connected', (socket, data) {
       setState(() {
-        _loggedUsers = data['loggedUsers'];
-        _annonUsers = data['annonUsers'];
-        _totalUsers = data['totalUsers'];
       });
     });
 
@@ -558,9 +552,6 @@ class _DashboardState extends State<Dashboard> {
     );
   }
 
-  Widget _buildUsersContent(DashboardLoaded state) {
-    return const UsersPage();
-  }
 
   Widget _buildFeatureFlippingConten(DashboardLoaded state) {
     return const Center(child: Text('Feature Flipping'));

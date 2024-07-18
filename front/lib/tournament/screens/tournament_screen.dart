@@ -278,6 +278,7 @@ class TournamentScreenState extends State<TournamentScreen> {
         // Reload the teams after deleting a team
         _loadUserTeams();
       });
+      if(!mounted) return;
       _showToast(AppLocalizations.of(context).teamDeleted(teamName), Colors.green);
     } catch (e) {
       _showToast(AppLocalizations.of(context).failedToDeleteTeam(e.toString()), Colors.red);
@@ -295,6 +296,7 @@ class TournamentScreenState extends State<TournamentScreen> {
         // Reload the teams after leaving a team
         _loadUserTeams();
       });
+      if(!mounted) return;
       _showToast(AppLocalizations.of(context).teamLeft(teamName), Colors.green);
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 409) {

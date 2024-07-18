@@ -40,9 +40,6 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   DateTime? _startDateTime;
   DateTime? _endDateTime;
 
-  String _formatDateToUtcWithoutMilliseconds(DateTime dateTime) {
-    return _apiDateFormat.format(dateTime.toUtc());
-  }
 
   void _updateDateTimeField(bool isStartDate) {
     setState(() {
@@ -71,16 +68,16 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               selectionMode: DateRangePickerSelectionMode.single,
               minDate: isStartDate
                   ? today
-                  : (_startDateTime != null ? _startDateTime!.add(Duration(minutes: 1)) : today),
+                  : (_startDateTime != null ? _startDateTime!.add(const Duration(minutes: 1)) : today),
               showActionButtons: true,
               onSubmit: (Object? value) {
                 if (value is DateTime) {
                   if (isStartDate) {
                     // Update start date with selected time
                     _startDateTime = value;
-                    if (_endDateTime != null && _endDateTime!.isBefore(_startDateTime!.add(Duration(minutes: 1)))) {
+                    if (_endDateTime != null && _endDateTime!.isBefore(_startDateTime!.add(const Duration(minutes: 1)))) {
                       // If end date is before start date + 1 minute, adjust it
-                      _endDateTime = _startDateTime!.add(Duration(minutes: 1));
+                      _endDateTime = _startDateTime!.add(const Duration(minutes: 1));
                       _endDateTimeController.text = _displayDateFormat.format(_endDateTime!);
                     }
                   } else {
@@ -122,9 +119,9 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               time.minute,
             );
 
-            if (_endDateTime != null && _endDateTime!.isBefore(_startDateTime!.add(Duration(minutes: 1)))) {
+            if (_endDateTime != null && _endDateTime!.isBefore(_startDateTime!.add(const Duration(minutes: 1)))) {
               // If end date is before start date + 1 minute, adjust it
-              _endDateTime = _startDateTime!.add(Duration(minutes: 1));
+              _endDateTime = _startDateTime!.add(const Duration(minutes: 1));
               _endDateTimeController.text = _displayDateFormat.format(_endDateTime!);
             }
           } else {
@@ -139,7 +136,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
             // Check if end date is before start date, adjust if necessary
             if (_startDateTime != null && _endDateTime != null && _endDateTime!.isBefore(_startDateTime!)) {
-              _endDateTime = _startDateTime!.add(Duration(minutes: 1)); // Set end date to one minute after start date
+              _endDateTime = _startDateTime!.add(const Duration(minutes: 1)); // Set end date to one minute after start date
               _endDateTimeController.text = _displayDateFormat.format(_endDateTime!);
             }
           }

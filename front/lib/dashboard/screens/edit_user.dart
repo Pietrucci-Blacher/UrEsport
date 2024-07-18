@@ -53,7 +53,7 @@ class EditUserPageState extends State<EditUserPage> {
     if (widget.user == null) {
       // Logic for adding a new user
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Adding new user functionality not implemented')),
+        const SnackBar(content: Text('Adding new user functionality not implemented')),
       );
     } else {
       // Edit existing user
@@ -67,7 +67,7 @@ class EditUserPageState extends State<EditUserPage> {
 
       // Log the data being sent to the backend
       final updatedUserJson = updatedUser.toUpdateJson();
-      print('Sending data to backend: $updatedUserJson');
+      debugPrint('Sending data to backend: $updatedUserJson');
 
       try {
         final token = await _cacheService.getString('token');
@@ -81,7 +81,7 @@ class EditUserPageState extends State<EditUserPage> {
         );
 
         // Log the response from the backend
-        print('Response from backend: ${response.statusCode} - ${response.data}');
+        debugPrint('Response from backend: ${response.statusCode} - ${response.data}');
 
         if (response.statusCode == 200) {
           // Successfully updated the user
@@ -96,7 +96,7 @@ class EditUserPageState extends State<EditUserPage> {
         }
       } catch (e) {
         // Log the error
-        print('Error updating user: $e');
+        debugPrint('Error updating user: $e');
 
         // Handle error
         if (!mounted) return;
