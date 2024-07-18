@@ -12,6 +12,7 @@ import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/core/services/notification_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/core/services/match_service.dart';
+import 'package:uresport/core/services/log_service.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/core/services/rating_service.dart';
@@ -57,6 +58,7 @@ void main() async {
 
   final authService = AuthService(dio);
   final tournamentService = TournamentService(dio);
+  final logService = LogService(dio);
   final gameService = GameService(dio);
   final matchService = MatchService(dio);
 
@@ -86,6 +88,7 @@ void main() async {
             create: (_) => NotificationProvider()),
         Provider<MapService>.value(value: mapService),
         Provider<ITeamService>.value(value: teamService),
+        Provider<ILogService>.value(value: logService),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -95,9 +98,10 @@ void main() async {
           ),
           BlocProvider<DashboardBloc>(
             create: (context) => DashboardBloc(
-                Websocket.getInstance(), tournamentService, gameService)
+                Websocket.getInstance(), tournamentService, gameService, logService)
               ..add(FetchTournaments())
-              ..add(FetchGames()),
+              ..add(FetchGames())
+              ..add(FetchLogs()),
           ),
         ],
         child: MyApp(

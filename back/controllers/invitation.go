@@ -42,9 +42,11 @@ func GetInvitTournament(c *gin.Context) {
 	}
 
 	if err != nil {
+		models.ErrorLogf([]string{"invit", "GetInvitTournament"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	} else if len(tournaments) == 0 && len(teams) == 0 {
+		models.PrintLogf([]string{"invit", "GetInvitTournament"}, "No tournament or team found")
 		c.JSON(http.StatusOK, invit)
 		return
 	}
@@ -61,6 +63,7 @@ func GetInvitTournament(c *gin.Context) {
 
 	invit, err = models.FindInvitByType(models.TOURNAMENT_INVIT, param, ids)
 	if err != nil {
+		models.ErrorLogf([]string{"invit", "GetInvitTournament"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -97,6 +100,7 @@ func GetInvitTeam(c *gin.Context) {
 		param = "user_id"
 		ids = []int{connectedUser.ID}
 	} else {
+		models.ErrorLogf([]string{"invit", "GetInvitTeam"}, "Invalid inout parameter")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid inout parameter"})
 		return
 	}
@@ -117,6 +121,7 @@ func GetInvitTeam(c *gin.Context) {
 
 	invit, err = models.FindInvitByType(models.TEAM_INVIT, param, ids)
 	if err != nil {
+		models.ErrorLogf([]string{"invit", "GetInvitTeam"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"challenge/models"
 	"challenge/services"
 	"net/http"
 
@@ -13,6 +14,7 @@ func QueryFilter() gin.HandlerFunc {
 
 		queryFilter, err := services.NewQueryFilter(query)
 		if err != nil {
+			models.ErrorLogf([]string{"middleware", "QueryFilter"}, "%s", err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Error parsing query"})
 			c.Abort()
 			return

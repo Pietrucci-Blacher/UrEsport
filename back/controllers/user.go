@@ -25,7 +25,7 @@ func GetUsers(c *gin.Context) {
 
 	users, err := models.FindAllUsers(query)
 	if err != nil {
-		models.ErrorLogf([]string{"user", "GetUsers"}, "Error while fetching users: %s", err.Error())
+		models.ErrorLogf([]string{"user", "GetUsers"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -118,7 +118,7 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	if err := user.Save(); err != nil {
-		models.ErrorLogf([]string{"user", "UpdateUser"}, "Error while updating user: %s", err.Error())
+		models.ErrorLogf([]string{"user", "UpdateUser"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -150,7 +150,7 @@ func UploadUserImage(c *gin.Context) {
 	user.ProfileImageUrl = files[0]
 
 	if err := user.Save(); err != nil {
-		models.ErrorLogf([]string{"user", "UploadUserImage"}, "Error while updating user image: %s", err.Error())
+		models.ErrorLogf([]string{"user", "UploadUserImage"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -177,7 +177,7 @@ func DeleteUser(c *gin.Context) {
 	user, _ := c.MustGet("user").(*models.User)
 
 	if err := user.Delete(); err != nil {
-		models.ErrorLogf([]string{"user", "DeleteUser"}, "Error while deleting user: %s", err.Error())
+		models.ErrorLogf([]string{"user", "DeleteUser"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}

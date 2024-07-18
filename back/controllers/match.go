@@ -23,6 +23,7 @@ import (
 //	@Router 		/matches/{id} [get]
 func GetMatch(c *gin.Context) {
 	match, _ := c.MustGet("match").(*models.Match)
+	models.PrintLogf([]string{"match", "GetMatch"}, "Fetched match %d", match.ID)
 	c.JSON(http.StatusOK, match)
 }
 
@@ -45,10 +46,12 @@ func GetMatchs(c *gin.Context) {
 
 	matches, err := models.FindAllMatchs(query)
 	if err != nil {
+		models.ErrorLogf([]string{"match", "GetMatchs"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"match", "GetMatchs"}, "Fetched %d matches", len(matches))
 	c.JSON(http.StatusOK, matches)
 }
 
@@ -93,6 +96,7 @@ func UpdateMatch(c *gin.Context) {
 	}
 
 	if err := match.Save(); err != nil {
+		models.ErrorLogf([]string{"match", "UpdateMatch"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -100,6 +104,7 @@ func UpdateMatch(c *gin.Context) {
 	roomName := fmt.Sprintf("tournament:%d", match.TournamentID)
 	_ = ws.Room(roomName).Emit("match:update", match)
 
+	models.PrintLogf([]string{"match", "UpdateMatch"}, "Match %d updated", match.ID)
 	c.JSON(http.StatusOK, match)
 }
 
@@ -124,6 +129,7 @@ func ScoreMatch(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.ScoreMatchDto)
 
 	if match.Status != models.PLAYING {
+		models.ErrorLogf([]string{"match", "ScoreMatch"}, "Match %d is not playing", match.ID)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Match is not playing"})
 		return
 	}
@@ -132,6 +138,7 @@ func ScoreMatch(c *gin.Context) {
 	isTeam2 := team.ID == *match.Team2ID
 
 	if isTeam1 && match.Team1Close || isTeam2 && match.Team2Close {
+		models.ErrorLogf([]string{"match", "ScoreMatch"}, "You can't score if you want to close the match %d", match.ID)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "You can't score if you want to close the match"})
 		return
 	}
@@ -141,6 +148,7 @@ func ScoreMatch(c *gin.Context) {
 	match.Team2Close = false
 
 	if err := match.Save(); err != nil {
+		models.ErrorLogf([]string{"match", "ScoreMatch"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -148,6 +156,7 @@ func ScoreMatch(c *gin.Context) {
 	roomName := fmt.Sprintf("tournament:%d", match.TournamentID)
 	_ = ws.Room(roomName).Emit("match:update", match)
 
+	models.PrintLogf([]string{"match", "ScoreMatch"}, "Match %d scored", match.ID)
 	c.JSON(http.StatusOK, match)
 }
 
@@ -173,6 +182,7 @@ func CloseMatch(c *gin.Context) {
 	roomName := fmt.Sprintf("tournament:%d", match.TournamentID)
 
 	if match.Status != models.PLAYING {
+		models.ErrorLogf([]string{"match", "CloseMatch"}, "Match %d is not playing", match.ID)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Match is not playing"})
 		return
 	}
@@ -181,16 +191,19 @@ func CloseMatch(c *gin.Context) {
 
 	if !match.Team1Close || !match.Team2Close {
 		if err := match.Save(); err != nil {
+			models.ErrorLogf([]string{"match", "CloseMatch"}, "%s", err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		_ = ws.Room(roomName).Emit("match:update", match)
+		models.PrintLogf([]string{"match", "CloseMatch"}, "Match %d closed by team %d", match.ID, team.ID)
 		c.JSON(http.StatusOK, match)
 		return
 	}
 
 	if match.Score1 == match.Score2 && match.Team1Close && match.Team2Close {
+		models.ErrorLogf([]string{"match", "CloseMatch"}, "Match %d can't be a draw", match.ID)
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Match can't be a draw"})
 		return
 	}
@@ -198,6 +211,7 @@ func CloseMatch(c *gin.Context) {
 	match.Close()
 
 	if err := nextMatch.FindOneById(*match.NextMatchID); err != nil {
+		models.ErrorLogf([]string{"match", "CloseMatch"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -206,16 +220,19 @@ func CloseMatch(c *gin.Context) {
 
 	if nextMatch.Team1ID == nil || nextMatch.Team2ID == nil {
 		if err := match.Save(); err != nil {
+			models.ErrorLogf([]string{"match", "CloseMatch"}, "%s", err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 		if err := nextMatch.Save(); err != nil {
+			models.ErrorLogf([]string{"match", "CloseMatch"}, "%s", err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 			return
 		}
 
 		_ = ws.Room(roomName).Emit("match:update", match)
 		_ = ws.Room(roomName).Emit("match:update", nextMatch)
+		models.PrintLogf([]string{"match", "CloseMatch"}, "Match %d closed by team %d", match.ID, team.ID)
 		c.JSON(http.StatusOK, match)
 		return
 	}
@@ -223,15 +240,18 @@ func CloseMatch(c *gin.Context) {
 	nextMatch.Status = models.PLAYING
 
 	if err := match.Save(); err != nil {
+		models.ErrorLogf([]string{"match", "CloseMatch"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 	if err := nextMatch.Save(); err != nil {
+		models.ErrorLogf([]string{"match", "CloseMatch"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	_ = ws.Room(roomName).Emit("match:update", match)
 	_ = ws.Room(roomName).Emit("match:update", nextMatch)
+	models.PrintLogf([]string{"match", "CloseMatch"}, "Match %d closed by team %d", match.ID, team.ID)
 	c.JSON(http.StatusOK, match)
 }

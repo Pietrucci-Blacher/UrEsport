@@ -5,7 +5,6 @@ import (
 	"challenge/services"
 	"errors"
 	"fmt"
-	"log"
 	"net/http"
 	"time"
 
@@ -30,6 +29,7 @@ func GetTournaments(c *gin.Context) {
 
 	tournaments, err := models.FindAllTournaments(query)
 	if err != nil {
+		models.ErrorLogf([]string{"tournament", "GetTournaments"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -38,6 +38,7 @@ func GetTournaments(c *gin.Context) {
 		sanitized = append(sanitized, tournament.Sanitize(true))
 	}
 
+	models.PrintLogf([]string{"tournament", "GetTournaments"}, "Fetched %d tournaments", len(sanitized))
 	c.JSON(http.StatusOK, sanitized)
 }
 
@@ -58,6 +59,7 @@ func GetTournament(c *gin.Context) {
 
 	sanitized := tournament.Sanitize(true)
 
+	models.PrintLogf([]string{"tournament", "GetTournament"}, "Fetched tournament %s", tournament.Name)
 	c.JSON(http.StatusOK, sanitized)
 }
 
@@ -94,10 +96,12 @@ func CreateTournament(c *gin.Context) {
 	}
 
 	if err := tournament.Save(); err != nil {
+		models.ErrorLogf([]string{"tournament", "CreateTournament"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "CreateTournament"}, "Tournament %s created", tournament.Name)
 	c.JSON(http.StatusCreated, tournament)
 }
 
@@ -162,6 +166,7 @@ func UpdateTournament(c *gin.Context) {
 	if body.GameID != 0 {
 		var game models.Game
 		if err := game.FindOneById(body.GameID); err != nil {
+			models.ErrorLogf([]string{"tournament", "UpdateTournament"}, "%s", err.Error())
 			c.JSON(http.StatusNotFound, gin.H{"error": "Game not found"})
 			return
 		}
@@ -169,10 +174,12 @@ func UpdateTournament(c *gin.Context) {
 	}
 
 	if err := tournament.Save(); err != nil {
+		models.ErrorLogf([]string{"tournament", "UpdateTournament"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "UpdateTournament"}, "Tournament %s updated", tournament.Name)
 	c.JSON(http.StatusOK, tournament)
 }
 
@@ -198,10 +205,12 @@ func UploadTournamentImage(c *gin.Context) {
 	tournament.Image = files[0]
 
 	if err := tournament.Save(); err != nil {
+		models.ErrorLogf([]string{"tournament", "UploadTournamentImage"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "UploadTournamentImage"}, "Tournament %s image updated", tournament.Name)
 	c.JSON(http.StatusOK, tournament.Sanitize(false))
 }
 
@@ -220,10 +229,12 @@ func DeleteTournament(c *gin.Context) {
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
 	if err := tournament.Delete(); err != nil {
+		models.ErrorLogf([]string{"tournament", "DeleteTournament"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "DeleteTournament"}, "Tournament %s deleted", tournament.Name)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -244,11 +255,13 @@ func JoinTournament(c *gin.Context) {
 	team, _ := c.MustGet("team").(*models.Team)
 
 	if tournament.Private {
+		models.ErrorLogf([]string{"tournament", "JoinTournament"}, "Tournament %s is private", tournament.Name)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "This tournament is private"})
 		return
 	}
 
 	if len(team.Members) != tournament.NbPlayer {
+		models.ErrorLogf([]string{"tournament", "JoinTournament"}, "Team %s must contain %d members", team.Name, tournament.NbPlayer)
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": fmt.Sprintf("Team must contain %d members", tournament.NbPlayer),
 		})
@@ -256,15 +269,18 @@ func JoinTournament(c *gin.Context) {
 	}
 
 	if tournament.HasTeam(*team) {
+		models.ErrorLogf([]string{"tournament", "JoinTournament"}, "Team %s already in this tournament", team.Name)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Team already in this tournament"})
 		return
 	}
 
 	if err := tournament.AddTeam(*team); err != nil {
+		models.ErrorLogf([]string{"tournament", "JoinTournament"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "JoinTournament"}, "Team %s joined tournament %s", team.Name, tournament.Name)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -285,15 +301,18 @@ func LeaveTournament(c *gin.Context) {
 	team, _ := c.MustGet("team").(*models.Team)
 
 	if !tournament.HasTeam(*team) {
+		models.ErrorLogf([]string{"tournament", "LeaveTournament"}, "Team %s not found in this tournament", team.Name)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Team not found in this tournament"})
 		return
 	}
 
 	if err := tournament.RemoveTeam(*team); err != nil {
+		models.ErrorLogf([]string{"tournament", "LeaveTournament"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "LeaveTournament"}, "Team %s left tournament %s", team.Name, tournament.Name)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -317,16 +336,19 @@ func InviteTeamToTournament(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.InviteTeamDto)
 
 	if err := team.FindOne("name", body.Name); err != nil {
+		models.ErrorLogf([]string{"tournament", "InviteTeamToTournament"}, "Team %s not found", body.Name)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Team not found"})
 		return
 	}
 
 	if tournament.HasTeam(team) {
+		models.ErrorLogf([]string{"tournament", "InviteTeamToTournament"}, "Team %s already in this tournament", team.Name)
 		c.JSON(http.StatusConflict, gin.H{"error": "Team is already in this tournament"})
 		return
 	}
 
 	if len(team.Members) != tournament.NbPlayer {
+		models.ErrorLogf([]string{"tournament", "InviteTeamToTournament"}, "Team %s must contain %d members", team.Name, tournament.NbPlayer)
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": fmt.Sprintf("Team must contain %d members", tournament.NbPlayer),
 		})
@@ -334,15 +356,18 @@ func InviteTeamToTournament(c *gin.Context) {
 	}
 
 	if err := invit.FindOneByTournamentAndTeam(tournament.ID, team.ID); err == nil {
+		models.ErrorLogf([]string{"tournament", "InviteTeamToTournament"}, "Team %s already invited", team.Name)
 		c.JSON(http.StatusConflict, gin.H{"error": "Team already invited"})
 		return
 	}
 
 	if models.NewTournamentInvit(tournament.ID, team.ID).Save() != nil {
+		models.ErrorLogf([]string{"tournament", "InviteTeamToTournament"}, "Error while saving invitation")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while saving invitation"})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "InviteTeamToTournament"}, "Team %s invited to tournament %s", team.Name, tournament.Name)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -365,20 +390,24 @@ func KickUserFromTournament(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.InviteTeamDto)
 
 	if err := team.FindOne("name", body.Name); err != nil {
+		models.ErrorLogf([]string{"tournament", "KickUserFromTournament"}, "Team %s not found", body.Name)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
 	if !tournament.HasTeam(team) {
+		models.ErrorLogf([]string{"tournament", "KickUserFromTournament"}, "Team %s not in this tournament", team.Name)
 		c.JSON(http.StatusConflict, gin.H{"error": "Team is not in this tournament"})
 		return
 	}
 
 	if err := tournament.RemoveTeam(team); err != nil {
+		models.ErrorLogf([]string{"tournament", "KickUserFromTournament"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "KickUserFromTournament"}, "Team %s kicked from tournament %s", team.Name, tournament.Name)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -399,10 +428,12 @@ func TogglePrivateTournament(c *gin.Context) {
 	tournament.TogglePrivate()
 
 	if err := tournament.Save(); err != nil {
+		models.ErrorLogf([]string{"tournament", "TogglePrivateTournament"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "TogglePrivateTournament"}, "Tournament %s privacy toggled", tournament.Name)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -425,11 +456,13 @@ func AcceptTournamentInvitation(c *gin.Context) {
 	team, _ := c.MustGet("team").(*models.Team)
 
 	if tournament.HasTeam(*team) {
+		models.ErrorLogf([]string{"tournament", "AcceptTournamentInvitation"}, "Team %s already in this tournament", team.Name)
 		c.JSON(http.StatusConflict, gin.H{"error": "Team is already in this tournament"})
 		return
 	}
 
 	if len(team.Members) != tournament.NbPlayer {
+		models.ErrorLogf([]string{"tournament", "AcceptTournamentInvitation"}, "Team %s must contain %d members", team.Name, tournament.NbPlayer)
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": fmt.Sprintf("Team must contain %d members", tournament.NbPlayer),
 		})
@@ -437,11 +470,13 @@ func AcceptTournamentInvitation(c *gin.Context) {
 	}
 
 	if err := invit.FindOneByTournamentAndTeam(tournament.ID, team.ID); err != nil {
+		models.ErrorLogf([]string{"tournament", "AcceptTournamentInvitation"}, "Invitation not found")
 		c.JSON(http.StatusNotFound, gin.H{"error": "Invitation not found"})
 		return
 	}
 
 	if err := tournament.AddTeam(*team); err != nil {
+		models.ErrorLogf([]string{"tournament", "AcceptTournamentInvitation"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -449,10 +484,12 @@ func AcceptTournamentInvitation(c *gin.Context) {
 	invit.Status = models.ACCEPTED
 
 	if err := invit.Save(); err != nil {
+		models.ErrorLogf([]string{"tournament", "AcceptTournamentInvitation"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "AcceptTournamentInvitation"}, "Team %s accepted invitation to tournament %s", team.Name, tournament.Name)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -475,6 +512,7 @@ func RejectTournamentInvitation(c *gin.Context) {
 	team, _ := c.MustGet("team").(*models.Team)
 
 	if err := invit.FindOneByTournamentAndTeam(tournament.ID, team.ID); err != nil {
+		models.ErrorLogf([]string{"tournament", "RejectTournamentInvitation"}, "Invitation not found")
 		c.JSON(http.StatusNotFound, gin.H{"error": "Invitation not found"})
 		return
 	}
@@ -482,10 +520,12 @@ func RejectTournamentInvitation(c *gin.Context) {
 	invit.Status = models.REJECTED
 
 	if err := invit.Save(); err != nil {
+		models.ErrorLogf([]string{"tournament", "RejectTournamentInvitation"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "RejectTournamentInvitation"}, "Team %s rejected invitation to tournament %s", team.Name, tournament.Name)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -504,25 +544,30 @@ func GenerateTournamentBracket(c *gin.Context) {
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
 	if len(tournament.Teams) < 2 {
+		models.ErrorLogf([]string{"tournament", "GenerateTournamentBracket"}, "Not enough teams to generate bracket")
 		c.JSON(http.StatusConflict, gin.H{"error": "Not enough teams to generate bracket"})
 		return
 	}
 
 	countMatchs, err := models.CountMatchsByTournamentID(tournament.ID)
 	if err != nil {
+		models.ErrorLogf([]string{"tournament", "GenerateTournamentBracket"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	} else if countMatchs > 0 {
+		models.ErrorLogf([]string{"tournament", "GenerateTournamentBracket"}, "Bracket already generated")
 		c.JSON(http.StatusConflict, gin.H{"error": "Bracket already generated"})
 		return
 	}
 
 	matches, err := tournament.GenerateBraketTree()
 	if err != nil {
+		models.ErrorLogf([]string{"tournament", "GenerateTournamentBracket"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "GenerateTournamentBracket"}, "Bracket generated for tournament %s", tournament.Name)
 	c.JSON(http.StatusOK, matches)
 }
 
@@ -541,18 +586,13 @@ func AddUpvote(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
-	// Log the user ID
-	log.Printf("User ID: %d", connectedUser.ID)
-
-	// Log the tournament ID
-	log.Printf("Tournament ID: %d", tournament.ID)
-
-	// Perform the upvote
 	if err := tournament.AddUpvote(connectedUser.ID); err != nil {
+		models.ErrorLogf([]string{"tournament", "AddUpvote"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"tournament", "AddUpvote"}, "Upvote added to tournament %s", tournament.Name)
 	c.JSON(http.StatusOK, gin.H{"message": "Upvote toggled"})
 }
 
@@ -570,6 +610,7 @@ func AddUpvote(c *gin.Context) {
 func GetTournamentUpvote(c *gin.Context) {
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
+	models.PrintLogf([]string{"tournament", "GetTournamentUpvote"}, "Upvote count for tournament %s", tournament.Name)
 	c.JSON(http.StatusOK, gin.H{"upvote": tournament.Upvotes})
 }
 
@@ -596,22 +637,18 @@ func GetUpvoteById(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
-	log.Printf("Connected User ID: %d", connectedUser.ID)
-	log.Printf("Tournament ID: %d", tournament.ID)
-
-	// Check if the user has upvoted the tournament
 	upvote, err := models.GetUpvoteByUserAndTournament(uint(connectedUser.ID), uint(tournament.ID))
 	if err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
-			log.Printf("Upvote not found for user %d and tournament %d", connectedUser.ID, tournament.ID)
+			models.ErrorLogf([]string{"tournament", "GetUpvoteById"}, "Upvote not found for user %d and tournament %d", connectedUser.ID, tournament.ID)
 			c.JSON(http.StatusNotFound, gin.H{"error": "Upvote not found"})
 		} else {
-			log.Printf("Database error: %v", err)
+			models.ErrorLogf([]string{"tournament", "GetUpvoteById"}, "%s", err.Error())
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
 		}
 		return
 	}
 
-	log.Printf("Upvote found: %v", upvote)
+	models.ErrorLogf([]string{"tournament", "GetUpvoteById"}, "Upvote found: %v", upvote)
 	c.JSON(http.StatusOK, upvote)
 }

@@ -33,28 +33,29 @@ func NewLog(t string, tags []string, txt string) *Log {
 func FindAllLogs(query services.QueryFilter) ([]Log, error) {
 	var logs []Log
 
-	value := DB.Model(&Log{}).
+	err := DB.Model(&Log{}).
 		Offset(query.GetSkip()).
 		Where(query.GetWhere()).
-		Order(query.GetSort())
+		Order(query.GetSort()).
+		Find(&logs).Error
 
-	if query.GetLimit() > 0 {
-		value = value.Limit(query.GetLimit())
-	}
-
-	value.Find(&logs)
-
-	return logs, value.Error
+	return logs, err
 }
 
 func PrintLogf(tags []string, format string, v ...any) {
+	ws := services.GetWebsocket()
 	text := fmt.Sprintf(format, v...)
+
 	_ = NewLog(LOG_INFO, tags, text).Save()
+	_ = ws.Room("admin").Emit("log:new", text)
 }
 
 func ErrorLogf(tags []string, format string, v ...any) {
+	ws := services.GetWebsocket()
 	text := fmt.Sprintf(format, v...)
+
 	_ = NewLog(LOG_ERROR, tags, text).Save()
+	_ = ws.Room("admin").Emit("log:new", text)
 }
 
 func (l *Log) FindOneById(id int) error {
