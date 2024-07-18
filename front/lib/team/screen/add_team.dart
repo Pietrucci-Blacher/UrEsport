@@ -22,6 +22,8 @@ class AddTeamPageState extends State<AddTeamPage> {
         'private': _isPrivate,
       };
 
+      print('Team data: $teamData'); // Ajout d'un log pour les données de l'équipe
+
       try {
         final teamService = Provider.of<ITeamService>(context, listen: false);
         await teamService.createTeam(teamData);

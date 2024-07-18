@@ -30,6 +30,7 @@ class TournamentScreen extends StatefulWidget {
 
 class TournamentScreenState extends State<TournamentScreen> {
   User? _currentUser;
+  bool _isLoggedIn = false;
 
   Future<void> _loadCurrentUser() async {
     final authService = Provider.of<IAuthService>(context, listen: false);
@@ -38,9 +39,13 @@ class TournamentScreenState extends State<TournamentScreen> {
       if (!mounted) return;
       setState(() {
         _currentUser = user;
+        _isLoggedIn = true;
       });
     } catch (e) {
       debugPrint('Error loading current user: $e');
+      setState(() {
+        _isLoggedIn = false;
+      });
     }
   }
 
@@ -126,10 +131,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => TeamMembersPage(
-                              teamId: team
-                                  .id, // passez l'identifiant de l'équipe ici
-                              teamName:
-                                  team.name, // passez le nom de l'équipe ici
+                              teamId: team.id,
+                              teamName: team.name,
                               members: userMembers,
                               ownerId: team.ownerId,
                               currentId: _currentUser!.id,
@@ -164,7 +167,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                         ),
                         children: team.tournaments.map((tournamentJson) {
                           Tournament tournament =
-                              Tournament.fromJson(tournamentJson);
+                          Tournament.fromJson(tournamentJson);
                           return Card(
                             margin: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
@@ -197,9 +200,9 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         TournamentDetailsScreen(
-                                      tournament: tournament,
-                                      game: tournament.game,
-                                    ),
+                                          tournament: tournament,
+                                          game: tournament.game,
+                                        ),
                                   ),
                                 );
                               },
@@ -211,7 +214,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                   },
                 ),
               ),
-              if (_currentUser != null)
+              if (_isLoggedIn)
                 Positioned(
                   bottom: 16.0,
                   right: 16.0,
@@ -409,7 +412,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const AddTournamentPage(),
+                                      const AddTournamentPage(),
                                     ),
                                   );
                                 },
@@ -434,7 +437,7 @@ class TournamentScreenState extends State<TournamentScreen> {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-        DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return GestureDetector(
       onTap: () {

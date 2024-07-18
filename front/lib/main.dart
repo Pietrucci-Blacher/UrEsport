@@ -94,7 +94,7 @@ void main() async {
         providers: [
           BlocProvider<AuthBloc>(
             create: (context) =>
-                AuthBloc(authService)..add(AuthCheckRequested()),
+            AuthBloc(authService)..add(AuthCheckRequested()),
           ),
           BlocProvider<DashboardBloc>(
             create: (context) => DashboardBloc(Websocket.getInstance(),

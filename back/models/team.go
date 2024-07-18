@@ -31,7 +31,7 @@ type SanitizedTeam struct {
 
 type CreateTeamDto struct {
 	Name    string `json:"name" validate:"required"`
-	Private bool   `json:"private" validate:"required"`
+	Private bool   `json:"private"`
 }
 
 type UpdateTeamDto struct {

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -226,14 +227,23 @@ class AuthService implements IAuthService {
     }
   }
 
-  @override
   Future<List<User>> fetchUsers() async {
-    final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
-    if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.data.toString());
-      return jsonResponse.map((user) => User.fromJson(user)).toList();
-    } else {
-      throw Exception('Failed to load users');
+    try {
+      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
+      if (response.statusCode == 200) {
+        // Ajout de débogage pour la réponse JSON
+        debugPrint('Response data: ${response.data}');
+
+        // Traiter la réponse sans la décoder à nouveau
+        List<dynamic> jsonResponse = response.data;
+
+        return jsonResponse.map((user) => User.fromJson(user)).toList();
+      } else {
+        throw Exception('Failed to load users');
+      }
+    } catch (e) {
+      debugPrint('Error during fetching users: $e');
+      throw Exception('Failed to parse users: $e');
     }
   }
 
