@@ -1,6 +1,6 @@
 module challenge
 
-go 1.22.4
+go 1.22.5
 
 require (
 	github.com/Boostport/mjml-go v0.14.6

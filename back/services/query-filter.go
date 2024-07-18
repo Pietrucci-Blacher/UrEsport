@@ -20,7 +20,7 @@ type QueryFilter struct {
 func NewQueryFilter(query map[string][]string) (QueryFilter, error) {
 	queryFilter := QueryFilter{
 		Page:     1,
-		Limit:    10,
+		Limit:    0,
 		Skip:     0,
 		Select:   []string{},
 		Search:   []string{},

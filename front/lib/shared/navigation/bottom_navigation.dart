@@ -12,7 +12,7 @@ class CustomBottomNavigation extends StatelessWidget {
     required this.isLoggedIn,
     required this.selectedIndex,
     required this.onTap,
-    required this.notificationCount, // Add this parameter
+    required this.notificationCount,
   });
 
   void _showErrorToast(BuildContext context, String message) {

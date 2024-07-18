@@ -45,7 +45,7 @@ func FindAllRatings(query services.QueryFilter) ([]Rating, error) {
 
 	err := DB.Model(&Rating{}).
 		Offset(query.GetSkip()).
-		Limit(query.GetLimit()).
+		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
 		Order(query.GetSort()).
 		Find(&ratings).Error

@@ -19,10 +19,8 @@ class GamesScreen extends StatefulWidget {
 
 class GamesScreenState extends State<GamesScreen> {
   final List<String> _selectedTags = [];
-  final List<String> _allAvailableTags =
-      []; // Nouvelle liste pour tous les tags
-  List<String> _filteredAvailableTags =
-      []; // Liste filtrée des tags disponibles
+  final List<String> _allAvailableTags = [];
+  List<String> _filteredAvailableTags = [];
   late String _sortOption;
   late List<String> _sortOptions;
 
@@ -91,7 +89,7 @@ class GamesScreenState extends State<GamesScreen> {
                               } else {
                                 _selectedTags.add(tag);
                               }
-                              _updateFilteredAvailableTags(); // Mettez à jour les tags filtrés
+                              _updateFilteredAvailableTags();
                             });
                             _filterGames(context);
                           },
@@ -111,8 +109,7 @@ class GamesScreenState extends State<GamesScreen> {
           ),
         ),
         floatingActionButton: FilterButton(
-          availableTags:
-              _filteredAvailableTags, // Utilisez la liste filtrée ici
+          availableTags: _filteredAvailableTags,
           selectedTags: _selectedTags,
           sortOptions: _sortOptions,
           currentSortOption: _sortOption,
@@ -122,7 +119,7 @@ class GamesScreenState extends State<GamesScreen> {
               _selectedTags.addAll(selectedTags);
               _sortOption = sortOption;
               _currentSortIndex = _sortOptions.indexOf(sortOption);
-              _updateFilteredAvailableTags(); // Mettez à jour les tags filtrés
+              _updateFilteredAvailableTags();
             });
             _filterGames(context);
           },

@@ -8,7 +8,7 @@ class User {
   final String email;
   final String? profileImageUrl;
   final List<dynamic> roles;
-  final List<Team> teams; // Ajoutez cette ligne
+  final List<Team> teams;
 
   User({
     required this.id,
@@ -18,7 +18,7 @@ class User {
     required this.email,
     this.profileImageUrl,
     required this.roles,
-    required this.teams, // Ajoutez cette ligne
+    required this.teams,
   });
 
   factory User.fromJson(Map<String, dynamic> json) {
@@ -33,7 +33,7 @@ class User {
       teams: (json['teams'] as List<dynamic>?)
               ?.map((teamJson) => Team.fromJson(teamJson))
               .toList() ??
-          [], // Ajoutez cette ligne
+          [],
     );
   }
 
@@ -45,7 +45,7 @@ class User {
     String? email,
     String? profileImageUrl,
     List<dynamic>? roles,
-    List<Team>? teams, // Ajoutez cette ligne
+    List<Team>? teams,
   }) {
     return User(
       id: id ?? this.id,
@@ -55,7 +55,7 @@ class User {
       email: email ?? this.email,
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       roles: roles ?? this.roles,
-      teams: teams ?? this.teams, // Ajoutez cette ligne
+      teams: teams ?? this.teams,
     );
   }
 }

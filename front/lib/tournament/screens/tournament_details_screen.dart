@@ -15,7 +15,6 @@ import 'package:uresport/bracket/screens/custom_bracket.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/models/team.dart' as team_model;
-
 import 'package:uresport/tournament/screens/edit_tournament.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
@@ -36,6 +35,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
   List<team_model.Team> _teams = [];
   bool _hasUpvoted = false;
   late AnimationController _controller;
+  bool _isLoggedIn = false;
 
   @override
   void initState() {
@@ -44,7 +44,18 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
-    _loadCurrentUser();
+    _checkLoginStatus();
+  }
+
+  Future<void> _checkLoginStatus() async {
+    final authService = Provider.of<IAuthService>(context, listen: false);
+    final isLoggedIn = await authService.isLoggedIn();
+    setState(() {
+      _isLoggedIn = isLoggedIn;
+    });
+    if (_isLoggedIn) {
+      _loadCurrentUser();
+    }
   }
 
   Future<void> _loadCurrentUser() async {
@@ -736,13 +747,16 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              Text(
-                                'Voir tous les participants',
-                                style: TextStyle(
-                                  color: Theme.of(context)
-                                      .primaryColor, // Couleur du texte cliquable
-                                  decoration: TextDecoration
-                                      .underline, // Souligner le texte
+                              Flexible(
+                                child: Text(
+                                  'Voir tous les participants',
+                                  style: TextStyle(
+                                    color: Theme.of(context)
+                                        .primaryColor, // Couleur du texte cliquable
+                                    decoration: TextDecoration
+                                        .underline, // Souligner le texte
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
                               const SizedBox(width: 8),
@@ -795,9 +809,10 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                 ),
               ),
             const SizedBox(height: 16),
-            if (!_hasJoined &&
+            if (_hasJoined &&
                 widget.tournament.ownerId != _currentUser?.id &&
-                !widget.tournament.isPrivate)
+                !widget.tournament.isPrivate &&
+                _isLoggedIn)
               Center(
                 child: ElevatedButton(
                   onPressed: _showLeaveTeamsModal,

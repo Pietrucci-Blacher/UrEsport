@@ -577,7 +577,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   ),
                                 ),
                               ],
-                            )
+                            ),
                           ],
                         ),
                       ),
