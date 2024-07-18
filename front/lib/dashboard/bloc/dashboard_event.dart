@@ -44,6 +44,8 @@ class FetchTournaments extends DashboardEvent {}
 
 class FetchGames extends DashboardEvent {}
 
+class FetchLogs extends DashboardEvent {}
+
 class DeleteGameEvent extends DashboardEvent {
   final int gameId;
 

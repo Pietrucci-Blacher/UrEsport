@@ -25,9 +25,12 @@ func GetFriends(c *gin.Context) {
 	// Récupérer la liste d'amis de l'utilisateur
 	friends, err := models.GetFriendsByUserID(user.ID)
 	if err != nil {
+		models.ErrorLogf([]string{"friend", "GetFriends"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	models.PrintLogf([]string{"friend", "GetFriends"}, "Fetched %d friends", len(friends))
 	c.JSON(http.StatusOK, friends)
 }
 
@@ -50,9 +53,12 @@ func GetFriend(c *gin.Context) {
 	// Récupérer l'ami de l'utilisateur
 	friend, err := models.GetFriendsByUserID(user.ID)
 	if err != nil {
+		models.ErrorLogf([]string{"friend", "GetFriend"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	models.PrintLogf([]string{"friend", "GetFriend"}, "Fetched friend")
 	c.JSON(http.StatusOK, friend)
 }
 
@@ -76,6 +82,7 @@ func AddFriend(c *gin.Context) {
 
 	// Vérifier si l'ami existe déjà dans la liste d'amis de l'utilisateur
 	if models.IsFriend(user.ID, friend.ID) {
+		models.ErrorLogf([]string{"friend", "AddFriend"}, "Friend already exists")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Friend already exists"})
 		return
 	}
@@ -83,9 +90,12 @@ func AddFriend(c *gin.Context) {
 	// Ajouter l'ami à la liste d'amis de l'utilisateur
 	_, err := models.CreateFriend(user.ID, friend.ID, false)
 	if err != nil {
+		models.ErrorLogf([]string{"friend", "AddFriend"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	models.PrintLogf([]string{"friend", "AddFriend"}, "Friend added successfully")
 	c.JSON(http.StatusOK, gin.H{"message": "Friend added successfully"})
 }
 
@@ -109,9 +119,12 @@ func DeleteFriend(c *gin.Context) {
 	// Supprimer l'ami de la liste d'amis de l'utilisateur
 	err := models.DeleteFriend(user.ID, friend.ID)
 	if err != nil {
+		models.ErrorLogf([]string{"friend", "DeleteFriend"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	models.PrintLogf([]string{"friend", "DeleteFriend"}, "Friend deleted successfully")
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -137,8 +150,11 @@ func UpdateFriend(c *gin.Context) {
 	// Mettre à jour le statut favori de l'ami
 	err := models.UpdateFriend(user.ID, friend.ID, favorite)
 	if err != nil {
+		models.ErrorLogf([]string{"friend", "UpdateFriend"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
+
+	models.PrintLogf([]string{"friend", "UpdateFriend"}, "Friend updated successfully")
 	c.JSON(http.StatusNoContent, nil)
 }

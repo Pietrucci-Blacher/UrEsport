@@ -15,6 +15,7 @@ func Validate[T any]() gin.HandlerFunc {
 		var body T
 
 		if err := c.BindJSON(&body); err != nil {
+			models.ErrorLogf([]string{"middleware", "Validate"}, "%s", err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			c.Abort()
 			return
@@ -22,6 +23,7 @@ func Validate[T any]() gin.HandlerFunc {
 
 		validate := validator.New()
 		if err := validate.Struct(body); err != nil {
+			models.ErrorLogf([]string{"middleware", "Validate"}, "%s", err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			c.Abort()
 			return
@@ -38,6 +40,7 @@ func Get[T models.Model](name string) gin.HandlerFunc {
 
 		id, err := strconv.Atoi(c.Param(name))
 		if err != nil {
+			models.ErrorLogf([]string{"middleware", "Get"}, "%s", err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Bad Request"})
 			c.Abort()
 			return
@@ -45,6 +48,7 @@ func Get[T models.Model](name string) gin.HandlerFunc {
 
 		instance := reflect.New(reflect.TypeOf(model).Elem()).Interface().(models.Model)
 		if instance.FindOneById(id) != nil {
+			models.ErrorLogf([]string{"middleware", "Get"}, "Instance not found")
 			c.JSON(http.StatusNotFound, gin.H{"error": "Not Found"})
 			c.Abort()
 			return

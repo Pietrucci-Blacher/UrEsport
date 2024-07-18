@@ -1,6 +1,7 @@
 package middlewares
 
 import (
+	"challenge/models"
 	"challenge/services"
 	"challenge/utils"
 	"fmt"
@@ -17,6 +18,7 @@ func FileUploader(availableType []string, size int) gin.HandlerFunc {
 
 		form, err := c.MultipartForm()
 		if err != nil {
+			models.ErrorLogf([]string{"file", "FileUploader"}, "%s", err.Error())
 			c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 			c.Abort()
 			return
@@ -24,10 +26,10 @@ func FileUploader(availableType []string, size int) gin.HandlerFunc {
 
 		files := form.File["upload[]"]
 
-		// TODO: improve by using goroutine
 		for _, file := range files {
 			url, err := uploadFile(file, availableType, size)
 			if err != nil {
+				models.ErrorLogf([]string{"file", "FileUploader"}, "%s", err.Error())
 				c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 				c.Abort()
 				return
@@ -37,6 +39,7 @@ func FileUploader(availableType []string, size int) gin.HandlerFunc {
 		}
 
 		if len(fileUrls) == 0 {
+			models.ErrorLogf([]string{"file", "FileUploader"}, "Failed to upload file")
 			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to upload file"})
 			c.Abort()
 			return
@@ -59,10 +62,12 @@ func uploadFile(file *multipart.FileHeader, availableType []string, size int) (s
 	}
 
 	if len(buf) > size {
+		models.ErrorLogf([]string{"file", "uploadFile"}, "File size is too large, maximum %s", utils.FormatSize(size))
 		return "", fmt.Errorf("File size is too large, maximum %s", utils.FormatSize(size))
 	}
 
 	if !utils.IsFileType(buf, availableType) {
+		models.ErrorLogf([]string{"file", "uploadFile"}, "File type is not allowed, only %v are accepted", availableType)
 		return "", fmt.Errorf("File type is not allowed, only %v are accepted", availableType)
 	}
 

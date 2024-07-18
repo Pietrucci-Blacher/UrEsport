@@ -25,6 +25,7 @@ func GetTeams(c *gin.Context) {
 
 	teams, err := models.FindAllTeams(query)
 	if err != nil {
+		models.ErrorLogf([]string{"team", "GetTeams"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -33,6 +34,7 @@ func GetTeams(c *gin.Context) {
 		sanitized = append(sanitized, team.Sanitize())
 	}
 
+	models.PrintLogf([]string{"team", "GetTeams"}, "Fetched %d teams", len(sanitized))
 	c.JSON(http.StatusOK, sanitized)
 }
 
@@ -51,6 +53,7 @@ func GetTeams(c *gin.Context) {
 func GetTeam(c *gin.Context) {
 	team, _ := c.MustGet("team").(*models.Team)
 	sanitized := team.Sanitize()
+	models.PrintLogf([]string{"team", "GetTeam"}, "Fetched team %s", team.Name)
 	c.JSON(http.StatusOK, sanitized)
 }
 
@@ -69,6 +72,7 @@ func GetUserTeams(c *gin.Context) {
 
 	teams, err := models.FindTeamsByUserId(user.ID)
 	if err != nil {
+		models.ErrorLogf([]string{"team", "GetUserTeams"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -78,6 +82,7 @@ func GetUserTeams(c *gin.Context) {
 		sanitizedTeams = append(sanitizedTeams, team.Sanitize())
 	}
 
+	models.PrintLogf([]string{"team", "GetUserTeams"}, "Fetched %d teams", len(sanitizedTeams))
 	c.JSON(http.StatusOK, sanitizedTeams)
 }
 
@@ -104,15 +109,18 @@ func CreateTeam(c *gin.Context) {
 	}
 
 	if err := team.Save(); err != nil {
+		models.ErrorLogf([]string{"team", "CreateTeam"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
 	if err := team.AddMember(connectedUser); err != nil {
+		models.ErrorLogf([]string{"team", "CreateTeam"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"team", "CreateTeam"}, "Team %s created", team.Name)
 	c.JSON(http.StatusCreated, team.Sanitize())
 }
 
@@ -140,10 +148,12 @@ func UpdateTeam(c *gin.Context) {
 	}
 
 	if err := team.Save(); err != nil {
+		models.ErrorLogf([]string{"team", "UpdateTeam"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"team", "UpdateTeam"}, "Team %s updated", team.Name)
 	c.JSON(http.StatusOK, team.Sanitize())
 }
 
@@ -163,10 +173,12 @@ func DeleteTeam(c *gin.Context) {
 	team, _ := c.MustGet("team").(*models.Team)
 
 	if err := team.Delete(); err != nil {
+		models.ErrorLogf([]string{"team", "DeleteTeam"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"team", "DeleteTeam"}, "Team %s deleted", team.Name)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -188,20 +200,24 @@ func JoinTeam(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
 	if team.Private {
+		models.ErrorLogf([]string{"team", "JoinTeam"}, "User %d tried to join private team %d", connectedUser.ID, team.ID)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "This team is private"})
 		return
 	}
 
 	if team.HasMember(connectedUser) {
+		models.ErrorLogf([]string{"team", "JoinTeam"}, "User %d is already a member of team %d", connectedUser.ID, team.ID)
 		c.JSON(http.StatusConflict, gin.H{"error": "You are already a member of this team"})
 		return
 	}
 
 	if err := team.AddMember(connectedUser); err != nil {
+		models.ErrorLogf([]string{"team", "JoinTeam"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"team", "JoinTeam"}, "User %d joined team %d", connectedUser.ID, team.ID)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -223,20 +239,24 @@ func LeaveTeam(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
 	if team.IsOwner(connectedUser) {
+		models.ErrorLogf([]string{"team", "LeaveTeam"}, "User %d tried to leave team %d", connectedUser.ID, team.ID)
 		c.JSON(http.StatusConflict, gin.H{"error": "You can't leave the team because you are the owner"})
 		return
 	}
 
 	if !team.HasMember(connectedUser) {
+		models.ErrorLogf([]string{"team", "LeaveTeam"}, "User %d is not a member of team %d", connectedUser.ID, team.ID)
 		c.JSON(http.StatusConflict, gin.H{"error": "You are not a member of this team"})
 		return
 	}
 
 	if err := team.RemoveMember(connectedUser); err != nil {
+		models.ErrorLogf([]string{"team", "LeaveTeam"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"team", "LeaveTeam"}, "User %d left team %d", connectedUser.ID, team.ID)
 	c.JSON(http.StatusNoContent, nil)
 
 }
@@ -263,25 +283,30 @@ func InviteUserToTeam(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.InviteUserDto)
 
 	if err := user.FindOne("username", body.Username); err != nil {
+		models.ErrorLogf([]string{"team", "InviteUserToTeam"}, "User %s not found", body.Username)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
 	if team.HasMember(user) {
+		models.ErrorLogf([]string{"team", "InviteUserToTeam"}, "User %s is already a member of team %d", user.Username, team.ID)
 		c.JSON(http.StatusConflict, gin.H{"error": "User is already a member of this team"})
 		return
 	}
 
 	if err := invit.FindOneByTeamAndUser(team.ID, user.ID); err == nil {
+		models.ErrorLogf([]string{"team", "InviteUserToTeam"}, "User %s is already invited to team %d", user.Username, team.ID)
 		c.JSON(http.StatusConflict, gin.H{"error": "User already invited"})
 		return
 	}
 
 	if models.NewTeamInvit(team.ID, user.ID).Save() != nil {
+		models.ErrorLogf([]string{"team", "InviteUserToTeam"}, "Error while saving the invitation")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Error while saving the invitation"})
 		return
 	}
 
+	models.PrintLogf([]string{"team", "InviteUserToTeam"}, "User %s invited to team %d", user.Username, team.ID)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -306,25 +331,30 @@ func KickUserFromTeam(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.InviteUserDto)
 
 	if err := user.FindOne("username", body.Username); err != nil {
+		models.ErrorLogf([]string{"team", "KickUserFromTeam"}, "User %s not found", body.Username)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
 
 	if team.IsOwner(user) {
+		models.ErrorLogf([]string{"team", "KickUserFromTeam"}, "User %s is the owner of team %d", user.Username, team.ID)
 		c.JSON(http.StatusConflict, gin.H{"error": "You can't kick the owner of the team"})
 		return
 	}
 
 	if !team.HasMember(user) {
+		models.ErrorLogf([]string{"team", "KickUserFromTeam"}, "User %s is not a member of team %d", user.Username, team.ID)
 		c.JSON(http.StatusConflict, gin.H{"error": "User is not a member of this team"})
 		return
 	}
 
 	if err := team.RemoveMember(user); err != nil {
+		models.ErrorLogf([]string{"team", "KickUserFromTeam"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"team", "KickUserFromTeam"}, "User %s kicked from team %d", user.Username, team.ID)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -347,10 +377,12 @@ func TogglePrivateTeam(c *gin.Context) {
 	team.TogglePrivate()
 
 	if err := team.Save(); err != nil {
+		models.ErrorLogf([]string{"team", "TogglePrivateTeam"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"team", "TogglePrivateTeam"}, "Team %s is now %t", team.Name, team.Private)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -374,16 +406,19 @@ func AcceptTeamInvitation(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
 	if team.HasMember(connectedUser) {
+		models.ErrorLogf([]string{"team", "AcceptTeamInvitation"}, "User %s is already a member of team %d", connectedUser.Username, team.ID)
 		c.JSON(http.StatusConflict, gin.H{"error": "You are already a member of this team"})
 		return
 	}
 
 	if err := invit.FindOneByTeamAndUser(team.ID, connectedUser.ID); err != nil {
+		models.ErrorLogf([]string{"team", "AcceptTeamInvitation"}, "Invitation not found")
 		c.JSON(http.StatusNotFound, gin.H{"error": "Invitation not found"})
 		return
 	}
 
 	if err := team.AddMember(connectedUser); err != nil {
+		models.ErrorLogf([]string{"team", "AcceptTeamInvitation"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
@@ -391,10 +426,12 @@ func AcceptTeamInvitation(c *gin.Context) {
 	invit.Status = models.ACCEPTED
 
 	if err := invit.Save(); err != nil {
+		models.ErrorLogf([]string{"team", "AcceptTeamInvitation"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"team", "AcceptTeamInvitation"}, "User %s accepted invitation to team %d", connectedUser.Username, team.ID)
 	c.JSON(http.StatusNoContent, nil)
 }
 
@@ -418,6 +455,7 @@ func RejectTeamInvitation(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 
 	if err := invit.FindOneByTeamAndUser(team.ID, connectedUser.ID); err != nil {
+		models.ErrorLogf([]string{"team", "RejectTeamInvitation"}, "Invitation not found")
 		c.JSON(http.StatusNotFound, gin.H{"error": "Invitation not found"})
 		return
 	}
@@ -425,9 +463,11 @@ func RejectTeamInvitation(c *gin.Context) {
 	invit.Status = models.REJECTED
 
 	if err := invit.Save(); err != nil {
+		models.ErrorLogf([]string{"team", "RejectTeamInvitation"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"team", "RejectTeamInvitation"}, "User %s rejected invitation to team %d", connectedUser.Username, team.ID)
 	c.JSON(http.StatusNoContent, nil)
 }

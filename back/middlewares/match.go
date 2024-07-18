@@ -13,6 +13,7 @@ func IsTeamInMatch() gin.HandlerFunc {
 		team, _ := c.MustGet("team").(*models.Team)
 
 		if !match.HasTeam(*team) {
+			models.ErrorLogf([]string{"team", "IsTeamInMatch"}, "This team is not in this match")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "This team is not in this match"})
 			c.Abort()
 			return
@@ -28,6 +29,7 @@ func IsTeamOwnerInMatch() gin.HandlerFunc {
 		user, _ := c.MustGet("connectedUser").(models.User)
 
 		if !match.HasTeamOwner(user) && !user.IsRole(models.ROLE_ADMIN) {
+			models.ErrorLogf([]string{"team", "IsTeamOwnerInMatch"}, "You are not the owner of a team in this match")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not the owner of a team in this match"})
 			c.Abort()
 			return
@@ -43,6 +45,7 @@ func IsTeamMemberInMatch() gin.HandlerFunc {
 		user, _ := c.MustGet("connectedUser").(models.User)
 
 		if !match.HasTeamMember(user) && !user.IsRole(models.ROLE_ADMIN) {
+			models.ErrorLogf([]string{"team", "IsTeamMemberInMatch"}, "You are not a member of a team in this match")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not in this match"})
 			c.Abort()
 			return
@@ -58,6 +61,7 @@ func IsMatchTournmanentOwner() gin.HandlerFunc {
 		user, _ := c.MustGet("connectedUser").(models.User)
 
 		if !match.Tournament.IsOwner(user) && !user.IsRole(models.ROLE_ADMIN) {
+			models.ErrorLogf([]string{"team", "IsMatchTournmanentOwner"}, "You are not the owner of this tournament")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not the owner of this tournament"})
 			c.Abort()
 			return
