@@ -9,6 +9,8 @@ import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 
+import 'package:uresport/core/services/cache_service.dart';
+
 class AddTournamentPage extends StatefulWidget {
   const AddTournamentPage({super.key});
 
@@ -24,22 +26,38 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
   final _imageController = TextEditingController();
-  final _privateController = TextEditingController();
   final _gameIdController = TextEditingController();
   final _nbPlayerController = TextEditingController();
+  final TextEditingController _startDateTimeController = TextEditingController();
+  final TextEditingController _endDateTimeController = TextEditingController();
   final Dio _dio = Dio();
+  bool _isPrivate = false;
+  final CacheService _cacheService = CacheService.instance;
 
-  final DateFormat _dateFormat = DateFormat("yyyy-MM-dd HH:mm");
+  final DateFormat _apiDateFormat = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  final DateFormat _displayDateFormat = DateFormat("dd-MM-yyyy HH:mm");
 
   DateTime? _startDateTime;
   DateTime? _endDateTime;
 
   String _formatDateToUtcWithoutMilliseconds(DateTime dateTime) {
-    return DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(dateTime.toUtc());
+    return _apiDateFormat.format(dateTime.toUtc());
+  }
+
+  void _updateDateTimeField(bool isStartDate) {
+    setState(() {
+      if (isStartDate) {
+        _startDateTimeController.text = _startDateTime != null ? _displayDateFormat.format(_startDateTime!) : '';
+      } else {
+        _endDateTimeController.text = _endDateTime != null ? _displayDateFormat.format(_endDateTime!) : '';
+      }
+    });
   }
 
   Future<void> _selectDateTime(BuildContext context, bool isStartDate) async {
     AppLocalizations l = AppLocalizations.of(context);
+    DateTime today = DateTime.now();
+
     await showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -51,16 +69,27 @@ class AddTournamentPageState extends State<AddTournamentPage> {
             child: SfDateRangePicker(
               view: DateRangePickerView.month,
               selectionMode: DateRangePickerSelectionMode.single,
+              minDate: isStartDate
+                  ? today
+                  : (_startDateTime != null ? _startDateTime!.add(Duration(minutes: 1)) : today),
               showActionButtons: true,
               onSubmit: (Object? value) {
                 if (value is DateTime) {
-                  setState(() {
-                    if (isStartDate) {
-                      _startDateTime = value;
-                    } else {
-                      _endDateTime = value;
+                  if (isStartDate) {
+                    // Update start date with selected time
+                    _startDateTime = value;
+                    if (_endDateTime != null && _endDateTime!.isBefore(_startDateTime!.add(Duration(minutes: 1)))) {
+                      // If end date is before start date + 1 minute, adjust it
+                      _endDateTime = _startDateTime!.add(Duration(minutes: 1));
+                      _endDateTimeController.text = _displayDateFormat.format(_endDateTime!);
                     }
-                  });
+                  } else {
+                    // Update end date with selected time
+                    _endDateTime = value;
+                  }
+
+                  // Update the text fields
+                  _updateDateTimeField(isStartDate);
                   Navigator.pop(context);
                 }
               },
@@ -84,6 +113,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       if (time != null) {
         setState(() {
           if (isStartDate) {
+            // Update start date with selected time
             _startDateTime = DateTime(
               _startDateTime!.year,
               _startDateTime!.month,
@@ -91,7 +121,14 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               time.hour,
               time.minute,
             );
+
+            if (_endDateTime != null && _endDateTime!.isBefore(_startDateTime!.add(Duration(minutes: 1)))) {
+              // If end date is before start date + 1 minute, adjust it
+              _endDateTime = _startDateTime!.add(Duration(minutes: 1));
+              _endDateTimeController.text = _displayDateFormat.format(_endDateTime!);
+            }
           } else {
+            // Update end date with selected time
             _endDateTime = DateTime(
               _endDateTime!.year,
               _endDateTime!.month,
@@ -99,7 +136,16 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               time.hour,
               time.minute,
             );
+
+            // Check if end date is before start date, adjust if necessary
+            if (_startDateTime != null && _endDateTime != null && _endDateTime!.isBefore(_startDateTime!)) {
+              _endDateTime = _startDateTime!.add(Duration(minutes: 1)); // Set end date to one minute after start date
+              _endDateTimeController.text = _displayDateFormat.format(_endDateTime!);
+            }
           }
+
+          // Update the text fields
+          _updateDateTimeField(isStartDate);
         });
       }
     }
@@ -113,8 +159,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       final newTournament = {
         'name': _nameController.text,
         'description': _descriptionController.text,
-        'start_date': _formatDateToUtcWithoutMilliseconds(_startDateTime!),
-        'end_date': _formatDateToUtcWithoutMilliseconds(_endDateTime!),
+        'start_date': _apiDateFormat.format(_startDateTime!), // Use API format for start date
+        'end_date': _apiDateFormat.format(_endDateTime!),     // Use API format for end date
         'location': _locationController.text.isNotEmpty
             ? _locationController.text
             : null,
@@ -124,7 +170,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         'longitude': _longitudeController.text.isNotEmpty
             ? double.tryParse(_longitudeController.text)
             : null,
-        'private': _privateController.text.toLowerCase() == 'true',
+        'private': _isPrivate,
         'game_id': int.tryParse(_gameIdController.text) ?? 0,
         'nb_player': int.tryParse(_nbPlayerController.text) ?? 0,
       };
@@ -134,9 +180,14 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       }
 
       try {
+        final token = await _cacheService.getString('token');
+        if (token == null) throw Exception('No token found');
         final response = await _dio.post(
-          '${dotenv.env['API_ENDPOINT']}/tournaments',
+          '${dotenv.env['API_ENDPOINT']}/tournaments/',
           data: newTournament,
+          options: Options(headers: {
+            'Authorization': token,
+          }),
         );
 
         if (kDebugMode) {
@@ -163,6 +214,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
     }
   }
 
+
   void _handleSuccessfulResponse() {
     AppLocalizations l = AppLocalizations.of(context);
     Navigator.of(context).pop(true);
@@ -187,9 +239,10 @@ class AddTournamentPageState extends State<AddTournamentPage> {
     _latitudeController.dispose();
     _longitudeController.dispose();
     _imageController.dispose();
-    _privateController.dispose();
     _gameIdController.dispose();
     _nbPlayerController.dispose();
+    _startDateTimeController.dispose();
+    _endDateTimeController.dispose();
     super.dispose();
   }
 
@@ -235,10 +288,11 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                       onTap: () => _selectDateTime(context, true),
                       child: AbsorbPointer(
                         child: TextFormField(
+                          controller: _startDateTimeController,
                           decoration: InputDecoration(
                             labelText: l.startDateTime,
                             hintText: _startDateTime != null
-                                ? _dateFormat.format(_startDateTime!)
+                                ? _displayDateFormat.format(_startDateTime!)
                                 : '',
                           ),
                         ),
@@ -248,10 +302,11 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                       onTap: () => _selectDateTime(context, false),
                       child: AbsorbPointer(
                         child: TextFormField(
+                          controller: _endDateTimeController,
                           decoration: InputDecoration(
                             labelText: l.endDateTime,
                             hintText: _endDateTime != null
-                                ? _dateFormat.format(_endDateTime!)
+                                ? _displayDateFormat.format(_endDateTime!)
                                 : '',
                           ),
                         ),
@@ -259,7 +314,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                     ),
                     TextFormField(
                       controller: _locationController,
-                      decoration: InputDecoration(labelText: l.location.toString()),
+                      decoration: const InputDecoration(labelText: 'Location'),
                     ),
                     TextFormField(
                       controller: _latitudeController,
@@ -271,15 +326,13 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                       decoration: InputDecoration(labelText: l.longitude),
                       keyboardType: TextInputType.number,
                     ),
-                    TextFormField(
-                      controller: _privateController,
-                      decoration: InputDecoration(
-                          labelText: l.private),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return l.pleaseEnterIfTournamentIsPrivate;
-                        }
-                        return null;
+                    SwitchListTile(
+                      title: Text(l.private),
+                      value: _isPrivate,
+                      onChanged: (bool value) {
+                        setState(() {
+                          _isPrivate = value;
+                        });
                       },
                     ),
                     TextFormField(

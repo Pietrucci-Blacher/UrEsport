@@ -6,6 +6,8 @@ import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 
+import 'package:uresport/core/services/cache_service.dart';
+
 class AddGamePage extends StatefulWidget {
   const AddGamePage({super.key});
 
@@ -20,6 +22,8 @@ class AddGamePageState extends State<AddGamePage> {
   final _imageController = TextEditingController();
   final _tagsController = TextEditingController();
   final Dio _dio = Dio();
+  final CacheService _cacheService = CacheService.instance;
+
 
   Future<void> _saveGame() async {
     AppLocalizations l = AppLocalizations.of(context);
@@ -42,9 +46,14 @@ class AddGamePageState extends State<AddGamePage> {
       }
 
       try {
+        final token = await _cacheService.getString('token');
+        if (token == null) throw Exception('No token found');
         final response = await _dio.post(
-          'http://localhost:8080/games',
+          'http://localhost:8080/games/',
           data: newGame,
+          options: Options(headers: {
+            'Authorization': token,
+          }),
         );
 
         // Log de la réponse complète du serveur
