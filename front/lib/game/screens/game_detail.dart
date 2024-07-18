@@ -1,10 +1,16 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:provider/provider.dart';
 import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/models/user.dart';
+import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/game_service.dart';
+import 'package:uresport/core/services/like_service.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
+import 'package:uresport/core/models/like.dart';
+import 'package:uresport/widgets/custom_toast.dart'; // Assurez-vous d'importer le fichier CustomToast
 
 class GameDetailPage extends StatefulWidget {
   final Game game;
@@ -18,11 +24,129 @@ class GameDetailPage extends StatefulWidget {
 class GameDetailPageState extends State<GameDetailPage> {
   late Future<List<Tournament>> _futureTournaments;
   final GameService _gameService = GameService(Dio());
+  final LikeService _likeService = LikeService(Dio(BaseOptions(
+    followRedirects: true,
+    validateStatus: (status) {
+      return status != null && status < 400;
+    },
+  )));
+  User? _currentUser;
+  Like? _currentLike; // Keep a reference to the current like
+  bool _isLiked = false;
 
   @override
   void initState() {
     super.initState();
+    _loadCurrentUser();
     _futureTournaments = _gameService.fetchTournamentsByGameId(widget.game.id);
+  }
+
+  Future<void> _loadCurrentUser() async {
+    final authService = Provider.of<IAuthService>(context, listen: false);
+    try {
+      final user = await authService.getUser();
+      if (!mounted) return;
+      setState(() {
+        _currentUser = user;
+      });
+      debugPrint('Current user loaded: ${_currentUser!.id}');
+      _checkIfLiked(); // Appeler _checkIfLiked après avoir chargé l'utilisateur
+    } catch (e) {
+      debugPrint('Error loading current user: $e');
+    }
+  }
+
+  Future<void> _checkIfLiked() async {
+    if (_currentUser == null) {
+      debugPrint('Current user is null, cannot check like status');
+      return;
+    }
+
+    try {
+      debugPrint(
+          'Checking if liked for user: ${_currentUser!.id} and game: ${widget.game.id}');
+      final likes = await _likeService.getLikesByUserIdAndGameId(
+          _currentUser!.id, widget.game.id);
+      debugPrint('Response from GetLikesByUserIDAndGameID: $likes');
+      setState(() {
+        if (likes.isNotEmpty) {
+          _currentLike = likes.first;
+          _isLiked = true;
+        } else {
+          _currentLike = null;
+          _isLiked = false;
+        }
+        debugPrint('Like status updated: $_isLiked');
+      });
+    } catch (e) {
+      debugPrint('Error checking if liked: $e');
+    }
+  }
+
+  Future<void> _createLike() async {
+    if (_currentUser == null) {
+      _showToast(
+          context, 'Vous devez être connecté pour suivre ce jeu', Colors.red);
+      return;
+    }
+
+    try {
+      Like newLike = Like(
+          userId: _currentUser!.id, gameId: widget.game.id, game: widget.game);
+      debugPrint('Creating like with data: ${newLike.toJson()}');
+      final createdLike = await _likeService.createLike(newLike);
+      setState(() {
+        _isLiked = true;
+        _currentLike = createdLike; // Update the current like
+      });
+      if (!mounted) return;
+      _showToast(context, 'Ajout du jeux dans votre liste', Colors.green);
+    } catch (e) {
+      debugPrint('Error: $e');
+      _showToast(context, 'Erreur lors du suivi du jeu : $e', Colors.red);
+    }
+  }
+
+  Future<void> _deleteLike() async {
+    if (_currentLike == null) {
+      _showToast(context, 'Aucun like à supprimer', Colors.red);
+      return;
+    }
+
+    try {
+      await _likeService.deleteLike(_currentLike!.id!);
+      setState(() {
+        _isLiked = false;
+        _currentLike = null; // Clear the current like
+      });
+      if (!mounted) return;
+      _showToast(context, 'Suppression du jeux de votre liste', Colors.red);
+    } catch (e) {
+      debugPrint('Error: $e');
+      _showToast(context, 'Erreur lors de la suppression du suivi du jeu : $e',
+          Colors.red);
+    }
+  }
+
+  void _showToast(BuildContext context, String message, Color backgroundColor) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => CustomToast(
+        message: message,
+        backgroundColor: backgroundColor,
+        textColor: Colors.white,
+        onClose: () {
+          overlayEntry.remove();
+        },
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
   }
 
   @override
@@ -32,31 +156,14 @@ class GameDetailPageState extends State<GameDetailPage> {
         title: Text(widget.game.name),
         actions: [
           IconButton(
-            icon: const Icon(Icons.favorite_border),
+            icon: Icon(_isLiked ? Icons.favorite : Icons.favorite_border,
+                color: _isLiked ? Colors.red : null),
             onPressed: () {
-              showDialog(
-                context: context,
-                builder: (context) {
-                  return AlertDialog(
-                    title: const Text('Follow Game'),
-                    content: const Text('Do you want to follow this game?'),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Cancel'),
-                      ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.pop(context);
-                        },
-                        child: const Text('Follow'),
-                      ),
-                    ],
-                  );
-                },
-              );
+              if (_isLiked) {
+                _deleteLike(); // Supprimer le like s'il existe déjà
+              } else {
+                _createLike(); // Créer un like s'il n'existe pas
+              }
             },
           ),
         ],
@@ -78,7 +185,7 @@ class GameDetailPageState extends State<GameDetailPage> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Game Description',
+                'Description du Jeu',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -111,7 +218,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                 thickness: 3,
               ),
               Text(
-                'Tournaments',
+                'Tournois',
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -123,7 +230,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
+                    return Center(child: Text('Erreur: ${snapshot.error}'));
                   } else if (snapshot.hasData) {
                     final tournaments = snapshot.data!;
                     if (tournaments.isEmpty) {
@@ -250,7 +357,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                                               color: Colors.blue),
                                           const SizedBox(width: 8),
                                           Text(
-                                            'Start: ${DateFormat.yMMMd().format(tournament.startDate)}',
+                                            'Début: ${DateFormat.yMMMd().format(tournament.startDate)}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
@@ -264,7 +371,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                                               color: Colors.blue),
                                           const SizedBox(width: 8),
                                           Text(
-                                            'End: ${DateFormat.yMMMd().format(tournament.endDate)}',
+                                            'Fin: ${DateFormat.yMMMd().format(tournament.endDate)}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
@@ -281,7 +388,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                       },
                     );
                   } else {
-                    return const Center(child: Text('No tournaments found'));
+                    return const Center(child: Text('Aucun tournoi trouvé'));
                   }
                 },
               ),

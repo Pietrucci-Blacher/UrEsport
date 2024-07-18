@@ -28,42 +28,50 @@ func Login(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.LoginUserDto)
 
 	if err := user.FindOne("email", body.Email); err != nil {
+		models.ErrorLogf([]string{"auth", "login"}, "Failed to find user with email %s", body.Email)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
 	if !user.Verified {
+		models.ErrorLogf([]string{"auth", "login"}, "Account not verified")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Account not verified"})
 		return
 	}
 
 	if !user.ComparePassword(body.Password) {
+		models.ErrorLogf([]string{"auth", "login"}, "Invalid password for user %s", user.Email)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Invalid credentials"})
 		return
 	}
 
 	if err := models.DeleteTokensByUserID(user.ID); err != nil {
+		models.ErrorLogf([]string{"auth", "login"}, "Failed to delete tokens for user %s", user.Email)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete tokens"})
 		return
 	}
 
 	token, err := models.NewToken("access_token", user.ID)
 	if err != nil {
+		models.ErrorLogf([]string{"auth", "login"}, "Failed to create token for user %s", user.Email)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create token"})
 		return
 	}
 
 	if token.GenerateTokens() != nil {
+		models.ErrorLogf([]string{"auth", "login"}, "Failed to generate tokens for user %s", user.Email)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to generate tokens"})
 		return
 	}
 
 	if token.Save() != nil {
+		models.ErrorLogf([]string{"auth", "login"}, "Failed to save token for user %s", user.Email)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save token"})
 		return
 	}
 
 	setAuthCookies(c, token)
+	models.PrintLogf([]string{"auth", "login"}, "User %s logged in", user.Email)
 	c.JSON(http.StatusOK, gin.H{"access_token": token.AccessToken, "refresh_token": token.RefreshToken})
 }
 
@@ -120,6 +128,7 @@ func Register(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.CreateUserDto)
 
 	if isUserExists(body) {
+		models.ErrorLogf([]string{"auth", "register"}, "Email or Username already exists")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Email or Username already exists"})
 		return
 	}
@@ -136,15 +145,18 @@ func Register(c *gin.Context) {
 	}
 
 	if err := user.HashPassword(body.Password); err != nil {
+		models.ErrorLogf([]string{"auth", "register"}, "Failed to hash password")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
 		return
 	}
 
 	if err := user.Save(); err != nil {
+		models.ErrorLogf([]string{"auth", "register"}, "Failed to create user")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create user"})
 		return
 	}
 
+	models.PrintLogf([]string{"auth", "register"}, "User %s registered", user.Email)
 	sendWelcomeAndVerificationEmails(user, c)
 }
 
@@ -166,16 +178,19 @@ func Verify(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.VerifyUserDto)
 
 	if verificationCode.FindOneByCodeAndEmail(body.Code, body.Email) != nil {
+		models.ErrorLogf([]string{"auth", "verify"}, "Verification code not found")
 		c.JSON(http.StatusNotFound, gin.H{"error": "Verification code not found"})
 		return
 	}
 
 	if verificationCode.IsExpired() {
+		models.ErrorLogf([]string{"auth", "verify"}, "Invalid or expired verification code")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid or expired verification code"})
 		return
 	}
 
 	if user.FindOne("email", verificationCode.Email) != nil {
+		models.ErrorLogf([]string{"auth", "verify"}, "User %s not found", verificationCode.Email)
 		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
 		return
 	}
@@ -183,15 +198,18 @@ func Verify(c *gin.Context) {
 	user.Verified = true
 
 	if user.Save() != nil {
+		models.ErrorLogf([]string{"auth", "verify"}, "Failed to verify account")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to verify account"})
 		return
 	}
 
 	if verificationCode.Delete() != nil {
+		models.ErrorLogf([]string{"auth", "verify"}, "Failed to delete verification code")
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete verification code"})
 		return
 	}
 
+	models.PrintLogf([]string{"auth", "verify"}, "User %s verified", user.Email)
 	c.JSON(http.StatusOK, gin.H{"message": "Account verified successfully"})
 }
 

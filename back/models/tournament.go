@@ -82,17 +82,22 @@ type SanitizedTournament struct {
 func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
 	var tournaments []Tournament
 
-	err := DB.Model(&Tournament{}).
+	value := DB.Model(&Tournament{}).
 		Offset(query.GetSkip()).
-		Limit(query.GetLimit()).
+		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
 		Order(query.GetSort()).
 		Preload("Teams").
 		Preload("Owner").
-		Preload("Game").
-		Find(&tournaments).Error
+		Preload("Game")
 
-	return tournaments, err
+	if query.GetLimit() != 0 {
+		value.Limit(query.GetLimit())
+	}
+
+	value.Find(&tournaments)
+
+	return tournaments, value.Error
 }
 
 func FindTournamentsByUserID(userID int) ([]Tournament, error) {

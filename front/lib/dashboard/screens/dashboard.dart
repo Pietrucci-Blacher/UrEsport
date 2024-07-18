@@ -158,14 +158,43 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildLogsContent(DashboardLoaded state) {
-    return ListView.builder(
-      itemCount: state.recentLogs.length,
-      itemBuilder: (context, index) {
-        return ListTile(
-          title: Text(state.recentLogs[index]),
-        );
-      },
-    );
+    final ScrollController scrollController = ScrollController();
+    return Stack(children: [
+      SingleChildScrollView(
+        scrollDirection: Axis.horizontal,
+        child: SingleChildScrollView(
+          controller: scrollController,
+          child: DataTable(
+            columns: const [
+              DataColumn(label: Expanded(child: Text('Date'))),
+              DataColumn(label: Expanded(child: Text('Type'))),
+              DataColumn(label: Expanded(child: Text('Tags'))),
+              DataColumn(label: Expanded(child: Text('Text'))),
+            ],
+            rows: state.recentLogs.map((log) {
+              return DataRow(cells: [
+                DataCell(Text(log.date.toIso8601String())),
+                DataCell(
+                  Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: log.type == 'error' ? Colors.red : Colors.green,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: Text(
+                      log.type,
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+                DataCell(Text(log.tags.join(', '))),
+                DataCell(Text(log.text)),
+              ]);
+            }).toList(),
+          ),
+        ),
+      ),
+    ]);
   }
 
   Widget _buildTournamentsContent(DashboardLoaded state) {

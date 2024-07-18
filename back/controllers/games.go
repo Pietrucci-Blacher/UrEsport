@@ -23,10 +23,12 @@ func GetGames(c *gin.Context) {
 
 	games, err := models.FindAllGames(query)
 	if err != nil {
+		models.ErrorLogf([]string{"game", "GetGames"}, "Error while fetching games: %s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"game", "GetGames"}, "Fetched %d games", len(games))
 	c.JSON(http.StatusOK, games)
 }
 
@@ -64,6 +66,7 @@ func CreateGame(c *gin.Context) {
 	body, _ := c.MustGet("body").(models.CreateGameDto)
 
 	if count, err := models.CountGameByName(body.Name); err != nil || count > 0 {
+		models.ErrorLogf([]string{"game", "CreateGame"}, "Game already exists")
 		c.JSON(http.StatusBadRequest, gin.H{"error": "Game already exists"})
 		return
 	}
@@ -76,10 +79,12 @@ func CreateGame(c *gin.Context) {
 	}
 
 	if err := game.Save(); err != nil {
+		models.ErrorLogf([]string{"game", "CreateGame"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"game", "CreateGame"}, "Game %d created", game.ID)
 	c.JSON(http.StatusCreated, game)
 }
 
@@ -114,10 +119,12 @@ func UpdateGame(c *gin.Context) {
 	}
 
 	if err := game.Save(); err != nil {
+		models.ErrorLogf([]string{"game", "UpdateGame"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"game", "UpdateGame"}, "Game %s updated", game.Name)
 	c.JSON(http.StatusOK, game)
 }
 
@@ -137,10 +144,12 @@ func DeleteGame(c *gin.Context) {
 	game, _ := c.MustGet("game").(*models.Game)
 
 	if err := game.Delete(); err != nil {
+		models.ErrorLogf([]string{"game", "DeleteGame"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"game", "DeleteGame"}, "Game %s deleted", game.Name)
 	c.Status(http.StatusNoContent)
 }
 
@@ -165,10 +174,12 @@ func UploadGameImage(c *gin.Context) {
 	game.Image = files[0]
 
 	if err := game.Save(); err != nil {
+		models.ErrorLogf([]string{"game", "UploadGameImage"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"game", "UploadGameImage"}, "Game %s image updated", game.Name)
 	c.JSON(http.StatusOK, game)
 }
 
@@ -189,9 +200,11 @@ func GetTournamentsByGame(c *gin.Context) {
 
 	tournaments, err := game.GetTournaments()
 	if err != nil {
+		models.ErrorLogf([]string{"game", "GetTournamentsByGame"}, "%s", err.Error())
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
+	models.PrintLogf([]string{"game", "GetTournamentsByGame"}, "Fetched %d tournaments", len(tournaments))
 	c.JSON(http.StatusOK, tournaments)
 }

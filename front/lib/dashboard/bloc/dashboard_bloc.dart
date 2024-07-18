@@ -7,21 +7,26 @@ import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/game.dart';
+import 'package:uresport/core/models/log.dart';
+import 'package:uresport/core/services/log_service.dart';
 
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final Websocket _websocket;
   final TournamentService _tournamentService;
   final GameService _gameService;
+  final LogService _logService;
 
-  DashboardBloc(this._websocket, this._tournamentService, this._gameService)
+  DashboardBloc(this._websocket, this._tournamentService, this._gameService,
+      this._logService)
       : super(DashboardInitial()) {
     on<ConnectWebSocket>(_onConnectWebSocket);
     on<DisconnectWebSocket>(_onDisconnectWebSocket);
     on<WebSocketMessageReceived>(_onWebSocketMessageReceived);
     on<UpdateDashboardStats>(_onUpdateDashboardStats);
-    on<AddLogEntry>(_onAddLogEntry);
+    // on<AddLogEntry>(_onAddLogEntry);
     on<FetchAllUsers>(_onFetchAllUsers);
     on<FetchTournaments>(_onFetchTournaments);
+    on<FetchLogs>(_onFetchLogs);
     on<FetchGames>(_onFetchGames);
     on<DeleteGameEvent>(_onDeleteGame);
   }
@@ -107,12 +112,28 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     }
   }
 
-  void _onAddLogEntry(AddLogEntry event, Emitter<DashboardState> emit) {
-    if (state is DashboardLoaded) {
-      final currentState = state as DashboardLoaded;
-      final updatedLogs = List<String>.from(currentState.recentLogs)
-        ..add(event.logEntry);
-      emit(currentState.copyWith(recentLogs: updatedLogs));
+  // void _onAddLogEntry(AddLogEntry event, Emitter<DashboardState> emit) {
+  //   if (state is DashboardLoaded) {
+  //     final currentState = state as DashboardLoaded;
+  //     final updatedLogs = List<String>.from(currentState.recentLogs)
+  //       ..add(event.logEntry);
+  //     emit(currentState.copyWith(recentLogs: updatedLogs));
+  //   }
+  // }
+
+  Future<void> _onFetchLogs(
+      FetchLogs event, Emitter<DashboardState> emit) async {
+    try {
+      final List<Log> logs = await _logService.fetchLogs(sort: 'id desc');
+      emit(DashboardLoaded(
+        message: 'Logs loaded',
+        activeUsers: 0, // mettez à jour selon vos besoins
+        activeTournaments: 0, // mettez à jour selon vos besoins
+        totalGames: 0, // mettez à jour selon vos besoins
+        recentLogs: logs, // mettez à jour selon vos besoins
+      ));
+    } catch (e) {
+      emit(DashboardError(e.toString()));
     }
   }
 

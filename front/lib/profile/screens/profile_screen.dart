@@ -1,19 +1,23 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
+import 'package:uresport/core/models/like.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/like_service.dart';
 import 'package:uresport/cubit/locale_cubit.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/main_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
-import 'package:uresport/shared/utils/image_util.dart'
-    as image_util; // Renommer l'importation conflictuelle
+import 'package:uresport/shared/utils/image_util.dart' as image_util;
+import 'package:uresport/game/screens/game_detail.dart';
+import 'package:uresport/shared/navigation/bottom_navigation.dart';
 
 class ProfileScreen extends StatefulWidget {
   final IAuthService authService;
@@ -51,79 +55,91 @@ class ProfileScreenState extends State<ProfileScreen>
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     super.build(context);
     return BlocProvider(
       create: (context) =>
           AuthBloc(widget.authService)..add(AuthCheckRequested()),
-      child: Scaffold(
-        appBar: AppBar(
-          title: Text(AppLocalizations.of(context).profileScreenTitle),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            onPressed: () => Navigator.pop(context),
-          ),
-          actions: [
-            LocaleSwitcher(
-              onLocaleChanged: (locale) {
-                context.read<LocaleCubit>().setLocale(locale);
-              },
+      child: DefaultTabController(
+        length: 2, // Number of tabs
+        child: Scaffold(
+          appBar: AppBar(
+            title: Text(AppLocalizations.of(context).profileScreenTitle),
+            leading: IconButton(
+              icon: const Icon(Icons.arrow_back),
+              onPressed: () => Navigator.pop(context),
             ),
-          ],
-        ),
-        body: BlocListener<AuthBloc, AuthState>(
-          listener: (context, state) {
-            if (state is AuthFailure) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(state.error)),
-              );
-            } else if (state is PasswordResetEmailSent) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(
-                        AppLocalizations.of(context).passwordResetEmailSent)),
-              );
-            } else if (state is PasswordResetConfirmed) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                    content: Text(
-                        AppLocalizations.of(context).passwordResetSuccessful)),
-              );
-            } else if (state is AuthAuthenticated) {
-              _initializeControllers(state.user);
-            } else if (state is AuthUnauthenticated) {
-              WidgetsBinding.instance.addPostFrameCallback((_) {
-                Navigator.of(context).pushAndRemoveUntil(
-                  MaterialPageRoute(
-                    builder: (context) =>
-                        MainScreen(authService: widget.authService),
-                  ),
-                  (Route<dynamic> route) => false,
+            actions: [
+              LocaleSwitcher(
+                onLocaleChanged: (locale) {
+                  context.read<LocaleCubit>().setLocale(locale);
+                },
+              ),
+            ],
+            bottom: TabBar(
+              tabs: [
+                Tab(text: l.profileTab),
+                Tab(text: l.likedGamesTab),
+              ],
+            ),
+          ),
+          body: BlocListener<AuthBloc, AuthState>(
+            listener: (context, state) {
+              if (state is AuthFailure) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(state.error)),
                 );
-              });
-            }
-          },
-          child: BlocBuilder<AuthBloc, AuthState>(
-            builder: (context, state) {
-              if (state is AuthLoading) {
-                return const Center(child: CircularProgressIndicator());
+              } else if (state is PasswordResetEmailSent) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text(
+                          AppLocalizations.of(context).passwordResetEmailSent)),
+                );
+              } else if (state is PasswordResetConfirmed) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                      content: Text(AppLocalizations.of(context)
+                          .passwordResetSuccessful)),
+                );
               } else if (state is AuthAuthenticated) {
-                if (_user == null) {
-                  return FutureBuilder<void>(
-                    future: _initializeControllers(state.user),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return const Center(child: CircularProgressIndicator());
-                      } else {
-                        return _buildProfileScreen(context);
-                      }
-                    },
+                _initializeControllers(state.user);
+              } else if (state is AuthUnauthenticated) {
+                WidgetsBinding.instance.addPostFrameCallback((_) {
+                  Navigator.of(context).pushAndRemoveUntil(
+                    MaterialPageRoute(
+                      builder: (context) =>
+                          MainScreen(authService: widget.authService),
+                    ),
+                    (Route<dynamic> route) => false,
                   );
-                }
-                return _buildProfileScreen(context);
-              } else {
-                return const Center(child: CircularProgressIndicator());
+                });
               }
             },
+            child: BlocBuilder<AuthBloc, AuthState>(
+              builder: (context, state) {
+                if (state is AuthLoading) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (state is AuthAuthenticated) {
+                  if (_user == null) {
+                    return FutureBuilder<void>(
+                      future: _initializeControllers(state.user),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        } else {
+                          return _buildTabBarView(context);
+                        }
+                      },
+                    );
+                  }
+                  return _buildTabBarView(context);
+                } else {
+                  return const Center(child: CircularProgressIndicator());
+                }
+              },
+            ),
           ),
         ),
       ),
@@ -145,6 +161,15 @@ class ProfileScreenState extends State<ProfileScreen>
     if (mounted) {
       setState(action);
     }
+  }
+
+  Widget _buildTabBarView(BuildContext context) {
+    return TabBarView(
+      children: [
+        _buildProfileScreen(context),
+        _buildLikedGamesScreen(context),
+      ],
+    );
   }
 
   Widget _buildProfileScreen(BuildContext context) {
@@ -177,6 +202,10 @@ class ProfileScreenState extends State<ProfileScreen>
         ],
       ),
     );
+  }
+
+  Widget _buildLikedGamesScreen(BuildContext context) {
+    return LikedGamesList(userId: _user?.id);
   }
 
   Future<void> _saveProfile(Map<String, dynamic> updatedFields) async {
@@ -389,7 +418,6 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
                   )
                 : _localProfileImageUrl != null
                     ? image_util.CachedImageWidget(
-                        // Utilisation de l'import renommé
                         url: _localProfileImageUrl!,
                         size: 100,
                       )
@@ -707,6 +735,107 @@ class EditableFieldsSectionState extends State<EditableFieldsSection> {
           ),
       ],
     );
+  }
+}
+
+class LikedGamesList extends StatelessWidget {
+  final int? userId;
+
+  const LikedGamesList({super.key, this.userId});
+
+  @override
+  Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+    if (userId == null) {
+      return Center(child: Text(AppLocalizations.of(context).mustBeLoggedIn));
+    }
+
+    return FutureBuilder<List<Like>>(
+      future: _fetchLikedGames(userId!),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        } else if (snapshot.hasError) {
+          return Center(child: Text(l.errorFetchingLikedGames));
+        } else if (snapshot.hasData) {
+          final likes = snapshot.data!;
+          if (likes.isEmpty) {
+            return Center(child: Text(l.noLikedGames));
+          }
+
+          return ListView.builder(
+            itemCount: likes.length,
+            itemBuilder: (context, index) {
+              final like = likes[index];
+              final game = like.game;
+              return Dismissible(
+                key: Key(game.id.toString()),
+                direction: DismissDirection.endToStart,
+                onDismissed: (direction) async {
+                  // Appeler le service pour supprimer le like
+                  final likeService = LikeService(Dio());
+                  await likeService.deleteLike(like.id!);
+
+                  // Montrer un message de confirmation
+                  if (!context.mounted) return;
+                  _showToast(context, '${game.name} supprimé de vos likes',
+                      Colors.red);
+                },
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const Icon(Icons.heart_broken, color: Colors.white),
+                ),
+                child: GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => GameDetailPage(game: game),
+                      ),
+                    );
+                  },
+                  child: ListTile(
+                    leading: Image.network(game.imageUrl,
+                        width: 50, height: 50, fit: BoxFit.cover),
+                    title: Text(game.name),
+                    subtitle: Text(game.description),
+                  ),
+                ),
+              );
+            },
+          );
+        }
+        return const Center(child: CircularProgressIndicator());
+      },
+    );
+  }
+
+  Future<List<Like>> _fetchLikedGames(int userId) async {
+    final likeService = LikeService(Dio());
+    return await likeService.getLikesByUserID(userId);
+  }
+
+  void _showToast(BuildContext context, String message, Color backgroundColor) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => CustomToast(
+        message: message,
+        backgroundColor: backgroundColor,
+        textColor: Colors.white,
+        onClose: () {
+          overlayEntry.remove();
+        },
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
   }
 }
 
