@@ -444,6 +444,14 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Validate[models.ScoreMatchDto](),
 				ScoreMatch,
 			)
+			matches.PATCH("/:match/team/:team/close",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Match]("match"),
+				middlewares.Get[*models.Team]("team"),
+				middlewares.IsTeamOwner(),
+				middlewares.IsTeamInMatch(),
+				CloseMatch,
+			)
 		}
 
 		invit := api.Group("/invit")

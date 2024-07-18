@@ -87,9 +87,8 @@ func LoadTournaments(games []models.Game) error {
 		fmt.Printf("Tournament %s created\n", tournament.Name)
 
 		teamsAdded := make(map[int]bool)
-		teamCount := rand.Intn(2) + 3 // Ensure 3-4 teams per tournament
 
-		for j := 0; j < teamCount; j++ {
+		for j := 0; j < TOURNAMENT_TEAMS_NB; j++ {
 			if err := addTeamToTournament(tournament.ID, teamPool, teamsAdded); err != nil {
 				return err
 			}
@@ -128,9 +127,8 @@ func LoadTournaments(games []models.Game) error {
 		fmt.Printf("Tournament %s created\n", tournament.Name)
 
 		teamsAdded := make(map[int]bool)
-		teamCount := rand.Intn(2) + 3 // Ensure 3-4 teams per tournament
 
-		for j := 0; j < teamCount; j++ {
+		for j := 0; j < TOURNAMENT_TEAMS_NB; j++ {
 			if err := addTeamToTournament(tournament.ID, teamPool, teamsAdded); err != nil {
 				return err
 			}
