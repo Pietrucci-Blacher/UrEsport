@@ -19,7 +19,7 @@ class MatchNotifier extends ChangeNotifier {
   }
 }
 
-class MatchDetailsPage extends StatefulWidget  {
+class MatchDetailsPage extends StatefulWidget {
   final Match match;
 
   const MatchDetailsPage({required this.match, super.key});
@@ -28,7 +28,7 @@ class MatchDetailsPage extends StatefulWidget  {
   MatchDetailsPageState createState() => MatchDetailsPageState();
 }
 
-class MatchDetailsPageState extends State<MatchDetailsPage>  {
+class MatchDetailsPageState extends State<MatchDetailsPage> {
   final TextEditingController _score = TextEditingController();
   final TextEditingController _score1 = TextEditingController();
   final TextEditingController _score2 = TextEditingController();
@@ -74,7 +74,8 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
     var isTeam1Owner = _currentUser?.id == matchNotifier.match.team1?.ownerId;
     var isTeam2Owner = _currentUser?.id == matchNotifier.match.team2?.ownerId;
     var isTeamOwner = isTeam1Owner || isTeam2Owner;
-    var isTournamentOwner = _currentUser?.id == matchNotifier.match.tournament?.ownerId;
+    var isTournamentOwner =
+        _currentUser?.id == matchNotifier.match.tournament?.ownerId;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Match Details'),
@@ -102,37 +103,64 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                     builder: (context, child) {
                       return Column(
                         children: [
-                          _buildTeamHeader(matchNotifier.match.team1?.name ?? '', matchNotifier.match.team2?.name ?? ''),
+                          _buildTeamHeader(
+                              matchNotifier.match.team1?.name ?? '',
+                              matchNotifier.match.team2?.name ?? ''),
                           const Divider(thickness: 2),
                           _buildCustomScoreRow(
-                            'Score', matchNotifier.match.score1.toString(), matchNotifier.match.score2.toString()),
+                              'Score',
+                              matchNotifier.match.score1.toString(),
+                              matchNotifier.match.score2.toString()),
                           const Divider(thickness: 2),
-                          _buildStatColumn('Status', matchNotifier.match.status),
-                          _buildStatColumn('Winner', matchNotifier.match.getWinner()?.name ?? 'No winner yet'),
+                          _buildStatColumn(
+                              'Status', matchNotifier.match.status),
+                          _buildStatColumn(
+                              'Winner',
+                              matchNotifier.match.getWinner()?.name ??
+                                  'No winner yet'),
                           if (matchNotifier.match.team1Close)
-                            _buildStatColumn(matchNotifier.match.team1?.name ?? '', matchNotifier.match.team1Close ? 'Propose de cloturer' : ''),
+                            _buildStatColumn(
+                                matchNotifier.match.team1?.name ?? '',
+                                matchNotifier.match.team1Close
+                                    ? 'Propose de cloturer'
+                                    : ''),
                           if (matchNotifier.match.team2Close)
-                            _buildStatColumn(matchNotifier.match.team2?.name ?? '', matchNotifier.match.team2Close ? 'Propose de cloturer' : ''),
-                          if ((isTeamOwner || isTournamentOwner) && matchNotifier.match.winnerId == null)
+                            _buildStatColumn(
+                                matchNotifier.match.team2?.name ?? '',
+                                matchNotifier.match.team2Close
+                                    ? 'Propose de cloturer'
+                                    : ''),
+                          if ((isTeamOwner || isTournamentOwner) &&
+                              matchNotifier.match.winnerId == null)
                             const Divider(thickness: 2),
-                          if (isTeamOwner && matchNotifier.match.winnerId == null)
+                          if (isTeamOwner &&
+                              matchNotifier.match.winnerId == null)
                             Center(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  _openScoreModal(isTeam1Owner ? matchNotifier.match.team1Id ?? 0 : matchNotifier.match.team2Id ?? 0);
+                                  _openScoreModal(isTeam1Owner
+                                      ? matchNotifier.match.team1Id ?? 0
+                                      : matchNotifier.match.team2Id ?? 0);
                                 },
                                 child: Text(
-                                  'Mettre à jour le score de ${isTeam1Owner ? matchNotifier.match.team1?.name : matchNotifier.match.team2?.name}'
-                                ),
+                                    'Mettre à jour le score de ${isTeam1Owner ? matchNotifier.match.team1?.name : matchNotifier.match.team2?.name}'),
                               ),
                             ),
-                          if (isTeamOwner && matchNotifier.match.winnerId == null)
+                          if (isTeamOwner &&
+                              matchNotifier.match.winnerId == null)
                             Center(
                               child: ElevatedButton(
                                 onPressed: () {
-                                  _closeMatch(isTeam1Owner ? matchNotifier.match.team1Id ?? 0 : matchNotifier.match.team2Id ?? 0);
+                                  _closeMatch(isTeam1Owner
+                                      ? matchNotifier.match.team1Id ?? 0
+                                      : matchNotifier.match.team2Id ?? 0);
                                 },
-                                child: Text(isTeam1Owner && matchNotifier.match.team1Close || isTeam2Owner && matchNotifier.match.team2Close ? 'Annuler la cloture' : 'Cloturer le match'),
+                                child: Text(isTeam1Owner &&
+                                            matchNotifier.match.team1Close ||
+                                        isTeam2Owner &&
+                                            matchNotifier.match.team2Close
+                                    ? 'Annuler la cloture'
+                                    : 'Cloturer le match'),
                               ),
                             ),
                           if (isTournamentOwner)
@@ -160,16 +188,14 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
   void _closeMatch(int teamId) async {
     final teamService = Provider.of<IMatchService>(context, listen: false);
     try {
-      final updatedMatch = await teamService.closeMatch(matchNotifier.match.id, teamId);
+      final updatedMatch =
+          await teamService.closeMatch(matchNotifier.match.id, teamId);
       matchNotifier.updateMatch(updatedMatch);
     } catch (e) {
       if (e is DioException) {
         if (!mounted) return;
-        showNotificationToast(
-          context,
-          e.error.toString(),
-          backgroundColor: Colors.red
-        );
+        showNotificationToast(context, e.error.toString(),
+            backgroundColor: Colors.red);
       }
     }
   }
@@ -202,18 +228,16 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
                 final inputScore1 = int.tryParse(_score1.text);
                 final inputScore2 = int.tryParse(_score2.text);
                 try {
-                  final updatedMatch = await teamService.updateMatch(matchNotifier.match.id, {
+                  final updatedMatch =
+                      await teamService.updateMatch(matchNotifier.match.id, {
                     'score1': inputScore1,
                     'score2': inputScore2,
                   });
                   matchNotifier.updateMatch(updatedMatch);
                 } catch (e) {
                   if (e is DioException && context.mounted) {
-                    showNotificationToast(
-                      context,
-                      e.error.toString(),
-                      backgroundColor: Colors.red
-                    );
+                    showNotificationToast(context, e.error.toString(),
+                        backgroundColor: Colors.red);
                   }
                 }
                 _score1.clear();
@@ -246,15 +270,13 @@ class MatchDetailsPageState extends State<MatchDetailsPage>  {
               onPressed: () async {
                 final inputScore = int.tryParse(_score.text) ?? 0;
                 try {
-                  final updatedMatch = await teamService.setScore(matchNotifier.match.id, teamId, inputScore);
+                  final updatedMatch = await teamService.setScore(
+                      matchNotifier.match.id, teamId, inputScore);
                   matchNotifier.updateMatch(updatedMatch);
                 } catch (e) {
                   if (e is DioException && context.mounted) {
-                    showNotificationToast(
-                      context,
-                      e.error.toString(),
-                      backgroundColor: Colors.red
-                    );
+                    showNotificationToast(context, e.error.toString(),
+                        backgroundColor: Colors.red);
                   }
                 }
                 _score.clear();

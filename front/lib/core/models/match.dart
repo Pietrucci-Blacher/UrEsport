@@ -40,7 +40,9 @@ class Match {
     return Match(
       id: json['id'],
       tournamentId: json['tournament_id'],
-      tournament: json['tournament'] != null ? Tournament.fromJson(json['tournament']) : null,
+      tournament: json['tournament'] != null
+          ? Tournament.fromJson(json['tournament'])
+          : null,
       team1Id: json['team1_id'],
       team2Id: json['team2_id'],
       team1: json['team1'] != null ? Team.fromJson(json['team1']) : null,

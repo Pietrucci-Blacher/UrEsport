@@ -205,7 +205,8 @@ class BracketContentState extends State<BracketContent> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MatchDetailsPage(match: model as Match),
+                      builder: (context) =>
+                          MatchDetailsPage(match: model as Match),
                     ),
                   );
                 },
