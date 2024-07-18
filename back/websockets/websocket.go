@@ -17,7 +17,6 @@ func RegisterWebsocket(r *gin.Engine) {
 
 	ws.On("tournament:add-to-room", AddAnonClientToTournamentRoom)
 	// ws.On("tournament:get-nb", GetNbTournament)
-	ws.On("user:get-nb", GetNbUser)
 
 	r.GET("/ws",
 		middlewares.IsLoggedIn(false),

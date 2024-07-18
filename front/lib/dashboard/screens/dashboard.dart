@@ -37,7 +37,7 @@ class _DashboardState extends State<Dashboard> {
       }));
     });
 
-    ws.emit('user:get-nb', null);
+    // ws.emit('user:get-nb', null);
   }
 
   @override

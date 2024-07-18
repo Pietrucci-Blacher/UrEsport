@@ -70,6 +70,24 @@ type UserInfo struct {
 	ProfileImageUrl string `json:"profile_image_url"`
 }
 
+func CountStatsUsers(ws *services.Websocket) map[string]int {
+	totalUsers, _ := CountUsers()
+
+	loggedClients := ws.FilterClient(func(c *services.Client) bool {
+		return c.Get("logged").(bool)
+	})
+
+	annonClients := ws.FilterClient(func(c *services.Client) bool {
+		return !c.Get("logged").(bool)
+	})
+
+	return map[string]int{
+		"loggedUsers": len(loggedClients),
+		"annonUsers":  len(annonClients),
+		"totalUsers":  int(totalUsers),
+	}
+}
+
 func FindAllUsers(query services.QueryFilter) ([]User, error) {
 	var users []User
 

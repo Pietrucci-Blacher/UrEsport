@@ -97,7 +97,8 @@ void main() async {
                 tournamentService, gameService, authService, logService)
               ..add(FetchTournaments())
               ..add(FetchGames())
-              ..add(FetchLogs()),
+              ..add(FetchLogs())
+              ..add(FetchUserStats()),
           ),
         ],
         child: MyApp(

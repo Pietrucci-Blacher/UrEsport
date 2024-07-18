@@ -28,6 +28,7 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<FetchTournaments>(_onFetchTournaments);
     on<FetchLogs>(_onFetchLogs);
     on<FetchGames>(_onFetchGames);
+    on<FetchUserStats>(_onFetchUserStats);
     on<DeleteGameEvent>(_onDeleteGame);
   }
 
@@ -118,9 +119,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           await _tournamentService.fetchTournaments();
       emit(DashboardLoaded(
         message: 'Tournaments loaded',
-        loggedInUsers: 0, // mettez à jour selon vos besoins
-        anonymousUsers: 0,
-        subscribedUsers: 0,
         tournaments: tournaments,
       ));
     } catch (e) {
@@ -138,12 +136,24 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       } else {
         emit(DashboardLoaded(
           message: 'Games loaded',
-          loggedInUsers: 0,
-          anonymousUsers: 0,
-          subscribedUsers: 0,
           games: games,
         ));
       }
+    } catch (e) {
+      emit(DashboardError(e.toString()));
+    }
+  }
+
+  Future<void> _onFetchUserStats(
+      FetchUserStats event, Emitter<DashboardState> emit) async {
+    try {
+      final stats = await _authService.fetchUserStats();
+      emit(DashboardLoaded(
+        message: 'User stats loaded',
+        loggedInUsers: stats['loggedInUsers'] ?? 0,
+        anonymousUsers: stats['anonymousUsers'] ?? 0,
+        subscribedUsers: stats['subscribedUsers'] ?? 0,
+      ));
     } catch (e) {
       emit(DashboardError(e.toString()));
     }

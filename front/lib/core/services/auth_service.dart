@@ -27,6 +27,7 @@ abstract class IAuthService {
   Future<String> uploadProfileImage(int userId, File image);
   Future<void> updateUserInfo(int userId, Map<String, dynamic> updatedFields);
   Future<void> deleteAccount(int userId);
+  Future<Map<String, int>> fetchUserStats();
 }
 
 class AuthService implements IAuthService {
@@ -377,5 +378,31 @@ class AuthService implements IAuthService {
 
   String? parseTokenFromResult(String result) {
     return null;
+  }
+
+  @override
+  Future<Map<String, int>> fetchUserStats() async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+    try {
+      final response = await _dio.get(
+        '${dotenv.env['API_ENDPOINT']}/stats/users',
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load user stats');
+      }
+
+      return {
+        'loggedInUsers': response.data['loggedUsers'],
+        'anonymousUsers': response.data['annonUsers'],
+        'subscribedUsers': response.data['totalUsers'],
+      };
+    } catch (e) {
+      throw Exception('Failed to load user stats: $e');
+    }
   }
 }

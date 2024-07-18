@@ -513,5 +513,14 @@ func RegisterRoutes(r *gin.Engine) {
 				GetLog,
 			)
 		}
+
+		stats := api.Group("/stats")
+		{
+			stats.GET("/users",
+				middlewares.IsLoggedIn(true),
+				middlewares.IsAdmin(),
+				GetUsersStats,
+			)
+		}
 	}
 }
