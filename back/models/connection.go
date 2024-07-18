@@ -68,6 +68,7 @@ func Migration() error {
 		&Friend{},
 		&Upvote{},
 		&Rating{},
+		&Like{},
 	)
 }
 
@@ -88,6 +89,7 @@ func DropTables() error {
 		&Upvote{},
 		&Rating{},
 		"game_tournaments",
+		&Like{},
 	)
 }
 

@@ -51,7 +51,7 @@ func FindAllInvits(query services.QueryFilter) ([]Invit, error) {
 
 	err := DB.Model(&Invit{}).
 		Offset(query.GetSkip()).
-		Limit(query.GetLimit()).
+		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
 		Order(query.GetSort()).
 		Preload("Team").

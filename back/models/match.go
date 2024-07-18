@@ -71,7 +71,7 @@ func FindAllMatchs(query services.QueryFilter) ([]Match, error) {
 
 	err := DB.Model(&Match{}).
 		Offset(query.GetSkip()).
-		Limit(query.GetLimit()).
+		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
 		Order(query.GetSort()).
 		Preload("Tournament").

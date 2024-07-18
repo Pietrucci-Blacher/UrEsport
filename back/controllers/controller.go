@@ -416,6 +416,38 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Get[*models.Game]("game"),
 				GetTournamentsByGame,
 			)
+
+		}
+
+		likes := api.Group("/likes")
+		{
+			likes.GET("/",
+				middlewares.QueryFilter(),
+				GetAllLikes,
+			)
+			likes.GET("/:id",
+				middlewares.IsLoggedIn(true),
+				GetLikeByID,
+			)
+			likes.GET("/user/:user/game/:game",
+				middlewares.Get[*models.User]("user"),
+				middlewares.Get[*models.Game]("game"),
+				GetLikesByUserIDAndGameID,
+			)
+			likes.GET("/user/:user",
+				middlewares.Get[*models.User]("user"),
+				GetLikesByUserID,
+			)
+			likes.POST("/",
+				middlewares.IsLoggedIn(true),
+				middlewares.Validate[models.CreateLikeDto](),
+				CreateLike,
+			)
+			likes.DELETE("/:like",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Like]("like"),
+				DeleteLike,
+			)
 		}
 
 		matches := api.Group("/matches")
