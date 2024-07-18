@@ -2,6 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
+import 'package:uresport/core/models/log.dart';
 
 abstract class DashboardState extends Equatable {
   const DashboardState();
@@ -19,7 +20,7 @@ class DashboardLoaded extends DashboardState {
   final int loggedInUsers;
   final int anonymousUsers;
   final int subscribedUsers;
-  final List<String> recentLogs;
+  final List<Log> recentLogs;
   final List<User> users;
   final List<Tournament> tournaments;
   final List<Game> games;
@@ -52,7 +53,7 @@ class DashboardLoaded extends DashboardState {
     int? loggedInUsers,
     int? anonymousUsers,
     int? subscribedUsers,
-    List<String>? recentLogs,
+    List<Log>? recentLogs,
     List<User>? users,
     List<Tournament>? tournaments,
     List<Game>? games,

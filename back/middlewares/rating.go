@@ -13,6 +13,7 @@ func IsRatingOwner() gin.HandlerFunc {
 		rating, _ := c.MustGet("rating").(*models.Rating)
 
 		if rating.UserID != uint(user.ID) && !user.IsRole(models.ROLE_ADMIN) {
+			models.ErrorLogf([]string{"rating", "IsRatingOwner"}, "You are not the owner of this rating")
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "You are not the owner of this rating"})
 			c.Abort()
 			return
