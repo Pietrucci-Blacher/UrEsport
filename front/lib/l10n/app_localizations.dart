@@ -821,7 +821,7 @@ class AppLocalizations {
 
   String teamPlayersCount(int playersCount) {
     return Intl.message(
-      'Nombre joueurs par teams: $playersCount',
+      'Joueurs par team: $playersCount',
       name: 'teamPlayersCount',
       args: [playersCount],
       desc: 'Team players count display',
