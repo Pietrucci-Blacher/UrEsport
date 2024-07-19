@@ -17,7 +17,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   final LogService _logService;
   final AuthService _authService;
 
-  DashboardBloc(this._tournamentService, this._gameService, this._authService, this._logService)
+  DashboardBloc(this._tournamentService, this._gameService, this._authService,
+      this._logService)
       : super(DashboardInitial()) {
     on<ConnectWebSocket>(_onConnectWebSocket);
     on<DisconnectWebSocket>(_onDisconnectWebSocket);
@@ -32,9 +33,11 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<DeleteGameEvent>(_onDeleteGame);
   }
 
-  Future<void> _onFetchAllUsers(FetchAllUsers event, Emitter<DashboardState> emit) async {
+  Future<void> _onFetchAllUsers(
+      FetchAllUsers event, Emitter<DashboardState> emit) async {
     try {
-      List<User> users = await _authService.fetchUsers();  // Utilisation du service
+      List<User> users =
+          await _authService.fetchUsers(); // Utilisation du service
       if (state is DashboardLoaded) {
         final currentState = state as DashboardLoaded;
         emit(currentState.copyWith(users: users));

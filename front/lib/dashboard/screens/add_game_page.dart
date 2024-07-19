@@ -24,7 +24,6 @@ class AddGamePageState extends State<AddGamePage> {
   final Dio _dio = Dio();
   final CacheService _cacheService = CacheService.instance;
 
-
   Future<void> _saveGame() async {
     AppLocalizations l = AppLocalizations.of(context);
     if (_formKey.currentState!.validate()) {

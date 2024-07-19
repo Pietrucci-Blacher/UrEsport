@@ -30,10 +30,15 @@ class TeamMembersPage extends StatelessWidget {
       await teamService.kickUserFromTeam(teamId, username);
       if (!context.mounted) return;
       _showToast(
-          context, AppLocalizations.of(context).userKickedSuccess(username), Colors.green);
+          context,
+          AppLocalizations.of(context).userKickedSuccess(username),
+          Colors.green);
     } catch (e) {
       debugPrint(AppLocalizations.of(context).errorKickingUser(e.toString()));
-      _showToast(context, AppLocalizations.of(context).errorKickingUser(e.toString()), Colors.red);
+      _showToast(
+          context,
+          AppLocalizations.of(context).errorKickingUser(e.toString()),
+          Colors.red);
     }
   }
 
@@ -46,7 +51,8 @@ class TeamMembersPage extends StatelessWidget {
           context, '$username a bien été invité à la team', Colors.green);
     } catch (e) {
       debugPrint('Erreur lors de l\'invitation du user: $e');
-      _showToast(context, 'Erreur lors de l\'invitation du user: $e', Colors.red);
+      _showToast(
+          context, 'Erreur lors de l\'invitation du user: $e', Colors.red);
     }
   }
 
@@ -120,28 +126,28 @@ class TeamMembersPage extends StatelessWidget {
   Future<bool> _confirmKickUser(BuildContext context, String username) async {
     AppLocalizations l = AppLocalizations.of(context);
     return (await showDialog<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(l.confirmKick),
-          content: Text(l.confirmKickMessage(username)),
-          actions: <Widget>[
-            TextButton(
-              child: Text(l.cancel),
-              onPressed: () {
-                Navigator.of(context).pop(false);
-              },
-            ),
-            TextButton(
-              child: Text(l.kick),
-              onPressed: () {
-                Navigator.of(context).pop(true);
-              },
-            ),
-          ],
-        );
-      },
-    )) ??
+          context: context,
+          builder: (BuildContext context) {
+            return AlertDialog(
+              title: Text(l.confirmKick),
+              content: Text(l.confirmKickMessage(username)),
+              actions: <Widget>[
+                TextButton(
+                  child: Text(l.cancel),
+                  onPressed: () {
+                    Navigator.of(context).pop(false);
+                  },
+                ),
+                TextButton(
+                  child: Text(l.kick),
+                  onPressed: () {
+                    Navigator.of(context).pop(true);
+                  },
+                ),
+              ],
+            );
+          },
+        )) ??
         false;
   }
 
@@ -159,65 +165,65 @@ class TeamMembersPage extends StatelessWidget {
           final member = members[index];
           return ownerId == currentId
               ? Dismissible(
-            key: Key(member.id.toString()),
-            direction: DismissDirection.endToStart,
-            confirmDismiss: (direction) async {
-              return await _confirmKickUser(context, member.username);
-            },
-            onDismissed: (direction) async {
-              await _kickUser(context, teamId, member.username);
-            },
-            background: Container(
-              color: Colors.red,
-              alignment: Alignment.centerRight,
-              padding: const EdgeInsets.only(right: 20.0),
-              child: const Icon(
-                Icons.delete,
-                color: Colors.white,
-              ),
-            ),
-            child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: NetworkImage(member.profileImageUrl ??
-                    'https://via.placeholder.com/150'),
-              ),
-              title: Row(
-                children: [
-                  Text(member.username),
-                  if (member.id == ownerId) ...[
-                    const SizedBox(width: 5),
-                    const Icon(Icons.verified,
-                        color: Colors.amber, size: 20),
-                  ],
-                ],
-              ),
-              subtitle: Text('${member.firstname} ${member.lastname}'),
-            ),
-          )
+                  key: Key(member.id.toString()),
+                  direction: DismissDirection.endToStart,
+                  confirmDismiss: (direction) async {
+                    return await _confirmKickUser(context, member.username);
+                  },
+                  onDismissed: (direction) async {
+                    await _kickUser(context, teamId, member.username);
+                  },
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
+                    ),
+                  ),
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(member.profileImageUrl ??
+                          'https://via.placeholder.com/150'),
+                    ),
+                    title: Row(
+                      children: [
+                        Text(member.username),
+                        if (member.id == ownerId) ...[
+                          const SizedBox(width: 5),
+                          const Icon(Icons.verified,
+                              color: Colors.amber, size: 20),
+                        ],
+                      ],
+                    ),
+                    subtitle: Text('${member.firstname} ${member.lastname}'),
+                  ),
+                )
               : ListTile(
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage(member.profileImageUrl ??
-                  'https://via.placeholder.com/150'),
-            ),
-            title: Row(
-              children: [
-                Text(member.username),
-                if (member.id == ownerId) ...[
-                  const SizedBox(width: 5),
-                  const Icon(Icons.verified,
-                      color: Colors.amber, size: 20),
-                ],
-              ],
-            ),
-            subtitle: Text('${member.firstname} ${member.lastname}'),
-          );
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(member.profileImageUrl ??
+                        'https://via.placeholder.com/150'),
+                  ),
+                  title: Row(
+                    children: [
+                      Text(member.username),
+                      if (member.id == ownerId) ...[
+                        const SizedBox(width: 5),
+                        const Icon(Icons.verified,
+                            color: Colors.amber, size: 20),
+                      ],
+                    ],
+                  ),
+                  subtitle: Text('${member.firstname} ${member.lastname}'),
+                );
         },
       ),
       floatingActionButton: ownerId == currentId
           ? FloatingActionButton(
-        onPressed: () => _showInviteDialog(context),
-        child: const Icon(Icons.person_add),
-      )
+              onPressed: () => _showInviteDialog(context),
+              child: const Icon(Icons.person_add),
+            )
           : null,
     );
   }

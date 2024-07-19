@@ -46,7 +46,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
       try {
         final tournamentService =
-        Provider.of<ITournamentService>(context, listen: false);
+            Provider.of<ITournamentService>(context, listen: false);
         await tournamentService.createTournament(tournamentData);
         if (!mounted) return;
         showCustomToast(
@@ -78,10 +78,12 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       if (pickedDate.isSameDateAs(now)) {
         pickedTime = await showTimePicker(
           context: context,
-          initialTime: TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
+          initialTime:
+              TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
           builder: (BuildContext context, Widget? child) {
             return MediaQuery(
-              data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
               child: child!,
             );
           },
@@ -92,7 +94,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
           initialTime: const TimeOfDay(hour: 0, minute: 0),
           builder: (BuildContext context, Widget? child) {
             return MediaQuery(
-              data: MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
               child: child!,
             );
           },
@@ -108,7 +111,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
           pickedTime.minute,
         );
         final formattedDate =
-        DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
+            DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
         setState(() {
           controller.text = formattedDate;
         });

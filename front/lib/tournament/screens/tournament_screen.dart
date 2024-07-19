@@ -170,7 +170,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                         ),
                         children: team.tournaments.map((tournamentJson) {
                           Tournament tournament =
-                          Tournament.fromJson(tournamentJson);
+                              Tournament.fromJson(tournamentJson);
                           return Card(
                             margin: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),
@@ -203,9 +203,9 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         TournamentDetailsScreen(
-                                          tournament: tournament,
-                                          game: tournament.game,
-                                        ),
+                                      tournament: tournament,
+                                      game: tournament.game,
+                                    ),
                                   ),
                                 );
                               },
@@ -424,7 +424,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                      const AddTournamentPage(),
+                                          const AddTournamentPage(),
                                     ),
                                   );
                                 },
@@ -449,7 +449,7 @@ class TournamentScreenState extends State<TournamentScreen> {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
-    DateFormat.yMMMd(Localizations.localeOf(context).toString());
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
     AppLocalizations l = AppLocalizations.of(context);
 
     return GestureDetector(

@@ -115,7 +115,8 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
                               matchNotifier.match.score1.toString(),
                               matchNotifier.match.score2.toString()),
                           const Divider(thickness: 2),
-                          _buildStatColumn(l.status, matchNotifier.match.status),
+                          _buildStatColumn(
+                              l.status, matchNotifier.match.status),
                           _buildStatColumn(
                               l.winner,
                               matchNotifier.match.getWinner()?.name ??
@@ -158,9 +159,9 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
                                       : matchNotifier.match.team2Id ?? 0);
                                 },
                                 child: Text(isTeam1Owner &&
-                                    matchNotifier.match.team1Close ||
-                                    isTeam2Owner &&
-                                        matchNotifier.match.team2Close
+                                            matchNotifier.match.team1Close ||
+                                        isTeam2Owner &&
+                                            matchNotifier.match.team2Close
                                     ? l.cancelCloseMatch
                                     : l.closeMatch),
                               ),
@@ -191,7 +192,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
     final teamService = Provider.of<IMatchService>(context, listen: false);
     try {
       final updatedMatch =
-      await teamService.closeMatch(matchNotifier.match.id, teamId);
+          await teamService.closeMatch(matchNotifier.match.id, teamId);
       matchNotifier.updateMatch(updatedMatch);
     } catch (e) {
       if (e is DioException) {
@@ -232,7 +233,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
                 final inputScore2 = int.tryParse(_score2.text);
                 try {
                   final updatedMatch =
-                  await teamService.updateMatch(matchNotifier.match.id, {
+                      await teamService.updateMatch(matchNotifier.match.id, {
                     'score1': inputScore1,
                     'score2': inputScore2,
                   });

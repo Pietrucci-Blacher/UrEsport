@@ -62,7 +62,8 @@ class PouleBracketViewState extends State<PouleBracketView> {
     );
   }
 
-  List<TableRow> _buildRoundRobinTableRows(List<Team> teams, AppLocalizations l) {
+  List<TableRow> _buildRoundRobinTableRows(
+      List<Team> teams, AppLocalizations l) {
     List<TableRow> rows = [];
 
     // Add header row
@@ -71,15 +72,15 @@ class PouleBracketViewState extends State<PouleBracketView> {
         children: [
           TableCell(child: Container()),
           ...teams.map((team) => Center(
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Text(
-                team.name,
-                style: const TextStyle(fontWeight: FontWeight.bold),
-                textAlign: TextAlign.center,
-              ),
-            ),
-          )),
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(
+                    team.name,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              )),
         ],
       ),
     );
@@ -133,7 +134,8 @@ class PouleBracketViewState extends State<PouleBracketView> {
     return rows;
   }
 
-  void _showResultDialog(BuildContext context, Team team1, Team team2, AppLocalizations l) {
+  void _showResultDialog(
+      BuildContext context, Team team1, Team team2, AppLocalizations l) {
     final TextEditingController scoreController1 = TextEditingController();
     final TextEditingController scoreController2 = TextEditingController();
 
@@ -175,9 +177,9 @@ class PouleBracketViewState extends State<PouleBracketView> {
                   matchResults[team1.name] = matchResults[team1.name] ?? {};
                   matchResults[team2.name] = matchResults[team2.name] ?? {};
                   matchResults[team1.name]![team2.name] =
-                  '${scoreController1.text} - ${scoreController2.text}';
+                      '${scoreController1.text} - ${scoreController2.text}';
                   matchResults[team2.name]![team1.name] =
-                  '${scoreController2.text} - ${scoreController1.text}';
+                      '${scoreController2.text} - ${scoreController1.text}';
                 });
                 Navigator.of(context).pop();
               },

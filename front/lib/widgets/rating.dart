@@ -46,10 +46,12 @@ class RatingWidgetState extends State<RatingWidget> {
         _isLoading = false;
       });
       if (_currentRating == 0.0) {
-        widget.showCustomToast(context, AppLocalizations.of(context).noRatingFetched,
+        widget.showCustomToast(
+            context, AppLocalizations.of(context).noRatingFetched,
             backgroundColor: Colors.orange);
       } else {
-        widget.showCustomToast(context, AppLocalizations.of(context).ratingFetchedSuccessfully,
+        widget.showCustomToast(
+            context, AppLocalizations.of(context).ratingFetchedSuccessfully,
             backgroundColor: Colors.green);
       }
     } catch (e) {
@@ -68,7 +70,8 @@ class RatingWidgetState extends State<RatingWidget> {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
 
     if (rating == 0.0) {
-      widget.showCustomToast(context, AppLocalizations.of(context).ratingCannotBeZero,
+      widget.showCustomToast(
+          context, AppLocalizations.of(context).ratingCannotBeZero,
           backgroundColor: Colors.red);
       return;
     }
@@ -84,7 +87,8 @@ class RatingWidgetState extends State<RatingWidget> {
             widget.tournamentId, widget.userId, rating);
       }
       if (!mounted) return;
-      widget.showCustomToast(context, AppLocalizations.of(context).ratingSavedSuccessfully,
+      widget.showCustomToast(
+          context, AppLocalizations.of(context).ratingSavedSuccessfully,
           backgroundColor: Colors.green);
       setState(() {
         _currentRating = rating;
@@ -105,25 +109,25 @@ class RatingWidgetState extends State<RatingWidget> {
     return _isLoading
         ? const Center(child: CircularProgressIndicator())
         : Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(l.yourRating,
-            style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: 4),
-        RatingBar.builder(
-          initialRating: _currentRating,
-          minRating: 0,
-          direction: Axis.horizontal,
-          allowHalfRating: true,
-          itemCount: 5,
-          itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-          itemBuilder: (context, _) =>
-          const Icon(Icons.star, color: Colors.amber),
-          onRatingUpdate: (rating) {
-            _submitOrUpdateRating(rating);
-          },
-        ),
-      ],
-    );
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(l.yourRating,
+                  style: Theme.of(context).textTheme.titleMedium),
+              const SizedBox(height: 4),
+              RatingBar.builder(
+                initialRating: _currentRating,
+                minRating: 0,
+                direction: Axis.horizontal,
+                allowHalfRating: true,
+                itemCount: 5,
+                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                itemBuilder: (context, _) =>
+                    const Icon(Icons.star, color: Colors.amber),
+                onRatingUpdate: (rating) {
+                  _submitOrUpdateRating(rating);
+                },
+              ),
+            ],
+          );
   }
 }
