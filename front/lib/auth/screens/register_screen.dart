@@ -91,17 +91,16 @@ class RegisterScreenState extends State<RegisterScreen> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: FutureBuilder<Widget>(
-              future: _buildRegister(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else {
-                  return snapshot.data ?? Container();
-                }
-              }
-            ),
+                future: _buildRegister(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    return snapshot.data ?? Container();
+                  }
+                }),
           ),
         ),
       ),
@@ -109,7 +108,8 @@ class RegisterScreenState extends State<RegisterScreen> {
   }
 
   Future<Widget> _buildRegister() async {
-    final featureService = Provider.of<IFeatureFlippingService>(context, listen: false);
+    final featureService =
+        Provider.of<IFeatureFlippingService>(context, listen: false);
     final loginIsActived = await featureService.isFeatureActive(2);
     if (!loginIsActived && mounted) {
       return Center(
@@ -162,14 +162,14 @@ class RegisterScreenState extends State<RegisterScreen> {
               return ElevatedButton(
                 onPressed: () {
                   context.read<AuthBloc>().add(
-                    RegisterSubmitted(
-                      firstName: _firstnameController.text,
-                      lastName: _lastnameController.text,
-                      username: _usernameController.text,
-                      email: _emailController.text,
-                      password: _passwordController.text,
-                    ),
-                  );
+                        RegisterSubmitted(
+                          firstName: _firstnameController.text,
+                          lastName: _lastnameController.text,
+                          username: _usernameController.text,
+                          email: _emailController.text,
+                          password: _passwordController.text,
+                        ),
+                      );
                 },
                 child: Text(AppLocalizations.of(context).register),
               );

@@ -26,7 +26,8 @@ class FeatureFlippingScreenState extends State<FeatureFlippingScreen> {
             scrollDirection: Axis.horizontal,
             child: SingleChildScrollView(
               child: DataTable(
-                sortColumnIndex: ['name', 'description', 'active'].indexOf(_sortColumn),
+                sortColumnIndex:
+                    ['name', 'description', 'active'].indexOf(_sortColumn),
                 sortAscending: _sortAscending,
                 columns: [
                   DataColumn(
@@ -49,7 +50,9 @@ class FeatureFlippingScreenState extends State<FeatureFlippingScreen> {
                     DataCell(Switch(
                       value: feature.active,
                       onChanged: (value) {
-                        context.read<DashboardBloc>().add(ToggleFeature(feature.id));
+                        context
+                            .read<DashboardBloc>()
+                            .add(ToggleFeature(feature.id));
                       },
                     )),
                   ]);
