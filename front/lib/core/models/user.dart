@@ -59,8 +59,7 @@ class User {
       'firstname': firstname,
       'lastname': lastname,
       'username': username,
-      'email': email,
-      'password': password, // Ajout du champ password pour la mise à jour
+      'email': email, // Ajout du champ password pour la mise à jour
     };
   }
 

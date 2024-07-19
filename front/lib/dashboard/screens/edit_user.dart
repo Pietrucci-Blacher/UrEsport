@@ -20,10 +20,17 @@ class EditUserPageState extends State<EditUserPage> {
   late TextEditingController emailController;
   late TextEditingController rolesController;
   late TextEditingController profileImageUrlController;
-  late TextEditingController passwordController;
 
   final Dio _dio = Dio();
   final CacheService _cacheService = CacheService.instance;
+
+  // Variables pour stocker les valeurs initiales
+  late String initialUsername;
+  late String initialFirstname;
+  late String initialLastname;
+  late String initialEmail;
+  late String initialRoles;
+  late String initialProfileImageUrl;
 
   @override
   void initState() {
@@ -34,7 +41,14 @@ class EditUserPageState extends State<EditUserPage> {
     emailController = TextEditingController(text: widget.user?.email ?? '');
     rolesController = TextEditingController(text: widget.user?.roles.join(', ') ?? '');
     profileImageUrlController = TextEditingController(text: widget.user?.profileImageUrl ?? '');
-    passwordController = TextEditingController(); // Initialiser un champ mot de passe vide
+
+    // Initialiser les valeurs initiales
+    initialUsername = widget.user?.username ?? '';
+    initialFirstname = widget.user?.firstname ?? '';
+    initialLastname = widget.user?.lastname ?? '';
+    initialEmail = widget.user?.email ?? '';
+    initialRoles = widget.user?.roles.join(', ') ?? '';
+    initialProfileImageUrl = widget.user?.profileImageUrl ?? '';
   }
 
   @override
@@ -45,7 +59,6 @@ class EditUserPageState extends State<EditUserPage> {
     emailController.dispose();
     rolesController.dispose();
     profileImageUrlController.dispose();
-    passwordController.dispose();
     super.dispose();
   }
 
@@ -56,25 +69,38 @@ class EditUserPageState extends State<EditUserPage> {
         const SnackBar(content: Text('Adding new user functionality not implemented')),
       );
     } else {
-      // Edit existing user
-      final updatedUser = widget.user!.copyWith(
-        username: usernameController.text,
-        firstname: firstnameController.text,
-        lastname: lastnameController.text,
-        email: emailController.text,
-        password: passwordController.text.isNotEmpty ? passwordController.text : null, // Ajout du champ mot de passe
-      );
+      // Comparer les valeurs initiales avec les valeurs actuelles
+      final Map<String, dynamic> updatedFields = {};
+
+      if (usernameController.text != initialUsername) {
+        updatedFields['username'] = usernameController.text;
+      }
+      if (firstnameController.text != initialFirstname) {
+        updatedFields['firstname'] = firstnameController.text;
+      }
+      if (lastnameController.text != initialLastname) {
+        updatedFields['lastname'] = lastnameController.text;
+      }
+      if (emailController.text != initialEmail) {
+        updatedFields['email'] = emailController.text;
+      }
+      // Vérifier s'il y a des champs modifiés à envoyer
+      if (updatedFields.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No changes made')),
+        );
+        return;
+      }
 
       // Log the data being sent to the backend
-      final updatedUserJson = updatedUser.toUpdateJson();
-      debugPrint('Sending data to backend: $updatedUserJson');
+      debugPrint('Sending data to backend: $updatedFields');
 
       try {
         final token = await _cacheService.getString('token');
         if (token == null) throw Exception('No token found');
         final response = await _dio.patch(
-          '${dotenv.env['API_ENDPOINT']}/users/${updatedUser.id}',
-          data: updatedUserJson,
+          '${dotenv.env['API_ENDPOINT']}/users/${widget.user!.id}',
+          data: updatedFields,
           options: Options(headers: {
             'Authorization': 'Bearer $token',
           }),
