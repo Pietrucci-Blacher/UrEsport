@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/widgets/custom_toast.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class EditTournamentScreen extends StatefulWidget {
   final Tournament tournament;
@@ -96,9 +97,9 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       final description = _descriptionController.text;
       final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss'Z'");
       final startDate =
-          dateFormat.format(DateTime.parse(_startDateController.text));
+      dateFormat.format(DateTime.parse(_startDateController.text));
       final endDate =
-          dateFormat.format(DateTime.parse(_endDateController.text));
+      dateFormat.format(DateTime.parse(_endDateController.text));
       final location = _locationController.text;
       final latitude = double.parse(_latitudeController.text);
       final longitude = double.parse(_longitudeController.text);
@@ -125,15 +126,15 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       debugPrint('Tournament JSON: ${jsonEncode(tournamentJson)}');
 
       final tournamentService =
-          Provider.of<ITournamentService>(context, listen: false);
+      Provider.of<ITournamentService>(context, listen: false);
       try {
         await tournamentService.updateTournament(updatedTournament);
         if (!mounted) return;
-        showNotificationToast(context, 'Tournament updated successfully',
+        showNotificationToast(context, AppLocalizations.of(context).tournamentUpdatedSuccessfully,
             backgroundColor: Colors.green);
         Navigator.pop(context, updatedTournament);
       } catch (e) {
-        showNotificationToast(context, 'Failed to update tournament: $e',
+        showNotificationToast(context, AppLocalizations.of(context).failedToUpdateTournament(e.toString()),
             backgroundColor: Colors.red);
       }
     }
@@ -141,9 +142,11 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Edit Tournament'),
+        title: Text(l.editTournament),
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
@@ -159,86 +162,86 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(labelText: l.name),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a name';
+                    return l.pleaseEnterName;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(labelText: l.description),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a description';
+                    return l.pleaseEnterDescription;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _startDateController,
-                decoration: const InputDecoration(labelText: 'Start Date'),
+                decoration: InputDecoration(labelText: l.startDate.toString()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a start date';
+                    return l.pleaseEnterStartDate;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _endDateController,
-                decoration: const InputDecoration(labelText: 'End Date'),
+                decoration: InputDecoration(labelText: l.endDate.toString()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter an end date';
+                    return l.pleaseEnterEndDate;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                decoration: InputDecoration(labelText: l.location.toString()),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a location';
+                    return l.pleaseEnterLocation;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _latitudeController,
-                decoration: const InputDecoration(labelText: 'Latitude'),
+                decoration: InputDecoration(labelText: l.latitude),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a latitude';
+                    return l.pleaseEnterLatitude;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _longitudeController,
-                decoration: const InputDecoration(labelText: 'Longitude'),
+                decoration: InputDecoration(labelText: l.longitude),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a longitude';
+                    return l.pleaseEnterLongitude;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _imageController,
-                decoration: const InputDecoration(labelText: 'Image URL'),
+                decoration: InputDecoration(labelText: l.imageUrl),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter an image URL';
+                    return l.pleaseEnterImageUrl;
                   }
                   return null;
                 },
               ),
               SwitchListTile(
-                title: const Text('Private'),
+                title: Text(l.private),
                 value: _isPrivate,
                 onChanged: (bool value) {
                   setState(() {
@@ -248,21 +251,20 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               ),
               TextFormField(
                 controller: _gameIdController,
-                decoration: const InputDecoration(labelText: 'Game ID'),
+                decoration: InputDecoration(labelText: l.gameId),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter a game ID';
+                    return l.pleaseEnterGameId;
                   }
                   return null;
                 },
               ),
               TextFormField(
                 controller: _nbPlayerController,
-                decoration:
-                    const InputDecoration(labelText: 'Number of Players'),
+                decoration: InputDecoration(labelText: l.numberOfPlayers),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter the number of players';
+                    return l.pleaseEnterNumberOfPlayers;
                   }
                   return null;
                 },
@@ -270,7 +272,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveTournament,
-                child: const Text('Valider'),
+                child: Text(l.validate),
               ),
             ],
           ),

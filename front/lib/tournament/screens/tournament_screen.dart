@@ -1,8 +1,8 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
@@ -10,6 +10,8 @@ import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/map/map.dart';
+import 'package:uresport/team/screen/add_team.dart';
+import 'package:uresport/team/screen/team_member.dart';
 import 'package:uresport/tournament/bloc/tournament_bloc.dart';
 import 'package:uresport/tournament/bloc/tournament_event.dart';
 import 'package:uresport/tournament/bloc/tournament_state.dart';
@@ -17,9 +19,6 @@ import 'package:uresport/tournament/screens/add_tournament.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
-import 'package:uresport/core/models/team.dart';
-import 'package:uresport/team/screen/add_team.dart';
-import 'package:uresport/team/screen/team_member.dart';
 
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
@@ -91,13 +90,15 @@ class TournamentScreenState extends State<TournamentScreen> {
     return FutureBuilder(
       future: _loadUserTeams(),
       builder: (context, snapshot) {
+        AppLocalizations l = AppLocalizations.of(context);
+
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           debugPrint('Error in FutureBuilder: ${snapshot.error}');
-          return const Center(child: Text('Failed to load user teams'));
+          return Center(child: Text(l.failedToLoadUserTeams));
         } else if (!snapshot.hasData || (snapshot.data as List<Team>).isEmpty) {
-          return const Center(child: Text('No teams found for the user'));
+          return Center(child: Text(l.noTeamsFoundForUser));
         } else {
           final teams = snapshot.data as List<Team>;
           debugPrint('Teams data: $teams');
@@ -154,9 +155,11 @@ class TournamentScreenState extends State<TournamentScreen> {
                             style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold)),
                         subtitle: Text(
-                            'Members: ${team.members.length} | Tournaments: ${team.tournaments.length}',
-                            style: const TextStyle(
-                                fontSize: 14, color: Colors.grey)),
+                          l.membersAndTournaments(
+                              team.members.length, team.tournaments.length),
+                          style:
+                              const TextStyle(fontSize: 14, color: Colors.grey),
+                        ),
                         trailing: IconButton(
                           icon: Icon(
                             isOwner ? Icons.delete : Icons.exit_to_app,
@@ -183,10 +186,10 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      'Start: ${DateFormat.yMMMd().format(tournament.startDate)}',
+                                      l.tournamentStartDate(
+                                          tournament.startDate),
                                       style: const TextStyle(fontSize: 14)),
-                                  Text(
-                                      'End: ${DateFormat.yMMMd().format(tournament.endDate)}',
+                                  Text(l.tournamentEndDate(tournament.endDate),
                                       style: const TextStyle(fontSize: 14)),
                                   Text(tournament.description,
                                       style: const TextStyle(
@@ -240,23 +243,25 @@ class TournamentScreenState extends State<TournamentScreen> {
 
   Future<void> _confirmLeaveTeam(
       int teamId, String teamName, bool isOwner) async {
+    AppLocalizations l = AppLocalizations.of(context);
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Action'),
+          title: Text(l.confirmAction),
           content: Text(isOwner
-              ? 'Are you sure you want to delete the team $teamName?'
-              : 'Are you sure you want to leave the team $teamName?'),
+              ? l.deleteTeamConfirmation(teamName)
+              : l.leaveTeamConfirmation(teamName)),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(l.cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text(isOwner ? 'Delete' : 'Leave'),
+              child: Text(isOwner ? l.delete : l.leave),
               onPressed: () {
                 Navigator.of(context).pop();
                 if (isOwner) {
@@ -282,9 +287,12 @@ class TournamentScreenState extends State<TournamentScreen> {
         // Reload the teams after deleting a team
         _loadUserTeams();
       });
-      _showToast('Vous avez bien supprimé la team $teamName', Colors.green);
+      if (!mounted) return;
+      _showToast(
+          AppLocalizations.of(context).teamDeleted(teamName), Colors.green);
     } catch (e) {
-      _showToast('Failed to delete the team: $e', Colors.red);
+      _showToast(AppLocalizations.of(context).failedToDeleteTeam(e.toString()),
+          Colors.red);
     }
   }
 
@@ -299,15 +307,17 @@ class TournamentScreenState extends State<TournamentScreen> {
         // Reload the teams after leaving a team
         _loadUserTeams();
       });
-      _showToast('Vous avez bien quitté la team $teamName', Colors.green);
+      if (!mounted) return;
+      _showToast(AppLocalizations.of(context).teamLeft(teamName), Colors.green);
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 409) {
         final errorResponse = e.response?.data;
-        final errorMessage =
-            errorResponse['error'] ?? 'Failed to leave the team';
+        final errorMessage = errorResponse['error'] ??
+            AppLocalizations.of(context).failedToLeaveTeam;
         _showToast(errorMessage, Colors.red);
       } else {
-        _showToast('Failed to leave the team: $e', Colors.red);
+        if (!mounted) return;
+        _showToast(AppLocalizations.of(context).failedToLeaveTeam, Colors.red);
       }
     }
   }
@@ -339,7 +349,7 @@ class TournamentScreenState extends State<TournamentScreen> {
 
   Future<List<Team>> _loadUserTeams() async {
     if (_currentUser == null) {
-      throw Exception('User is not logged in');
+      throw Exception(AppLocalizations.of(context).failedToLoadUserTeams);
     }
 
     final teamService = Provider.of<ITeamService>(context, listen: false);
@@ -366,6 +376,8 @@ class TournamentScreenState extends State<TournamentScreen> {
           },
           child: BlocBuilder<TournamentBloc, TournamentState>(
             builder: (context, state) {
+              AppLocalizations l = AppLocalizations.of(context);
+
               if (state is TournamentInitial) {
                 context
                     .read<TournamentBloc>()
@@ -425,9 +437,9 @@ class TournamentScreenState extends State<TournamentScreen> {
                   ],
                 );
               } else if (state is TournamentLoadFailure) {
-                return const Center(child: Text('Failed to load tournaments'));
+                return Center(child: Text(l.failedToLoadTournaments));
               }
-              return const Center(child: Text('Unknown state'));
+              return Center(child: Text(l.unknownState));
             },
           ),
         ),
@@ -438,6 +450,7 @@ class TournamentScreenState extends State<TournamentScreen> {
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     final DateFormat dateFormat =
     DateFormat.yMMMd(Localizations.localeOf(context).toString());
+    AppLocalizations l = AppLocalizations.of(context);
 
     return GestureDetector(
       onTap: () {
@@ -531,7 +544,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    'Game: ${tournament.game.name}',
+                                    l.gameName(tournament.game.name),
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -546,7 +559,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    'Start: ${dateFormat.format(tournament.startDate)}',
+                                    l.tournamentStartDate(tournament.startDate),
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -561,7 +574,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    'End: ${dateFormat.format(tournament.endDate)}',
+                                    l.tournamentEndDate(tournament.endDate),
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -574,7 +587,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    'Nombre joueurs par teams: ${tournament.nbPlayers}',
+                                    l.teamPlayersCount(tournament.nbPlayers),
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -624,7 +637,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 ),
                               );
                             },
-                            child: const Text('View Details'),
+                            child: Text(l.viewDetails),
                           ),
                         ],
                       ),

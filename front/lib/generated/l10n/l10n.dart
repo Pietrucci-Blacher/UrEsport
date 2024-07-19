@@ -689,6 +689,296 @@ class S {
       args: [],
     );
   }
+
+  /// `My Teams`
+  String get listMyTeamsJoined {
+    return Intl.message(
+      'My Teams',
+      name: 'listMyTeamsJoined',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dashboard`
+  String get dashboard {
+    return Intl.message(
+      'Dashboard',
+      name: 'dashboard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Logs`
+  String get logs {
+    return Intl.message(
+      'Logs',
+      name: 'logs',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tournaments`
+  String get tournaments {
+    return Intl.message(
+      'Tournaments',
+      name: 'tournaments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Games`
+  String get games {
+    return Intl.message(
+      'Games',
+      name: 'games',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Users`
+  String get users {
+    return Intl.message(
+      'Users',
+      name: 'users',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active Users`
+  String get activeUsers {
+    return Intl.message(
+      'Active Users',
+      name: 'activeUsers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Active Tournaments`
+  String get activeTournaments {
+    return Intl.message(
+      'Active Tournaments',
+      name: 'activeTournaments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Games`
+  String get totalGames {
+    return Intl.message(
+      'Total Games',
+      name: 'totalGames',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Latest Message`
+  String get latestMessage {
+    return Intl.message(
+      'Latest Message',
+      name: 'latestMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete Game`
+  String get deleteGame {
+    return Intl.message(
+      'Delete Game',
+      name: 'deleteGame',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete this game?`
+  String get confirmDeleteGame {
+    return Intl.message(
+      'Are you sure you want to delete this game?',
+      name: 'confirmDeleteGame',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unknown Page`
+  String get unknownPage {
+    return Intl.message(
+      'Unknown Page',
+      name: 'unknownPage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error loading data`
+  String get errorLoading {
+    return Intl.message(
+      'Error loading data',
+      name: 'errorLoading',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Actions`
+  String get actions {
+    return Intl.message(
+      'Actions',
+      name: 'actions',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Game Details`
+  String get gameDetailPageTitle {
+    return Intl.message(
+      'Game Details',
+      name: 'gameDetailPageTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You must be logged in to follow this game`
+  String get youMustBeLoggedIn {
+    return Intl.message(
+      'You must be logged in to follow this game',
+      name: 'youMustBeLoggedIn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Game added to your list`
+  String get addedToGameList {
+    return Intl.message(
+      'Game added to your list',
+      name: 'addedToGameList',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error following the game: {error}`
+  String errorFollowingGame(Object error) {
+    return Intl.message(
+      'Error following the game: $error',
+      name: 'errorFollowingGame',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Game removed from your list`
+  String get removedFromGameList {
+    return Intl.message(
+      'Game removed from your list',
+      name: 'removedFromGameList',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No like to delete`
+  String get noLikeToDelete {
+    return Intl.message(
+      'No like to delete',
+      name: 'noLikeToDelete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error unfollowing the game: {error}`
+  String errorUnfollowingGame(Object error) {
+    return Intl.message(
+      'Error unfollowing the game: $error',
+      name: 'errorUnfollowingGame',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Game Description`
+  String get gameDescription {
+    return Intl.message(
+      'Game Description',
+      name: 'gameDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tags`
+  String get tags {
+    return Intl.message(
+      'Tags',
+      name: 'tags',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No tournaments for this game`
+  String get noTournamentsForGame {
+    return Intl.message(
+      'No tournaments for this game',
+      name: 'noTournamentsForGame',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No tournaments found`
+  String get noTournamentsFound {
+    return Intl.message(
+      'No tournaments found',
+      name: 'noTournamentsFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error: {error}`
+  String errorLoadingTournaments(Object error) {
+    return Intl.message(
+      'Error: $error',
+      name: 'errorLoadingTournaments',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Start: {date}`
+  String start(Object date) {
+    return Intl.message(
+      'Start: $date',
+      name: 'start',
+      desc: '',
+      args: [date],
+    );
+  }
+
+  /// `End: {date}`
+  String end(Object date) {
+    return Intl.message(
+      'End: $date',
+      name: 'end',
+      desc: '',
+      args: [date],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

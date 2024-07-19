@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
-import 'package:uresport/widgets/custom_toast.dart'; // Importer le widget personnalisé;
+import 'package:uresport/widgets/custom_toast.dart'; // Importer le widget personnalisé
 import 'package:uresport/widgets/notification_card.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class NotificationsTab extends StatelessWidget {
   const NotificationsTab({super.key});
@@ -23,7 +24,7 @@ class NotificationsTab extends StatelessWidget {
                   direction: DismissDirection.endToStart,
                   onDismissed: (direction) {
                     notificationProvider.removeNotification(index);
-                    showNotificationToast(context, 'Notification supprimée');
+                    showNotificationToast(context, AppLocalizations.of(context).notificationDeleted);
                   },
                   background: Container(
                     color: Colors.red,
