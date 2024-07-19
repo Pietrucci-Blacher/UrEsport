@@ -857,47 +857,47 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     final tournamentService =
         Provider.of<ITournamentService>(context, listen: false);
 
+    final joinedTournamentMessage =
+        AppLocalizations.of(context).joinedTournament;
+    final teamAlreadyInTournamentMessage =
+        AppLocalizations.of(context).teamAlreadyInTournament;
+    final alreadyJoinedTournamentMessage =
+        AppLocalizations.of(context).alreadyJoinedTournament;
+    final joinErrorMessage = AppLocalizations.of(context).joinError;
+    final unknownJoinErrorMessage =
+        AppLocalizations.of(context).unknownJoinError;
+
     try {
       await tournamentService.joinTournament(tournamentId, teamId);
       if (!mounted) return;
-      _showNotificationToast(
-          AppLocalizations.of(context).joinedTournament, Colors.green);
+      _showNotificationToast(joinedTournamentMessage, Colors.green);
       setState(() {
         _hasJoined = true;
       });
     } catch (e) {
       if (!mounted) return;
-      _handleJoinError(e);
+      if (e is DioException) {
+        if (e.response != null && e.response?.data != null) {
+          final errorMessage = e.response?.data['error'];
+          if (errorMessage == teamAlreadyInTournamentMessage) {
+            _showNotificationToast(alreadyJoinedTournamentMessage, Colors.red);
+            setState(() {
+              _hasJoined = true;
+            });
+          } else {
+            _showNotificationToast(joinErrorMessage(errorMessage), Colors.red);
+          }
+        } else {
+          _showNotificationToast(joinErrorMessage(e.toString()), Colors.red);
+        }
+      } else {
+        _showNotificationToast(unknownJoinErrorMessage, Colors.red);
+      }
     }
   }
 
   void _showNotificationToast(String message, Color backgroundColor) {
     if (!mounted) return;
     showNotificationToast(context, message, backgroundColor: backgroundColor);
-  }
-
-  void _handleJoinError(dynamic e) {
-    if (e is DioException) {
-      if (e.response != null && e.response?.data != null) {
-        final errorMessage = e.response?.data['error'];
-        if (errorMessage ==
-            AppLocalizations.of(context).teamAlreadyInTournament) {
-          _showNotificationToast(
-              AppLocalizations.of(context).alreadyJoinedTournament, Colors.red);
-          setState(() {
-            _hasJoined = true;
-          });
-        } else {
-          _showNotificationToast(
-              AppLocalizations.of(context).joinError(errorMessage), Colors.red);
-        }
-      } else {
-        _showNotificationToast(
-            AppLocalizations.of(context).joinError(e.toString()), Colors.red);
-      }
-    } else {
-      _showNotificationToast(
-          AppLocalizations.of(context).unknownJoinError, Colors.red);
-    }
   }
 }
