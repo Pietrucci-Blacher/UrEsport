@@ -97,11 +97,12 @@ void main() async {
           ),
           BlocProvider<DashboardBloc>(
             create: (context) => DashboardBloc(
-                tournamentService, gameService, authService, logService)
+                tournamentService, gameService, authService, logService, featureFlippingService)
               ..add(FetchTournaments())
               ..add(FetchGames())
               ..add(FetchLogs())
-              ..add(FetchUserStats()),
+              ..add(FetchUserStats())
+              ..add(FetchAllFeatures()),
           ),
         ],
         child: MyApp(

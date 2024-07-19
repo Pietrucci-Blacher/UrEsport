@@ -2,10 +2,12 @@ import 'dart:io';
 
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:uresport/core/models/feature.dart';
 
 import 'cache_service.dart';
 
 abstract class IFeatureFlippingService {
+  Future<List<Feature>> fetchAllFeatures();
   Future<bool> isFeatureActive(int featureId);
   Future<void> toggleFeature(int featureId);
 }
@@ -15,6 +17,21 @@ class FeatureFlippingService implements IFeatureFlippingService {
   final CacheService _cacheService = CacheService.instance;
 
   FeatureFlippingService(this._dio);
+
+  @override
+  Future<List<Feature>> fetchAllFeatures() async {
+    final response = await _dio.get(
+      '${dotenv.env['API_ENDPOINT']}/features/',
+    );
+
+    if (response.statusCode != HttpStatus.ok) {
+      throw Exception('Failed to fetch feature flipping');
+    }
+
+    return (response.data as List)
+        .map((feature) => Feature.fromJson(feature))
+        .toList();
+  }
 
   @override
   Future<bool> isFeatureActive(int featureId) async {
@@ -34,7 +51,7 @@ class FeatureFlippingService implements IFeatureFlippingService {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
-    final response = await _dio.post(
+    final response = await _dio.get(
       '${dotenv.env['API_ENDPOINT']}/features/$featureId/toggle',
       options: Options(
         headers: {

@@ -48,6 +48,17 @@ class FetchLogs extends DashboardEvent {}
 
 class FetchUserStats extends DashboardEvent {}
 
+class FetchAllFeatures extends DashboardEvent {}
+
+class ToggleFeature extends DashboardEvent {
+  final int featureId;
+
+  const ToggleFeature(this.featureId);
+
+  @override
+  List<Object> get props => [featureId];
+}
+
 class DeleteGameEvent extends DashboardEvent {
   final int gameId;
 

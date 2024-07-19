@@ -12,6 +12,7 @@ import 'package:uresport/dashboard/screens/games_screen.dart';
 import 'package:uresport/dashboard/screens/logs_screen.dart';
 import 'package:uresport/dashboard/screens/tournaments_screen.dart';
 import 'package:uresport/dashboard/screens/users_screen.dart';
+import 'package:uresport/dashboard/screens/feature_flipping_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
 
 import 'add_game_page.dart';
@@ -149,7 +150,7 @@ class _DashboardState extends State<Dashboard> {
             case 0:
               return _buildDashboardContent(state);
             case 1:
-            //return const FeatureFlippingScreen();
+              return FeatureFlippingScreen(state: state);
             case 2:
               return LogsScreen(state: state);
             case 3:
