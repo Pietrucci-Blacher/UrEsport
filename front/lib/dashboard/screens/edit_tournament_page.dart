@@ -10,7 +10,6 @@ import 'package:uresport/core/services/cache_service.dart';
 class EditTournamentPage extends StatefulWidget {
   final Tournament? tournament;
 
-
   const EditTournamentPage({super.key, this.tournament});
 
   @override

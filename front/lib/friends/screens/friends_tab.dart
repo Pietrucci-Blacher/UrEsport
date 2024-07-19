@@ -122,9 +122,9 @@ class FriendsTabState extends State<FriendsTab> {
 
                     final friends = state.friends;
                     final favoriteFriends =
-                    friends.where((friend) => friend.isFavorite).toList();
+                        friends.where((friend) => friend.isFavorite).toList();
                     final nonFavoriteFriends =
-                    friends.where((friend) => !friend.isFavorite).toList();
+                        friends.where((friend) => !friend.isFavorite).toList();
 
                     final groupedFriends = <String, List<Friend>>{};
                     for (var friend in nonFavoriteFriends) {
@@ -146,25 +146,25 @@ class FriendsTabState extends State<FriendsTab> {
                           ),
                         ),
                         ...favoriteFriends.map((friend) => Dismissible(
-                          key: UniqueKey(),
-                          direction: DismissDirection.endToStart,
-                          onDismissed: (direction) {
-                            context.read<FriendsBloc>().add(
-                                ToggleFavorite(friend, _currentUser!.id));
-                          },
-                          background: Container(
-                            color: Colors.red,
-                            alignment: Alignment.centerRight,
-                            padding:
-                            const EdgeInsets.symmetric(horizontal: 20),
-                            child: const Icon(Icons.remove_circle,
-                                color: Colors.white),
-                          ),
-                          child: GestureDetector(
-                            //onTap: () => navigateToFriendDetails(context, friend),
-                            child: FriendListTile(name: friend.name),
-                          ),
-                        )),
+                              key: UniqueKey(),
+                              direction: DismissDirection.endToStart,
+                              onDismissed: (direction) {
+                                context.read<FriendsBloc>().add(
+                                    ToggleFavorite(friend, _currentUser!.id));
+                              },
+                              background: Container(
+                                color: Colors.red,
+                                alignment: Alignment.centerRight,
+                                padding:
+                                    const EdgeInsets.symmetric(horizontal: 20),
+                                child: const Icon(Icons.remove_circle,
+                                    color: Colors.white),
+                              ),
+                              child: GestureDetector(
+                                //onTap: () => navigateToFriendDetails(context, friend),
+                                child: FriendListTile(name: friend.name),
+                              ),
+                            )),
                         Padding(
                           padding: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 16.0),
@@ -186,74 +186,75 @@ class FriendsTabState extends State<FriendsTab> {
                               ),
                             ),
                             ...entry.value.map((friend) => Dismissible(
-                              key: UniqueKey(),
-                              direction: DismissDirection.horizontal,
-                              confirmDismiss: (direction) async {
-                                if (direction ==
-                                    DismissDirection.endToStart) {
-                                  return await showDialog<bool>(
-                                    context: context,
-                                    builder: (BuildContext context) {
-                                      return AlertDialog(
-                                        title: const Text(
-                                            'Confirmation'),
-                                        content: Text(l
-                                            .confirmDeleteFriend(friend.name)),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context)
-                                                    .pop(false),
-                                            child: Text(l.no),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.of(context)
-                                                    .pop(true),
-                                            child: Text(l.yes),
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  ) ??
-                                      false;
-                                } else {
-                                  return true;
-                                }
-                              },
-                              onDismissed: (direction) {
-                                if (direction ==
-                                    DismissDirection.endToStart) {
-                                  context.read<FriendsBloc>().add(
-                                      DeleteFriend(
-                                          friend, _currentUser!.id));
-                                } else {
-                                  context.read<FriendsBloc>().add(
-                                      ToggleFavorite(
-                                          friend, _currentUser!.id));
-                                }
-                              },
-                              background: Container(
-                                color: Colors.green,
-                                alignment: Alignment.centerLeft,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20),
-                                child: const Icon(Icons.star,
-                                    color: Colors.white),
-                              ),
-                              secondaryBackground: Container(
-                                color: Colors.red,
-                                alignment: Alignment.centerRight,
-                                padding: const EdgeInsets.symmetric(
-                                    horizontal: 20),
-                                child: const Icon(Icons.delete,
-                                    color: Colors.white),
-                              ),
-                              child: GestureDetector(
-                                //onTap: () => navigateToFriendDetails(context, friend),
-                                child: FriendListTile(name: friend.name),
-                              ),
-                            )),
+                                  key: UniqueKey(),
+                                  direction: DismissDirection.horizontal,
+                                  confirmDismiss: (direction) async {
+                                    if (direction ==
+                                        DismissDirection.endToStart) {
+                                      return await showDialog<bool>(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title:
+                                                    const Text('Confirmation'),
+                                                content: Text(
+                                                    l.confirmDeleteFriend(
+                                                        friend.name)),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(false),
+                                                    child: Text(l.no),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(true),
+                                                    child: Text(l.yes),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          ) ??
+                                          false;
+                                    } else {
+                                      return true;
+                                    }
+                                  },
+                                  onDismissed: (direction) {
+                                    if (direction ==
+                                        DismissDirection.endToStart) {
+                                      context.read<FriendsBloc>().add(
+                                          DeleteFriend(
+                                              friend, _currentUser!.id));
+                                    } else {
+                                      context.read<FriendsBloc>().add(
+                                          ToggleFavorite(
+                                              friend, _currentUser!.id));
+                                    }
+                                  },
+                                  background: Container(
+                                    color: Colors.green,
+                                    alignment: Alignment.centerLeft,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
+                                    child: const Icon(Icons.star,
+                                        color: Colors.white),
+                                  ),
+                                  secondaryBackground: Container(
+                                    color: Colors.red,
+                                    alignment: Alignment.centerRight,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 20),
+                                    child: const Icon(Icons.delete,
+                                        color: Colors.white),
+                                  ),
+                                  child: GestureDetector(
+                                    //onTap: () => navigateToFriendDetails(context, friend),
+                                    child: FriendListTile(name: friend.name),
+                                  ),
+                                )),
                           ];
                         }),
                       ],

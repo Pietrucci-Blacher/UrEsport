@@ -31,10 +31,10 @@ class _DashboardState extends State<Dashboard> {
   void _websocket() {
     ws.on('user:connected', (socket, data) {
       context.read<DashboardBloc>().add(UpdateDashboardStats({
-        'loggedInUsers': data['loggedUsers'],
-        'anonymousUsers': data['annonUsers'],
-        'subscribedUsers': data['totalUsers'],
-      }));
+            'loggedInUsers': data['loggedUsers'],
+            'anonymousUsers': data['annonUsers'],
+            'subscribedUsers': data['totalUsers'],
+          }));
     });
 
     // ws.emit('user:get-nb', null);

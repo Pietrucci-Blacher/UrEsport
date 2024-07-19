@@ -28,13 +28,19 @@ class EditUserPageState extends State<EditUserPage> {
   @override
   void initState() {
     super.initState();
-    usernameController = TextEditingController(text: widget.user?.username ?? '');
-    firstnameController = TextEditingController(text: widget.user?.firstname ?? '');
-    lastnameController = TextEditingController(text: widget.user?.lastname ?? '');
+    usernameController =
+        TextEditingController(text: widget.user?.username ?? '');
+    firstnameController =
+        TextEditingController(text: widget.user?.firstname ?? '');
+    lastnameController =
+        TextEditingController(text: widget.user?.lastname ?? '');
     emailController = TextEditingController(text: widget.user?.email ?? '');
-    rolesController = TextEditingController(text: widget.user?.roles.join(', ') ?? '');
-    profileImageUrlController = TextEditingController(text: widget.user?.profileImageUrl ?? '');
-    passwordController = TextEditingController(); // Initialiser un champ mot de passe vide
+    rolesController =
+        TextEditingController(text: widget.user?.roles.join(', ') ?? '');
+    profileImageUrlController =
+        TextEditingController(text: widget.user?.profileImageUrl ?? '');
+    passwordController =
+        TextEditingController(); // Initialiser un champ mot de passe vide
   }
 
   @override
@@ -53,7 +59,8 @@ class EditUserPageState extends State<EditUserPage> {
     if (widget.user == null) {
       // Logic for adding a new user
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Adding new user functionality not implemented')),
+        const SnackBar(
+            content: Text('Adding new user functionality not implemented')),
       );
     } else {
       // Edit existing user
@@ -62,7 +69,9 @@ class EditUserPageState extends State<EditUserPage> {
         firstname: firstnameController.text,
         lastname: lastnameController.text,
         email: emailController.text,
-        password: passwordController.text.isNotEmpty ? passwordController.text : null, // Ajout du champ mot de passe
+        password: passwordController.text.isNotEmpty
+            ? passwordController.text
+            : null, // Ajout du champ mot de passe
       );
 
       // Log the data being sent to the backend
@@ -81,7 +90,8 @@ class EditUserPageState extends State<EditUserPage> {
         );
 
         // Log the response from the backend
-        debugPrint('Response from backend: ${response.statusCode} - ${response.data}');
+        debugPrint(
+            'Response from backend: ${response.statusCode} - ${response.data}');
 
         if (response.statusCode == 200) {
           // Successfully updated the user
@@ -91,7 +101,9 @@ class EditUserPageState extends State<EditUserPage> {
           // Handle error
           if (!mounted) return;
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update user: ${response.statusMessage}')),
+            SnackBar(
+                content:
+                    Text('Failed to update user: ${response.statusMessage}')),
           );
         }
       } catch (e) {

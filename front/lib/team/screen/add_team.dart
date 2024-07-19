@@ -23,7 +23,8 @@ class AddTeamPageState extends State<AddTeamPage> {
         'private': _isPrivate,
       };
 
-      debugPrint('Team data: $teamData'); // Ajout d'un log pour les données de l'équipe
+      debugPrint(
+          'Team data: $teamData'); // Ajout d'un log pour les données de l'équipe
 
       try {
         final teamService = Provider.of<ITeamService>(context, listen: false);

@@ -33,8 +33,8 @@ class User {
       profileImageUrl: json['profile_image_url'],
       roles: json['roles'] ?? [],
       teams: (json['teams'] as List<dynamic>?)
-          ?.map((teamJson) => Team.fromJson(teamJson))
-          .toList() ??
+              ?.map((teamJson) => Team.fromJson(teamJson))
+              .toList() ??
           [],
       password: json['password'], // Ajout du champ password pour la mise à jour
     );
@@ -84,7 +84,8 @@ class User {
       profileImageUrl: profileImageUrl ?? this.profileImageUrl,
       roles: roles ?? this.roles,
       teams: teams ?? this.teams,
-      password: password ?? this.password, // Ajout du champ password pour la mise à jour
+      password: password ??
+          this.password, // Ajout du champ password pour la mise à jour
     );
   }
 }

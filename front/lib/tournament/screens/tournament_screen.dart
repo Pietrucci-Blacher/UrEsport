@@ -170,7 +170,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                         ),
                         children: team.tournaments.map((tournamentJson) {
                           Tournament tournament =
-                          Tournament.fromJson(tournamentJson);
+                              Tournament.fromJson(tournamentJson);
                           return Card(
                             margin: const EdgeInsets.symmetric(
                                 vertical: 8.0, horizontal: 16.0),

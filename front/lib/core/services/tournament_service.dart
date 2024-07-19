@@ -15,7 +15,10 @@ abstract class ITournamentService {
   Future<void> joinTournament(int tournamentId, int teamId);
   Future<bool> hasJoinedTournament(int tournamentId, String username);
   Future<void> inviteTeamToTournament(
-      int tournamentId, int teamId, String teamName,);
+    int tournamentId,
+    int teamId,
+    String teamName,
+  );
   Future<List<Team>> fetchTeams();
   Future<Tournament> fetchTournamentById(int tournamentId);
   Future<void> generateBracket(int tournamentId);
