@@ -230,8 +230,6 @@ class AuthService implements IAuthService {
     try {
       final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
       if (response.statusCode == 200) {
-        // Ajout de débogage pour la réponse JSON
-        debugPrint('Response data: ${response.data}');
 
         // Traiter la réponse sans la décoder à nouveau
         List<dynamic> jsonResponse = response.data;
