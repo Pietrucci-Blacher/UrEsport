@@ -1,7 +1,6 @@
 package websockets
 
 import (
-	"challenge/models"
 	"challenge/services"
 	"encoding/json"
 	"fmt"
@@ -30,31 +29,32 @@ func AddAnonClientToTournamentRoom(client *services.Client, msg any) error {
 	roomName := fmt.Sprintf("tournament:%d", roomMsg.TournamentID)
 	client.Ws.Room(roomName).AddClient(client)
 
-	if err := client.Emit("info", "You have been added to the room"); err != nil {
-		return err
-	}
-
-	return nil
+	return client.Emit("info", "You have been added to the room")
 }
 
-func AddClientToTournamentRoom(client *services.Client) error {
-	user := client.Get("user").(models.User)
-	OwnerTournaments, err := models.FindTournamentsByUserID(user.ID)
-	if err != nil {
-		return err
-	}
+// func GetNbTournament(client *services.Client, msg any) error {
+// 	tournamentNb := client.Ws.Room("tournament")
+// 	return client.Emit("tournament:nb", tournamentNb)
+// }
 
-	userTeamInTournament, err := user.FindTournaments()
-	if err != nil {
-		return err
-	}
+// func AddClientToTournamentRoom(client *services.Client) error {
+// 	user := client.Get("user").(models.User)
+// 	OwnerTournaments, err := models.FindTournamentsByUserID(user.ID)
+// 	if err != nil {
+// 		return err
+// 	}
 
-	tournaments := append(OwnerTournaments, userTeamInTournament...)
+// 	userTeamInTournament, err := user.FindTournaments()
+// 	if err != nil {
+// 		return err
+// 	}
 
-	for _, tournament := range tournaments {
-		roomName := fmt.Sprintf("tournament:%d", tournament.ID)
-		client.Ws.Room(roomName).AddClient(client)
-	}
+// 	tournaments := append(OwnerTournaments, userTeamInTournament...)
 
-	return nil
-}
+// 	for _, tournament := range tournaments {
+// 		roomName := fmt.Sprintf("tournament:%d", tournament.ID)
+// 		client.Ws.Room(roomName).AddClient(client)
+// 	}
+
+// 	return nil
+// }

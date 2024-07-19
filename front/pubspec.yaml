@@ -40,6 +40,7 @@ dependencies:
   geolocator: ^12.0.0
   mapbox_api_pro: ^1.0.0
   xml: ^6.5.0
+  fl_chart: ^0.68.0
   syncfusion_flutter_datepicker: ^26.1.42
 
 dev_dependencies:

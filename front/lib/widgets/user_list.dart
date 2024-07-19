@@ -4,6 +4,7 @@ import 'package:uresport/core/models/user.dart';
 import 'package:uresport/shared/utils/invite_button.dart';
 import 'package:uresport/shared/utils/join_button.dart';
 import 'package:uresport/game/screens/game_screen.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class UserList extends StatelessWidget {
   final String tournamentId;
@@ -14,15 +15,17 @@ class UserList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return FutureBuilder<List<User>>(
       future: authService.fetchUsers(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Failed to load users'));
+          return Center(child: Text(l.failedToLoadUsers));
         } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-          return const Center(child: Text('No users found'));
+          return Center(child: Text(l.noUsersFound));
         } else {
           List<User> users = snapshot.data!;
           return ListView.builder(
@@ -51,7 +54,7 @@ class UserList extends StatelessWidget {
                                 builder: (context) => const GamesScreen()),
                           );
                         },
-                        child: const Text('Voir les jeux'),
+                        child: Text(l.viewGames),
                       ),
                     ],
                   ),
