@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:uresport/bracket/models/poule.dart';
 import 'package:uresport/bracket/models/team.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class PouleBracketView extends StatefulWidget {
   final List<Poule> poules;
@@ -16,9 +17,11 @@ class PouleBracketViewState extends State<PouleBracketView> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Brackets des Poules'),
+        title: Text(l.pouleBrackets),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -46,7 +49,7 @@ class PouleBracketViewState extends State<PouleBracketView> {
                       child: Table(
                         border: TableBorder.all(),
                         defaultColumnWidth: const FixedColumnWidth(120.0),
-                        children: _buildRoundRobinTableRows(poule.teams),
+                        children: _buildRoundRobinTableRows(poule.teams, l),
                       ),
                     ),
                   ),
@@ -59,7 +62,7 @@ class PouleBracketViewState extends State<PouleBracketView> {
     );
   }
 
-  List<TableRow> _buildRoundRobinTableRows(List<Team> teams) {
+  List<TableRow> _buildRoundRobinTableRows(List<Team> teams, AppLocalizations l) {
     List<TableRow> rows = [];
 
     // Add header row
@@ -68,15 +71,15 @@ class PouleBracketViewState extends State<PouleBracketView> {
         children: [
           TableCell(child: Container()),
           ...teams.map((team) => Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    team.name,
-                    style: const TextStyle(fontWeight: FontWeight.bold),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              )),
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Text(
+                team.name,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+                textAlign: TextAlign.center,
+              ),
+            ),
+          )),
         ],
       ),
     );
@@ -108,12 +111,12 @@ class PouleBracketViewState extends State<PouleBracketView> {
           cells.add(
             GestureDetector(
               onTap: () {
-                _showResultDialog(context, teams[i], teams[j]);
+                _showResultDialog(context, teams[i], teams[j], l);
               },
               child: Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Text(
-                  matchResults[teams[i].name]?[teams[j].name] ?? 'VS',
+                  matchResults[teams[i].name]?[teams[j].name] ?? l.vs,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                       color: Colors.blue, decoration: TextDecoration.underline),
@@ -130,7 +133,7 @@ class PouleBracketViewState extends State<PouleBracketView> {
     return rows;
   }
 
-  void _showResultDialog(BuildContext context, Team team1, Team team2) {
+  void _showResultDialog(BuildContext context, Team team1, Team team2, AppLocalizations l) {
     final TextEditingController scoreController1 = TextEditingController();
     final TextEditingController scoreController2 = TextEditingController();
 
@@ -138,21 +141,21 @@ class PouleBracketViewState extends State<PouleBracketView> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Enter result for ${team1.name} vs ${team2.name}'),
+          title: Text('${l.enterResult} ${team1.name} vs ${team2.name}'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
                 controller: scoreController1,
                 decoration: InputDecoration(
-                  labelText: '${team1.name} Score',
+                  labelText: '${team1.name} ${l.score}',
                 ),
                 keyboardType: TextInputType.number,
               ),
               TextFormField(
                 controller: scoreController2,
                 decoration: InputDecoration(
-                  labelText: '${team2.name} Score',
+                  labelText: '${team2.name} ${l.score}',
                 ),
                 keyboardType: TextInputType.number,
               ),
@@ -160,21 +163,21 @@ class PouleBracketViewState extends State<PouleBracketView> {
           ),
           actions: [
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(l.cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             ElevatedButton(
-              child: const Text('Save'),
+              child: Text(l.save),
               onPressed: () {
                 setState(() {
                   matchResults[team1.name] = matchResults[team1.name] ?? {};
                   matchResults[team2.name] = matchResults[team2.name] ?? {};
                   matchResults[team1.name]![team2.name] =
-                      '${scoreController1.text} - ${scoreController2.text}';
+                  '${scoreController1.text} - ${scoreController2.text}';
                   matchResults[team2.name]![team1.name] =
-                      '${scoreController2.text} - ${scoreController1.text}';
+                  '${scoreController2.text} - ${scoreController1.text}';
                 });
                 Navigator.of(context).pop();
               },

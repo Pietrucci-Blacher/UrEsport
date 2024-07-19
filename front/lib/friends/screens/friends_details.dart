@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:uresport/core/models/friend.dart'; // Assurez-vous que le chemin est correct;
+import 'package:uresport/core/models/friend.dart';
+import 'package:uresport/l10n/app_localizations.dart'; // Import the localization
 
 class FriendsDetails extends StatelessWidget {
   final Friend friend;
@@ -8,13 +9,15 @@ class FriendsDetails extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Détails de l\'ami'),
+        title: Text(l.friendDetails),
       ),
       body: Center(
         child: Text(
-          'Détails pour ${friend.name}', // Utilisez les détails de l'ami
+          '${l.friendDetails} ${friend.name}', // Use friend's details
           style: const TextStyle(fontSize: 24),
         ),
       ),

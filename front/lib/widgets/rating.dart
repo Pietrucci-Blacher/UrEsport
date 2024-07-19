@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/services/rating_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class RatingWidget extends StatefulWidget {
   final int tournamentId;
@@ -45,17 +46,17 @@ class RatingWidgetState extends State<RatingWidget> {
         _isLoading = false;
       });
       if (_currentRating == 0.0) {
-        widget.showCustomToast(context, 'Aucune note n\'a été récupérée',
+        widget.showCustomToast(context, AppLocalizations.of(context).noRatingFetched,
             backgroundColor: Colors.orange);
       } else {
-        widget.showCustomToast(context, 'Note récupérée avec succès',
+        widget.showCustomToast(context, AppLocalizations.of(context).ratingFetchedSuccessfully,
             backgroundColor: Colors.green);
       }
     } catch (e) {
       debugPrint('Error while fetching rating: $e');
       if (!mounted) return;
       widget.showCustomToast(
-          context, 'Erreur lors de la récupération de la note',
+          context, AppLocalizations.of(context).errorFetchingRating,
           backgroundColor: Colors.red);
       setState(() {
         _isLoading = false;
@@ -67,7 +68,7 @@ class RatingWidgetState extends State<RatingWidget> {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
 
     if (rating == 0.0) {
-      widget.showCustomToast(context, 'La note ne peut pas être zéro',
+      widget.showCustomToast(context, AppLocalizations.of(context).ratingCannotBeZero,
           backgroundColor: Colors.red);
       return;
     }
@@ -83,7 +84,7 @@ class RatingWidgetState extends State<RatingWidget> {
             widget.tournamentId, widget.userId, rating);
       }
       if (!mounted) return;
-      widget.showCustomToast(context, 'Note enregistrée avec succès',
+      widget.showCustomToast(context, AppLocalizations.of(context).ratingSavedSuccessfully,
           backgroundColor: Colors.green);
       setState(() {
         _currentRating = rating;
@@ -92,35 +93,37 @@ class RatingWidgetState extends State<RatingWidget> {
       debugPrint('Error while submitting or updating rating: $e');
       if (!mounted) return;
       widget.showCustomToast(
-          context, 'Erreur lors de l\'enregistrement de la note',
+          context, AppLocalizations.of(context).errorSavingRating,
           backgroundColor: Colors.red);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return _isLoading
         ? const Center(child: CircularProgressIndicator())
         : Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text('Votre note:',
-                  style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 4),
-              RatingBar.builder(
-                initialRating: _currentRating,
-                minRating: 0,
-                direction: Axis.horizontal,
-                allowHalfRating: true,
-                itemCount: 5,
-                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                itemBuilder: (context, _) =>
-                    const Icon(Icons.star, color: Colors.amber),
-                onRatingUpdate: (rating) {
-                  _submitOrUpdateRating(rating);
-                },
-              ),
-            ],
-          );
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(l.yourRating,
+            style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: 4),
+        RatingBar.builder(
+          initialRating: _currentRating,
+          minRating: 0,
+          direction: Axis.horizontal,
+          allowHalfRating: true,
+          itemCount: 5,
+          itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+          itemBuilder: (context, _) =>
+          const Icon(Icons.star, color: Colors.amber),
+          onRatingUpdate: (rating) {
+            _submitOrUpdateRating(rating);
+          },
+        ),
+      ],
+    );
   }
 }

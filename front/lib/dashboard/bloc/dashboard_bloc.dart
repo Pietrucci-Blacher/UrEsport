@@ -1,23 +1,23 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:uresport/core/models/game.dart';
+import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
-import 'package:uresport/core/websocket/websocket.dart';
+import 'package:uresport/core/services/game_service.dart';
+import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/core/services/game_service.dart';
-import 'package:uresport/core/models/tournament.dart';
-import 'package:uresport/core/models/game.dart';
 import 'package:uresport/core/models/log.dart';
 import 'package:uresport/core/services/log_service.dart';
 
+import 'package:uresport/core/services/auth_service.dart';
+
 class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
-  final Websocket _websocket;
   final TournamentService _tournamentService;
   final GameService _gameService;
   final LogService _logService;
+  final AuthService _authService;
 
-  DashboardBloc(this._websocket, this._tournamentService, this._gameService,
-      this._logService)
+  DashboardBloc(this._tournamentService, this._gameService, this._authService, this._logService)
       : super(DashboardInitial()) {
     on<ConnectWebSocket>(_onConnectWebSocket);
     on<DisconnectWebSocket>(_onDisconnectWebSocket);
@@ -28,13 +28,13 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     on<FetchTournaments>(_onFetchTournaments);
     on<FetchLogs>(_onFetchLogs);
     on<FetchGames>(_onFetchGames);
+    on<FetchUserStats>(_onFetchUserStats);
     on<DeleteGameEvent>(_onDeleteGame);
   }
 
-  Future<void> _onFetchAllUsers(
-      FetchAllUsers event, Emitter<DashboardState> emit) async {
+  Future<void> _onFetchAllUsers(FetchAllUsers event, Emitter<DashboardState> emit) async {
     try {
-      List<User> users = await fetchUsersFromApiOrDatabase();
+      List<User> users = await _authService.fetchUsers();  // Utilisation du service
       if (state is DashboardLoaded) {
         final currentState = state as DashboardLoaded;
         emit(currentState.copyWith(users: users));
@@ -44,31 +44,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     }
   }
 
-  Future<List<User>> fetchUsersFromApiOrDatabase() async {
-    await Future.delayed(const Duration(seconds: 2)); // Correction ici
-    return [
-      User(
-          id: 1,
-          username: 'user1',
-          firstname: 'First',
-          lastname: 'User',
-          email: 'user1@example.com',
-          roles: ['user'],
-          teams: []),
-    ];
-  }
-
   Future<void> _onConnectWebSocket(
       ConnectWebSocket event, Emitter<DashboardState> emit) async {
     emit(DashboardLoading());
     try {
-      _websocket.connect();
       emit(const DashboardLoaded(
         message: 'Connected',
-        activeUsers: 0,
-        activeTournaments: 0,
-        totalGames: 0,
-        recentLogs: [],
       ));
     } catch (e) {
       emit(DashboardError(e.toString()));
@@ -78,13 +59,8 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
   Future<void> _onDisconnectWebSocket(
       DisconnectWebSocket event, Emitter<DashboardState> emit) async {
     try {
-      _websocket.disconnect();
       emit(const DashboardLoaded(
         message: 'Disconnected',
-        activeUsers: 0,
-        activeTournaments: 0,
-        totalGames: 0,
-        recentLogs: [],
       ));
     } catch (e) {
       emit(DashboardError(e.toString()));
@@ -104,10 +80,12 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
     if (state is DashboardLoaded) {
       final currentState = state as DashboardLoaded;
       emit(currentState.copyWith(
-        activeUsers: event.stats['activeUsers'] ?? currentState.activeUsers,
-        activeTournaments:
-            event.stats['activeTournaments'] ?? currentState.activeTournaments,
-        totalGames: event.stats['totalGames'] ?? currentState.totalGames,
+        loggedInUsers:
+            event.stats['loggedInUsers'] ?? currentState.loggedInUsers,
+        anonymousUsers:
+            event.stats['anonymousUsers'] ?? currentState.anonymousUsers,
+        subscribedUsers:
+            event.stats['subscribedUsers'] ?? currentState.subscribedUsers,
       ));
     }
   }
@@ -127,9 +105,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       final List<Log> logs = await _logService.fetchLogs(sort: 'id desc');
       emit(DashboardLoaded(
         message: 'Logs loaded',
-        activeUsers: 0, // mettez à jour selon vos besoins
-        activeTournaments: 0, // mettez à jour selon vos besoins
-        totalGames: 0, // mettez à jour selon vos besoins
         recentLogs: logs, // mettez à jour selon vos besoins
       ));
     } catch (e) {
@@ -144,10 +119,6 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
           await _tournamentService.fetchTournaments();
       emit(DashboardLoaded(
         message: 'Tournaments loaded',
-        activeUsers: 0, // mettez à jour selon vos besoins
-        activeTournaments: tournaments.length,
-        totalGames: 0, // mettez à jour selon vos besoins
-        recentLogs: const [], // mettez à jour selon vos besoins
         tournaments: tournaments,
       ));
     } catch (e) {
@@ -165,15 +136,24 @@ class DashboardBloc extends Bloc<DashboardEvent, DashboardState> {
       } else {
         emit(DashboardLoaded(
           message: 'Games loaded',
-          activeUsers: 0,
-          activeTournaments: 0,
-          totalGames: games.length,
-          recentLogs: const [],
-          users: const [],
-          tournaments: const [],
           games: games,
         ));
       }
+    } catch (e) {
+      emit(DashboardError(e.toString()));
+    }
+  }
+
+  Future<void> _onFetchUserStats(
+      FetchUserStats event, Emitter<DashboardState> emit) async {
+    try {
+      final stats = await _authService.fetchUserStats();
+      emit(DashboardLoaded(
+        message: 'User stats loaded',
+        loggedInUsers: stats['loggedInUsers'] ?? 0,
+        anonymousUsers: stats['anonymousUsers'] ?? 0,
+        subscribedUsers: stats['subscribedUsers'] ?? 0,
+      ));
     } catch (e) {
       emit(DashboardError(e.toString()));
     }

@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:io';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_auth_2/flutter_web_auth_2.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -26,6 +27,7 @@ abstract class IAuthService {
   Future<String> uploadProfileImage(int userId, File image);
   Future<void> updateUserInfo(int userId, Map<String, dynamic> updatedFields);
   Future<void> deleteAccount(int userId);
+  Future<Map<String, int>> fetchUserStats();
 }
 
 class AuthService implements IAuthService {
@@ -229,11 +231,24 @@ class AuthService implements IAuthService {
 
   @override
   Future<List<User>> fetchUsers() async {
-    final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users');
-    if (response.statusCode == 200) {
-      List jsonResponse = json.decode(response.data.toString());
-      return jsonResponse.map((user) => User.fromJson(user)).toList();
-    } else {
+    try {
+      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/users/');
+      if (response.statusCode == 200) {
+        debugPrint('Response data: ${response.data}'); // Ajout d'instruction de débogage
+        List<dynamic> jsonResponse;
+        if (response.data is String) {
+          jsonResponse = json.decode(response.data);
+        } else if (response.data is List) {
+          jsonResponse = response.data;
+        } else {
+          throw Exception('Unexpected response format');
+        }
+        return jsonResponse.map((user) => User.fromJson(user)).toList();
+      } else {
+        throw Exception('Failed to load users');
+      }
+    } catch (e) {
+      debugPrint('Error: $e'); // Imprimez l'erreur pour le débogage
       throw Exception('Failed to load users');
     }
   }
@@ -364,5 +379,31 @@ class AuthService implements IAuthService {
 
   String? parseTokenFromResult(String result) {
     return null;
+  }
+
+  @override
+  Future<Map<String, int>> fetchUserStats() async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+    try {
+      final response = await _dio.get(
+        '${dotenv.env['API_ENDPOINT']}/stats/users',
+        options: Options(headers: {
+          'Authorization': 'Bearer $token',
+        }),
+      );
+
+      if (response.statusCode != 200) {
+        throw Exception('Failed to load user stats');
+      }
+
+      return {
+        'loggedInUsers': response.data['loggedUsers'],
+        'anonymousUsers': response.data['annonUsers'],
+        'subscribedUsers': response.data['totalUsers'],
+      };
+    } catch (e) {
+      throw Exception('Failed to load user stats: $e');
+    }
   }
 }
