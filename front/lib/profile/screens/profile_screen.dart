@@ -59,7 +59,7 @@ class ProfileScreenState extends State<ProfileScreen>
     super.build(context);
     return BlocProvider(
       create: (context) =>
-      AuthBloc(widget.authService)..add(AuthCheckRequested()),
+          AuthBloc(widget.authService)..add(AuthCheckRequested()),
       child: DefaultTabController(
         length: 2, // Number of tabs
         child: Scaffold(
@@ -106,7 +106,7 @@ class ProfileScreenState extends State<ProfileScreen>
                       builder: (context) =>
                           MainScreen(authService: widget.authService),
                     ),
-                        (Route<dynamic> route) => false,
+                    (Route<dynamic> route) => false,
                   );
                 });
               }
@@ -169,7 +169,6 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 
   Widget _buildProfileScreen(BuildContext context) {
-
     return SingleChildScrollView(
       padding: const EdgeInsets.all(16.0),
       child: Column(
@@ -263,7 +262,7 @@ class ProfileScreenState extends State<ProfileScreen>
                     builder: (context) =>
                         MainScreen(authService: widget.authService),
                   ),
-                      (Route<dynamic> route) => false,
+                  (Route<dynamic> route) => false,
                 );
               });
             },
@@ -303,11 +302,11 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 
   Widget _buildDangerZoneTile(
-      BuildContext context, {
-        required IconData icon,
-        required String label,
-        required VoidCallback onTap,
-      }) {
+    BuildContext context, {
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
     return ListTile(
       leading: Icon(icon, color: Colors.red),
       title: Text(
@@ -319,11 +318,11 @@ class ProfileScreenState extends State<ProfileScreen>
   }
 
   Future<void> _showConfirmationDialog(
-      BuildContext context, {
-        required String title,
-        required String content,
-        required VoidCallback confirmAction,
-      }) {
+    BuildContext context, {
+    required String title,
+    required String content,
+    required VoidCallback confirmAction,
+  }) {
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -409,19 +408,19 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
           ClipOval(
             child: _isUpdatingImage
                 ? const CircleAvatar(
-              radius: 50,
-              backgroundColor: Colors.grey,
-              child: CircularProgressIndicator(),
-            )
+                    radius: 50,
+                    backgroundColor: Colors.grey,
+                    child: CircularProgressIndicator(),
+                  )
                 : _localProfileImageUrl != null
-                ? image_util.CachedImageWidget(
-              url: _localProfileImageUrl!,
-              size: 100,
-            )
-                : const CircleAvatar(
-              radius: 50,
-              child: Icon(Icons.person),
-            ),
+                    ? image_util.CachedImageWidget(
+                        url: _localProfileImageUrl!,
+                        size: 100,
+                      )
+                    : const CircleAvatar(
+                        radius: 50,
+                        child: Icon(Icons.person),
+                      ),
           ),
           Positioned(
             bottom: 0,
@@ -553,18 +552,18 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
   }
 
   Future<void> _updateProfileImage(
-      File imageFile,
-      int userId,
-      ScaffoldMessengerState scaffoldMessenger,
-      AppLocalizations localizations,
-      ValueChanged<String> onImageUpdated,
-      ) async {
+    File imageFile,
+    int userId,
+    ScaffoldMessengerState scaffoldMessenger,
+    AppLocalizations localizations,
+    ValueChanged<String> onImageUpdated,
+  ) async {
     final authBloc = context.read<AuthBloc>();
 
     try {
       debugPrint('Uploading image file: ${imageFile.path}');
       final imageUrl =
-      await authBloc.authService.uploadProfileImage(userId, imageFile);
+          await authBloc.authService.uploadProfileImage(userId, imageFile);
       debugPrint('Image uploaded successfully. URL: $imageUrl');
 
       final updatedImageUrl =
@@ -706,17 +705,13 @@ class EditableFieldsSectionState extends State<EditableFieldsSection> {
           ],
         ),
         const SizedBox(height: 10),
-        _buildEditableField(
-            _firstNameController, l.firstName, 'firstname'),
+        _buildEditableField(_firstNameController, l.firstName, 'firstname'),
         const SizedBox(height: 10),
-        _buildEditableField(
-            _lastNameController, l.lastName, 'lastname'),
+        _buildEditableField(_lastNameController, l.lastName, 'lastname'),
         const SizedBox(height: 10),
-        _buildEditableField(
-            _usernameController, l.username, 'username'),
+        _buildEditableField(_usernameController, l.username, 'username'),
         const SizedBox(height: 10),
-        _buildEditableField(
-            _emailController, l.email, 'email'),
+        _buildEditableField(_emailController, l.email, 'email'),
         const SizedBox(height: 20),
         if (_isEditing)
           Row(

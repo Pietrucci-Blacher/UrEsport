@@ -42,7 +42,7 @@ class TournamentScreen extends StatelessWidget {
                           context,
                           MaterialPageRoute(
                             builder: (context) =>
-                            const TournamentBracketPage(tournamentId: 1),
+                                const TournamentBracketPage(tournamentId: 1),
                           ),
                         );
                       },
@@ -102,8 +102,7 @@ class TournamentScreen extends StatelessWidget {
                         ],
                       );
                     } else if (state is TournamentLoadFailure) {
-                      return Center(
-                          child: Text(l.failedToLoadTournaments));
+                      return Center(child: Text(l.failedToLoadTournaments));
                     }
                     return Center(child: Text(l.unknownState));
                   },
@@ -119,7 +118,7 @@ class TournamentScreen extends StatelessWidget {
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     AppLocalizations l = AppLocalizations.of(context);
     final DateFormat dateFormat =
-    DateFormat.yMMMd(Localizations.localeOf(context).toString());
+        DateFormat.yMMMd(Localizations.localeOf(context).toString());
 
     return Card(
       margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 15),
