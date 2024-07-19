@@ -901,28 +901,4 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     if (!mounted) return;
     showNotificationToast(context, message, backgroundColor: backgroundColor);
   }
-
-  void _handleJoinError(dynamic e) {
-    if (e is DioException) {
-      if (e.response != null && e.response?.data != null) {
-        final errorMessage = e.response?.data['error'];
-        if (errorMessage == 'Team already in this tournament') {
-          _showNotificationToast(
-              'Vous avez déjà rejoint le tournoi', Colors.red);
-          setState(() {
-            _hasJoined = true;
-          });
-        } else if (errorMessage == 'Too many players for this tournament') {
-          _showNotificationToast('Trop de joueurs pour ce tournoi', Colors.red);
-        } else {
-          _showNotificationToast(
-              'Erreur lors du join: $errorMessage', Colors.red);
-        }
-      } else {
-        _showNotificationToast('Erreur lors du join: ${e.message}', Colors.red);
-      }
-    } else {
-      _showNotificationToast('Erreur pour rejoindre le tournoi', Colors.red);
-    }
-  }
 }
