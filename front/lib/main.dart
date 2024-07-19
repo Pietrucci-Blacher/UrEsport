@@ -14,6 +14,7 @@ import 'package:uresport/core/services/notification_service.dart';
 import 'package:uresport/core/services/rating_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/core/services/log_service.dart';
+import 'package:uresport/core/services/feature_flipping_service.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/shared/routing/routing.dart';
@@ -66,6 +67,7 @@ void main() async {
   final mapsBoxApiKey = dotenv.env['SDK_REGISTRY_TOKEN']!;
   final mapService = MapService(dio: dio, mapboxApiKey: mapsBoxApiKey);
   final teamService = TeamService(dio);
+  final featureFlippingService = FeatureFlippingService(dio);
 
   connectWebsocket();
 
@@ -85,6 +87,7 @@ void main() async {
         Provider<MapService>.value(value: mapService),
         Provider<ITeamService>.value(value: teamService),
         Provider<ILogService>.value(value: logService),
+        Provider<IFeatureFlippingService>.value(value: featureFlippingService),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -93,12 +96,13 @@ void main() async {
                 AuthBloc(authService)..add(AuthCheckRequested()),
           ),
           BlocProvider<DashboardBloc>(
-            create: (context) => DashboardBloc(
-                tournamentService, gameService, authService, logService)
+            create: (context) => DashboardBloc(tournamentService, gameService,
+                authService, logService, featureFlippingService)
               ..add(FetchTournaments())
               ..add(FetchGames())
               ..add(FetchLogs())
-              ..add(FetchUserStats()),
+              ..add(FetchUserStats())
+              ..add(FetchAllFeatures()),
           ),
         ],
         child: MyApp(
