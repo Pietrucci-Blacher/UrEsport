@@ -64,20 +64,52 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
   Future<void> _selectDateTime(
       BuildContext context, TextEditingController controller) async {
-    final DateTime? picked = await showDatePicker(
+    final DateTime now = DateTime.now();
+
+    final DateTime? pickedDate = await showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
+      initialDate: now,
+      firstDate: now,
       lastDate: DateTime(2101),
     );
-    if (picked != null && context.mounted) {
-      final TimeOfDay? time = await showTimePicker(
-        context: context,
-        initialTime: TimeOfDay.now(),
-      );
-      if (time != null) {
+
+    if (pickedDate != null && context.mounted) {
+      TimeOfDay? pickedTime;
+      if (pickedDate.isSameDateAs(now)) {
+        pickedTime = await showTimePicker(
+          context: context,
+          initialTime:
+              TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!,
+            );
+          },
+        );
+      } else {
+        pickedTime = await showTimePicker(
+          context: context,
+          initialTime: const TimeOfDay(hour: 0, minute: 0),
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data:
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!,
+            );
+          },
+        );
+      }
+
+      if (pickedTime != null) {
         final DateTime fullDateTime = DateTime(
-            picked.year, picked.month, picked.day, time.hour, time.minute);
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
         final formattedDate =
             DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
         setState(() {
@@ -219,5 +251,11 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         ),
       ),
     );
+  }
+}
+
+extension DateOnlyCompare on DateTime {
+  bool isSameDateAs(DateTime other) {
+    return year == other.year && month == other.month && day == other.day;
   }
 }

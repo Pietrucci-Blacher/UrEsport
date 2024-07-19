@@ -5,6 +5,8 @@ import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 
+import 'package:uresport/core/services/auth_service.dart';
+
 class TeamMembersPage extends StatelessWidget {
   final int teamId;
   final List<User> members;
@@ -38,6 +40,62 @@ class TeamMembersPage extends StatelessWidget {
           AppLocalizations.of(context).errorKickingUser(e.toString()),
           Colors.red);
     }
+  }
+
+  Future<void> _inviteUser(BuildContext context, String username) async {
+    final teamService = Provider.of<ITeamService>(context, listen: false);
+    try {
+      await teamService.inviteUserToTeam(teamId, username);
+      if (!context.mounted) return;
+      _showToast(
+          context, '$username a bien été invité à la team', Colors.green);
+    } catch (e) {
+      debugPrint('Erreur lors de l\'invitation du user: $e');
+      _showToast(
+          context, 'Erreur lors de l\'invitation du user: $e', Colors.red);
+    }
+  }
+
+  void _showInviteDialog(BuildContext context) {
+    final authService = Provider.of<IAuthService>(context, listen: false);
+
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return FutureBuilder<List<User>>(
+          future: authService.fetchUsers(),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Erreur: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('Aucun utilisateur trouvé'));
+            } else {
+              final users = snapshot.data!;
+              return ListView.builder(
+                itemCount: users.length,
+                itemBuilder: (context, index) {
+                  final user = users[index];
+                  return ListTile(
+                    leading: CircleAvatar(
+                      backgroundImage: NetworkImage(user.profileImageUrl ??
+                          'https://via.placeholder.com/150'),
+                    ),
+                    title: Text(user.username),
+                    subtitle: Text('${user.firstname} ${user.lastname}'),
+                    onTap: () {
+                      Navigator.pop(context);
+                      _inviteUser(context, user.username);
+                    },
+                  );
+                },
+              );
+            }
+          },
+        );
+      },
+    );
   }
 
   void _showToast(BuildContext context, String message, Color backgroundColor) {
@@ -161,6 +219,12 @@ class TeamMembersPage extends StatelessWidget {
                 );
         },
       ),
+      floatingActionButton: ownerId == currentId
+          ? FloatingActionButton(
+              onPressed: () => _showInviteDialog(context),
+              child: const Icon(Icons.person_add),
+            )
+          : null,
     );
   }
 }

@@ -11,6 +11,7 @@ abstract class ITeamService {
   Future<void> leaveTeam(int userId, int teamId);
   Future<void> deleteTeam(int teamId);
   Future<void> kickUserFromTeam(int teamId, String username);
+  Future<void> inviteUserToTeam(int teamId, String username);
 }
 
 class TeamService implements ITeamService {
@@ -170,6 +171,43 @@ class TeamService implements ITeamService {
     } catch (e) {
       debugPrint('Error kicking user: $e');
       throw Exception('Failed to kick the user');
+    }
+  }
+
+  @override
+  Future<void> inviteUserToTeam(int teamId, String username) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    try {
+      final response = await _dio.post(
+        "${dotenv.env['API_ENDPOINT']}/teams/$teamId/invite",
+        data: {'username': username},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to invite user to team',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 }

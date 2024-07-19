@@ -45,6 +45,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
+    _loadCurrentUser();
     _checkLoginStatus();
   }
 
@@ -264,7 +265,10 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
     try {
       await tournamentService.inviteTeamToTournament(
-          widget.tournament.id, teamId, teamName);
+        widget.tournament.id,
+        teamId,
+        teamName,
+      );
       if (!mounted) return;
       showNotificationToast(context, 'Invitation sent',
           backgroundColor: Colors.green);
