@@ -10,6 +10,7 @@ import 'package:uresport/core/services/bracket_service.dart';
 import 'package:uresport/core/services/match_service.dart';
 import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/bracket/screens/match_details_page.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class TournamentBracketPage extends StatelessWidget {
   final int tournamentId;
@@ -18,6 +19,8 @@ class TournamentBracketPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return BlocProvider(
       create: (_) => BracketBloc(MatchService(Dio()))
         ..add(LoadBracket(tournamentId: tournamentId)),
@@ -25,7 +28,7 @@ class TournamentBracketPage extends StatelessWidget {
         body: BlocBuilder<BracketBloc, BracketState>(
           builder: (context, state) {
             if (state is BracketLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: Text(l.loading));
             } else if (state is BracketLoaded) {
               BracketService bracket = BracketService(state.matches);
               return BracketContent(
@@ -33,11 +36,11 @@ class TournamentBracketPage extends StatelessWidget {
                   roundNames: state.roundNames,
                   tournamentId: tournamentId);
             } else if (state is BracketUpdate) {
-              return const Center(child: Text('Bracket updated'));
+              return Center(child: Text(l.bracketUpdated));
             } else if (state is BracketError) {
               return Center(child: Text(state.message));
             } else {
-              return const Center(child: Text('Unknown state'));
+              return Center(child: Text(l.unknownState));
             }
           },
         ),
@@ -85,6 +88,7 @@ class BracketContentState extends State<BracketContent> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     websocket();
     return Column(
       children: [
@@ -187,10 +191,10 @@ class BracketContentState extends State<BracketContent> {
                   var team2 = m.team2?.name ?? '';
 
                   if (team1.isEmpty) {
-                    team1 = 'waiting';
+                    team1 = l.waiting;
                   }
                   if (team2.isEmpty) {
-                    team2 = 'waiting';
+                    team2 = l.waiting;
                   }
 
                   return BracketText(

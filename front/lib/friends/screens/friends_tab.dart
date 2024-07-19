@@ -10,10 +10,9 @@ import 'package:dio/dio.dart';
 import 'package:uresport/friends/bloc/friends_bloc.dart';
 import 'package:uresport/friends/bloc/friends_event.dart';
 import 'package:uresport/friends/bloc/friends_state.dart';
-
 import 'package:uresport/core/models/user.dart';
-
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class FriendsTab extends StatefulWidget {
   final int userId;
@@ -76,6 +75,8 @@ class FriendsTabState extends State<FriendsTab> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return BlocProvider(
       create: (context) => _friendsBloc,
       child: Scaffold(
@@ -92,7 +93,7 @@ class FriendsTabState extends State<FriendsTab> {
                         onPressed: () {
                           context.read<FriendsBloc>().add(SortFriends());
                         },
-                        child: Text(state.isSorted ? 'Trier Z-A' : 'Trier A-Z'),
+                        child: Text(state.isSorted ? l.sortZToA : l.sortAToZ),
                       );
                     }
                     return Container();
@@ -116,7 +117,7 @@ class FriendsTabState extends State<FriendsTab> {
                     return Center(child: Text(state.message));
                   } else if (state is FriendsLoaded) {
                     if (state.friends.isEmpty) {
-                      return const Center(child: Text('No friends found'));
+                      return Center(child: Text(l.noFriendsFound));
                     }
 
                     final friends = state.friends;
@@ -135,12 +136,12 @@ class FriendsTabState extends State<FriendsTab> {
 
                     return ListView(
                       children: [
-                        const Padding(
-                          padding: EdgeInsets.symmetric(
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 16.0),
                           child: Text(
-                            'Favoris',
-                            style: TextStyle(
+                            l.favorites,
+                            style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -164,12 +165,12 @@ class FriendsTabState extends State<FriendsTab> {
                                 child: FriendListTile(name: friend.name),
                               ),
                             )),
-                        const Padding(
-                          padding: EdgeInsets.symmetric(
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
                               vertical: 8.0, horizontal: 16.0),
                           child: Text(
-                            'Amis',
-                            style: TextStyle(
+                            l.friends,
+                            style: const TextStyle(
                                 fontSize: 18, fontWeight: FontWeight.bold),
                           ),
                         ),
@@ -197,19 +198,20 @@ class FriendsTabState extends State<FriendsTab> {
                                                 title:
                                                     const Text('Confirmation'),
                                                 content: Text(
-                                                    'Voulez-vous vraiment supprimer ${friend.name} de vos amis ?'),
+                                                    l.confirmDeleteFriend(
+                                                        friend.name)),
                                                 actions: [
                                                   TextButton(
                                                     onPressed: () =>
                                                         Navigator.of(context)
                                                             .pop(false),
-                                                    child: const Text('Non'),
+                                                    child: Text(l.no),
                                                   ),
                                                   TextButton(
                                                     onPressed: () =>
                                                         Navigator.of(context)
                                                             .pop(true),
-                                                    child: const Text('Oui'),
+                                                    child: Text(l.yes),
                                                   ),
                                                 ],
                                               );
@@ -266,6 +268,7 @@ class FriendsTabState extends State<FriendsTab> {
         ),
         floatingActionButton: FloatingActionButton(
           onPressed: () => _navigateAndRefresh(context),
+          tooltip: l.addFriend,
           child: const Icon(Icons.person_add),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,

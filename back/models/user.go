@@ -41,7 +41,6 @@ type UpdateUserDto struct {
 	Lastname  string `json:"lastname"`
 	Username  string `json:"username"`
 	Email     string `json:"email"`
-	Password  string `json:"password"`
 }
 
 type SanitizedUser struct {
@@ -49,6 +48,9 @@ type SanitizedUser struct {
 	Username        string          `json:"username"`
 	Firstname       string          `json:"firstname"`
 	Lastname        string          `json:"lastname"`
+	Email           string          `json:"email"`
+	Roles           []string        `json:"roles"`
+	Verified        bool            `json:"verified"`
 	ProfileImageUrl string          `json:"profile_image_url"`
 	Teams           []SanitizedTeam `json:"teams"`
 	CreatedAt       time.Time       `json:"created_at"`
@@ -66,6 +68,24 @@ type UserInfo struct {
 	Firstname       string `json:"firstname"`
 	Lastname        string `json:"lastname"`
 	ProfileImageUrl string `json:"profile_image_url"`
+}
+
+func CountStatsUsers(ws *services.Websocket) map[string]int {
+	totalUsers, _ := CountUsers()
+
+	loggedClients := ws.FilterClient(func(c *services.Client) bool {
+		return c.Get("logged").(bool)
+	})
+
+	annonClients := ws.FilterClient(func(c *services.Client) bool {
+		return !c.Get("logged").(bool)
+	})
+
+	return map[string]int{
+		"loggedUsers": len(loggedClients),
+		"annonUsers":  len(annonClients),
+		"totalUsers":  int(totalUsers),
+	}
 }
 
 func FindAllUsers(query services.QueryFilter) ([]User, error) {
@@ -102,6 +122,12 @@ func CountUsersByUsername(username string) (int64, error) {
 	return count, err
 }
 
+func CountUsers() (int64, error) {
+	var count int64
+	err := DB.Model(&User{}).Count(&count).Error
+	return count, err
+}
+
 // FindTeamsByUserID returns all tournaments that the user is part of
 func (u *User) FindTournaments() ([]Tournament, error) {
 	var tournaments []Tournament
@@ -132,6 +158,9 @@ func (u *User) Sanitize(getTeam bool) SanitizedUser {
 		Username:        u.Username,
 		Firstname:       u.Firstname,
 		Lastname:        u.Lastname,
+		Email:           u.Email,
+		Roles:           u.Roles,
+		Verified:        u.Verified,
 		ProfileImageUrl: u.ProfileImageUrl,
 		CreatedAt:       u.CreatedAt,
 		UpdatedAt:       u.UpdatedAt,

@@ -25,6 +25,7 @@ import (
 //	@Router			/auth/login [post]
 func Login(c *gin.Context) {
 	var user models.User
+	var loginFeature models.Feature
 	body, _ := c.MustGet("body").(models.LoginUserDto)
 
 	if err := user.FindOne("email", body.Email); err != nil {
@@ -36,6 +37,18 @@ func Login(c *gin.Context) {
 	if !user.Verified {
 		models.ErrorLogf([]string{"auth", "login"}, "Account not verified")
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Account not verified"})
+		return
+	}
+
+	if loginFeature.FindOne("name", "login") != nil {
+		models.ErrorLogf([]string{"auth", "login"}, "Login feature not found")
+		c.JSON(http.StatusNotFound, gin.H{"error": "Login feature not found"})
+		return
+	}
+
+	if !loginFeature.Active && !user.IsRole(models.ROLE_ADMIN) {
+		models.ErrorLogf([]string{"auth", "login"}, "Login feature is not active")
+		c.JSON(http.StatusForbidden, gin.H{"error": "Login feature is not active"})
 		return
 	}
 
@@ -125,7 +138,20 @@ func Refresh(c *gin.Context) {
 //	@Failure		400	{object}	utils.HttpError
 //	@Router			/auth/register [post]
 func Register(c *gin.Context) {
+	var registerFeature models.Feature
 	body, _ := c.MustGet("body").(models.CreateUserDto)
+
+	if registerFeature.FindOne("name", "register") != nil {
+		models.ErrorLogf([]string{"auth", "register"}, "Register feature not found")
+		c.JSON(http.StatusNotFound, gin.H{"error": "Register feature not found"})
+		return
+	}
+
+	if !registerFeature.Active {
+		models.ErrorLogf([]string{"auth", "register"}, "Register feature is not active")
+		c.JSON(http.StatusForbidden, gin.H{"error": "Register feature is not active"})
+		return
+	}
 
 	if isUserExists(body) {
 		models.ErrorLogf([]string{"auth", "register"}, "Email or Username already exists")

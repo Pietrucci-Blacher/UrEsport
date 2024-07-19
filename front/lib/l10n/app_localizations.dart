@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
@@ -669,6 +671,1646 @@ class AppLocalizations {
       'No liked games',
       name: 'noLikedGames',
       desc: 'Message when no liked games are available',
+    );
+  }
+
+  String get failedToLoadUserTeams {
+    return Intl.message(
+      'Failed to load user teams',
+      name: 'failedToLoadUserTeams',
+      desc: 'Message displayed when user teams fail to load',
+    );
+  }
+
+  String get noTeamsFoundForUser {
+    return Intl.message(
+      'No teams found for the user',
+      name: 'noTeamsFoundForUser',
+      desc: 'Message displayed when no teams are found for the user',
+    );
+  }
+
+  String membersAndTournaments(int membersCount, int tournamentsCount) {
+    return Intl.message(
+      'Members: $membersCount | Tournaments: $tournamentsCount',
+      name: 'membersAndTournaments',
+      args: [membersCount, tournamentsCount],
+      desc: 'Members and tournaments count display',
+    );
+  }
+
+  String get confirmAction {
+    return Intl.message(
+      'Confirm Action',
+      name: 'confirmAction',
+      desc: 'Confirm action dialog title',
+    );
+  }
+
+  String deleteTeamConfirmation(String teamName) {
+    return Intl.message(
+      'Are you sure you want to delete the team $teamName?',
+      name: 'deleteTeamConfirmation',
+      args: [teamName],
+      desc: 'Delete team confirmation message',
+    );
+  }
+
+  String leaveTeamConfirmation(String teamName) {
+    return Intl.message(
+      'Are you sure you want to leave the team $teamName?',
+      name: 'leaveTeamConfirmation',
+      args: [teamName],
+      desc: 'Leave team confirmation message',
+    );
+  }
+
+  String get delete {
+    return Intl.message(
+      'Delete',
+      name: 'delete',
+      desc: 'Delete button text',
+    );
+  }
+
+  String get leave {
+    return Intl.message(
+      'Leave',
+      name: 'leave',
+      desc: 'Leave button text',
+    );
+  }
+
+  String teamDeleted(String teamName) {
+    return Intl.message(
+      'Vous avez bien supprimé la team $teamName',
+      name: 'teamDeleted',
+      args: [teamName],
+      desc: 'Team deleted success message',
+    );
+  }
+
+  String failedToDeleteTeam(String error) {
+    return Intl.message(
+      'Failed to delete the team: $error',
+      name: 'failedToDeleteTeam',
+      args: [error],
+      desc: 'Failed to delete team message',
+    );
+  }
+
+  String teamLeft(String teamName) {
+    return Intl.message(
+      'Vous avez bien quitté la team $teamName',
+      name: 'teamLeft',
+      args: [teamName],
+      desc: 'Team left success message',
+    );
+  }
+
+  String get failedToLeaveTeam {
+    return Intl.message(
+      'Failed to leave the team',
+      name: 'failedToLeaveTeam',
+      desc: 'Failed to leave team message',
+    );
+  }
+
+  String get failedToLoadTournaments {
+    return Intl.message(
+      'Failed to load tournaments',
+      name: 'failedToLoadTournaments',
+      desc: 'Failed to load tournaments message',
+    );
+  }
+
+  String get unknownState {
+    return Intl.message(
+      'Unknown state',
+      name: 'unknownState',
+      desc: 'Unknown state message',
+    );
+  }
+
+  String tournamentStartDate(DateTime date) {
+    return Intl.message(
+      'Start: ${DateFormat.yMMMd().format(date)}',
+      name: 'tournamentStartDate',
+      args: [date],
+      desc: 'Tournament start date display',
+    );
+  }
+
+  String tournamentEndDate(DateTime date) {
+    return Intl.message(
+      'End: ${DateFormat.yMMMd().format(date)}',
+      name: 'tournamentEndDate',
+      args: [date],
+      desc: 'Tournament end date display',
+    );
+  }
+
+  String gameName(String gameName) {
+    return Intl.message(
+      'Game: $gameName',
+      name: 'gameName',
+      args: [gameName],
+      desc: 'Game name display',
+    );
+  }
+
+  String teamPlayersCount(int playersCount) {
+    return Intl.message(
+      'Joueurs par team: $playersCount',
+      name: 'teamPlayersCount',
+      args: [playersCount],
+      desc: 'Team players count display',
+    );
+  }
+
+  String get viewDetails {
+    return Intl.message(
+      'View Details',
+      name: 'viewDetails',
+      desc: 'View details button text',
+    );
+  }
+
+  String get errorLoadingCurrentUser {
+    return Intl.message(
+      'Error loading current user: $e',
+      name: 'errorLoadingCurrentUser',
+      desc: 'Error message when loading current user fails',
+    );
+  }
+
+  String get errorCheckingIfUpvoted {
+    return Intl.message(
+      'Error checking if upvoted: $e',
+      name: 'errorCheckingIfUpvoted',
+      desc: 'Error message when checking if upvoted fails',
+    );
+  }
+
+  String get errorCheckingIfJoined {
+    return Intl.message(
+      'Error checking if joined: $e',
+      name: 'errorCheckingIfJoined',
+      desc: 'Error message when checking if joined fails',
+    );
+  }
+
+  String get errorLoadingTeams {
+    return Intl.message(
+      'Error loading teams: $e',
+      name: 'errorLoadingTeams',
+      desc: 'Error message when loading teams fails',
+    );
+  }
+
+  String get noTeamsAvailableForUser {
+    return Intl.message(
+      'No teams available for the current user.',
+      name: 'noTeamsAvailableForUser',
+      desc: 'Message displayed when no teams are available for the user',
+    );
+  }
+
+  String get selectTeamToJoin {
+    return Intl.message(
+      'Select a Team to Join',
+      name: 'selectTeamToJoin',
+      desc: 'Title for selecting a team to join',
+    );
+  }
+
+  String get noTeamsAvailable {
+    return Intl.message(
+      'No teams available.',
+      name: 'noTeamsAvailable',
+      desc: 'Message displayed when no teams are available',
+    );
+  }
+
+  String get selectTeamToLeave {
+    return Intl.message(
+      'Select a Team to Leave',
+      name: 'selectTeamToLeave',
+      desc: 'Title for selecting a team to leave',
+    );
+  }
+
+  String get confirmLeave {
+    return Intl.message(
+      'Confirm Leave',
+      name: 'confirmLeave',
+      desc: 'Title for confirming leave',
+    );
+  }
+
+  String get confirmLeaveTournament {
+    return Intl.message(
+      'Are you sure you want to leave this tournament?',
+      name: 'confirmLeaveTournament',
+      desc: 'Message for confirming leave tournament',
+    );
+  }
+
+  String get mustBeLoggedInToUpvote {
+    return Intl.message(
+      'You must be logged in to upvote',
+      name: 'mustBeLoggedInToUpvote',
+      desc: 'Message displayed when user must be logged in to upvote',
+    );
+  }
+
+  String get upvoteAdded {
+    return Intl.message(
+      'Upvote ajouté',
+      name: 'upvoteAdded',
+      desc: 'Message displayed when upvote is added',
+    );
+  }
+
+  String get upvoteRemoved {
+    return Intl.message(
+      'Upvote retiré',
+      name: 'upvoteRemoved',
+      desc: 'Message displayed when upvote is removed',
+    );
+  }
+
+  String failedToChangeUpvoteStatus(String error) {
+    return Intl.message(
+      'Failed to change upvote status: $error',
+      name: 'failedToChangeUpvoteStatus',
+      args: [error],
+      desc: 'Message displayed when upvote status change fails',
+    );
+  }
+
+  String get leftTournament {
+    return Intl.message(
+      'Vous avez quitté le tournoi',
+      name: 'leftTournament',
+      desc: 'Message displayed when user leaves tournament',
+    );
+  }
+
+  String get teamNotRegistered {
+    return Intl.message(
+      'Cette team n\'est pas inscrite dans le tournoi',
+      name: 'teamNotRegistered',
+      desc: 'Message displayed when team is not registered in the tournament',
+    );
+  }
+
+  String get resourceNotFound404 {
+    return Intl.message(
+      'Ressource non trouvée (404)',
+      name: 'resourceNotFound404',
+      desc: 'Message displayed when resource is not found (404)',
+    );
+  }
+
+  String leaveTournamentError(String error) {
+    return Intl.message(
+      'Erreur lors du départ du tournoi: $error',
+      name: 'leaveTournamentError',
+      args: [error],
+      desc: 'Message displayed when leaving tournament fails',
+    );
+  }
+
+  String unknownError(String error) {
+    return Intl.message(
+      'Erreur inconnue: $error',
+      name: 'unknownError',
+      args: [error],
+      desc: 'Message displayed when an unknown error occurs',
+    );
+  }
+
+  String get details {
+    return Intl.message(
+      'Details',
+      name: 'details',
+      desc: 'Details tab text',
+    );
+  }
+
+  String get bracket {
+    return Intl.message(
+      'Bracket',
+      name: 'bracket',
+      desc: 'Bracket tab text',
+    );
+  }
+
+  String get mustBeLoggedInToViewBracket {
+    return Intl.message(
+      'You must be logged in to view your bracket',
+      name: 'mustBeLoggedInToViewBracket',
+      desc: 'Message displayed when user must be logged in to view bracket',
+    );
+  }
+
+  String get description {
+    return Intl.message(
+      'Description:',
+      name: 'description',
+      desc: 'Description label text',
+    );
+  }
+
+  String location(String location) {
+    return Intl.message(
+      'Location: $location',
+      name: 'location',
+      args: [location],
+      desc: 'Location display text',
+    );
+  }
+
+  String game(String gameName) {
+    return Intl.message(
+      'Game: $gameName',
+      name: 'game',
+      args: [gameName],
+      desc: 'Game display text',
+    );
+  }
+
+  String startDate(String date) {
+    return Intl.message(
+      'Start Date: $date',
+      name: 'startDate',
+      args: [date],
+      desc: 'Start date display text',
+    );
+  }
+
+  String endDate(String date) {
+    return Intl.message(
+      'End Date: $date',
+      name: 'endDate',
+      args: [date],
+      desc: 'End date display text',
+    );
+  }
+
+  String get upvotes {
+    return Intl.message(
+      'Upvotes:',
+      name: 'upvotes',
+      desc: 'Upvotes label text',
+    );
+  }
+
+  String get participants {
+    return Intl.message(
+      'Participants:',
+      name: 'participants',
+      desc: 'Participants label text',
+    );
+  }
+
+  String get viewAllParticipants {
+    return Intl.message(
+      'Voir tous les participants',
+      name: 'viewAllParticipants',
+      desc: 'View all participants text',
+    );
+  }
+
+  String get generateBracket {
+    return Intl.message(
+      'Générer le bracket',
+      name: 'generateBracket',
+      desc: 'Generate bracket button text',
+    );
+  }
+
+  String get joinTournament {
+    return Intl.message(
+      'Rejoindre le tournoi',
+      name: 'joinTournament',
+      desc: 'Join tournament button text',
+    );
+  }
+
+  String get leaveTournament {
+    return Intl.message(
+      'Quitter le tournoi',
+      name: 'leaveTournament',
+      desc: 'Leave tournament button text',
+    );
+  }
+
+  String get joinedTournament {
+    return Intl.message(
+      'Vous avez bien rejoint le tournoi',
+      name: 'joinedTournament',
+      desc: 'Message displayed when user joins tournament successfully',
+    );
+  }
+
+  String get teamAlreadyInTournament {
+    return Intl.message(
+      'Team already in this tournament',
+      name: 'teamAlreadyInTournament',
+      desc: 'Message displayed when team is already in the tournament',
+    );
+  }
+
+  String get alreadyJoinedTournament {
+    return Intl.message(
+      'Vous avez déjà rejoint le tournoi',
+      name: 'alreadyJoinedTournament',
+      desc: 'Message displayed when user has already joined the tournament',
+    );
+  }
+
+  String joinError(String error) {
+    return Intl.message(
+      'Erreur lors du join: $error',
+      name: 'joinError',
+      args: [error],
+      desc: 'Message displayed when joining tournament fails',
+    );
+  }
+
+  String get unknownJoinError {
+    return Intl.message(
+      'Erreur pour rejoindre le tournoi',
+      name: 'unknownJoinError',
+      desc:
+          'Message displayed when an unknown error occurs while joining the tournament',
+    );
+  }
+
+  String get tournamentParticipants {
+    return Intl.message(
+      'Participants du tournoi',
+      name: 'tournamentParticipants',
+      desc: 'Title for the tournament participants screen',
+    );
+  }
+
+  String get editTournament {
+    return Intl.message(
+      'Edit Tournament',
+      name: 'editTournament',
+      desc: 'Title for the edit tournament screen',
+    );
+  }
+
+  String get tournamentUpdatedSuccessfully {
+    return Intl.message(
+      'Tournament updated successfully',
+      name: 'tournamentUpdatedSuccessfully',
+      desc: 'Message displayed when the tournament is updated successfully',
+    );
+  }
+
+  String failedToUpdateTournament(String error) {
+    return Intl.message(
+      'Failed to update tournament: $error',
+      name: 'failedToUpdateTournament',
+      args: [error],
+      desc: 'Message displayed when the tournament update fails',
+    );
+  }
+
+  String get name {
+    return Intl.message(
+      'Name',
+      name: 'name',
+      desc: 'Label for the name field',
+    );
+  }
+
+  String get pleaseEnterName {
+    return Intl.message(
+      'Please enter a name',
+      name: 'pleaseEnterName',
+      desc: 'Validation message for the name field',
+    );
+  }
+
+  String get pleaseEnterDescription {
+    return Intl.message(
+      'Please enter a description',
+      name: 'pleaseEnterDescription',
+      desc: 'Validation message for the description field',
+    );
+  }
+
+  String get pleaseEnterStartDate {
+    return Intl.message(
+      'Please enter a start date',
+      name: 'pleaseEnterStartDate',
+      desc: 'Validation message for the start date field',
+    );
+  }
+
+  String get pleaseEnterEndDate {
+    return Intl.message(
+      'Please enter an end date',
+      name: 'pleaseEnterEndDate',
+      desc: 'Validation message for the end date field',
+    );
+  }
+
+  String get pleaseEnterLocation {
+    return Intl.message(
+      'Please enter a location',
+      name: 'pleaseEnterLocation',
+      desc: 'Validation message for the location field',
+    );
+  }
+
+  String get latitude {
+    return Intl.message(
+      'Latitude',
+      name: 'latitude',
+      desc: 'Label for the latitude field',
+    );
+  }
+
+  String get pleaseEnterLatitude {
+    return Intl.message(
+      'Please enter a latitude',
+      name: 'pleaseEnterLatitude',
+      desc: 'Validation message for the latitude field',
+    );
+  }
+
+  String get longitude {
+    return Intl.message(
+      'Longitude',
+      name: 'longitude',
+      desc: 'Label for the longitude field',
+    );
+  }
+
+  String get pleaseEnterLongitude {
+    return Intl.message(
+      'Please enter a longitude',
+      name: 'pleaseEnterLongitude',
+      desc: 'Validation message for the longitude field',
+    );
+  }
+
+  String get imageUrl {
+    return Intl.message(
+      'Image URL',
+      name: 'imageUrl',
+      desc: 'Label for the image URL field',
+    );
+  }
+
+  String get pleaseEnterImageUrl {
+    return Intl.message(
+      'Please enter an image URL',
+      name: 'pleaseEnterImageUrl',
+      desc: 'Validation message for the image URL field',
+    );
+  }
+
+  String get private {
+    return Intl.message(
+      'Private',
+      name: 'private',
+      desc: 'Label for the private switch',
+    );
+  }
+
+  String get gameId {
+    return Intl.message(
+      'Game ID',
+      name: 'gameId',
+      desc: 'Label for the game ID field',
+    );
+  }
+
+  String get pleaseEnterGameId {
+    return Intl.message(
+      'Please enter a game ID',
+      name: 'pleaseEnterGameId',
+      desc: 'Validation message for the game ID field',
+    );
+  }
+
+  String get numberOfPlayers {
+    return Intl.message(
+      'Number of Players',
+      name: 'numberOfPlayers',
+      desc: 'Label for the number of players field',
+    );
+  }
+
+  String get pleaseEnterNumberOfPlayers {
+    return Intl.message(
+      'Please enter the number of players',
+      name: 'pleaseEnterNumberOfPlayers',
+      desc: 'Validation message for the number of players field',
+    );
+  }
+
+  String get validate {
+    return Intl.message(
+      'Valider',
+      name: 'validate',
+      desc: 'Text for the validate button',
+    );
+  }
+
+  String get addTournament {
+    return Intl.message(
+      'Add Tournament',
+      name: 'addTournament',
+      desc: 'Title for the add tournament screen',
+    );
+  }
+
+  String get tournamentCreatedSuccessfully {
+    return Intl.message(
+      'Tournoi créé avec succès',
+      name: 'tournamentCreatedSuccessfully',
+      desc: 'Message displayed when the tournament is created successfully',
+    );
+  }
+
+  String failedToCreateTournament(String error) {
+    return Intl.message(
+      'Erreur lors de la création du tournoi: $error',
+      name: 'failedToCreateTournament',
+      args: [error],
+      desc: 'Message displayed when the tournament creation fails',
+    );
+  }
+
+  String get nameIsRequired {
+    return Intl.message(
+      'Name is required',
+      name: 'nameIsRequired',
+      desc: 'Validation message for the name field',
+    );
+  }
+
+  String get descriptionIsRequired {
+    return Intl.message(
+      'Description is required',
+      name: 'descriptionIsRequired',
+      desc: 'Validation message for the description field',
+    );
+  }
+
+  String get startDateIsRequired {
+    return Intl.message(
+      'Start Date is required',
+      name: 'startDateIsRequired',
+      desc: 'Validation message for the start date field',
+    );
+  }
+
+  String get endDateIsRequired {
+    return Intl.message(
+      'End Date is required',
+      name: 'endDateIsRequired',
+      desc: 'Validation message for the end date field',
+    );
+  }
+
+  String get gameIdIsRequired {
+    return Intl.message(
+      'Game ID is required',
+      name: 'gameIdIsRequired',
+      desc: 'Validation message for the game ID field',
+    );
+  }
+
+  String get numberOfPlayersPerTeam {
+    return Intl.message(
+      'Number of Players per Team',
+      name: 'numberOfPlayersPerTeam',
+      desc: 'Label for the number of players per team field',
+    );
+  }
+
+  String get numberOfPlayersIsRequired {
+    return Intl.message(
+      'Number of Players is required',
+      name: 'numberOfPlayersIsRequired',
+      desc: 'Validation message for the number of players field',
+    );
+  }
+
+  String get createTournament {
+    return Intl.message(
+      'Create Tournament',
+      name: 'createTournament',
+      desc: 'Text for the create tournament button',
+    );
+  }
+
+  String get errorLoadingTournaments {
+    return Intl.message(
+      'Error loading tournaments',
+      name: 'errorLoadingTournaments',
+      desc: 'Error message when loading tournaments fails',
+    );
+  }
+
+  String get confirmKick {
+    return Intl.message(
+      'Confirm Kick',
+      name: 'confirmKick',
+      desc: 'Title for the confirm kick dialog',
+    );
+  }
+
+  String confirmKickMessage(String username) {
+    return Intl.message(
+      'Are you sure you want to kick $username from the team?',
+      name: 'confirmKickMessage',
+      args: [username],
+      desc: 'Message for the confirm kick dialog',
+    );
+  }
+
+  String get kick {
+    return Intl.message(
+      'Kick',
+      name: 'kick',
+      desc: 'Kick button text',
+    );
+  }
+
+  String membersOfTeam(String teamName) {
+    return Intl.message(
+      'Members of $teamName',
+      name: 'membersOfTeam',
+      args: [teamName],
+      desc: 'Title for the team members screen',
+    );
+  }
+
+  String userKickedSuccess(String username) {
+    return Intl.message(
+      '$username à bien était kick de la team',
+      name: 'userKickedSuccess',
+      args: [username],
+      desc: 'Message displayed when a user is kicked successfully',
+    );
+  }
+
+  String errorKickingUser(String error) {
+    return Intl.message(
+      'Erreur lors du kick du user: $error',
+      name: 'errorKickingUser',
+      args: [error],
+      desc: 'Error message when kicking a user fails',
+    );
+  }
+
+  String get addTeam {
+    return Intl.message(
+      'Add Team',
+      name: 'addTeam',
+      desc: 'Title for the add team screen',
+    );
+  }
+
+  String get teamCreatedSuccessfully {
+    return Intl.message(
+      'Équipe créée avec succès',
+      name: 'teamCreatedSuccessfully',
+      desc: 'Message displayed when the team is created successfully',
+    );
+  }
+
+  String failedToCreateTeam(String error) {
+    return Intl.message(
+      'Erreur lors de la création de l\'équipe: $error',
+      name: 'failedToCreateTeam',
+      args: [error],
+      desc: 'Message displayed when the team creation fails',
+    );
+  }
+
+  String get createTeam {
+    return Intl.message(
+      'Create Team',
+      name: 'createTeam',
+      desc: 'Text for the create team button',
+    );
+  }
+
+  String get noRatingFetched {
+    return Intl.message(
+      'Aucune note n\'a été récupérée',
+      name: 'noRatingFetched',
+      desc: 'Message displayed when no rating is fetched',
+    );
+  }
+
+  String get ratingFetchedSuccessfully {
+    return Intl.message(
+      'Note récupérée avec succès',
+      name: 'ratingFetchedSuccessfully',
+      desc: 'Message displayed when the rating is fetched successfully',
+    );
+  }
+
+  String get errorFetchingRating {
+    return Intl.message(
+      'Erreur lors de la récupération de la note',
+      name: 'errorFetchingRating',
+      desc: 'Error message when fetching rating fails',
+    );
+  }
+
+  String get ratingCannotBeZero {
+    return Intl.message(
+      'La note ne peut pas être zéro',
+      name: 'ratingCannotBeZero',
+      desc: 'Message displayed when the rating cannot be zero',
+    );
+  }
+
+  String get ratingSavedSuccessfully {
+    return Intl.message(
+      'Note enregistrée avec succès',
+      name: 'ratingSavedSuccessfully',
+      desc: 'Message displayed when the rating is saved successfully',
+    );
+  }
+
+  String get errorSavingRating {
+    return Intl.message(
+      'Erreur lors de l\'enregistrement de la note',
+      name: 'errorSavingRating',
+      desc: 'Error message when saving rating fails',
+    );
+  }
+
+  String get yourRating {
+    return Intl.message(
+      'Votre note:',
+      name: 'yourRating',
+      desc: 'Label for the user rating',
+    );
+  }
+
+  String get tournaments {
+    return Intl.message(
+      'Tournaments',
+      name: 'tournaments',
+      desc: 'Title for the tournaments screen',
+    );
+  }
+
+  String get customBracket {
+    return Intl.message(
+      'Custom Bracket',
+      name: 'customBracket',
+      desc: 'Label for the custom bracket button',
+    );
+  }
+
+  String get customPoules {
+    return Intl.message(
+      'Custom Poules',
+      name: 'customPoules',
+      desc: 'Label for the custom poules button',
+    );
+  }
+
+  String get failedToLoadUsers {
+    return Intl.message(
+      'Failed to load users',
+      name: 'failedToLoadUsers',
+      desc: 'Error message when loading users fails',
+    );
+  }
+
+  String get noUsersFound {
+    return Intl.message(
+      'No users found',
+      name: 'noUsersFound',
+      desc: 'Message displayed when no users are found',
+    );
+  }
+
+  String get viewGames {
+    return Intl.message(
+      'Voir les jeux',
+      name: 'viewGames',
+      desc: 'Button text to view games',
+    );
+  }
+
+  String get notifications {
+    return Intl.message(
+      'Notifications',
+      name: 'notifications',
+      desc: 'Tab title for notifications',
+    );
+  }
+
+  String get friends {
+    return Intl.message(
+      'Amis',
+      name: 'friends',
+      desc: 'Tab title for friends',
+    );
+  }
+
+  String get notificationDeleted {
+    return Intl.message(
+      'Notification supprimée',
+      name: 'notificationDeleted',
+      desc: 'Message displayed when a notification is deleted',
+    );
+  }
+
+  String get addFriend {
+    return Intl.message(
+      'Add Friend',
+      name: 'addFriend',
+      desc: 'Title for the add friend page',
+    );
+  }
+
+  String get searchUser {
+    return Intl.message(
+      'Search User',
+      name: 'searchUser',
+      desc: 'Label for the search user text field',
+    );
+  }
+
+  String get unknown {
+    return Intl.message(
+      'Unknown',
+      name: 'unknown',
+      desc: 'Label for unknown user',
+    );
+  }
+
+  String get friendAddedSuccessfully {
+    return Intl.message(
+      'Ami ajouté avec succès',
+      name: 'friendAddedSuccessfully',
+      desc: 'Notification message when a friend is added successfully',
+    );
+  }
+
+  String get friendAlreadyAdded {
+    return Intl.message(
+      'Ami déjà ajouté',
+      name: 'friendAlreadyAdded',
+      desc: 'Error message when the friend is already added',
+    );
+  }
+
+  String get errorAddingFriend {
+    return Intl.message(
+      'Erreur lors de l\'ajout de l\'ami',
+      name: 'errorAddingFriend',
+      desc: 'Error message when there is an error adding a friend',
+    );
+  }
+
+  String get friendDetails {
+    return Intl.message(
+      'Détails de l\'ami',
+      name: 'friendDetails',
+      desc: 'Title for the friend details page',
+    );
+  }
+
+  String get friendsTab {
+    return Intl.message(
+      'Amis',
+      name: 'friendsTab',
+      desc: 'Tab title for friends',
+    );
+  }
+
+  String get sortAToZ {
+    return Intl.message(
+      'Trier A-Z',
+      name: 'sortAToZ',
+      desc: 'Button text to sort friends from A to Z',
+    );
+  }
+
+  String get sortZToA {
+    return Intl.message(
+      'Trier Z-A',
+      name: 'sortZToA',
+      desc: 'Button text to sort friends from Z to A',
+    );
+  }
+
+  String get noFriendsFound {
+    return Intl.message(
+      'No friends found',
+      name: 'noFriendsFound',
+      desc: 'Message displayed when no friends are found',
+    );
+  }
+
+  String get favorites {
+    return Intl.message(
+      'Favoris',
+      name: 'favorites',
+      desc: 'Section title for favorite friends',
+    );
+  }
+
+  String confirmDeleteFriend(String friendName) {
+    return Intl.message(
+      'Voulez-vous vraiment supprimer $friendName de vos amis ?',
+      name: 'confirmDeleteFriend',
+      desc: 'Confirmation message to delete a friend',
+      args: [friendName],
+    );
+  }
+
+  String get no {
+    return Intl.message(
+      'Non',
+      name: 'no',
+      desc: 'Text for no button',
+    );
+  }
+
+  String get yes {
+    return Intl.message(
+      'Oui',
+      name: 'yes',
+      desc: 'Text for yes button',
+    );
+  }
+
+  String get failedToLoadFriends {
+    return Intl.message(
+      'Failed to load friends',
+      name: 'failedToLoadFriends',
+      desc: 'Error message when loading friends fails',
+    );
+  }
+
+  String get failedToUpdateFavoriteStatus {
+    return Intl.message(
+      'Failed to update favorite status',
+      name: 'failedToUpdateFavoriteStatus',
+      desc: 'Error message when updating favorite status fails',
+    );
+  }
+
+  String get failedToDeleteFriend {
+    return Intl.message(
+      'Failed to delete friend',
+      name: 'failedToDeleteFriend',
+      desc: 'Error message when deleting a friend fails',
+    );
+  }
+
+  String get loading {
+    return Intl.message(
+      'Loading...',
+      name: 'loading',
+      desc: 'Text displayed while loading',
+    );
+  }
+
+  String get bracketUpdated {
+    return Intl.message(
+      'Bracket updated',
+      name: 'bracketUpdated',
+      desc: 'Text displayed when the bracket is updated',
+    );
+  }
+
+  String get failedToLoadBracket {
+    return Intl.message(
+      'Failed to load bracket',
+      name: 'failedToLoadBracket',
+      desc: 'Error message when loading the bracket fails',
+    );
+  }
+
+  String get waiting {
+    return Intl.message(
+      'waiting',
+      name: 'waiting',
+      desc: 'Text displayed when a team is waiting',
+    );
+  }
+
+  String get poulesTitle {
+    return Intl.message(
+      'Poules de Tournois',
+      name: 'poulesTitle',
+      desc: 'Title for the poules page',
+    );
+  }
+
+  String get viewBrackets {
+    return Intl.message(
+      'Voir les Brackets',
+      name: 'viewBrackets',
+      desc: 'Button text to view the brackets',
+    );
+  }
+
+  String get team {
+    return Intl.message(
+      'Team',
+      name: 'team',
+      desc: 'Table header for team names',
+    );
+  }
+
+  String get score {
+    return Intl.message(
+      'Score',
+      name: 'score',
+      desc: 'Table header for team scores',
+    );
+  }
+
+  String get matchDetails {
+    return Intl.message(
+      'Match Details',
+      name: 'matchDetails',
+      desc: 'Title for the match details page',
+    );
+  }
+
+  String get updateScore {
+    return Intl.message(
+      'Update Score',
+      name: 'updateScore',
+      desc: 'Button text to update the score',
+    );
+  }
+
+  String get closeMatch {
+    return Intl.message(
+      'Close Match',
+      name: 'closeMatch',
+      desc: 'Button text to close the match',
+    );
+  }
+
+  String get cancelClose {
+    return Intl.message(
+      'Cancel Close',
+      name: 'cancelClose',
+      desc: 'Button text to cancel the close of the match',
+    );
+  }
+
+  String get updateMatch {
+    return Intl.message(
+      'Update Match',
+      name: 'updateMatch',
+      desc: 'Button text to update the match',
+    );
+  }
+
+  String get proposeToClose {
+    return Intl.message(
+      'Propose to close',
+      name: 'proposeToClose',
+      desc: 'Text indicating a team proposes to close the match',
+    );
+  }
+
+  String get noWinnerYet {
+    return Intl.message(
+      'No winner yet',
+      name: 'noWinnerYet',
+      desc: 'Text indicating no winner has been determined yet',
+    );
+  }
+
+  String get cancelCloseMatch {
+    return Intl.message(
+      'Annuler la cloture',
+      name: 'cancelCloseMatch',
+      desc: 'Button text for canceling the closure of the match',
+    );
+  }
+
+  String get status {
+    return Intl.message(
+      'Status',
+      name: 'status',
+      desc: 'Label for status',
+    );
+  }
+
+  String get winner {
+    return Intl.message(
+      'Winner',
+      name: 'winner',
+      desc: 'Label for winner',
+    );
+  }
+
+  String get team1Score {
+    return Intl.message(
+      'Score team 1',
+      name: 'team1Score',
+      desc: 'Label for team 1 score',
+    );
+  }
+
+  String get team2Score {
+    return Intl.message(
+      'Score team 2',
+      name: 'team2Score',
+      desc: 'Label for team 2 score',
+    );
+  }
+
+  String get pouleBrackets {
+    return Intl.message(
+      'Brackets des Poules',
+      name: 'pouleBrackets',
+      desc: 'Title for the poule brackets page',
+    );
+  }
+
+  String get enterResult {
+    return Intl.message(
+      'Enter result for',
+      name: 'enterResult',
+      desc: 'Prompt to enter result for a match',
+    );
+  }
+
+  String get vs {
+    return Intl.message(
+      'VS',
+      name: 'vs',
+      desc: 'Text for VS',
+    );
+  }
+
+  String get addGame {
+    return Intl.message(
+      'Add Game',
+      name: 'addGame',
+      desc: 'Title for the add game dialog',
+    );
+  }
+
+  String get tags {
+    return Intl.message(
+      'Tags (comma or space separated)',
+      name: 'tags',
+      desc: 'Label for the tags field',
+    );
+  }
+
+  String get pleaseEnterGameName {
+    return Intl.message(
+      'Please enter the game name',
+      name: 'pleaseEnterGameName',
+      desc: 'Validation message for the game name field',
+    );
+  }
+
+  String get pleaseEnterGameDescription {
+    return Intl.message(
+      'Please enter the game description',
+      name: 'pleaseEnterGameDescription',
+      desc: 'Validation message for the game description field',
+    );
+  }
+
+  String get pleaseEnterTags {
+    return Intl.message(
+      'Please enter the tags',
+      name: 'pleaseEnterTags',
+      desc: 'Validation message for the tags field',
+    );
+  }
+
+  String get gameAdded {
+    return Intl.message(
+      'Game added',
+      name: 'gameAdded',
+      desc: 'Message for game added',
+    );
+  }
+
+  String get errorAddingGame {
+    return Intl.message(
+      'Error adding game',
+      name: 'errorAddingGame',
+      desc: 'Message for error adding game',
+    );
+  }
+
+  String get ok {
+    return Intl.message(
+      'OK',
+      name: 'ok',
+      desc: 'OK button text',
+    );
+  }
+
+  String get startDateTime {
+    return Intl.message(
+      'Start Date & Time',
+      name: 'startDateTime',
+      desc: 'Label for the start date and time field',
+    );
+  }
+
+  String get endDateTime {
+    return Intl.message(
+      'End Date & Time',
+      name: 'endDateTime',
+      desc: 'Label for the end date and time field',
+    );
+  }
+
+  String get pleaseEnterTournamentName {
+    return Intl.message(
+      'Please enter the tournament name',
+      name: 'pleaseEnterTournamentName',
+      desc: 'Validation message for the tournament name field',
+    );
+  }
+
+  String get pleaseEnterTournamentDescription {
+    return Intl.message(
+      'Please enter the tournament description',
+      name: 'pleaseEnterTournamentDescription',
+      desc: 'Validation message for the tournament description field',
+    );
+  }
+
+  String get pleaseEnterIfTournamentIsPrivate {
+    return Intl.message(
+      'Please enter if the tournament is private',
+      name: 'pleaseEnterIfTournamentIsPrivate',
+      desc: 'Validation message for the private field',
+    );
+  }
+
+  String get tournamentAdded {
+    return Intl.message(
+      'Tournament added',
+      name: 'tournamentAdded',
+      desc: 'Message for tournament added',
+    );
+  }
+
+  String get errorAddingTournament {
+    return Intl.message(
+      'Error adding tournament',
+      name: 'errorAddingTournament',
+      desc: 'Message for error adding tournament',
+    );
+  }
+
+  String get selectStartDate {
+    return Intl.message(
+      'Select Start Date',
+      name: 'selectStartDate',
+      desc: 'Title for select start date dialog',
+    );
+  }
+
+  String get selectEndDate {
+    return Intl.message(
+      'Select End Date',
+      name: 'selectEndDate',
+      desc: 'Title for select end date dialog',
+    );
+  }
+
+  String get pleaseFillRequiredFields {
+    return Intl.message(
+      'Please fill in all required fields and select dates and times',
+      name: 'pleaseFillRequiredFields',
+      desc: 'Validation message for required fields and dates',
+    );
+  }
+
+  String get dashboard {
+    return Intl.message(
+      'Dashboard',
+      name: 'dashboard',
+      desc: 'Label for the dashboard navigation item',
+    );
+  }
+
+  String get logs {
+    return Intl.message(
+      'Logs',
+      name: 'logs',
+      desc: 'Label for the logs navigation item',
+    );
+  }
+
+  String get games {
+    return Intl.message(
+      'Games',
+      name: 'games',
+      desc: 'Label for the games navigation item',
+    );
+  }
+
+  String get users {
+    return Intl.message(
+      'Users',
+      name: 'users',
+      desc: 'Label for the users navigation item',
+    );
+  }
+
+  String get activeUsers {
+    return Intl.message(
+      'Active Users',
+      name: 'activeUsers',
+      desc: 'Label for active users',
+    );
+  }
+
+  String get activeTournaments {
+    return Intl.message(
+      'Active Tournaments',
+      name: 'activeTournaments',
+      desc: 'Label for active tournaments',
+    );
+  }
+
+  String get totalGames {
+    return Intl.message(
+      'Total Games',
+      name: 'totalGames',
+      desc: 'Label for total games',
+    );
+  }
+
+  String get latestMessage {
+    return Intl.message(
+      'Latest Message',
+      name: 'latestMessage',
+      desc: 'Label for the latest message',
+    );
+  }
+
+  String get deleteGame {
+    return Intl.message(
+      'Delete Game',
+      name: 'deleteGame',
+      desc: 'Title for the delete game confirmation dialog',
+    );
+  }
+
+  String get confirmDeleteGame {
+    return Intl.message(
+      'Are you sure you want to delete this game?',
+      name: 'confirmDeleteGame',
+      desc: 'Confirmation message for deleting a game',
+    );
+  }
+
+  String get unknownPage {
+    return Intl.message(
+      'Unknown page',
+      name: 'unknownPage',
+      desc: 'Label for unknown page',
+    );
+  }
+
+  String get errorLoading {
+    return Intl.message(
+      'Error loading data',
+      name: 'errorLoading',
+      desc: 'Label for error loading data',
+    );
+  }
+
+  String get descriptionGame {
+    return Intl.message(
+      'Description:',
+      name: 'descriptionGame',
+      desc: 'Description label text',
+    );
+  }
+
+  String get gameDetailPageTitle {
+    return Intl.message(
+      'Game Details',
+      name: 'gameDetailPageTitle',
+      desc: 'Title for the game details page',
+    );
+  }
+
+  String get youMustBeLoggedIn {
+    return Intl.message(
+      'You must be logged in to follow this game',
+      name: 'youMustBeLoggedIn',
+      desc:
+          'Message shown when user tries to like a game without being logged in',
+    );
+  }
+
+  String get addedToGameList {
+    return Intl.message(
+      'Game added to your list',
+      name: 'addedToGameList',
+      desc: 'Message shown when game is added to user\'s list',
+    );
+  }
+
+  String get errorFollowingGame {
+    return Intl.message(
+      'Error following the game: {error}',
+      name: 'errorFollowingGame',
+      desc: 'Message shown when there is an error following the game',
+      args: ['error'],
+    );
+  }
+
+  String get removedFromGameList {
+    return Intl.message(
+      'Game removed from your list',
+      name: 'removedFromGameList',
+      desc: 'Message shown when game is removed from user\'s list',
+    );
+  }
+
+  String get noLikeToDelete {
+    return Intl.message(
+      'No like to delete',
+      name: 'noLikeToDelete',
+      desc: 'Message shown when there is no like to delete',
+    );
+  }
+
+  String get errorUnfollowingGame {
+    return Intl.message(
+      'Error unfollowing the game: {error}',
+      name: 'errorUnfollowingGame',
+      desc: 'Message shown when there is an error unfollowing the game',
+      args: ['error'],
+    );
+  }
+
+  String get gameDescription {
+    return Intl.message(
+      'Game Description',
+      name: 'gameDescription',
+      desc: 'Title for the game description section',
+    );
+  }
+
+  String get noTournamentsForGame {
+    return Intl.message(
+      'No tournaments for this game',
+      name: 'noTournamentsForGame',
+      desc: 'Message shown when there are no tournaments for the game',
+    );
+  }
+
+  String get noTournamentsFound {
+    return Intl.message(
+      'No tournaments found',
+      name: 'noTournamentsFound',
+      desc: 'Message shown when no tournaments are found',
+    );
+  }
+
+  String get start {
+    return Intl.message(
+      'Start: {date}',
+      name: 'start',
+      desc: 'Label for the start date',
+      args: ['date'],
+    );
+  }
+
+  String get end {
+    return Intl.message(
+      'End: {date}',
+      name: 'end',
+      desc: 'Label for the end date',
+      args: ['date'],
     );
   }
 }

@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:syncfusion_flutter_datepicker/datepicker.dart';
 import 'package:uresport/core/models/tournament.dart';
 
+import 'package:uresport/core/services/cache_service.dart';
+
 class EditTournamentPage extends StatefulWidget {
   final Tournament? tournament;
 
@@ -28,6 +30,7 @@ class EditTournamentPageState extends State<EditTournamentPage> {
 
   final Dio _dio = Dio();
   final DateFormat _dateFormat = DateFormat("yyyy-MM-dd HH:mm");
+  final CacheService _cacheService = CacheService.instance;
 
   DateTime? _startDateTime;
   DateTime? _endDateTime;
@@ -98,9 +101,14 @@ class EditTournamentPageState extends State<EditTournamentPage> {
       );
 
       try {
+        final token = await _cacheService.getString('token');
+        if (token == null) throw Exception('No token found');
         final response = await _dio.patch(
           '${dotenv.env['API_ENDPOINT']}/tournaments/${updatedTournament.id}',
           data: updatedTournament.toJson(),
+          options: Options(headers: {
+            'Authorization': token,
+          }),
         );
         if (!mounted) return;
         if (response.statusCode == 200) {

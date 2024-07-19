@@ -5,28 +5,31 @@ import 'package:uresport/bracket/bloc/events.dart';
 import 'package:uresport/bracket/bloc/states.dart';
 import 'package:uresport/bracket/models/poule.dart';
 import 'package:uresport/bracket/screens/poule_bracket_view.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class CustomPoulesPage extends StatelessWidget {
   const CustomPoulesPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return BlocProvider(
       create: (_) => PouleBloc()..add(LoadPoules()),
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Poules de Tournois'),
+          title: Text(l.poulesTitle),
         ),
         body: BlocBuilder<PouleBloc, PouleState>(
           builder: (context, state) {
             if (state is PouleLoading) {
-              return const Center(child: CircularProgressIndicator());
+              return Center(child: Text(l.loading));
             } else if (state is PouleLoaded) {
               return TournamentPoules(poules: state.poules);
             } else if (state is PouleError) {
               return Center(child: Text(state.message));
             } else {
-              return const Center(child: Text('Unknown state'));
+              return Center(child: Text(l.unknownState));
             }
           },
         ),
@@ -42,6 +45,8 @@ class TournamentPoules extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Column(
       children: [
         Expanded(
@@ -60,7 +65,7 @@ class TournamentPoules extends StatelessWidget {
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   children: [
-                    _buildPouleTable(poule),
+                    _buildPouleTable(context, poule),
                   ],
                 ),
               );
@@ -78,14 +83,16 @@ class TournamentPoules extends StatelessWidget {
                 ),
               );
             },
-            child: const Text('Voir les Brackets'),
+            child: Text(l.viewBrackets),
           ),
         ),
       ],
     );
   }
 
-  Widget _buildPouleTable(Poule poule) {
+  Widget _buildPouleTable(BuildContext context, Poule poule) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Table(
@@ -95,23 +102,23 @@ class TournamentPoules extends StatelessWidget {
           1: FlexColumnWidth(1),
         },
         children: [
-          const TableRow(
+          TableRow(
             children: [
               TableCell(
                 child: Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Team',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    l.team,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ),
               ),
               TableCell(
                 child: Padding(
-                  padding: EdgeInsets.all(8.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: Text(
-                    'Score',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    l.score,
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                     textAlign: TextAlign.center,
                   ),
                 ),

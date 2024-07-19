@@ -7,6 +7,7 @@ import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/match_service.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:dio/dio.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class MatchNotifier extends ChangeNotifier {
   Match match;
@@ -71,6 +72,8 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     var isTeam1Owner = _currentUser?.id == matchNotifier.match.team1?.ownerId;
     var isTeam2Owner = _currentUser?.id == matchNotifier.match.team2?.ownerId;
     var isTeamOwner = isTeam1Owner || isTeam2Owner;
@@ -78,7 +81,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
         _currentUser?.id == matchNotifier.match.tournament?.ownerId;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Match Details'),
+        title: Text(l.matchDetails),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
@@ -108,16 +111,16 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
                               matchNotifier.match.team2?.name ?? ''),
                           const Divider(thickness: 2),
                           _buildCustomScoreRow(
-                              'Score',
+                              l.score,
                               matchNotifier.match.score1.toString(),
                               matchNotifier.match.score2.toString()),
                           const Divider(thickness: 2),
                           _buildStatColumn(
-                              'Status', matchNotifier.match.status),
+                              l.status, matchNotifier.match.status),
                           _buildStatColumn(
-                              'Winner',
+                              l.winner,
                               matchNotifier.match.getWinner()?.name ??
-                                  'No winner yet'),
+                                  l.noWinnerYet),
                           if (matchNotifier.match.team1Close)
                             _buildStatColumn(
                                 matchNotifier.match.team1?.name ?? '',
@@ -143,7 +146,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
                                       : matchNotifier.match.team2Id ?? 0);
                                 },
                                 child: Text(
-                                    'Mettre à jour le score de ${isTeam1Owner ? matchNotifier.match.team1?.name : matchNotifier.match.team2?.name}'),
+                                    '${l.updateScore} ${isTeam1Owner ? matchNotifier.match.team1?.name : matchNotifier.match.team2?.name}'),
                               ),
                             ),
                           if (isTeamOwner &&
@@ -159,8 +162,8 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
                                             matchNotifier.match.team1Close ||
                                         isTeam2Owner &&
                                             matchNotifier.match.team2Close
-                                    ? 'Annuler la cloture'
-                                    : 'Cloturer le match'),
+                                    ? l.cancelCloseMatch
+                                    : l.closeMatch),
                               ),
                             ),
                           if (isTournamentOwner)
@@ -169,7 +172,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
                                 onPressed: () {
                                   _openUpdateModal();
                                 },
-                                child: const Text('Mettre a jour'),
+                                child: Text(l.updateMatch),
                               ),
                             ),
                         ],
@@ -202,22 +205,23 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
 
   void _openUpdateModal() {
     final teamService = Provider.of<IMatchService>(context, listen: false);
+    AppLocalizations l = AppLocalizations.of(context);
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Mettre à jour le match'),
+          title: Text(l.updateMatch),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
               TextFormField(
                 controller: _score1,
-                decoration: const InputDecoration(labelText: 'Score team 1'),
+                decoration: InputDecoration(labelText: l.team1Score),
                 keyboardType: TextInputType.number,
               ),
               TextFormField(
                 controller: _score2,
-                decoration: const InputDecoration(labelText: 'Score team 2'),
+                decoration: InputDecoration(labelText: l.team2Score),
                 keyboardType: TextInputType.number,
               ),
             ],
@@ -245,7 +249,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
                 if (!context.mounted) return;
                 Navigator.pop(context);
               },
-              child: const Text('Mettre à jour le score'),
+              child: Text(l.updateScore),
             ),
           ],
         );
@@ -255,14 +259,15 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
 
   void _openScoreModal(int teamId) {
     final teamService = Provider.of<IMatchService>(context, listen: false);
+    AppLocalizations l = AppLocalizations.of(context);
     showDialog<void>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Mettre à jour le score'),
+          title: Text(l.updateScore),
           content: TextFormField(
             controller: _score,
-            decoration: const InputDecoration(labelText: 'Score'),
+            decoration: InputDecoration(labelText: l.score),
             keyboardType: TextInputType.number,
           ),
           actions: <Widget>[
@@ -283,7 +288,7 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
                 if (!context.mounted) return;
                 Navigator.pop(context);
               },
-              child: const Text('Mettre à jour le score'),
+              child: Text(l.updateScore),
             ),
           ],
         );

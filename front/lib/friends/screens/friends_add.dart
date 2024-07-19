@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:uresport/core/services/friends_services.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/widgets/custom_toast.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class AddFriendPage extends StatefulWidget {
   final int userId;
@@ -84,9 +85,10 @@ class AddFriendPageState extends State<AddFriendPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Add Friend'),
+        title: Text(l.addFriend),
       ),
       body: Column(
         children: [
@@ -96,7 +98,7 @@ class AddFriendPageState extends State<AddFriendPage> {
               controller: searchController,
               onChanged: filterUsers,
               decoration: InputDecoration(
-                labelText: 'Search User',
+                labelText: l.searchUser,
                 suffixIcon: IconButton(
                   onPressed: () {
                     searchController.clear();
@@ -113,7 +115,7 @@ class AddFriendPageState extends State<AddFriendPage> {
               itemBuilder: (context, index) {
                 final user = filteredUsers[index];
                 return ListTile(
-                  title: Text(user['firstname'] ?? 'Unknown'),
+                  title: Text(user['firstname'] ?? l.unknown),
                   onTap: () async {
                     final friendId = user['id'];
                     final currentUser = widget.currentUser;
@@ -122,20 +124,20 @@ class AddFriendPageState extends State<AddFriendPage> {
                         widget.userId,
                         friendId,
                       );
-                      showNotificationToast(context, 'Ami ajouté avec succès');
+                      showNotificationToast(context, l.friendAddedSuccessfully);
                       Provider.of<NotificationProvider>(context, listen: false)
                           .addNotification(
                               '$currentUser vous a ajouté en ami: ${user['firstname']}');
                     } catch (e) {
                       String errorMessage;
                       if (e is DioException) {
-                        if (e.message == 'Ami déjà ajouté') {
-                          errorMessage = 'Ami déjà ajouté';
+                        if (e.message == l.friendAlreadyAdded) {
+                          errorMessage = l.friendAlreadyAdded;
                         } else {
-                          errorMessage = 'Erreur lors de l\'ajout de l\'ami';
+                          errorMessage = l.errorAddingFriend;
                         }
                       } else {
-                        errorMessage = 'Erreur lors de l\'ajout de l\'ami';
+                        errorMessage = l.errorAddingFriend;
                       }
                       showNotificationToast(
                         context,

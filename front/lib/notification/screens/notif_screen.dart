@@ -3,12 +3,15 @@ import 'package:provider/provider.dart';
 import 'package:uresport/friends/screens/friends_tab.dart';
 import 'package:uresport/notification/screens/notif_tab.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
+
     return DefaultTabController(
       length: 2, // Number of tabs
       child: Scaffold(
@@ -21,7 +24,7 @@ class NotificationScreen extends StatelessWidget {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        const Text('Notifications'),
+                        Text(l.notifications),
                         if (notificationProvider.notificationCount > 0)
                           Container(
                             margin: const EdgeInsets.only(left: 8),
@@ -48,7 +51,7 @@ class NotificationScreen extends StatelessWidget {
                   );
                 },
               ),
-              const Tab(text: 'Amis'),
+              Tab(text: l.friends),
             ],
           ),
         ),

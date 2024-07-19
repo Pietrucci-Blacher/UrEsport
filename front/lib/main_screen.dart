@@ -16,6 +16,7 @@ import 'package:uresport/profile/screens/profile_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
+import 'package:uresport/shared/utils/forbidden_screen.dart';
 import 'package:uresport/shared/utils/image_util.dart' as image_util;
 import 'package:uresport/tournament/screens/tournament_screen.dart';
 
@@ -85,6 +86,9 @@ class MainScreenState extends State<MainScreen> {
                 );
               } else {
                 bool isLoggedIn = state is AuthAuthenticated;
+                if (kIsWeb && isLoggedIn) {
+                  return const ForbiddenScreen();
+                }
                 if (isLoggedIn &&
                     state.user.profileImageUrl != _profileImageUrl) {
                   _profileImageUrl = state.user.profileImageUrl;

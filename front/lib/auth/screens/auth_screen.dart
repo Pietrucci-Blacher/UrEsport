@@ -85,7 +85,10 @@ class AuthScreen extends StatelessWidget {
                     builder: (context) => LoginScreen(authService: authService),
                   ),
                 ).then(
-                    (_) => context.read<AuthBloc>().add(AuthCheckRequested()));
+                    (_) {
+                        if (!context.mounted) return;
+                        return context.read<AuthBloc>().add(AuthCheckRequested());
+                    });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -108,7 +111,10 @@ class AuthScreen extends StatelessWidget {
                         RegisterScreen(authService: authService),
                   ),
                 ).then(
-                    (_) => context.read<AuthBloc>().add(AuthCheckRequested()));
+                    (_) {
+                        if (!context.mounted) return;
+                        return context.read<AuthBloc>().add(AuthCheckRequested());
+                    });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,

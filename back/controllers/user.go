@@ -185,3 +185,9 @@ func DeleteUser(c *gin.Context) {
 	models.PrintLogf([]string{"user", "DeleteUser"}, "User %d deleted", user.ID)
 	c.JSON(http.StatusNoContent, nil)
 }
+
+func GetUsersStats(c *gin.Context) {
+	ws := services.GetWebsocket()
+	stats := models.CountStatsUsers(ws)
+	c.JSON(http.StatusOK, stats)
+}

@@ -8,12 +8,13 @@ import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/friends_services.dart';
 import 'package:uresport/core/services/game_service.dart';
-import 'package:uresport/core/services/log_service.dart';
 import 'package:uresport/core/services/map_service.dart';
 import 'package:uresport/core/services/match_service.dart';
 import 'package:uresport/core/services/notification_service.dart';
 import 'package:uresport/core/services/rating_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/core/services/log_service.dart';
+import 'package:uresport/core/services/feature_flipping_service.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/shared/routing/routing.dart';
@@ -22,7 +23,6 @@ import 'package:uresport/shared/websocket/websocket.dart';
 import 'app.dart';
 import 'auth/bloc/auth_event.dart';
 import 'core/services/team_services.dart';
-import 'core/websocket/websocket.dart';
 import 'dashboard/bloc/dashboard_event.dart';
 
 void main() async {
@@ -60,7 +60,6 @@ void main() async {
   final gameService = GameService(dio);
   final matchService = MatchService(dio);
 
-  // L'URL de base sera maintenant récupérée via dotenv dans le service
   final ratingService = RatingService(dio);
 
   final routeGenerator = RouteGenerator(authService);
@@ -68,6 +67,7 @@ void main() async {
   final mapsBoxApiKey = dotenv.env['SDK_REGISTRY_TOKEN']!;
   final mapService = MapService(dio: dio, mapboxApiKey: mapsBoxApiKey);
   final teamService = TeamService(dio);
+  final featureFlippingService = FeatureFlippingService(dio);
 
   connectWebsocket();
 
@@ -87,6 +87,7 @@ void main() async {
         Provider<MapService>.value(value: mapService),
         Provider<ITeamService>.value(value: teamService),
         Provider<ILogService>.value(value: logService),
+        Provider<IFeatureFlippingService>.value(value: featureFlippingService),
       ],
       child: MultiBlocProvider(
         providers: [
@@ -95,11 +96,13 @@ void main() async {
                 AuthBloc(authService)..add(AuthCheckRequested()),
           ),
           BlocProvider<DashboardBloc>(
-            create: (context) => DashboardBloc(Websocket.getInstance(),
-                tournamentService, gameService, logService)
+            create: (context) => DashboardBloc(tournamentService, gameService,
+                authService, logService, featureFlippingService)
               ..add(FetchTournaments())
               ..add(FetchGames())
-              ..add(FetchLogs()),
+              ..add(FetchLogs())
+              ..add(FetchUserStats())
+              ..add(FetchAllFeatures()),
           ),
         ],
         child: MyApp(
