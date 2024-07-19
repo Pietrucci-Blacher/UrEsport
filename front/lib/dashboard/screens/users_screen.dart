@@ -21,7 +21,8 @@ class UsersPageState extends State<UsersPage> {
   String _sortColumn = 'username';
   bool _sortAscending = true;
   final List<String> _selectedRoles = [];
-  final AuthService _authService = AuthService(Dio()); // Instancier le service avec Dio
+  final AuthService _authService =
+      AuthService(Dio()); // Instancier le service avec Dio
 
   @override
   void initState() {
@@ -100,7 +101,7 @@ class UsersPageState extends State<UsersPage> {
       scrollDirection: Axis.horizontal,
       child: DataTable(
         sortColumnIndex:
-        ['username', 'firstname', 'lastname', 'email'].indexOf(_sortColumn),
+            ['username', 'firstname', 'lastname', 'email'].indexOf(_sortColumn),
         sortAscending: _sortAscending,
         columns: [
           DataColumn(
@@ -156,15 +157,15 @@ class UsersPageState extends State<UsersPage> {
   List<User> _filterAndSortUsers(List<User> users) {
     List<User> filteredUsers = users.where((user) {
       return (user.username
-          .toLowerCase()
-          .contains(_searchQuery.toLowerCase()) ||
-          user.firstname
-              .toLowerCase()
-              .contains(_searchQuery.toLowerCase()) ||
-          user.lastname
-              .toLowerCase()
-              .contains(_searchQuery.toLowerCase()) ||
-          user.email.toLowerCase().contains(_searchQuery.toLowerCase())) &&
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()) ||
+              user.firstname
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()) ||
+              user.lastname
+                  .toLowerCase()
+                  .contains(_searchQuery.toLowerCase()) ||
+              user.email.toLowerCase().contains(_searchQuery.toLowerCase())) &&
           (_selectedRoles.isEmpty ||
               _selectedRoles.any((role) => user.roles.contains(role)));
     }).toList();
@@ -233,11 +234,13 @@ class UsersPageState extends State<UsersPage> {
   }
 
   void _editUser(User user) {
-    Navigator.of(context).push(
+    Navigator.of(context)
+        .push(
       MaterialPageRoute(
         builder: (context) => EditUserPage(user: user),
       ),
-    ).then((result) {
+    )
+        .then((result) {
       if (result == true) {
         _fetchUsers(); // Refresh the list after editing a user
       }
@@ -260,7 +263,7 @@ class UsersPageState extends State<UsersPage> {
             onPressed: () async {
               try {
                 await _authService.deleteAccount(user.id);
-                if(!context.mounted) return;
+                if (!context.mounted) return;
                 Navigator.of(context).pop();
                 _fetchUsers(); // Refresh the list after deleting a user
               } catch (e) {

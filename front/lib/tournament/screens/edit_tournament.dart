@@ -97,9 +97,9 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       final description = _descriptionController.text;
       final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss'Z'");
       final startDate =
-      dateFormat.format(DateTime.parse(_startDateController.text));
+          dateFormat.format(DateTime.parse(_startDateController.text));
       final endDate =
-      dateFormat.format(DateTime.parse(_endDateController.text));
+          dateFormat.format(DateTime.parse(_endDateController.text));
       final location = _locationController.text;
       final latitude = double.parse(_latitudeController.text);
       final longitude = double.parse(_longitudeController.text);
@@ -126,15 +126,17 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       debugPrint('Tournament JSON: ${jsonEncode(tournamentJson)}');
 
       final tournamentService =
-      Provider.of<ITournamentService>(context, listen: false);
+          Provider.of<ITournamentService>(context, listen: false);
       try {
         await tournamentService.updateTournament(updatedTournament);
         if (!mounted) return;
-        showNotificationToast(context, AppLocalizations.of(context).tournamentUpdatedSuccessfully,
+        showNotificationToast(
+            context, AppLocalizations.of(context).tournamentUpdatedSuccessfully,
             backgroundColor: Colors.green);
         Navigator.pop(context, updatedTournament);
       } catch (e) {
-        showNotificationToast(context, AppLocalizations.of(context).failedToUpdateTournament(e.toString()),
+        showNotificationToast(context,
+            AppLocalizations.of(context).failedToUpdateTournament(e.toString()),
             backgroundColor: Colors.red);
       }
     }

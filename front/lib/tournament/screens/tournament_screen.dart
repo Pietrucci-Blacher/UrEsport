@@ -29,6 +29,7 @@ class TournamentScreen extends StatefulWidget {
 
 class TournamentScreenState extends State<TournamentScreen> {
   User? _currentUser;
+  bool _isLoggedIn = false;
 
   Future<void> _loadCurrentUser() async {
     final authService = Provider.of<IAuthService>(context, listen: false);
@@ -37,9 +38,13 @@ class TournamentScreenState extends State<TournamentScreen> {
       if (!mounted) return;
       setState(() {
         _currentUser = user;
+        _isLoggedIn = true;
       });
     } catch (e) {
       debugPrint('Error loading current user: $e');
+      setState(() {
+        _isLoggedIn = false;
+      });
     }
   }
 
@@ -198,9 +203,9 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         TournamentDetailsScreen(
-                                      tournament: tournament,
-                                      game: tournament.game,
-                                    ),
+                                          tournament: tournament,
+                                          game: tournament.game,
+                                        ),
                                   ),
                                 );
                               },
@@ -212,7 +217,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                   },
                 ),
               ),
-              if (_currentUser != null)
+              if (_isLoggedIn)
                 Positioned(
                   bottom: 16.0,
                   right: 16.0,
@@ -419,7 +424,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                          const AddTournamentPage(),
+                                      const AddTournamentPage(),
                                     ),
                                   );
                                 },
