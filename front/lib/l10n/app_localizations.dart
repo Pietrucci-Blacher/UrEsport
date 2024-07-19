@@ -1144,7 +1144,8 @@ class AppLocalizations {
     return Intl.message(
       'Erreur pour rejoindre le tournoi',
       name: 'unknownJoinError',
-      desc: 'Message displayed when an unknown error occurs while joining the tournament',
+      desc:
+          'Message displayed when an unknown error occurs while joining the tournament',
     );
   }
 
@@ -1324,7 +1325,6 @@ class AppLocalizations {
       desc: 'Text for the validate button',
     );
   }
-
 
   String get addTournament {
     return Intl.message(
@@ -2189,29 +2189,29 @@ class AppLocalizations {
     );
   }
 
-    String get unknownPage {
-      return Intl.message(
-        'Unknown page',
-        name: 'unknownPage',
-        desc: 'Label for unknown page',
-      );
-    }
+  String get unknownPage {
+    return Intl.message(
+      'Unknown page',
+      name: 'unknownPage',
+      desc: 'Label for unknown page',
+    );
+  }
 
-      String get errorLoading {
-        return Intl.message(
-          'Error loading data',
-          name: 'errorLoading',
-          desc: 'Label for error loading data',
-        );
-      }
+  String get errorLoading {
+    return Intl.message(
+      'Error loading data',
+      name: 'errorLoading',
+      desc: 'Label for error loading data',
+    );
+  }
 
-      String get descriptionGame {
-        return Intl.message(
-          'Description:',
-          name: 'descriptionGame',
-          desc: 'Description label text',
-        );
-      }
+  String get descriptionGame {
+    return Intl.message(
+      'Description:',
+      name: 'descriptionGame',
+      desc: 'Description label text',
+    );
+  }
 
   String get gameDetailPageTitle {
     return Intl.message(
@@ -2225,7 +2225,8 @@ class AppLocalizations {
     return Intl.message(
       'You must be logged in to follow this game',
       name: 'youMustBeLoggedIn',
-      desc: 'Message shown when user tries to like a game without being logged in',
+      desc:
+          'Message shown when user tries to like a game without being logged in',
     );
   }
 
@@ -2312,7 +2313,6 @@ class AppLocalizations {
       args: ['date'],
     );
   }
-
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
