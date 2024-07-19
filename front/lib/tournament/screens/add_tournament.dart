@@ -173,7 +173,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               ),
               TextFormField(
                 controller: _startDateController,
-                decoration: InputDecoration(labelText: l.startDate.toString()),
+                decoration: const InputDecoration(labelText: 'Start Date'),
                 readOnly: true,
                 onTap: () => _selectDateTime(context, _startDateController),
                 validator: (value) {
@@ -185,7 +185,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               ),
               TextFormField(
                 controller: _endDateController,
-                decoration: InputDecoration(labelText: l.endDate.toString()),
+                decoration: const InputDecoration(labelText: 'End Date'),
                 readOnly: true,
                 onTap: () => _selectDateTime(context, _endDateController),
                 validator: (value) {
@@ -197,7 +197,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               ),
               TextFormField(
                 controller: _locationController,
-                decoration: InputDecoration(labelText: l.location.toString()),
+                decoration: const InputDecoration(labelText: 'Location'),
               ),
               TextFormField(
                 controller: _latitudeController,
