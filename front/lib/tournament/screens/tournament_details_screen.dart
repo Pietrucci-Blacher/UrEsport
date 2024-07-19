@@ -718,31 +718,34 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                       const SizedBox(height: 4),
                       Column(
                         children: List.generate(
-                            widget.tournament.teams.length > 3
-                                ? 3
-                                : widget.tournament.teams.length, (index) {
-                          final team = widget.tournament.teams[index];
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4.0),
-                            child: Row(
-                              children: [
-                                CircleAvatar(
-                                  radius: 16,
-                                  backgroundColor: Colors.blueAccent,
-                                  child: Text(
-                                    team.name[0],
-                                    style: const TextStyle(color: Colors.white),
+                          widget.tournament.teams.length > 3 ? 3 : widget.tournament.teams.length,
+                              (index) {
+                            final team = widget.tournament.teams[index];
+                            return Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              child: Row(
+                                children: [
+                                  CircleAvatar(
+                                    radius: 16,
+                                    backgroundColor: Colors.blueAccent,
+                                    child: Text(
+                                      team.name[0],
+                                      style: const TextStyle(color: Colors.white),
+                                    ),
                                   ),
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  team.name,
-                                  style: Theme.of(context).textTheme.bodyLarge,
-                                ),
-                              ],
-                            ),
-                          );
-                        }),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      team.name,
+                                      style: Theme.of(context).textTheme.bodyLarge,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          },
+                        ),
                       ),
                       const SizedBox(height: 8),
                       if (widget.tournament.teams.length > 3)
@@ -751,9 +754,9 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    TournamentParticipantsScreen(
-                                        tournament: widget.tournament),
+                                builder: (context) => TournamentParticipantsScreen(
+                                  tournament: widget.tournament,
+                                ),
                               ),
                             );
                           },
@@ -764,10 +767,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                                 child: Text(
                                   l.viewAllParticipants,
                                   style: TextStyle(
-                                    color: Theme.of(context)
-                                        .primaryColor, // Couleur du texte cliquable
-                                    decoration: TextDecoration
-                                        .underline, // Souligner le texte
+                                    color: Theme.of(context).primaryColor,
+                                    decoration: TextDecoration.underline,
                                   ),
                                   overflow: TextOverflow.ellipsis,
                                 ),
@@ -775,8 +776,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                               const SizedBox(width: 8),
                               Icon(
                                 Icons.arrow_forward,
-                                color: Theme.of(context)
-                                    .primaryColor, // Couleur de l'icône
+                                color: Theme.of(context).primaryColor,
                               ),
                             ],
                           ),
