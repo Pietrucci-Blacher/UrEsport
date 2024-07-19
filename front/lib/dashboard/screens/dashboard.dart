@@ -8,13 +8,14 @@ import 'package:uresport/cubit/locale_cubit.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
+import 'package:uresport/dashboard/screens/games_screen.dart';
+import 'package:uresport/dashboard/screens/logs_screen.dart';
+import 'package:uresport/dashboard/screens/tournaments_screen.dart';
 import 'package:uresport/dashboard/screens/users_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
 
 import 'add_game_page.dart';
 import 'add_tournament_page.dart';
-import 'edit_game_page.dart';
-import 'edit_tournament_page.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({super.key});
@@ -31,10 +32,10 @@ class _DashboardState extends State<Dashboard> {
   void _websocket() {
     ws.on('user:connected', (socket, data) {
       context.read<DashboardBloc>().add(UpdateDashboardStats({
-        'loggedInUsers': data['loggedUsers'],
-        'anonymousUsers': data['annonUsers'],
-        'subscribedUsers': data['totalUsers'],
-      }));
+            'loggedInUsers': data['loggedUsers'],
+            'anonymousUsers': data['annonUsers'],
+            'subscribedUsers': data['totalUsers'],
+          }));
     });
 
     // ws.emit('user:get-nb', null);
@@ -127,13 +128,6 @@ class _DashboardState extends State<Dashboard> {
       color: Colors.white,
       child: Row(
         children: [
-          Text(
-            'Dashboard',
-            style: Theme.of(context)
-                .textTheme
-                .headlineSmall
-                ?.copyWith(color: Colors.black),
-          ),
           const Spacer(),
           LocaleSwitcher(
             onLocaleChanged: (locale) {
@@ -155,13 +149,13 @@ class _DashboardState extends State<Dashboard> {
             case 0:
               return _buildDashboardContent(state);
             case 1:
-              return _buildFeatureFlippingConten(state);
+            //return const FeatureFlippingScreen();
             case 2:
-              return _buildLogsContent(state);
+              return LogsScreen(state: state);
             case 3:
-              return _buildTournamentsContent(state);
+              return TournamentsScreen(state: state);
             case 4:
-              return _buildGamesContent(state);
+              return GamesScreen(state: state);
             case 5:
               return const UsersPage();
             default:
@@ -341,251 +335,6 @@ class _DashboardState extends State<Dashboard> {
         color: Colors.white,
       ),
     );
-  }
-
-  Widget _buildLogsContent(DashboardLoaded state) {
-    final ScrollController scrollController = ScrollController();
-    return Stack(children: [
-      SingleChildScrollView(
-        scrollDirection: Axis.horizontal,
-        child: SingleChildScrollView(
-          controller: scrollController,
-          child: DataTable(
-            columns: const [
-              DataColumn(label: Expanded(child: Text('Date'))),
-              DataColumn(label: Expanded(child: Text('Type'))),
-              DataColumn(label: Expanded(child: Text('Tags'))),
-              DataColumn(label: Expanded(child: Text('Text'))),
-            ],
-            rows: state.recentLogs.map((log) {
-              return DataRow(cells: [
-                DataCell(Text(log.date.toIso8601String())),
-                DataCell(
-                  Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: BoxDecoration(
-                      color: log.type == 'ERROR' ? Colors.red : Colors.green,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: Text(
-                      log.type,
-                      style: const TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ),
-                DataCell(Text(log.tags.join(', '))),
-                DataCell(Text(log.text)),
-              ]);
-            }).toList(),
-          ),
-        ),
-      ),
-    ]);
-  }
-
-  Widget _buildTournamentsContent(DashboardLoaded state) {
-    final ScrollController scrollController = ScrollController();
-
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('ID')),
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Description')),
-                DataColumn(label: Text('Start Date')),
-                DataColumn(label: Text('End Date')),
-                DataColumn(label: Text('Location')),
-                DataColumn(label: Text('Latitude')),
-                DataColumn(label: Text('Longitude')),
-                DataColumn(label: Text('Owner ID')),
-                DataColumn(label: Text('Image')),
-                DataColumn(label: Text('Private')),
-                DataColumn(label: Text('Nb Players')),
-                DataColumn(label: Text('Created At')),
-                DataColumn(label: Text('Updated At')),
-                DataColumn(label: Text('Upvotes')),
-                DataColumn(label: Text('')), // Empty column for spacing
-              ],
-              rows: state.tournaments.map((tournament) {
-                return DataRow(cells: [
-                  DataCell(Text(tournament.id.toString())),
-                  DataCell(Text(tournament.name)),
-                  DataCell(Text(tournament.description)),
-                  DataCell(Text(tournament.startDate.toIso8601String())),
-                  DataCell(Text(tournament.endDate.toIso8601String())),
-                  DataCell(Text(tournament.location)),
-                  DataCell(Text(tournament.latitude.toString())),
-                  DataCell(Text(tournament.longitude.toString())),
-                  DataCell(Text(tournament.ownerId.toString())),
-                  DataCell(Text(tournament.image)),
-                  DataCell(Text(tournament.isPrivate.toString())),
-                  DataCell(Text(tournament.nbPlayers.toString())),
-                  DataCell(Text(tournament.startDate.toIso8601String())),
-                  DataCell(Text(tournament.endDate.toIso8601String())),
-                  DataCell(Text(tournament.upvotes.toString())),
-                  DataCell(Container()), // Empty cell for spacing
-                ]);
-              }).toList(),
-            ),
-          ),
-        ),
-        Positioned(
-          right: 0,
-          child: SizedBox(
-            width: 100, // Set the width for the fixed column
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Actions')),
-              ],
-              rows: state.tournaments.map((tournament) {
-                return DataRow(cells: [
-                  DataCell(
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => EditTournamentPage(
-                                      tournament: tournament)),
-                            );
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            _showDeleteConfirmationDialog(
-                                context, tournament.id);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ]);
-              }).toList(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildGamesContent(DashboardLoaded state) {
-    final ScrollController scrollController = ScrollController();
-
-    return Stack(
-      children: [
-        SingleChildScrollView(
-          scrollDirection: Axis.horizontal,
-          child: SingleChildScrollView(
-            controller: scrollController,
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('ID')),
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Description')),
-                DataColumn(label: Text('Image URL')),
-                DataColumn(label: Text('Tags')),
-                DataColumn(label: Text('Created At')),
-                DataColumn(label: Text('Updated At')),
-                DataColumn(label: Text('')), // Empty column for spacing
-              ],
-              rows: state.games.map((game) {
-                return DataRow(cells: [
-                  DataCell(Text(game.id.toString())),
-                  DataCell(Text(game.name)),
-                  DataCell(Text(game.description)),
-                  DataCell(Text(game.imageUrl)),
-                  DataCell(Text(game.tags.join(', '))),
-                  DataCell(Text(game.createdAt)),
-                  DataCell(Text(game.updatedAt)),
-                  DataCell(Container()), // Empty cell for spacing
-                ]);
-              }).toList(),
-            ),
-          ),
-        ),
-        Positioned(
-          right: 0,
-          child: SizedBox(
-            width: 100, // Set the width for the fixed column
-            child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Actions')),
-              ],
-              rows: state.games.map((game) {
-                return DataRow(cells: [
-                  DataCell(
-                    Row(
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit),
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      EditGamePage(game: game)),
-                            );
-                          },
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete),
-                          onPressed: () {
-                            _showDeleteConfirmationDialog(context, game.id);
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                ]);
-              }).toList(),
-            ),
-          ),
-        ),
-      ],
-    );
-  }
-
-  void _showDeleteConfirmationDialog(BuildContext context, int gameId) {
-    showDialog(
-      context: context,
-      builder: (BuildContext dialogContext) {
-        return Builder(
-          builder: (BuildContext innerContext) {
-            return AlertDialog(
-              title: const Text('Delete Game'),
-              content: const Text('Are you sure you want to delete this game?'),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.of(dialogContext).pop(),
-                  child: const Text('Cancel'),
-                ),
-                TextButton(
-                  onPressed: () {
-                    BlocProvider.of<DashboardBloc>(innerContext)
-                        .add(DeleteGameEvent(gameId));
-                    Navigator.of(dialogContext).pop();
-                  },
-                  child: const Text('Delete'),
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
-
-  Widget _buildFeatureFlippingConten(DashboardLoaded state) {
-    return const Center(child: Text('Feature Flipping'));
   }
 
   Widget _buildFloatingActionButton() {
