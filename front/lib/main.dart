@@ -96,8 +96,8 @@ void main() async {
                 AuthBloc(authService)..add(AuthCheckRequested()),
           ),
           BlocProvider<DashboardBloc>(
-            create: (context) => DashboardBloc(
-                tournamentService, gameService, authService, logService, featureFlippingService)
+            create: (context) => DashboardBloc(tournamentService, gameService,
+                authService, logService, featureFlippingService)
               ..add(FetchTournaments())
               ..add(FetchGames())
               ..add(FetchLogs())

@@ -63,7 +63,7 @@ class FeatureFlippingService implements IFeatureFlippingService {
     if (response.statusCode != HttpStatus.ok) {
       throw Exception('Failed to toggle feature');
     }
-    
+
     return;
   }
 }

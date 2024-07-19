@@ -97,8 +97,8 @@ class LoginScreenState extends State<LoginScreen> {
             child: SingleChildScrollView(
               child: FutureBuilder<Widget>(
                 future: kIsWeb
-                  ? _buildWebLogin(context)
-                  : _buildMobileLogin(context),
+                    ? _buildWebLogin(context)
+                    : _buildMobileLogin(context),
                 builder: (context, snapshot) {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
@@ -174,7 +174,8 @@ class LoginScreenState extends State<LoginScreen> {
   }
 
   Future<Widget> _buildMobileLogin(BuildContext context) async {
-    final featureService = Provider.of<IFeatureFlippingService>(context, listen: false);
+    final featureService =
+        Provider.of<IFeatureFlippingService>(context, listen: false);
     final loginIsActived = await featureService.isFeatureActive(1);
     if (!loginIsActived && context.mounted) {
       return Center(
