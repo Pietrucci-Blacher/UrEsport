@@ -1,3 +1,4 @@
+import 'package:provider/provider.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -5,6 +6,7 @@ import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/feature_flipping_service.dart';
 import 'package:uresport/dashboard/screens/dashboard.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/main_screen.dart';
@@ -93,8 +95,20 @@ class LoginScreenState extends State<LoginScreen> {
           child: Padding(
             padding: const EdgeInsets.all(16.0),
             child: SingleChildScrollView(
-              child:
-                  kIsWeb ? _buildWebLogin(context) : _buildMobileLogin(context),
+              child: FutureBuilder<Widget>(
+                future: kIsWeb
+                  ? _buildWebLogin(context)
+                  : _buildMobileLogin(context),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(child: Text('Error: ${snapshot.error}'));
+                  } else {
+                    return snapshot.data ?? Container();
+                  }
+                },
+              ),
             ),
           ),
         ),
@@ -102,7 +116,7 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildWebLogin(BuildContext context) {
+  Future<Widget> _buildWebLogin(BuildContext context) async {
     return Center(
       child: Container(
         constraints: const BoxConstraints(maxWidth: 400),
@@ -159,7 +173,23 @@ class LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget _buildMobileLogin(BuildContext context) {
+  Future<Widget> _buildMobileLogin(BuildContext context) async {
+    final featureService = Provider.of<IFeatureFlippingService>(context, listen: false);
+    final loginIsActived = await featureService.isFeatureActive(1);
+    if (!loginIsActived && context.mounted) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 20),
+            Text(
+              'Login is disabled',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+          ],
+        ),
+      );
+    }
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

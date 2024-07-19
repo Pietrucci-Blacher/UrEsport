@@ -1,3 +1,4 @@
+import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
@@ -6,6 +7,7 @@ import 'package:uresport/auth/bloc/auth_state.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/auth/screens/verification_screen.dart';
+import 'package:uresport/core/services/feature_flipping_service.dart';
 
 class RegisterScreen extends StatefulWidget {
   final IAuthService authService;
@@ -88,61 +90,92 @@ class RegisterScreenState extends State<RegisterScreen> {
           },
           child: Padding(
             padding: const EdgeInsets.all(16.0),
-            child: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  _buildTextField(
-                    controller: _firstnameController,
-                    label: AppLocalizations.of(context).firstName,
-                    hint: AutofillHints.givenName,
-                    keyboardType: TextInputType.name,
-                  ),
-                  _buildTextField(
-                    controller: _lastnameController,
-                    label: AppLocalizations.of(context).lastName,
-                    hint: AutofillHints.familyName,
-                    keyboardType: TextInputType.name,
-                  ),
-                  _buildTextField(
-                    controller: _usernameController,
-                    label: AppLocalizations.of(context).username,
-                    hint: AutofillHints.username,
-                  ),
-                  _buildTextField(
-                    controller: _emailController,
-                    label: AppLocalizations.of(context).email,
-                    hint: AutofillHints.email,
-                    keyboardType: TextInputType.emailAddress,
-                  ),
-                  _buildPasswordField(),
-                  const SizedBox(height: 20),
-                  BlocBuilder<AuthBloc, AuthState>(
-                    builder: (context, state) {
-                      if (state is AuthLoading) {
-                        return const CircularProgressIndicator();
-                      }
-                      return ElevatedButton(
-                        onPressed: () {
-                          context.read<AuthBloc>().add(
-                                RegisterSubmitted(
-                                  firstName: _firstnameController.text,
-                                  lastName: _lastnameController.text,
-                                  username: _usernameController.text,
-                                  email: _emailController.text,
-                                  password: _passwordController.text,
-                                ),
-                              );
-                        },
-                        child: Text(AppLocalizations.of(context).register),
-                      );
-                    },
-                  ),
-                ],
-              ),
+            child: FutureBuilder<Widget>(
+              future: _buildRegister(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else {
+                  return snapshot.data ?? Container();
+                }
+              }
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Future<Widget> _buildRegister() async {
+    final featureService = Provider.of<IFeatureFlippingService>(context, listen: false);
+    final loginIsActived = await featureService.isFeatureActive(2);
+    if (!loginIsActived && mounted) {
+      return Center(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const SizedBox(height: 20),
+            Text(
+              'Register is disabled',
+              style: Theme.of(context).textTheme.headlineSmall,
+            ),
+          ],
+        ),
+      );
+    }
+    return SingleChildScrollView(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          _buildTextField(
+            controller: _firstnameController,
+            label: AppLocalizations.of(context).firstName,
+            hint: AutofillHints.givenName,
+            keyboardType: TextInputType.name,
+          ),
+          _buildTextField(
+            controller: _lastnameController,
+            label: AppLocalizations.of(context).lastName,
+            hint: AutofillHints.familyName,
+            keyboardType: TextInputType.name,
+          ),
+          _buildTextField(
+            controller: _usernameController,
+            label: AppLocalizations.of(context).username,
+            hint: AutofillHints.username,
+          ),
+          _buildTextField(
+            controller: _emailController,
+            label: AppLocalizations.of(context).email,
+            hint: AutofillHints.email,
+            keyboardType: TextInputType.emailAddress,
+          ),
+          _buildPasswordField(),
+          const SizedBox(height: 20),
+          BlocBuilder<AuthBloc, AuthState>(
+            builder: (context, state) {
+              if (state is AuthLoading) {
+                return const CircularProgressIndicator();
+              }
+              return ElevatedButton(
+                onPressed: () {
+                  context.read<AuthBloc>().add(
+                    RegisterSubmitted(
+                      firstName: _firstnameController.text,
+                      lastName: _lastnameController.text,
+                      username: _usernameController.text,
+                      email: _emailController.text,
+                      password: _passwordController.text,
+                    ),
+                  );
+                },
+                child: Text(AppLocalizations.of(context).register),
+              );
+            },
+          ),
+        ],
       ),
     );
   }
