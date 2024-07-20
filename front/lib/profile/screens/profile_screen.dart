@@ -759,11 +759,12 @@ class LikedGamesList extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.favorite_border, size: 64, color: Colors.grey),
-                  SizedBox(height: 16),
+                  const Icon(Icons.favorite_border,
+                      size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
                   Text(
                     l.noLikedGames,
-                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    style: const TextStyle(fontSize: 18, color: Colors.grey),
                     textAlign: TextAlign.center,
                   ),
                 ],
