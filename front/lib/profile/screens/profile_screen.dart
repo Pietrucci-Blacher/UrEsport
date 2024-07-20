@@ -12,12 +12,12 @@ import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/like_service.dart';
 import 'package:uresport/cubit/locale_cubit.dart';
+import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/main_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
-import 'package:uresport/shared/utils/image_util.dart' as image_util;
-import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
+import 'package:uresport/shared/utils/image_util.dart' as image_util;
 
 class ProfileScreen extends StatefulWidget {
   final IAuthService authService;
@@ -755,7 +755,20 @@ class LikedGamesList extends StatelessWidget {
         } else if (snapshot.hasData) {
           final likes = snapshot.data!;
           if (likes.isEmpty) {
-            return Center(child: Text(l.noLikedGames));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.favorite_border, size: 64, color: Colors.grey),
+                  SizedBox(height: 16),
+                  Text(
+                    l.noLikedGames,
+                    style: TextStyle(fontSize: 18, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
           }
 
           return ListView.builder(
@@ -767,11 +780,9 @@ class LikedGamesList extends StatelessWidget {
                 key: Key(game.id.toString()),
                 direction: DismissDirection.endToStart,
                 onDismissed: (direction) async {
-                  // Appeler le service pour supprimer le like
                   final likeService = LikeService(Dio());
                   await likeService.deleteLike(like.id!);
 
-                  // Montrer un message de confirmation
                   if (!context.mounted) return;
                   _showToast(context, '${game.name} supprimé de vos likes',
                       Colors.red);
