@@ -1,13 +1,13 @@
-import 'package:provider/provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:provider/provider.dart';
 import 'package:uresport/auth/bloc/auth_bloc.dart';
 import 'package:uresport/auth/bloc/auth_event.dart';
 import 'package:uresport/auth/bloc/auth_state.dart';
-import 'package:uresport/core/services/auth_service.dart';
-import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/auth/screens/verification_screen.dart';
+import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/feature_flipping_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class RegisterScreen extends StatefulWidget {
   final IAuthService authService;
@@ -42,7 +42,7 @@ class RegisterScreenState extends State<RegisterScreen> {
     });
   }
 
-  void _showSuccessDialog(BuildContext context) {
+  void _showSuccessDialog() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -60,16 +60,18 @@ class RegisterScreenState extends State<RegisterScreen> {
     );
 
     Future.delayed(const Duration(seconds: 2), () {
-      Navigator.of(context).pop(true);
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => VerificationScreen(
-            email: _emailController.text,
-            authService: widget.authService,
+      if (mounted) {
+        Navigator.of(context).pop(true);
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerificationScreen(
+              email: _emailController.text,
+              authService: widget.authService,
+            ),
           ),
-        ),
-      );
+        );
+      }
     });
   }
 
@@ -85,7 +87,7 @@ class RegisterScreenState extends State<RegisterScreen> {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(state.error)));
             } else if (state is AuthRegistrationSuccess) {
-              _showSuccessDialog(context);
+              _showSuccessDialog();
             }
           },
           child: Padding(
@@ -111,20 +113,30 @@ class RegisterScreenState extends State<RegisterScreen> {
     final featureService =
         Provider.of<IFeatureFlippingService>(context, listen: false);
     final loginIsActived = await featureService.isFeatureActive(2);
-    if (!loginIsActived && mounted) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              'Register is disabled',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-          ],
-        ),
-      );
+
+    if (!loginIsActived) {
+      return _buildDisabledRegisterWidget();
     }
+
+    return _buildRegisterForm();
+  }
+
+  Widget _buildDisabledRegisterWidget() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 20),
+          Text(
+            'Register is disabled',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRegisterForm() {
     return SingleChildScrollView(
       child: Column(
         mainAxisSize: MainAxisSize.min,

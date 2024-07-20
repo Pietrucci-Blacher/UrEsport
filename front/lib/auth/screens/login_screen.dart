@@ -177,20 +177,30 @@ class LoginScreenState extends State<LoginScreen> {
     final featureService =
         Provider.of<IFeatureFlippingService>(context, listen: false);
     final loginIsActived = await featureService.isFeatureActive(1);
-    if (!loginIsActived && context.mounted) {
-      return Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              'Login is disabled',
-              style: Theme.of(context).textTheme.headlineSmall,
-            ),
-          ],
-        ),
-      );
+
+    if (!loginIsActived) {
+      return _buildLoginDisabledWidget();
     }
+
+    return _buildLoginForm();
+  }
+
+  Widget _buildLoginDisabledWidget() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const SizedBox(height: 20),
+          Text(
+            'Login is disabled',
+            style: Theme.of(context).textTheme.headlineSmall,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildLoginForm() {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

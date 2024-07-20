@@ -121,11 +121,6 @@ func GetLikesByUserID(c *gin.Context) {
 		return
 	}
 
-	if len(likes) == 0 {
-		c.JSON(http.StatusNotFound, gin.H{"error": "No likes found"})
-		return
-	}
-
 	c.JSON(http.StatusOK, likes)
 
 }

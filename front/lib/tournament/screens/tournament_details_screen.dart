@@ -567,7 +567,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
         },
         child: const Icon(Icons.list),
       );
-    } else if (!isPrivate) {
+    } else if (!isPrivate && widget.tournament.ownerId == _currentUser?.id) {
       return FloatingActionButton(
         onPressed: _showJoinTeamsModal,
         child: const Icon(Icons.list),
@@ -576,6 +576,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
     return null;
   }
+
 
 
   Widget _pageDetail() {
