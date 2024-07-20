@@ -34,12 +34,12 @@ func GetLikeByID(id int) (*Like, error) {
 }
 
 func GetLikesByUserIDAndGameID(userID, gameID int) ([]Like, error) {
-    var likes []Like
-    result := DB.Where("user_id = ? AND game_id = ?", userID, gameID).Find(&likes)
-    if result.Error != nil {
-        return nil, result.Error
-    }
-    return likes, nil
+	var likes []Like
+	result := DB.Where("user_id = ? AND game_id = ?", userID, gameID).Find(&likes)
+	if result.Error != nil {
+		return nil, result.Error
+	}
+	return likes, nil
 }
 
 func CreateLike(like *Like) error {
