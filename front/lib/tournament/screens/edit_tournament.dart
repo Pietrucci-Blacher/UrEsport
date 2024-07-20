@@ -2,7 +2,6 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
@@ -30,11 +29,9 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
   late TextEditingController _locationController;
   late TextEditingController _latitudeController;
   late TextEditingController _longitudeController;
-  late TextEditingController _imageController;
   late TextEditingController _gameIdController;
   late TextEditingController _nbPlayerController;
   bool _isPrivate = false;
-  File? _selectedImageFile;
   List<Game> _games = [];
   int? _selectedGameId;
 
@@ -42,23 +39,16 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.tournament.name);
-    _descriptionController =
-        TextEditingController(text: widget.tournament.description);
+    _descriptionController = TextEditingController(text: widget.tournament.description);
     _startDateController = TextEditingController(
         text: DateFormat('yyyy-MM-dd').format(widget.tournament.startDate));
     _endDateController = TextEditingController(
         text: DateFormat('yyyy-MM-dd').format(widget.tournament.endDate));
-    _locationController =
-        TextEditingController(text: widget.tournament.location);
-    _latitudeController =
-        TextEditingController(text: widget.tournament.latitude.toString());
-    _longitudeController =
-        TextEditingController(text: widget.tournament.longitude.toString());
-    _imageController = TextEditingController(text: widget.tournament.image);
-    _gameIdController =
-        TextEditingController(text: widget.tournament.game.id.toString());
-    _nbPlayerController =
-        TextEditingController(text: widget.tournament.nbPlayers.toString());
+    _locationController = TextEditingController(text: widget.tournament.location);
+    _latitudeController = TextEditingController(text: widget.tournament.latitude.toString());
+    _longitudeController = TextEditingController(text: widget.tournament.longitude.toString());
+    _gameIdController = TextEditingController(text: widget.tournament.game.id.toString());
+    _nbPlayerController = TextEditingController(text: widget.tournament.nbPlayers.toString());
     _isPrivate = widget.tournament.isPrivate;
     _selectedGameId = widget.tournament.game.id;
     _loadGames();
@@ -87,49 +77,9 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     _locationController.dispose();
     _latitudeController.dispose();
     _longitudeController.dispose();
-    _imageController.dispose();
     _gameIdController.dispose();
     _nbPlayerController.dispose();
     super.dispose();
-  }
-
-  Future<void> _pickImage() async {
-    final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
-
-    if (pickedFile != null) {
-      setState(() {
-        _selectedImageFile = File(pickedFile.path);
-      });
-      await _uploadImage();
-    }
-  }
-
-  Future<void> _uploadImage() async {
-    if (_selectedImageFile == null) return;
-
-    final dio = Dio();
-    final formData = FormData.fromMap({
-      'file': await MultipartFile.fromFile(_selectedImageFile!.path),
-    });
-
-    try {
-      final response = await dio.post(
-        'YOUR_IMAGE_UPLOAD_ENDPOINT', // Replace with your image upload endpoint
-        data: formData,
-      );
-
-      if (response.statusCode == 200) {
-        final imageUrl = response.data['url']; // Adjust based on your API response
-        setState(() {
-          _imageController.text = imageUrl;
-        });
-      } else {
-        _showToast(context, 'Image upload failed', Colors.red);
-      }
-    } catch (e) {
-      _showToast(context, 'Error uploading image: $e', Colors.red);
-    }
   }
 
   void _showToast(BuildContext context, String message, Color backgroundColor) {
@@ -157,14 +107,11 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       final name = _nameController.text;
       final description = _descriptionController.text;
       final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss'Z'");
-      final startDate =
-      dateFormat.format(DateTime.parse(_startDateController.text));
-      final endDate =
-      dateFormat.format(DateTime.parse(_endDateController.text));
+      final startDate = dateFormat.format(DateTime.parse(_startDateController.text));
+      final endDate = dateFormat.format(DateTime.parse(_endDateController.text));
       final location = _locationController.text.isNotEmpty ? _locationController.text : '';
       final latitude = _latitudeController.text.isNotEmpty ? double.parse(_latitudeController.text) : 0.0;
       final longitude = _longitudeController.text.isNotEmpty ? double.parse(_longitudeController.text) : 0.0;
-      final image = _imageController.text;
       final isPrivate = _isPrivate;
       final gameId = _selectedGameId;
       final nbPlayers = int.parse(_nbPlayerController.text);
@@ -177,7 +124,6 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
         location: location,
         latitude: latitude,
         longitude: longitude,
-        image: image,
         isPrivate: isPrivate,
         game: widget.tournament.game.copyWith(id: gameId),
         nbPlayers: nbPlayers,
@@ -186,14 +132,14 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       final tournamentJson = updatedTournament.toJson();
       debugPrint('Tournament JSON: ${jsonEncode(tournamentJson)}');
 
-      final tournamentService =
-      Provider.of<ITournamentService>(context, listen: false);
+      final tournamentService = Provider.of<ITournamentService>(context, listen: false);
       try {
         await tournamentService.updateTournament(updatedTournament);
         if (!mounted) return;
         _showToast(context, AppLocalizations.of(context).tournamentUpdatedSuccessfully, Colors.green);
         Navigator.pop(context, updatedTournament);
       } catch (e) {
+        debugPrint('Failed to update tournament: $e');
         _showToast(context, AppLocalizations.of(context).failedToUpdateTournament(e.toString()), Colors.red);
       }
     }
@@ -271,18 +217,6 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
                 controller: _longitudeController,
                 decoration: InputDecoration(labelText: l.longitude),
               ),
-              TextFormField(
-                controller: _imageController,
-                decoration: InputDecoration(labelText: l.imageUrl),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.pleaseEnterImageUrl;
-                  }
-                  return null;
-                },
-              ),
-              if (_selectedImageFile != null)
-                Image.file(_selectedImageFile!, height: 200),
               SwitchListTile(
                 title: Text(l.private),
                 value: _isPrivate,
