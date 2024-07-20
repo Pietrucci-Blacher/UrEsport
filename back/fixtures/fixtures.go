@@ -10,13 +10,11 @@ var (
 	fake = faker.New()
 
 	FEATURES = map[string]string{
-		"login":      "Allow user to login",
-		"chat":       "Allow user to chat",
-		"tournament": "Allow user to create tournament",
-		"game":       "Allow user to play game",
+		"login":    "Allow user to login",
+		"register": "Allow user to register",
 	}
 
-	USER_PASSWORD = "pZlozyNYBqPwazH5TGSu"
+	USER_PASSWORD = "password"
 	USER_NB       = 30
 	USER_ROLES    = []string{models.ROLE_USER, models.ROLE_ADMIN}
 
