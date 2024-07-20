@@ -203,9 +203,9 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   MaterialPageRoute(
                                     builder: (context) =>
                                         TournamentDetailsScreen(
-                                          tournament: tournament,
-                                          game: tournament.game,
-                                        ),
+                                      tournament: tournament,
+                                      game: tournament.game,
+                                    ),
                                   ),
                                 );
                               },
@@ -424,7 +424,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                      const AddTournamentPage(),
+                                          const AddTournamentPage(),
                                     ),
                                   );
                                 },

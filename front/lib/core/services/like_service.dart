@@ -1,8 +1,9 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'cache_service.dart';
 import 'package:uresport/core/models/like.dart';
+
+import 'cache_service.dart';
 
 abstract class ILikeService {
   Future<List<Like>> fetchLikes();
@@ -88,6 +89,9 @@ class LikeService implements ILikeService {
         debugPrint('Likes fetched successfully: ${response.data}');
         List<dynamic> likesJson = response.data;
         return likesJson.map((json) => Like.fromJson(json)).toList();
+      } else if (response.statusCode == 404) {
+        debugPrint('No likes found for user $userId');
+        return [];
       } else {
         throw DioException(
           requestOptions: response.requestOptions,
@@ -99,6 +103,9 @@ class LikeService implements ILikeService {
     } catch (e) {
       debugPrint('Error fetching likes: $e');
       if (e is DioException) {
+        if (e.response?.statusCode == 404) {
+          return [];
+        }
         rethrow;
       } else {
         throw Exception('Unexpected error occurred');
