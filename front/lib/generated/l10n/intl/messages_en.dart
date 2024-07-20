@@ -115,6 +115,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "You must be logged in to view your tournaments"),
         "noGamesAvailable":
             MessageLookupByLibrary.simpleMessage("No games available."),
+        "noJoinedTournaments":
+            MessageLookupByLibrary.simpleMessage("No joined tournaments"),
         "noLikeToDelete":
             MessageLookupByLibrary.simpleMessage("No like to delete"),
         "noTournamentsForGame": MessageLookupByLibrary.simpleMessage(

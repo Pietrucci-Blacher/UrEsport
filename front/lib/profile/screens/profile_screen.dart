@@ -751,7 +751,7 @@ class LikedGamesList extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text(l.errorFetchingLikedGames));
+          return Center(child: Text(l.noLikedGames));
         } else if (snapshot.hasData) {
           final likes = snapshot.data!;
           if (likes.isEmpty) {

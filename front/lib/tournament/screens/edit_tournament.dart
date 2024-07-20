@@ -1,5 +1,8 @@
+import 'dart:io';
 import 'dart:convert';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
@@ -29,6 +32,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
   late TextEditingController _gameIdController;
   late TextEditingController _nbPlayerController;
   bool _isPrivate = false;
+  File? _selectedImageFile;
 
   @override
   void initState() {
@@ -69,16 +73,53 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     super.dispose();
   }
 
-  void showNotificationToast(BuildContext context, String message,
-      {Color? backgroundColor, Color? textColor}) {
+  Future<void> _pickImage() async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _selectedImageFile = File(pickedFile.path);
+      });
+      await _uploadImage();
+    }
+  }
+
+  Future<void> _uploadImage() async {
+    if (_selectedImageFile == null) return;
+
+    final dio = Dio();
+    final formData = FormData.fromMap({
+      'file': await MultipartFile.fromFile(_selectedImageFile!.path),
+    });
+
+    try {
+      final response = await dio.post(
+        'YOUR_IMAGE_UPLOAD_ENDPOINT', // Replace with your image upload endpoint
+        data: formData,
+      );
+
+      if (response.statusCode == 200) {
+        final imageUrl = response.data['url']; // Adjust based on your API response
+        setState(() {
+          _imageController.text = imageUrl;
+        });
+      } else {
+        _showToast(context, 'Image upload failed', Colors.red);
+      }
+    } catch (e) {
+      _showToast(context, 'Error uploading image: $e', Colors.red);
+    }
+  }
+
+  void _showToast(BuildContext context, String message, Color backgroundColor) {
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
     overlayEntry = OverlayEntry(
       builder: (context) => CustomToast(
         message: message,
-        backgroundColor: backgroundColor ?? Colors.blue,
-        textColor: textColor ?? Colors.white,
+        backgroundColor: backgroundColor,
         onClose: () {
           overlayEntry.remove();
         },
@@ -97,12 +138,12 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       final description = _descriptionController.text;
       final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss'Z'");
       final startDate =
-          dateFormat.format(DateTime.parse(_startDateController.text));
+      dateFormat.format(DateTime.parse(_startDateController.text));
       final endDate =
-          dateFormat.format(DateTime.parse(_endDateController.text));
-      final location = _locationController.text;
-      final latitude = double.parse(_latitudeController.text);
-      final longitude = double.parse(_longitudeController.text);
+      dateFormat.format(DateTime.parse(_endDateController.text));
+      final location = _locationController.text.isNotEmpty ? _locationController.text : '';
+      final latitude = _latitudeController.text.isNotEmpty ? double.parse(_latitudeController.text) : 0.0;
+      final longitude = _longitudeController.text.isNotEmpty ? double.parse(_longitudeController.text) : 0.0;
       final image = _imageController.text;
       final isPrivate = _isPrivate;
       final gameId = int.parse(_gameIdController.text);
@@ -126,18 +167,14 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       debugPrint('Tournament JSON: ${jsonEncode(tournamentJson)}');
 
       final tournamentService =
-          Provider.of<ITournamentService>(context, listen: false);
+      Provider.of<ITournamentService>(context, listen: false);
       try {
         await tournamentService.updateTournament(updatedTournament);
         if (!mounted) return;
-        showNotificationToast(
-            context, AppLocalizations.of(context).tournamentUpdatedSuccessfully,
-            backgroundColor: Colors.green);
+        _showToast(context, AppLocalizations.of(context).tournamentUpdatedSuccessfully, Colors.green);
         Navigator.pop(context, updatedTournament);
       } catch (e) {
-        showNotificationToast(context,
-            AppLocalizations.of(context).failedToUpdateTournament(e.toString()),
-            backgroundColor: Colors.red);
+        _showToast(context, AppLocalizations.of(context).failedToUpdateTournament(e.toString()), Colors.red);
       }
     }
   }
@@ -184,7 +221,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               ),
               TextFormField(
                 controller: _startDateController,
-                decoration: InputDecoration(labelText: l.startDate.toString()),
+                decoration: InputDecoration(labelText: l.startDateText),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.pleaseEnterStartDate;
@@ -194,7 +231,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               ),
               TextFormField(
                 controller: _endDateController,
-                decoration: InputDecoration(labelText: l.endDate.toString()),
+                decoration: InputDecoration(labelText: l.endDateText),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.pleaseEnterEndDate;
@@ -204,33 +241,15 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               ),
               TextFormField(
                 controller: _locationController,
-                decoration: InputDecoration(labelText: l.location.toString()),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.pleaseEnterLocation;
-                  }
-                  return null;
-                },
+                decoration: InputDecoration(labelText: l.locationText),
               ),
               TextFormField(
                 controller: _latitudeController,
                 decoration: InputDecoration(labelText: l.latitude),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.pleaseEnterLatitude;
-                  }
-                  return null;
-                },
               ),
               TextFormField(
                 controller: _longitudeController,
                 decoration: InputDecoration(labelText: l.longitude),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.pleaseEnterLongitude;
-                  }
-                  return null;
-                },
               ),
               TextFormField(
                 controller: _imageController,
@@ -242,6 +261,26 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
                   return null;
                 },
               ),
+              /*GestureDetector(
+                onTap: _pickImage,
+                child: AbsorbPointer(
+                  child: TextFormField(
+                    controller: _imageController,
+                    decoration: InputDecoration(
+                      labelText: l.imageUrl,
+                      suffixIcon: const Icon(Icons.photo),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return l.pleaseEnterImageUrl;
+                      }
+                      return null;
+                    },
+                  ),
+                ),
+              ),*/
+              if (_selectedImageFile != null)
+                Image.file(_selectedImageFile!, height: 200),
               SwitchListTile(
                 title: Text(l.private),
                 value: _isPrivate,

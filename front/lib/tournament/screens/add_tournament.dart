@@ -197,7 +197,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               ),
               TextFormField(
                 controller: _locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                decoration: InputDecoration(labelText: l.locationText),
               ),
               TextFormField(
                 controller: _latitudeController,
