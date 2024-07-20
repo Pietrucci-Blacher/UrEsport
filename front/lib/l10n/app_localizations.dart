@@ -2345,6 +2345,23 @@ class AppLocalizations {
       desc: 'Message shown when user has not joined any tournaments',
     );
   }
+
+  String failedToLoadGames(String string) {
+    return Intl.message(
+      'Failed to load games: $string',
+      name: 'failedToLoadGames',
+      desc: 'Message shown when loading games fails',
+      args: [string],
+    );
+  }
+
+  String get selectGame {
+    return Intl.message(
+      'Select Game',
+      name: 'selectGame',
+      desc: 'Title for the select game dialog',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

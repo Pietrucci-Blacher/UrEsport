@@ -7,8 +7,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/core/models/game.dart';
 
 class EditTournamentScreen extends StatefulWidget {
   final Tournament tournament;
@@ -33,6 +35,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
   late TextEditingController _nbPlayerController;
   bool _isPrivate = false;
   File? _selectedImageFile;
+  List<Game> _games = [];
+  int? _selectedGameId;
 
   @override
   void initState() {
@@ -56,6 +60,22 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     _nbPlayerController =
         TextEditingController(text: widget.tournament.nbPlayers.toString());
     _isPrivate = widget.tournament.isPrivate;
+    _selectedGameId = widget.tournament.game.id;
+    _loadGames();
+  }
+
+  Future<void> _loadGames() async {
+    try {
+      final gameService = Provider.of<IGameService>(context, listen: false);
+      final games = await gameService.fetchGames();
+      setState(() {
+        _games = games;
+      });
+      debugPrint('Games loaded: ${_games.length}');
+    } catch (e) {
+      debugPrint('Failed to load games: $e');
+      _showToast(context, AppLocalizations.of(context).failedToLoadGames(e.toString()), Colors.red);
+    }
   }
 
   @override
@@ -146,7 +166,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       final longitude = _longitudeController.text.isNotEmpty ? double.parse(_longitudeController.text) : 0.0;
       final image = _imageController.text;
       final isPrivate = _isPrivate;
-      final gameId = int.parse(_gameIdController.text);
+      final gameId = _selectedGameId;
       final nbPlayers = int.parse(_nbPlayerController.text);
 
       final updatedTournament = widget.tournament.copyWith(
@@ -261,24 +281,6 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
                   return null;
                 },
               ),
-              /*GestureDetector(
-                onTap: _pickImage,
-                child: AbsorbPointer(
-                  child: TextFormField(
-                    controller: _imageController,
-                    decoration: InputDecoration(
-                      labelText: l.imageUrl,
-                      suffixIcon: const Icon(Icons.photo),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return l.pleaseEnterImageUrl;
-                      }
-                      return null;
-                    },
-                  ),
-                ),
-              ),*/
               if (_selectedImageFile != null)
                 Image.file(_selectedImageFile!, height: 200),
               SwitchListTile(
@@ -290,16 +292,43 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
                   });
                 },
               ),
-              TextFormField(
-                controller: _gameIdController,
-                decoration: InputDecoration(labelText: l.gameId),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.pleaseEnterGameId;
-                  }
-                  return null;
-                },
-              ),
+              if (_games.isNotEmpty)
+                DropdownButtonFormField<int>(
+                  decoration: InputDecoration(labelText: l.gameId),
+                  items: _games.map((Game game) {
+                    return DropdownMenuItem<int>(
+                      value: game.id,
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Image.network(
+                              game.imageUrl,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(game.name),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _selectedGameId = newValue;
+                    });
+                  },
+                  value: _selectedGameId,
+                  validator: (value) {
+                    if (value == null) {
+                      return l.pleaseEnterGameId;
+                    }
+                    return null;
+                  },
+                )
+              else
+                const Center(child: CircularProgressIndicator()),
               TextFormField(
                 controller: _nbPlayerController,
                 decoration: InputDecoration(labelText: l.numberOfPlayers),
