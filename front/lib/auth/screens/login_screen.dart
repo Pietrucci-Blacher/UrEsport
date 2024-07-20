@@ -44,11 +44,11 @@ class LoginScreenState extends State<LoginScreen> {
     final password = _passwordController.text.trim();
 
     context.read<AuthBloc>().add(
-      LoginButtonPressed(
-        email: email,
-        password: password,
-      ),
-    );
+          LoginButtonPressed(
+            email: email,
+            password: password,
+          ),
+        );
   }
 
   @override
@@ -70,7 +70,7 @@ class LoginScreenState extends State<LoginScreen> {
                     MaterialPageRoute(
                       builder: (context) => const Dashboard(),
                     ),
-                        (Route<dynamic> route) => false,
+                    (Route<dynamic> route) => false,
                   );
                 } else {
                   Navigator.of(context).pushAndRemoveUntil(
@@ -78,7 +78,7 @@ class LoginScreenState extends State<LoginScreen> {
                       builder: (context) =>
                           MainScreen(authService: widget.authService),
                     ),
-                        (Route<dynamic> route) => false,
+                    (Route<dynamic> route) => false,
                   );
                 }
               } else {
@@ -87,7 +87,7 @@ class LoginScreenState extends State<LoginScreen> {
                     builder: (context) =>
                         MainScreen(authService: widget.authService),
                   ),
-                      (Route<dynamic> route) => false,
+                  (Route<dynamic> route) => false,
                 );
               }
             }
@@ -175,7 +175,7 @@ class LoginScreenState extends State<LoginScreen> {
 
   Future<Widget> _buildMobileLogin(BuildContext context) async {
     final featureService =
-    Provider.of<IFeatureFlippingService>(context, listen: false);
+        Provider.of<IFeatureFlippingService>(context, listen: false);
     final loginIsActived = await featureService.isFeatureActive(1);
 
     if (!loginIsActived) {
