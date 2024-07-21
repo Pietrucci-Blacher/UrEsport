@@ -165,6 +165,9 @@ func (t *Team) Delete() error {
 	if err := t.RemoveAllTournaments(); err != nil {
 		return err
 	}
+	if err := t.RemoveAllMembers(); err != nil {
+		return err
+	}
 
 	del := time.Now()
 	t.DeletedAt = &del

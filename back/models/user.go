@@ -229,8 +229,15 @@ func (u *User) FindOne(key string, value any) error {
 		First(&u).Error
 }
 
+func (u *User) RemoveAllTeams() error {
+	return DB.Model(u).Association("Teams").Clear()
+}
+
 func (u *User) Delete() error {
 	if err := DeleteTokensByUserID(u.ID); err != nil {
+		return err
+	}
+	if err := u.RemoveAllTeams(); err != nil {
 		return err
 	}
 
