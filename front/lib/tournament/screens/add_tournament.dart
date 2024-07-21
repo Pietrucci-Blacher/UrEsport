@@ -45,8 +45,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
     } catch (e) {
       debugPrint('Failed to load games: $e');
       showCustomToast(
-          AppLocalizations.of(context).failedToLoadGames(e.toString()),
-          Colors.red);
+          '${AppLocalizations.of(context).failedToLoadGames}: $e ', Colors.red);
     }
   }
 
@@ -81,7 +80,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         Navigator.pop(context);
       } catch (e) {
         showCustomToast(
-            AppLocalizations.of(context).failedToCreateTournament(e.toString()),
+            AppLocalizations.of(context).failedToCreateTournament,
             Colors.red);
       }
     }

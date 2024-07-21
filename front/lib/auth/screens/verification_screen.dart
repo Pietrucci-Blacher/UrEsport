@@ -43,7 +43,7 @@ class VerificationScreenState extends State<VerificationScreen> {
       builder: (context) => AlertDialog(
         title: Text(AppLocalizations.of(context).resendCode),
         content: Text(
-            AppLocalizations.of(context).verificationCodeSent(widget.email)),
+            '${AppLocalizations.of(context).verificationCodeSent}: ${widget.email}'),
         actions: <Widget>[
           TextButton(
             onPressed: () {
@@ -83,8 +83,7 @@ class VerificationScreenState extends State<VerificationScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text(AppLocalizations.of(context)
-                      .verificationCodeSent(widget.email)),
+                  Text('${AppLocalizations.of(context).verificationCodeSent}: ${widget.email}'),
                   const SizedBox(height: 20),
                   _buildCodeField(context),
                   const SizedBox(height: 20),

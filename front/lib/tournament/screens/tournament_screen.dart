@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
@@ -156,13 +157,13 @@ class TournamentScreenState extends State<TournamentScreen> {
                       },
                       child: Dismissible(
                         key: Key(team.id.toString()),
-                        direction: DismissDirection.startToEnd,
+                        direction: DismissDirection.endToStart,
                         onDismissed: (direction) {
                           _confirmLeaveTeam(team.id, team.name, isOwner);
                         },
                         background: Container(
                           color: Colors.red,
-                          alignment: Alignment.centerLeft,
+                          alignment: Alignment.centerRight,
                           padding: const EdgeInsets.only(left: 20.0),
                           child: const Icon(
                             Icons.delete,
@@ -174,8 +175,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                               style: const TextStyle(
                                   fontSize: 18, fontWeight: FontWeight.bold)),
                           subtitle: Text(
-                            l.membersAndTournaments(
-                                team.members.length, team.tournaments.length),
+                            '${l.membersInTeam}: ${team.members.length} | ${l.tournamentsInTeam}: ${team.tournaments.length}',
                             style: const TextStyle(fontSize: 14, color: Colors.grey),
                           ),
                           trailing: IconButton(
@@ -244,8 +244,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                   subtitle: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(l.tournamentStartDate(tournament.startDate), style: const TextStyle(fontSize: 14)),
-                      Text(l.tournamentEndDate(tournament.endDate), style: const TextStyle(fontSize: 14)),
+                      Text('${l.tournamentStartDate}: ${tournament.startDate}', style: const TextStyle(fontSize: 14)),
+                      Text('${l.tournamentEndDate}: ${tournament.endDate}', style: const TextStyle(fontSize: 14)),
                       Text(tournament.description, style: const TextStyle(fontSize: 12, color: Colors.grey), overflow: TextOverflow.ellipsis),
                     ],
                   ),
@@ -274,7 +274,7 @@ class TournamentScreenState extends State<TournamentScreen> {
       builder: (BuildContext context) {
         return AlertDialog(
           title: Text(l.confirmAction),
-          content: Text(isOwner ? l.deleteTeamConfirmation(teamName) : l.leaveTeamConfirmation(teamName)),
+          content: Text(isOwner ? '${l.deleteTeamConfirmation}: $teamName ?' : '${l.leaveTeamConfirmation}: $teamName ?'),
           actions: <Widget>[
             TextButton(
               child: Text(l.cancel),
@@ -300,6 +300,7 @@ class TournamentScreenState extends State<TournamentScreen> {
   }
 
   Future<void> _deleteTeam(int teamId, String teamName) async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (_currentUser == null) return;
 
     final teamService = Provider.of<ITeamService>(context, listen: false);
@@ -309,13 +310,14 @@ class TournamentScreenState extends State<TournamentScreen> {
         _loadUserTeams();
       });
       if (!mounted) return;
-      _showToast(AppLocalizations.of(context).teamDeleted(teamName), Colors.green);
+      _showToast('${l.teamDeleted} $teamName', Colors.green);
     } catch (e) {
-      _showToast(AppLocalizations.of(context).failedToDeleteTeam(e.toString()), Colors.red);
+      _showToast('${l.failedToDeleteTeam} $e', Colors.red);
     }
   }
 
   Future<void> _leaveTeam(int teamId, String teamName) async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (_currentUser == null) return;
 
     final userId = _currentUser!.id;
@@ -326,7 +328,7 @@ class TournamentScreenState extends State<TournamentScreen> {
         _loadUserTeams();
       });
       if (!mounted) return;
-      _showToast(AppLocalizations.of(context).teamLeft(teamName), Colors.green);
+      _showToast('${l.teamLeft} $teamName', Colors.green);
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 409) {
         final errorResponse = e.response?.data;
@@ -469,6 +471,7 @@ class TournamentScreenState extends State<TournamentScreen> {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     AppLocalizations l = AppLocalizations.of(context);
+    final DateFormat dateFormat = DateFormat.yMMMd(); // Créer une instance de DateFormat
 
     return GestureDetector(
       onTap: () {
@@ -558,7 +561,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    l.gameName(tournament.game.name),
+                                    '${l.gameName} ${tournament.game.name}',
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -572,7 +575,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    l.tournamentStartDate(tournament.startDate),
+                                    '${l.tournamentStartDate}: ${dateFormat.format(tournament.startDate)}', // Utiliser DateFormat ici
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),
@@ -586,9 +589,9 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    l.tournamentEndDate(tournament.endDate),
-                                    style: const TextStyle(fontSize: 16),
-                                    overflow: TextOverflow.ellipsis,
+                                      '${l.tournamentEndDate}: ${dateFormat.format(tournament.endDate)}',
+                                      style: const TextStyle(fontSize: 16),
+                                      overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
@@ -599,7 +602,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    l.teamPlayersCount(tournament.nbPlayers),
+                                    '${l.teamPlayersCount}: ${tournament.nbPlayers}',
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),

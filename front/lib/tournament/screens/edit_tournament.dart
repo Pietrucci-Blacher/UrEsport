@@ -1,6 +1,4 @@
-import 'dart:io';
 import 'dart:convert';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -64,7 +62,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       debugPrint('Games loaded: ${_games.length}');
     } catch (e) {
       debugPrint('Failed to load games: $e');
-      _showToast(context, AppLocalizations.of(context).failedToLoadGames(e.toString()), Colors.red);
+      _showToast(context, '${AppLocalizations.of(context).failedToLoadGames} $e', Colors.red);
     }
   }
 
@@ -140,7 +138,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
         Navigator.pop(context, updatedTournament);
       } catch (e) {
         debugPrint('Failed to update tournament: $e');
-        _showToast(context, AppLocalizations.of(context).failedToUpdateTournament(e.toString()), Colors.red);
+        _showToast(context, AppLocalizations.of(context).failedToUpdateTournament, Colors.red);
       }
     }
   }

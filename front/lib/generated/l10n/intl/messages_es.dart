@@ -28,15 +28,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m3(error) => "Error al dejar de seguir el juego: ${error}";
 
-  static String m4(count) => "Filtros (${count})";
+  static String m4(count) => "+${count} más";
 
-  static String m5(count) => "+${count} más";
+  static String m5(username) => "¡Bienvenido a tu perfil, ${username}!";
 
-  static String m6(username) => "¡Bienvenido a tu perfil, ${username}!";
+  static String m6(date) => "Inicio: ${date}";
 
-  static String m7(date) => "Inicio: ${date}";
-
-  static String m8(email) =>
+  static String m7(email) =>
       "Se ha enviado un código de verificación a ${email}.";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
@@ -87,7 +85,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Filtrar y ordenar"),
         "filterByTags":
             MessageLookupByLibrary.simpleMessage("FILTRAR POR ETIQUETAS"),
-        "filters": m4,
+        "filters": MessageLookupByLibrary.simpleMessage("Filtros"),
         "firstName": MessageLookupByLibrary.simpleMessage("Nombre"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("¿Olvidaste tu contraseña?"),
@@ -130,9 +128,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "login": MessageLookupByLibrary.simpleMessage("Iniciar sesión"),
         "logout": MessageLookupByLibrary.simpleMessage("Cerrar sesión"),
         "logs": MessageLookupByLibrary.simpleMessage("Registros"),
+        "membersInTeam": MessageLookupByLibrary.simpleMessage("Miembros"),
         "modifyGameButton":
             MessageLookupByLibrary.simpleMessage("Modificar el juego"),
-        "moreTagsCount": m5,
+        "moreTagsCount": m4,
         "mustBeLoggedIn": MessageLookupByLibrary.simpleMessage(
             "Debes estar conectado para ver tus torneos"),
         "noGamesAvailable":
@@ -160,7 +159,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "popularGamesTitle":
             MessageLookupByLibrary.simpleMessage("Juegos populares"),
         "profileScreenTitle": MessageLookupByLibrary.simpleMessage("Perfil"),
-        "profileScreenWelcome": m6,
+        "profileScreenWelcome": m5,
         "ratingCannotBeZero": MessageLookupByLibrary.simpleMessage(
             "La calificación no puede ser cero"),
         "ratingFetchedSuccessfully": MessageLookupByLibrary.simpleMessage(
@@ -182,15 +181,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendResetEmail": MessageLookupByLibrary.simpleMessage(
             "Enviar correo de restablecimiento"),
         "sort": MessageLookupByLibrary.simpleMessage("ORDENAR"),
-        "start": m7,
+        "start": m6,
         "tags": MessageLookupByLibrary.simpleMessage("Etiquetas"),
         "teamCreatedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Equipo creado con éxito"),
         "totalGames": MessageLookupByLibrary.simpleMessage("Juegos totales"),
+        "tournamentEndDate": MessageLookupByLibrary.simpleMessage("Fin"),
         "tournamentScreenTitle":
             MessageLookupByLibrary.simpleMessage("Torneos"),
         "tournamentScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "¡Bienvenido a la pantalla de torneos!"),
+        "tournamentStartDate": MessageLookupByLibrary.simpleMessage("Inicio"),
         "tournaments": MessageLookupByLibrary.simpleMessage("Torneos"),
         "trendingTournamentsTitle":
             MessageLookupByLibrary.simpleMessage("Torneos en tendencia"),
@@ -200,7 +201,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Voto positivo añadido"),
         "username": MessageLookupByLibrary.simpleMessage("Nombre de usuario"),
         "users": MessageLookupByLibrary.simpleMessage("Usuarios"),
-        "verificationCodeSent": m8,
+        "verificationCodeSent": m7,
         "verify": MessageLookupByLibrary.simpleMessage("Verificar"),
         "viewAll": MessageLookupByLibrary.simpleMessage("Ver todo"),
         "viewAllParticipants":

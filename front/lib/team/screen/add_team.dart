@@ -34,8 +34,7 @@ class AddTeamPageState extends State<AddTeamPage> {
         Navigator.pop(context);
       } catch (e) {
         showCustomToast(
-            AppLocalizations.of(context).failedToCreateTeam(e.toString()),
-            Colors.red);
+            '${AppLocalizations.of(context).failedToCreateTeam}: $e',Colors.red);
       }
     }
   }

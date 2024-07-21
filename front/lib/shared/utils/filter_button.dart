@@ -26,7 +26,7 @@ class FilterButton extends StatelessWidget {
       child: FloatingActionButton.extended(
         onPressed: () => _showFilterBottomSheet(context),
         label: Text(
-          AppLocalizations.of(context).filters(selectedTags.length),
+          '${AppLocalizations.of(context).filters}:(${selectedTags.length})',
           style: const TextStyle(
             color: Colors.black87,
             fontSize: 13,

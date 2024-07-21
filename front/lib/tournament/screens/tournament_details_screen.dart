@@ -415,7 +415,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
       debugPrint('Upvote failed: $e');
       if (!mounted) return;
       showNotificationToast(context,
-          AppLocalizations.of(context).failedToChangeUpvoteStatus(e.toString()),
+          '${AppLocalizations.of(context).failedToChangeUpvoteStatus}: $e',
           backgroundColor: Colors.red);
     }
   }
@@ -522,12 +522,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
           }
         } else {
           showNotificationToast(context,
-              AppLocalizations.of(context).leaveTournamentError(e.toString()),
+              '${AppLocalizations.of(context).leaveTournamentError}: $e',
               backgroundColor: Colors.red);
         }
       } else {
         showNotificationToast(
-            context, AppLocalizations.of(context).unknownError(e.toString()),
+            context, '${AppLocalizations.of(context).unknownError}: $e',
             backgroundColor: Colors.red);
       }
     }
@@ -704,7 +704,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    l.location(widget.tournament.location),
+                    '${l.location}: ${widget.tournament.location}',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -729,7 +729,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                       }
                     },
                     child: Text(
-                      l.game(widget.game?.name ?? widget.tournament.game.name),
+                      '${l.game} ${widget.game?.name ?? widget.tournament.game.name}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Theme.of(context).primaryColor,
                         decoration: TextDecoration.underline,
@@ -745,7 +745,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const Icon(Icons.date_range, color: Colors.blue),
                 const SizedBox(width: 8),
                 Text(
-                  l.startDate(dateFormat.format(widget.tournament.startDate)),
+                  '${l.startDate}: ${dateFormat.format(widget.tournament.startDate)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
@@ -756,7 +756,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const Icon(Icons.date_range, color: Colors.blue),
                 const SizedBox(width: 8),
                 Text(
-                  l.endDate(dateFormat.format(widget.tournament.endDate)),
+                  '${l.endDate}: ${dateFormat.format(widget.tournament.endDate)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
@@ -767,7 +767,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const SizedBox(width: 5),
                 Expanded(
                   child: Text(
-                    l.teamPlayersCount(widget.tournament.nbPlayers),
+                    '${l.teamPlayersCount} ${widget.tournament.nbPlayers}',
                     style: const TextStyle(fontSize: 16),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -985,12 +985,13 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
   Future<void> _joinTournament(BuildContext context, int tournamentId, int teamId) async {
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    AppLocalizations l = AppLocalizations.of(context);
 
-    final joinedTournamentMessage = AppLocalizations.of(context).joinedTournament;
-    final teamAlreadyInTournamentMessage = AppLocalizations.of(context).teamAlreadyInTournament;
-    final alreadyJoinedTournamentMessage = AppLocalizations.of(context).alreadyJoinedTournament;
-    final joinErrorMessage = AppLocalizations.of(context).joinError;
-    final unknownJoinErrorMessage = AppLocalizations.of(context).unknownJoinError;
+    final joinedTournamentMessage = l.joinedTournament;
+    final teamAlreadyInTournamentMessage = l.teamAlreadyInTournament;
+    final alreadyJoinedTournamentMessage = l.alreadyJoinedTournament;
+    final joinErrorMessage = l.joinError;
+    final unknownJoinErrorMessage = l.unknownJoinError;
 
     try {
       await tournamentService.joinTournament(tournamentId, teamId);
@@ -1010,10 +1011,10 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
               _hasJoined = true;
             });
           } else {
-            _showNotificationToast(joinErrorMessage(errorMessage), Colors.red);
+            _showNotificationToast(joinErrorMessage, Colors.red);
           }
         } else {
-          _showNotificationToast(joinErrorMessage(e.toString()), Colors.red);
+          _showNotificationToast(joinErrorMessage, Colors.red);
         }
       } else {
         _showNotificationToast(unknownJoinErrorMessage, Colors.red);
