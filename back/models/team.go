@@ -15,6 +15,7 @@ type Team struct {
 	Private     bool         `json:"private" gorm:"default:false"`
 	CreatedAt   time.Time    `json:"created_at"`
 	UpdatedAt   time.Time    `json:"updated_at"`
+	DeletedAt   *time.Time   `json:"deleted_at"`
 }
 
 type SanitizedTeam struct {
@@ -49,15 +50,20 @@ type InviteTeamDto struct {
 func FindAllTeams(query services.QueryFilter) ([]Team, error) {
 	var teams []Team
 
-	err := DB.Model(&Team{}).
+	value := DB.Model(&Team{}).
+		Where("deleted_at IS NULL").
 		Offset(query.GetSkip()).
-		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
 		Order(query.GetSort()).
 		Preload("Members").
 		Preload("Owner").
-		Preload("Tournaments").
-		Find(&teams).Error
+		Preload("Tournaments")
+
+	if query.GetLimit() != 0 {
+		value.Limit(query.GetLimit())
+	}
+
+	err := value.Find(&teams).Error
 
 	return teams, err
 }
@@ -143,6 +149,7 @@ func (t *Team) FindOneById(id int) error {
 
 func (t *Team) FindOne(key string, value any) error {
 	return DB.Model(&Team{}).
+		Where("deleted_at IS NULL").
 		Where(key, value).
 		Preload("Members").
 		Preload("Owner").
@@ -155,15 +162,18 @@ func (t *Team) Save() error {
 }
 
 func (t *Team) Delete() error {
+	if err := t.RemoveAllTournaments(); err != nil {
+		return err
+	}
 	if err := t.RemoveAllMembers(); err != nil {
 		return err
 	}
 
-	if err := t.RemoveAllTournaments(); err != nil {
-		return err
-	}
+	del := time.Now()
+	t.DeletedAt = &del
+	t.Name = "[deleted]"
 
-	return DB.Delete(&t).Error
+	return t.Save()
 }
 
 func ClearTeams() error {
@@ -175,6 +185,7 @@ func FindTeamsByUserId(userId int) ([]Team, error) {
 
 	// Retrieve teams where the user is the owner
 	err := DB.Model(&Team{}).
+		Where("deleted_at IS NULL").
 		Where("owner_id", userId).
 		Preload("Members").
 		Preload("Owner").
@@ -188,6 +199,7 @@ func FindTeamsByUserId(userId int) ([]Team, error) {
 	// Retrieve teams where the user is a member
 	var memberTeams []Team
 	err = DB.Model(&Team{}).
+		Where("deleted_at IS NULL").
 		Joins("JOIN team_members ON team_members.team_id = teams.id").
 		Where("team_members.user_id", userId).
 		Preload("Members").

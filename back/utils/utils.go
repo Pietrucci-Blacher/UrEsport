@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"math/rand"
 
 	"github.com/h2non/filetype"
 )
@@ -45,4 +46,13 @@ func FormatSize(size int) string {
 	} else {
 		return fmt.Sprintf("%d GB", size/SIZE_1GB)
 	}
+}
+
+func GenerateString(length int) string {
+	const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"
+	b := make([]byte, length)
+	for i := range b {
+		b[i] = charset[rand.Intn(len(charset))]
+	}
+	return string(b)
 }

@@ -11,9 +11,10 @@ type Game struct {
 	Description string       `json:"description" gorm:"type:varchar(255)"`
 	Image       string       `json:"image" gorm:"type:varchar(255)"`
 	Tags        []string     `json:"tags" gorm:"json"`
+	Tournaments []Tournament `json:"tournaments" gorm:"foreignKey:GameID"`
 	CreatedAt   time.Time    `json:"created_at"`
 	UpdatedAt   time.Time    `json:"updated_at"`
-	Tournaments []Tournament `json:"tournaments" gorm:"foreignKey:GameID"`
+	DeletedAt   *time.Time   `json:"deleted_at"`
 }
 
 type CreateGameDto struct {
@@ -34,8 +35,8 @@ func FindAllGames(query services.QueryFilter) ([]Game, error) {
 	var games []Game
 
 	value := DB.Model(&Game{}).
+		Where("deleted_at IS NULL").
 		Offset(query.GetSkip()).
-		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
 		Where(query.GetSearch()).
 		Order(query.GetSort()).
@@ -45,15 +46,16 @@ func FindAllGames(query services.QueryFilter) ([]Game, error) {
 		value.Limit(query.GetLimit())
 	}
 
-	value.Find(&games)
+	err := value.Find(&games).Error
 
-	return games, value.Error
+	return games, err
 }
 
 func CountGameByName(name string) (int64, error) {
 	var count int64
 
 	err := DB.Model(&Game{}).
+		Where("deleted_at IS NULL").
 		Where("name = ?", name).
 		Count(&count).Error
 
@@ -68,12 +70,19 @@ func (g *Game) FindOneById(id int) error {
 	return DB.First(g, id).Error
 }
 
-func (g *Game) FindOne(key string, value interface{}) error {
-	return DB.Where(key, value).First(g).Error
+func (g *Game) FindOne(key string, value any) error {
+	return DB.Where(key, value).
+		Where("deleted_at IS NULL").
+		First(g).Error
 }
 
 func (g *Game) Delete() error {
-	return DB.Delete(g).Error
+	del := time.Now()
+	g.DeletedAt = &del
+	g.Name = "[deleted]"
+	g.Description = "[deleted]"
+
+	return g.Save()
 }
 
 func ClearGames() error {
