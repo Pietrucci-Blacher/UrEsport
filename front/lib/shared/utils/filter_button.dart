@@ -7,6 +7,7 @@ class FilterButton extends StatelessWidget {
   final List<String> sortOptions;
   final String currentSortOption;
   final Function(List<String>, String) onFilterChanged;
+  final bool isSingleSelection;
 
   const FilterButton({
     super.key,
@@ -15,6 +16,7 @@ class FilterButton extends StatelessWidget {
     required this.sortOptions,
     required this.currentSortOption,
     required this.onFilterChanged,
+    this.isSingleSelection = false,
   });
 
   @override
@@ -50,6 +52,7 @@ class FilterButton extends StatelessWidget {
         sortOptions: sortOptions,
         currentSortOption: currentSortOption,
         onFilterChanged: onFilterChanged,
+        isSingleSelection: isSingleSelection,
       ),
     );
   }
@@ -61,6 +64,7 @@ class FilterBottomSheet extends StatefulWidget {
   final List<String> sortOptions;
   final String currentSortOption;
   final Function(List<String>, String) onFilterChanged;
+  final bool isSingleSelection;
 
   const FilterBottomSheet({
     super.key,
@@ -69,6 +73,7 @@ class FilterBottomSheet extends StatefulWidget {
     required this.sortOptions,
     required this.currentSortOption,
     required this.onFilterChanged,
+    this.isSingleSelection = false,
   });
 
   @override
@@ -179,23 +184,27 @@ class FilterBottomSheetState extends State<FilterBottomSheet> {
           runSpacing: 8,
           children: widget.availableTags
               .where((tag) =>
-                  tag.toLowerCase().contains(_searchQuery.toLowerCase()))
+              tag.toLowerCase().contains(_searchQuery.toLowerCase()))
               .map((tag) => FilterChip(
-                    label: Text(tag),
-                    selected: _selectedTags.contains(tag),
-                    onSelected: (selected) {
-                      setState(() {
-                        if (selected) {
-                          _selectedTags.add(tag);
-                        } else {
-                          _selectedTags.remove(tag);
-                        }
-                      });
-                    },
-                    selectedColor:
-                        Theme.of(context).primaryColor.withOpacity(0.3),
-                    checkmarkColor: Theme.of(context).primaryColor,
-                  ))
+            label: Text(tag),
+            selected: _selectedTags.contains(tag),
+            onSelected: (selected) {
+              setState(() {
+                if (widget.isSingleSelection) {
+                  _selectedTags = [tag];
+                } else {
+                  if (selected) {
+                    _selectedTags.add(tag);
+                  } else {
+                    _selectedTags.remove(tag);
+                  }
+                }
+              });
+            },
+            selectedColor:
+            Theme.of(context).primaryColor.withOpacity(0.3),
+            checkmarkColor: Theme.of(context).primaryColor,
+          ))
               .toList(),
         ),
       ],
@@ -209,16 +218,16 @@ class FilterBottomSheetState extends State<FilterBottomSheet> {
         Text(AppLocalizations.of(context).sort,
             style: Theme.of(context).textTheme.titleMedium),
         ...widget.sortOptions.map((option) => RadioListTile<String>(
-              title: Text(option),
-              value: option,
-              groupValue: _sortOption,
-              onChanged: (value) {
-                setState(() {
-                  _sortOption = value!;
-                });
-              },
-              activeColor: Theme.of(context).primaryColor,
-            )),
+          title: Text(option),
+          value: option,
+          groupValue: _sortOption,
+          onChanged: (value) {
+            setState(() {
+              _sortOption = value!;
+            });
+          },
+          activeColor: Theme.of(context).primaryColor,
+        )),
       ],
     );
   }

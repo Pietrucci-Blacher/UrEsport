@@ -123,6 +123,7 @@ class GamesScreenState extends State<GamesScreen> {
             });
             _filterGames(context);
           },
+          isSingleSelection: false, // Activer la sélection multiple
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
@@ -280,7 +281,7 @@ class GameCard extends StatelessWidget {
       visibleTags.add(
         Chip(
           label:
-              Text(AppLocalizations.of(context).moreTagsCount(hiddenTagsCount)),
+          Text(AppLocalizations.of(context).moreTagsCount(hiddenTagsCount)),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       );
