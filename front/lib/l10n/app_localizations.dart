@@ -2362,6 +2362,47 @@ class AppLocalizations {
       desc: 'Title for the select game dialog',
     );
   }
+
+  String get tournamentText {
+    return Intl.message(
+      'Tournois',
+      name: 'tournamentText',
+      desc: 'Label for the tournament field',
+    );
+  }
+
+  String get nothingTournamentforGame {
+    return Intl.message(
+      'Aucun tournoi pour ce jeu',
+      name: 'nothinTournamentforGame',
+      desc: 'Message displayed when no tournament is available for the game',
+    );
+  }
+
+
+  String get profileImageUpdated {
+    return Intl.message(
+      'Profile image updated',
+      name: 'profileImageUpdated',
+      desc: 'Message shown when the profile image is updated',
+    );
+  }
+
+  String get removedFromLikedGames {
+    return Intl.message(
+      'Removed from liked games',
+      name: 'removedFromLikedGames',
+      desc: 'Message shown when a game is removed from liked games',
+    );
+  }
+
+  String get needConnected {
+    return Intl.message(
+      'Vous devez être connecté pour accéder à cette page',
+      name: 'needConnected',
+      desc: 'Message shown when user is not connected',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

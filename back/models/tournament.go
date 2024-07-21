@@ -10,26 +10,25 @@ import (
 )
 
 type Tournament struct {
-	ID          int        `json:"id" gorm:"primaryKey"`
-	Name        string     `json:"name" gorm:"type:varchar(100)"`
-	Description string     `json:"description" gorm:"type:varchar(255)"`
-	StartDate   time.Time  `json:"start_date"`
-	EndDate     time.Time  `json:"end_date"`
-	Location    string     `json:"location" gorm:"type:varchar(100)"`
-	Latitude    float64    `json:"latitude" gorm:"type:decimal(10,8)"`
-	Longitude   float64    `json:"longitude" gorm:"type:decimal(11,8)"`
-	OwnerID     int        `json:"owner_id"`
-	Owner       User       `json:"owner" gorm:"foreignKey:OwnerID"`
-	Teams       []Team     `json:"teams" gorm:"many2many:tournament_teams;"`
-	Image       string     `json:"image" gorm:"type:text"`
-	Private     bool       `json:"private" gorm:"default:false"`
-	GameID      int        `json:"game_id"`
-	Game        Game       `json:"game" gorm:"foreignKey:GameID"`
-	NbPlayer    int        `json:"nb_player" gorm:"default:1"`
-	Upvotes     int        `json:"upvote" gorm:"default:0"`
-	CreatedAt   time.Time  `json:"created_at"`
-	UpdatedAt   time.Time  `json:"updated_at"`
-	DeletedAt   *time.Time `json:"deleted_at"`
+	ID          int       `json:"id" gorm:"primaryKey"`
+	Name        string    `json:"name" gorm:"type:varchar(100)"`
+	Description string    `json:"description" gorm:"type:varchar(255)"`
+	StartDate   time.Time `json:"start_date"`
+	EndDate     time.Time `json:"end_date"`
+	Location    string    `json:"location" gorm:"type:varchar(100)"`
+	Latitude    float64   `json:"latitude" gorm:"type:decimal(10,8)"`
+	Longitude   float64   `json:"longitude" gorm:"type:decimal(11,8)"`
+	OwnerID     int       `json:"owner_id"`
+	Owner       User      `json:"owner" gorm:"foreignKey:OwnerID"`
+	Teams       []Team    `json:"teams" gorm:"many2many:tournament_teams;"`
+	Image       string    `json:"image" gorm:"type:varchar(255)"`
+	Private     bool      `json:"private" gorm:"default:false"`
+	GameID      int       `json:"game_id"`
+	Game        Game      `json:"game" gorm:"foreignKey:GameID"`
+	NbPlayer    int       `json:"nb_player" gorm:"default:1"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
+	Upvotes     int       `json:"upvote" gorm:"default:0"`
 }
 
 type CreateTournamentDto struct {
@@ -84,8 +83,8 @@ func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
 	var tournaments []Tournament
 
 	value := DB.Model(&Tournament{}).
-		Where("deleted_at IS NULL").
 		Offset(query.GetSkip()).
+		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
 		Order(query.GetSort()).
 		Preload("Teams").
@@ -96,16 +95,15 @@ func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
 		value.Limit(query.GetLimit())
 	}
 
-	err := value.Find(&tournaments).Error
+	value.Find(&tournaments)
 
-	return tournaments, err
+	return tournaments, value.Error
 }
 
 func FindTournamentsByUserID(userID int) ([]Tournament, error) {
 	var tournaments []Tournament
 
 	err := DB.Model(&Tournament{}).
-		Where("deleted_at IS NULL").
 		Where("owner_id", userID).
 		Preload("Teams").
 		Preload("Owner").
@@ -257,7 +255,6 @@ func (t *Tournament) FindOneById(id int) error {
 
 func (t *Tournament) FindOne(key string, value any) error {
 	return DB.Model(&Tournament{}).
-		Where("deleted_at IS NULL").
 		Preload("Teams").
 		Preload("Owner").
 		Preload("Game").
@@ -266,14 +263,10 @@ func (t *Tournament) FindOne(key string, value any) error {
 }
 
 func (t *Tournament) Delete() error {
-	del := time.Now()
-	t.DeletedAt = &del
-	t.Name = "[deleted]"
-	t.Description = "[deleted]"
-	t.Location = "[deleted]"
-	t.Image = "[deleted]"
-
-	return t.Save()
+	if err := t.RemoveAllTeams(); err != nil {
+		return err
+	}
+	return DB.Delete(t).Error
 }
 
 func ClearTournaments() error {
