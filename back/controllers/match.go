@@ -103,6 +103,7 @@ func UpdateMatch(c *gin.Context) {
 
 	roomName := fmt.Sprintf("tournament:%d", match.TournamentID)
 	_ = ws.Room(roomName).Emit("match:update", match)
+	_ = ws.Room(roomName).Emit("bracket:update", match)
 
 	models.PrintLogf([]string{"match", "UpdateMatch"}, "Match %d updated", match.ID)
 	c.JSON(http.StatusOK, match)
@@ -155,6 +156,7 @@ func ScoreMatch(c *gin.Context) {
 
 	roomName := fmt.Sprintf("tournament:%d", match.TournamentID)
 	_ = ws.Room(roomName).Emit("match:update", match)
+	_ = ws.Room(roomName).Emit("bracket:update", match)
 
 	models.PrintLogf([]string{"match", "ScoreMatch"}, "Match %d scored", match.ID)
 	c.JSON(http.StatusOK, match)
@@ -252,6 +254,8 @@ func CloseMatch(c *gin.Context) {
 
 	_ = ws.Room(roomName).Emit("match:update", match)
 	_ = ws.Room(roomName).Emit("match:update", nextMatch)
+	_ = ws.Room(roomName).Emit("bracket:update", match)
+	_ = ws.Room(roomName).Emit("bracket:update", nextMatch)
 	models.PrintLogf([]string{"match", "CloseMatch"}, "Match %d closed by team %d", match.ID, team.ID)
 	c.JSON(http.StatusOK, match)
 }
