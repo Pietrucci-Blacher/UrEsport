@@ -162,7 +162,9 @@ func TestDeleteTeam(t *testing.T) {
 
 	assert.Nil(t, err)
 	var count int64
-	DB.Model(&Team{}).Count(&count)
+	DB.Model(&Team{}).
+		Where("deleted_at IS NULL").
+		Count(&count)
 	assert.Equal(t, int64(0), count)
 }
 
