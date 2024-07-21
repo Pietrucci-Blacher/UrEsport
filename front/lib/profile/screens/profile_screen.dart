@@ -785,7 +785,7 @@ class LikedGamesList extends StatelessWidget {
                   await likeService.deleteLike(like.id!);
 
                   if (!context.mounted) return;
-                  _showToast(context, '${game.name} ${l.removedFromLikedGames}',
+                  _showToast(context, '${game.name}: ${l.removedFromLikedGames}',
                       Colors.red);
                 },
                 background: Container(

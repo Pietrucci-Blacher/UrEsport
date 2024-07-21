@@ -926,7 +926,7 @@ class AppLocalizations {
 
   String get upvoteAdded {
     return Intl.message(
-      'Upvote ajouté',
+      'Upvote added',
       name: 'upvoteAdded',
       desc: 'Message displayed when upvote is added',
     );
@@ -951,7 +951,7 @@ class AppLocalizations {
 
   String get leftTournament {
     return Intl.message(
-      'Vous avez quitté le tournoi',
+      'You have left the tournament',
       name: 'leftTournament',
       desc: 'Message displayed when user leaves tournament',
     );
@@ -1101,7 +1101,7 @@ class AppLocalizations {
 
   String get viewAllParticipants {
     return Intl.message(
-      'Voir tous les participants',
+      'View all participants',
       name: 'viewAllParticipants',
       desc: 'View all participants text',
     );
@@ -1109,7 +1109,7 @@ class AppLocalizations {
 
   String get generateBracket {
     return Intl.message(
-      'Générer le bracket',
+      'Generate Bracket',
       name: 'generateBracket',
       desc: 'Generate bracket button text',
     );
@@ -1117,7 +1117,7 @@ class AppLocalizations {
 
   String get joinTournament {
     return Intl.message(
-      'Rejoindre le tournoi',
+      'Join Tournament',
       name: 'joinTournament',
       desc: 'Join tournament button text',
     );
@@ -1125,7 +1125,7 @@ class AppLocalizations {
 
   String get leaveTournament {
     return Intl.message(
-      'Quitter le tournoi',
+      'Leave Tournament',
       name: 'leaveTournament',
       desc: 'Leave tournament button text',
     );
@@ -1133,7 +1133,7 @@ class AppLocalizations {
 
   String get joinedTournament {
     return Intl.message(
-      'Vous avez bien rejoint le tournoi',
+      'You have successfully joined the tournament',
       name: 'joinedTournament',
       desc: 'Message displayed when user joins tournament successfully',
     );
@@ -1149,7 +1149,7 @@ class AppLocalizations {
 
   String get alreadyJoinedTournament {
     return Intl.message(
-      'Vous avez déjà rejoint le tournoi',
+      'You have already joined this tournament',
       name: 'alreadyJoinedTournament',
       desc: 'Message displayed when user has already joined the tournament',
     );
@@ -1509,7 +1509,7 @@ class AppLocalizations {
 
   String get teamCreatedSuccessfully {
     return Intl.message(
-      'Équipe créée avec succès',
+      'Team created successfully',
       name: 'teamCreatedSuccessfully',
       desc: 'Message displayed when the team is created successfully',
     );
@@ -1534,7 +1534,7 @@ class AppLocalizations {
 
   String get noRatingFetched {
     return Intl.message(
-      'Aucune note n\'a été récupérée',
+      'No rating fetched',
       name: 'noRatingFetched',
       desc: 'Message displayed when no rating is fetched',
     );
@@ -1542,7 +1542,7 @@ class AppLocalizations {
 
   String get ratingFetchedSuccessfully {
     return Intl.message(
-      'Note récupérée avec succès',
+      'Rating fetched successfully',
       name: 'ratingFetchedSuccessfully',
       desc: 'Message displayed when the rating is fetched successfully',
     );
@@ -1550,7 +1550,7 @@ class AppLocalizations {
 
   String get errorFetchingRating {
     return Intl.message(
-      'Erreur lors de la récupération de la note',
+      'Error fetching rating',
       name: 'errorFetchingRating',
       desc: 'Error message when fetching rating fails',
     );
@@ -1558,7 +1558,7 @@ class AppLocalizations {
 
   String get ratingCannotBeZero {
     return Intl.message(
-      'La note ne peut pas être zéro',
+      'Rating cannot be zero',
       name: 'ratingCannotBeZero',
       desc: 'Message displayed when the rating cannot be zero',
     );
@@ -1566,7 +1566,7 @@ class AppLocalizations {
 
   String get ratingSavedSuccessfully {
     return Intl.message(
-      'Note enregistrée avec succès',
+      'Rating saved successfully',
       name: 'ratingSavedSuccessfully',
       desc: 'Message displayed when the rating is saved successfully',
     );
@@ -1574,7 +1574,7 @@ class AppLocalizations {
 
   String get errorSavingRating {
     return Intl.message(
-      'Erreur lors de l\'enregistrement de la note',
+      'Error saving rating',
       name: 'errorSavingRating',
       desc: 'Error message when saving rating fails',
     );
@@ -1582,7 +1582,7 @@ class AppLocalizations {
 
   String get yourRating {
     return Intl.message(
-      'Votre note:',
+      'Your Rating:',
       name: 'yourRating',
       desc: 'Label for the user rating',
     );
@@ -2398,7 +2398,7 @@ class AppLocalizations {
 
   String get needConnected {
     return Intl.message(
-      'Vous devez être connecté pour accéder à cette page',
+      'You must be logged in to access this page',
       name: 'needConnected',
       desc: 'Message shown when user is not connected',
     );

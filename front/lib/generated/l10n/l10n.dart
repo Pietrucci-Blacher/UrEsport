@@ -989,6 +989,196 @@ class S {
       args: [],
     );
   }
+
+  /// `Game removed from your liked games`
+  String get removedFromLikedGames {
+    return Intl.message(
+      'Game removed from your liked games',
+      name: 'removedFromLikedGames',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rating fetched successfully`
+  String get ratingFetchedSuccessfully {
+    return Intl.message(
+      'Rating fetched successfully',
+      name: 'ratingFetchedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No rating fetched`
+  String get noRatingFetched {
+    return Intl.message(
+      'No rating fetched',
+      name: 'noRatingFetched',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Participants`
+  String get participants {
+    return Intl.message(
+      'Participants',
+      name: 'participants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View all participants`
+  String get viewAllParticipants {
+    return Intl.message(
+      'View all participants',
+      name: 'viewAllParticipants',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join Tournament`
+  String get joinTournament {
+    return Intl.message(
+      'Join Tournament',
+      name: 'joinTournament',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Leave Tournament`
+  String get leaveTournament {
+    return Intl.message(
+      'Leave Tournament',
+      name: 'leaveTournament',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have successfully joined the tournament`
+  String get joinedTournaments {
+    return Intl.message(
+      'You have successfully joined the tournament',
+      name: 'joinedTournaments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Generate Bracket`
+  String get generateBracket {
+    return Intl.message(
+      'Generate Bracket',
+      name: 'generateBracket',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your Rating:`
+  String get yourRating {
+    return Intl.message(
+      'Your Rating:',
+      name: 'yourRating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error saving rating`
+  String get errorSavingRating {
+    return Intl.message(
+      'Error saving rating',
+      name: 'errorSavingRating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rating saved successfully`
+  String get ratingSavedSuccessfully {
+    return Intl.message(
+      'Rating saved successfully',
+      name: 'ratingSavedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Rating cannot be zero`
+  String get ratingCannotBeZero {
+    return Intl.message(
+      'Rating cannot be zero',
+      name: 'ratingCannotBeZero',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error fetching rating`
+  String get errorFetchingRating {
+    return Intl.message(
+      'Error fetching rating',
+      name: 'errorFetchingRating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Team created successfully`
+  String get teamCreatedSuccessfully {
+    return Intl.message(
+      'Team created successfully',
+      name: 'teamCreatedSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have already joined this tournament`
+  String get alreadyJoinedTournament {
+    return Intl.message(
+      'You have already joined this tournament',
+      name: 'alreadyJoinedTournament',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You have left the tournament`
+  String get leftTournament {
+    return Intl.message(
+      'You have left the tournament',
+      name: 'leftTournament',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You must be logged in to access this page`
+  String get needConnected {
+    return Intl.message(
+      'You must be logged in to access this page',
+      name: 'needConnected',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upvote added`
+  String get upvoteAdded {
+    return Intl.message(
+      'Upvote added',
+      name: 'upvoteAdded',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
