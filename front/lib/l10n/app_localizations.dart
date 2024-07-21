@@ -1057,7 +1057,7 @@ class AppLocalizations {
 
   String get startDate {
     return Intl.message(
-      'Start Date:',
+      'Start:',
       name: 'startDate',
       desc: 'Start date display text',
     );
@@ -1065,7 +1065,7 @@ class AppLocalizations {
 
   String get endDate {
     return Intl.message(
-      'End Date:',
+      'End:',
       name: 'endDate',
       desc: 'End date display text',
     );
@@ -1298,7 +1298,7 @@ class AppLocalizations {
 
   String get gameId {
     return Intl.message(
-      'Game ID',
+      'Game',
       name: 'gameId',
       desc: 'Label for the game ID field',
     );
@@ -1978,7 +1978,7 @@ class AppLocalizations {
 
   String get tags {
     return Intl.message(
-      'Tags (comma or space separated)',
+      'Tags',
       name: 'tags',
       desc: 'Label for the tags field',
     );
@@ -2299,7 +2299,7 @@ class AppLocalizations {
 
   String get start {
     return Intl.message(
-      'Start: {date}',
+      'Start:',
       name: 'start',
       desc: 'Label for the start date',
     );
@@ -2307,7 +2307,7 @@ class AppLocalizations {
 
   String get end {
     return Intl.message(
-      'End: {date}',
+      'End:',
       name: 'end',
       desc: 'Label for the end date',
     );

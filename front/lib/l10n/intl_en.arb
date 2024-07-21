@@ -118,8 +118,8 @@
   "startDateText": "Start Date:",
   "endDateText": "End Date:",
   "locationText": "Location:",
-  "startDate": "Start Date:",
-  "endDate": "End Date:",
+  "startDate": "Start:",
+  "endDate": "End:",
   "upvotes": "Upvotes:",
   "participants": "Participants:",
   "viewAllParticipants": "View all participants",
@@ -148,7 +148,7 @@
   "imageUrl": "Image URL",
   "pleaseEnterImageUrl": "Please enter an image URL",
   "private": "Private",
-  "gameId": "Game ID",
+  "gameId": "Game",
   "pleaseEnterGameId": "Please enter a game ID",
   "numberOfPlayers": "Number of Players",
   "pleaseEnterNumberOfPlayers": "Please enter the number of players",
@@ -233,7 +233,7 @@
   "enterResult": "Enter result for",
   "vs": "VS",
   "addGame": "Add Game",
-  "tags": "Tags (comma or space separated)",
+  "tags": "Tags",
   "pleaseEnterGameName": "Please enter the game name",
   "pleaseEnterGameDescription": "Please enter the game description",
   "pleaseEnterTags": "Please enter the tags",
@@ -277,5 +277,6 @@
   "end": "End: {date}",
   "noJoinedTournaments": "No joined tournaments",
   "removedFromLikedGames": "Removed from liked games",
-  "needConnected": "You must be logged in to access this page"
+  "needConnected": "You must be logged in to access this page",
+  "nothingTournamentforGame": "No tournaments for this game"
 }

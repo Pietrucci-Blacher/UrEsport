@@ -100,7 +100,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Edit Tournament"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "end": m0,
-        "endDate": MessageLookupByLibrary.simpleMessage("End Date:"),
+        "endDate": MessageLookupByLibrary.simpleMessage("End:"),
         "endDateIsRequired":
             MessageLookupByLibrary.simpleMessage("End Date is required"),
         "endDateText": MessageLookupByLibrary.simpleMessage("End Date:"),
@@ -183,7 +183,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Game Description"),
         "gameDetailPageTitle":
             MessageLookupByLibrary.simpleMessage("Game Details"),
-        "gameId": MessageLookupByLibrary.simpleMessage("Game ID"),
+        "gameId": MessageLookupByLibrary.simpleMessage("Game"),
         "gameIdIsRequired":
             MessageLookupByLibrary.simpleMessage("Game ID is required"),
         "gameName": MessageLookupByLibrary.simpleMessage("Game: "),
@@ -276,6 +276,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No tournaments found"),
         "noUsersFound": MessageLookupByLibrary.simpleMessage("No users found"),
         "noWinnerYet": MessageLookupByLibrary.simpleMessage("No winner yet"),
+        "nothingTournamentforGame": MessageLookupByLibrary.simpleMessage(
+            "No tournaments for this game"),
         "notificationDeleted":
             MessageLookupByLibrary.simpleMessage("Notification deleted"),
         "notificationScreenTitle":
@@ -377,15 +379,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "sortAToZ": MessageLookupByLibrary.simpleMessage("Sort A-Z"),
         "sortZToA": MessageLookupByLibrary.simpleMessage("Sort Z-A"),
         "start": m6,
-        "startDate": MessageLookupByLibrary.simpleMessage("Start Date:"),
+        "startDate": MessageLookupByLibrary.simpleMessage("Start:"),
         "startDateIsRequired":
             MessageLookupByLibrary.simpleMessage("Start Date is required"),
         "startDateText": MessageLookupByLibrary.simpleMessage("Start Date:"),
         "startDateTime":
             MessageLookupByLibrary.simpleMessage("Start Date & Time"),
         "status": MessageLookupByLibrary.simpleMessage("Status"),
-        "tags": MessageLookupByLibrary.simpleMessage(
-            "Tags (comma or space separated)"),
+        "tags": MessageLookupByLibrary.simpleMessage("Tags"),
         "team": MessageLookupByLibrary.simpleMessage("Team"),
         "team1Score": MessageLookupByLibrary.simpleMessage("Team 1 Score"),
         "team2Score": MessageLookupByLibrary.simpleMessage("Team 2 Score"),

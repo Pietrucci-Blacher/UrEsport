@@ -330,9 +330,6 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
       try {
         final imageUrl = await _uploadImage(File(pickedFile.path));
-        if (imageUrl == null) {
-          throw Exception('Image URL returned is null');
-        }
         setState(() {
           widget.tournament.image = imageUrl;
           _isUploadingImage = false;
@@ -704,7 +701,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '${l.location}: ${widget.tournament.location}',
+                    '${l.location} ${widget.tournament.location}',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -745,7 +742,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const Icon(Icons.date_range, color: Colors.blue),
                 const SizedBox(width: 8),
                 Text(
-                  '${l.startDate}: ${dateFormat.format(widget.tournament.startDate)}',
+                  '${l.startDate} ${dateFormat.format(widget.tournament.startDate)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
@@ -756,7 +753,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const Icon(Icons.date_range, color: Colors.blue),
                 const SizedBox(width: 8),
                 Text(
-                  '${l.endDate}: ${dateFormat.format(widget.tournament.endDate)}',
+                  '${l.endDate} ${dateFormat.format(widget.tournament.endDate)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],

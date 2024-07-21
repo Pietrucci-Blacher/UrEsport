@@ -2829,6 +2829,16 @@ class S {
       args: [],
     );
   }
+
+  /// `No tournaments for this game`
+  String get nothingTournamentforGame {
+    return Intl.message(
+      'No tournaments for this game',
+      name: 'nothingTournamentforGame',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
