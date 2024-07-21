@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -14,11 +16,7 @@ abstract class ITournamentService {
   Future<bool> hasUpvoted(int tournamentId, int userId);
   Future<void> joinTournament(int tournamentId, int teamId);
   Future<bool> hasJoinedTournament(int tournamentId, String username);
-  Future<void> inviteTeamToTournament(
-    int tournamentId,
-    int teamId,
-    String teamName,
-  );
+  Future<void> inviteTeamToTournament(int tournamentId, int teamId, String teamName,);
   Future<List<Team>> fetchTeams();
   Future<Tournament> fetchTournamentById(int tournamentId);
   Future<void> generateBracket(int tournamentId);
@@ -26,6 +24,7 @@ abstract class ITournamentService {
   Future<void> createTournament(Map<String, dynamic> tournamentData);
   Future<void> leaveTournament(int tournamentId, int teamId);
   Future<void> updateTournament(Tournament tournament);
+  Future<String> uploadTournamentImage(int tournamentId, File image);
 }
 
 class TournamentService implements ITournamentService {
@@ -550,4 +549,55 @@ class TournamentService implements ITournamentService {
       }
     }
   }
+
+  @override
+  Future<String> uploadTournamentImage(int tournamentId, File image) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    try {
+      final formData = FormData.fromMap({
+        'upload[]': await MultipartFile.fromFile(image.path),
+      });
+
+      final response = await _dio.post(
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/image",
+        data: formData,
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'multipart/form-data',
+          },
+          validateStatus: (status) {
+            return status != null && status < 500;
+          },
+        ),
+      );
+
+      if (response.statusCode != 200) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: 'Failed to upload tournament image',
+          type: DioExceptionType.badResponse,
+        );
+      }
+
+      // Assurez-vous que l'URL de l'image n'est pas nulle
+      final imageUrl = response.data['image_url'];
+      if (imageUrl == null) {
+        throw Exception('Image URL is null');
+      }
+      return imageUrl;
+    } catch (e) {
+      if (e is DioException) {
+        debugPrint('DioException: ${e.response?.data}');
+        rethrow;
+      } else {
+        debugPrint('Unexpected error: $e');
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
 }

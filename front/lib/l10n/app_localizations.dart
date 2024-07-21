@@ -1041,6 +1041,30 @@ class AppLocalizations {
     );
   }
 
+  String get startDateText {
+    return Intl.message(
+      'Start Date:',
+      name: 'startDate',
+      desc: 'Start date label text',
+    );
+  }
+
+  String get endDateText {
+    return Intl.message(
+      'End Date:',
+      name: 'endDate',
+      desc: 'End date display text',
+    );
+  }
+
+  String get locationText {
+    return Intl.message(
+      'Location:',
+      name: 'location',
+      desc: 'Location display text',
+    );
+  }
+
   String startDate(String date) {
     return Intl.message(
       'Start Date: $date',
@@ -2311,6 +2335,31 @@ class AppLocalizations {
       name: 'end',
       desc: 'Label for the end date',
       args: ['date'],
+    );
+  }
+
+  String get noJoinedTournaments {
+    return Intl.message(
+      'No joined tournaments',
+      name: 'noJoinedTournaments',
+      desc: 'Message shown when user has not joined any tournaments',
+    );
+  }
+
+  String failedToLoadGames(String string) {
+    return Intl.message(
+      'Failed to load games: $string',
+      name: 'failedToLoadGames',
+      desc: 'Message shown when loading games fails',
+      args: [string],
+    );
+  }
+
+  String get selectGame {
+    return Intl.message(
+      'Select Game',
+      name: 'selectGame',
+      desc: 'Title for the select game dialog',
     );
   }
 }

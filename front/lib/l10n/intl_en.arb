@@ -92,5 +92,6 @@
   "noTournamentsFound": "No tournaments found",
   "errorLoadingTournaments": "Error: {error}",
   "start": "Start: {date}",
-  "end": "End: {date}"
+  "end": "End: {date}",
+  "noJoinedTournaments": "No joined tournaments"
 }

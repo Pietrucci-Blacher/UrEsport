@@ -979,6 +979,16 @@ class S {
       args: [date],
     );
   }
+
+  /// `No joined tournaments`
+  String get noJoinedTournaments {
+    return Intl.message(
+      'No joined tournaments',
+      name: 'noJoinedTournaments',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

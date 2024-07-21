@@ -105,7 +105,6 @@ func CreateTeam(c *gin.Context) {
 	team := models.Team{
 		Name:    body.Name,
 		OwnerID: connectedUser.ID,
-		Private: body.Private,
 	}
 
 	if err := team.Save(); err != nil {

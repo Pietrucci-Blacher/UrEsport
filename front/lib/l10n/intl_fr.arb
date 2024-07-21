@@ -98,5 +98,7 @@
     "gameDetailPageNoTournamentsFound": "Aucun tournoi trouvé",
     "gameDetailPageErrorLoadingTournaments": "Erreur : {error}",
     "start": "Début : {date}",
-    "end": "Fin : {date}"
+    "end": "Fin : {date}",
+    "noLikedGames": "Aucun jeu aimé",
+  "noJoinedTournaments": "Aucun tournoi rejoint"
 }
