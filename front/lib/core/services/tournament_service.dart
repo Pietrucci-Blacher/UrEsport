@@ -306,8 +306,6 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode == 200) {
-        debugPrint('API Response: ${response.data}');
-
         if (response.data == null) {
           throw Exception('Received null response from API');
         } else if (response.data is! List) {
