@@ -51,6 +51,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     );
     _loadCurrentUser();
     _checkLoginStatus();
+    _loadTeamsToTournament();
   }
 
   Future<void> _checkLoginStatus() async {
@@ -74,11 +75,6 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
         _currentUser = user;
       });
       debugPrint('Current user: ${user.id}, ${user.username}');
-      final teams = await teamService.getUserTeams(user.id);
-      setState(() {
-        _teams = teams;
-      });
-      debugPrint('Teams for user: ${teams.map((team) => team.name).join(', ')}');
       await _checkIfJoined();
       await _checkIfUpvoted();
     } catch (e) {
@@ -159,10 +155,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
       final teams = await tournamentService.getTeamsByTournamentId(_tournament.id);
+      debugPrint('Teams from API: ${teams.map((team) => team.name).toList()}'); // Log des équipes reçues de l'API
       if (!mounted) return;
       setState(() {
         _teams = teams;
-        debugPrint('Teams loaded in TournamentDetailsScreen: $_teams');
+        debugPrint('Teams loaded in TournamentDetailsScreen: ${_teams.map((team) => team.name).toList()}');
       });
     } catch (e) {
       if (kDebugMode) {
@@ -616,6 +613,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     );
   }
 
+
   Widget? _buildFloatingActionButton(bool isOwner, bool isPrivate) {
     if (_currentUser == null) return null;
 
@@ -871,11 +869,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                       const SizedBox(height: 4),
                       Column(
                         children: List.generate(
-                          _tournament.teams.length > 3
+                          _teams.length > 3
                               ? 3
-                              : _tournament.teams.length,
+                              : _teams.length,
                               (index) {
-                            final team = _tournament.teams[index];
+                            final team = _teams[index];
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Row(
@@ -903,7 +901,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                         ),
                       ),
                       const SizedBox(height: 8),
-                      if (_tournament.teams.length > 3)
+                      if (_teams.length > 3)
                         GestureDetector(
                           onTap: () {
                             Navigator.push(

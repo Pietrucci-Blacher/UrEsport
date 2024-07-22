@@ -663,7 +663,7 @@ func GetUpvoteById(c *gin.Context) {
 //	@Failure		404	{object}	utils.HttpError
 //	@Failure		500	{object}	utils.HttpError
 //	@Router			/tournaments/{id}/teams [get]
-/*func GetTeamsToTournamentId(c *gin.Context) {
+func GetTeamsToTournamentId(c *gin.Context) {
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
 	teams, err := tournament.GetTeamsByTournamentID(tournament.ID)
@@ -675,9 +675,9 @@ func GetUpvoteById(c *gin.Context) {
 
 	models.PrintLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Fetched %d teams for tournament %s", len(teams), tournament.Name)
 	c.JSON(http.StatusOK, teams)
-}*/
+}
 
-func GetTeamsToTournamentId(c *gin.Context) {
+/*func GetTeamsToTournamentId(c *gin.Context) {
 	tournamentID := c.Param("id")
 
 	var tournament models.Tournament
@@ -695,4 +695,4 @@ func GetTeamsToTournamentId(c *gin.Context) {
 	teams := tournament.Teams
 	models.PrintLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Fetched %d teams for tournament %s", len(teams), tournament.Name)
 	c.JSON(http.StatusOK, teams)
-}
+}*/
