@@ -124,7 +124,7 @@
   "failedToDeleteTeam": "Échec de la suppression de l'équipe",
   "teamLeft": "Vous avez quitté l'équipe",
   "failedToLeaveTeam": "Échec de la sortie de l'équipe",
-  "failedToLoadTournaments": "Échec du chargement des tournois",
+  "failedToLoadTournaments": "Vous ne possédez aucun tournois",
   "unknownState": "État inconnu",
   "gameName": "Jeu : ",
   "teamPlayersCount": "Joueurs par équipe : ",
@@ -310,5 +310,6 @@
   "rechercherUtilisateur": "Rechercher un utilisateur",
   "amiAjouteAvecSucces": "Ami ajouté avec succès",
   "amiDejaAjoute": "Ami déjà ajouté",
-  "erreurAjoutAmi": "Erreur lors de l'ajout de l'ami"
+  "erreurAjoutAmi": "Erreur lors de l'ajout de l'ami",
+  "failedToLoadUserTeams": "Vous appartenez à aucune team"
 }

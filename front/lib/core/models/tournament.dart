@@ -90,10 +90,9 @@ class Tournament {
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams: ((json['teams'] ?? []) as List?)
-              ?.map((team) => Team.fromJson(team))
-              .toList() ??
-          [],
+      teams: ((json['teams'] ?? []) as List)
+          .map((team) => Team.fromJson(team))
+          .toList(), // Gérer les équipes nulles
       nbPlayers: json['nb_player'] ?? 1,
       upvotes: json['upvotes'] ?? 0,
       game: Game.fromJson(json['game']),
@@ -122,6 +121,7 @@ class Tournament {
   }
 }
 
+
 class Owner {
   final int id;
   final String username;
@@ -148,7 +148,7 @@ class Owner {
       firstname: json['firstname'],
       lastname: json['lastname'],
       teams:
-          (json['teams'] as List?)?.map((team) => Team.fromJson(team)).toList(),
+      (json['teams'] as List?)?.map((team) => Team.fromJson(team)).toList(),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );

@@ -317,3 +317,21 @@ func GetUpvoteByUserAndTournament(userID, tournamentID uint) (*Upvote, error) {
 	err := DB.Where("user_id = ? AND tournament_id = ?", userID, tournamentID).First(&upvote).Error
 	return &upvote, err
 }
+
+/*func (t *Tournament) GetTeamsByTournamentID(tournamentID int) ([]Team, error) {
+	var teams []Team
+	err := DB.Model(&Tournament{}).
+		Where("id = ?", tournamentID).
+		Preload("Teams").
+		First(&teams).Error
+	return teams, err
+}*/
+
+func (t *Tournament) GetTeamsByTournamentID(tournamentID int) ([]Team, error) {
+	var tournament Tournament
+	err := DB.Preload("Teams").First(&tournament, tournamentID).Error
+	if err != nil {
+		return nil, err
+	}
+	return tournament.Teams, nil
+}

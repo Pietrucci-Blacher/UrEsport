@@ -134,7 +134,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     }
   }
 
-  Future<void> _loadTeams() async {
+  Future<void> _loadAllTeams() async {
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
       final teams = await tournamentService.fetchTeams();
@@ -145,6 +145,26 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     } catch (e) {
       if (kDebugMode) {
         debugPrint(AppLocalizations.of(context).errorLoadingTeams);
+      }
+      setState(() {});
+      showNotificationToast(
+          context, AppLocalizations.of(context).errorLoadingTeams,
+          backgroundColor: Colors.red);
+    }
+  }
+
+  Future<void> _loadTeamsToTournament() async {
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    try {
+      final teams = await tournamentService.getTeamsByTournamentId(widget.tournament.id);
+      if (!mounted) return;
+      setState(() {
+        _teams = teams;
+        debugPrint('Teams loaded in TournamentDetailsScreen: $_teams');
+      });
+    } catch (e) {
+      if (kDebugMode) {
+        debugPrint('Error loading teams: $e');
       }
       setState(() {});
       showNotificationToast(
@@ -597,7 +617,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     if (isOwner) {
       return FloatingActionButton(
         onPressed: () {
-          _loadTeams().then((_) {
+          _loadAllTeams().then((_) {
             _showTeamsModal();
           });
         },

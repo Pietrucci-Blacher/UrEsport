@@ -123,7 +123,7 @@
   "failedToDeleteTeam": "Error al eliminar el equipo",
   "teamLeft": "Has dejado el equipo",
   "failedToLeaveTeam": "Error al dejar el equipo",
-  "failedToLoadTournaments": "Error al cargar los torneos",
+  "failedToLoadTournaments": "No eres dueño de ningún torneo",
   "unknownState": "Estado desconocido",
   "gameName": "Juego: ",
   "teamPlayersCount": "Jugadores por equipo: ",
@@ -308,5 +308,6 @@
   "buscarUsuario": "Buscar usuario",
   "amigoAñadidoConÉxito": "Amigo añadido con éxito",
   "amigoYaAñadido": "Amigo ya añadido",
-  "errorAñadiendoAmigo": "Error añadiendo amigo"
+  "errorAñadiendoAmigo": "Error añadiendo amigo",
+  "failedToLoadUserTeams": "No perteneces a ningún equipo"
 }

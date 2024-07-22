@@ -25,6 +25,7 @@ abstract class ITournamentService {
   Future<void> leaveTournament(int tournamentId, int teamId);
   Future<void> updateTournament(Tournament tournament);
   Future<String> uploadTournamentImage(int tournamentId, File image);
+  Future<List<Team>> getTeamsByTournamentId(int tournamentId);
 }
 
 class TournamentService implements ITournamentService {
@@ -599,5 +600,26 @@ class TournamentService implements ITournamentService {
       }
     }
   }
+
+  @override
+  Future<List<Team>> getTeamsByTournamentId(int tournamentId) async {
+    try {
+      final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/teams');
+      if (response.statusCode == 200) {
+        debugPrint('API Response: ${response.data}');
+        if (response.data == null) {
+          return [];
+        }
+        List<Team> teams = (response.data as List<dynamic>).map((e) => Team.fromJson(e)).toList();
+        debugPrint('Parsed Teams: $teams');
+        return teams;
+      } else {
+        throw Exception('Failed to load teams');
+      }
+    } catch (e) {
+      throw Exception('Failed to load teams: $e');
+    }
+  }
+
 
 }

@@ -300,6 +300,10 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.IsRatingOwner(),
 				DeleteRating,
 			)
+			tournaments.GET("/:tournament/teams",
+				middlewares.Get[*models.Tournament]("tournament"),
+				GetTeamsToTournamentId,
+			)
 		}
 
 		teams := api.Group("/teams")

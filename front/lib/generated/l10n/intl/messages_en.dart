@@ -151,10 +151,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Failed to load bracket"),
         "failedToLoadFriends":
             MessageLookupByLibrary.simpleMessage("Failed to load friends"),
-        "failedToLoadTournaments":
-            MessageLookupByLibrary.simpleMessage("Failed to load tournaments"),
+        "failedToLoadTournaments": MessageLookupByLibrary.simpleMessage(
+            "You don\'t own any tournaments"),
         "failedToLoadUserTeams":
-            MessageLookupByLibrary.simpleMessage("Failed to load user teams"),
+            MessageLookupByLibrary.simpleMessage("You belong to no team"),
         "failedToLoadUsers":
             MessageLookupByLibrary.simpleMessage("Failed to load users"),
         "failedToUpdateFavoriteStatus": MessageLookupByLibrary.simpleMessage(
