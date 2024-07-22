@@ -10,8 +10,8 @@ import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/like_service.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/core/models/like.dart';
-import 'package:uresport/widgets/custom_toast.dart'; // Assurez-vous d'importer le fichier CustomToast
-import '../../l10n/app_localizations.dart';
+import 'package:uresport/widgets/custom_toast.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class GameDetailPage extends StatefulWidget {
   final Game game;

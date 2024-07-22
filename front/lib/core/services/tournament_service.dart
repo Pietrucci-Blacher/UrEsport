@@ -306,8 +306,6 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode == 200) {
-        debugPrint('API Response: ${response.data}');
-
         if (response.data == null) {
           throw Exception('Received null response from API');
         } else if (response.data is! List) {
@@ -575,19 +573,15 @@ class TournamentService implements ITournamentService {
         ),
       );
 
-      debugPrint('Response status: ${response.statusCode}');
-      debugPrint('Response data: ${response.data}');
-
       if (response.statusCode != 200) {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to upload tournament image',
+          error: response.data['error'] ?? 'Failed to upload tournament image',
           type: DioExceptionType.badResponse,
         );
       }
 
-      // Assurez-vous que l'URL de l'image n'est pas nulle
       final imageUrl = response.data['image'];
       if (imageUrl == null) {
         throw Exception('Image URL is null');
@@ -610,7 +604,6 @@ class TournamentService implements ITournamentService {
     try {
       final response = await _dio.get('${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/teams');
       if (response.statusCode == 200) {
-        debugPrint('API Response: ${response.data}');
         if (response.data == null) {
           return [];
         }
