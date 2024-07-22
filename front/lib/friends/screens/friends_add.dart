@@ -7,12 +7,20 @@ import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 
+import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:provider/provider.dart';
+import 'package:uresport/core/services/friends_services.dart';
+import 'package:uresport/shared/provider/notification_provider.dart';
+import 'package:uresport/widgets/custom_toast.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+
 class AddFriendPage extends StatefulWidget {
   final int userId;
   final String currentUser;
 
-  const AddFriendPage(
-      {super.key, required this.userId, required this.currentUser});
+  const AddFriendPage({super.key, required this.userId, required this.currentUser});
 
   @override
   AddFriendPageState createState() => AddFriendPageState();
@@ -50,10 +58,7 @@ class AddFriendPageState extends State<AddFriendPage> {
       if (query.isNotEmpty) {
         filteredUsers = allUsers
             .where((user) =>
-                user['firstname']
-                    ?.toLowerCase()
-                    .contains(query.toLowerCase()) ??
-                false)
+        user['firstname']?.toLowerCase().contains(query.toLowerCase()) ?? false)
             .toList();
       } else {
         filteredUsers = List.from(allUsers);
@@ -120,14 +125,21 @@ class AddFriendPageState extends State<AddFriendPage> {
                     final friendId = user['id'];
                     final currentUser = widget.currentUser;
                     try {
-                      friendService.addFriend(
-                        widget.userId,
-                        friendId,
-                      );
+                      final isAlreadyFriend = await friendService.isFriend(widget.userId, friendId);
+                      if (isAlreadyFriend) {
+                        showNotificationToast(
+                          context,
+                          l.friendAlreadyAdded,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                        );
+                        return;
+                      }
+
+                      await friendService.addFriend(widget.userId, friendId);
                       showNotificationToast(context, l.friendAddedSuccessfully);
                       Provider.of<NotificationProvider>(context, listen: false)
-                          .addNotification(
-                              '$currentUser vous a ajouté en ami: ${user['firstname']}');
+                          .addNotification('$currentUser vous a ajouté en ami: ${user['firstname']}');
                     } catch (e) {
                       String errorMessage;
                       if (e is DioException) {

@@ -44,6 +44,11 @@ class FriendService implements IFriendService {
     }
   }
 
+  Future<bool> isFriend(int currentUserId, int friendId) async {
+    final friends = await fetchFriends(currentUserId);
+    return friends.any((friend) => friend.id == friendId);
+  }
+
   @override
   Future<void> addFriend(int currentUserId, int friendId) async {
     final token = await _cacheService.getString('token');
