@@ -575,6 +575,9 @@ class TournamentService implements ITournamentService {
         ),
       );
 
+      debugPrint('Response status: ${response.statusCode}');
+      debugPrint('Response data: ${response.data}');
+
       if (response.statusCode != 200) {
         throw DioException(
           requestOptions: response.requestOptions,
@@ -585,7 +588,7 @@ class TournamentService implements ITournamentService {
       }
 
       // Assurez-vous que l'URL de l'image n'est pas nulle
-      final imageUrl = response.data['image_url'];
+      final imageUrl = response.data['image'];
       if (imageUrl == null) {
         throw Exception('Image URL is null');
       }
@@ -600,6 +603,7 @@ class TournamentService implements ITournamentService {
       }
     }
   }
+
 
   @override
   Future<List<Team>> getTeamsByTournamentId(int tournamentId) async {

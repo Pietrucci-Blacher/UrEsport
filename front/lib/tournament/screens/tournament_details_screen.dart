@@ -32,6 +32,7 @@ class TournamentDetailsScreen extends StatefulWidget {
 }
 
 class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with SingleTickerProviderStateMixin {
+  late tournament_model.Tournament _tournament; // Declare a mutable tournament object
   bool _hasJoined = false;
   User? _currentUser;
   List<team_model.Team> _teams = [];
@@ -43,6 +44,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   @override
   void initState() {
     super.initState();
+    _tournament = widget.tournament; // Initialize the mutable tournament object
     _controller = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -92,7 +94,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
       final hasUpvoted = await tournamentService.hasUpvoted(
-          widget.tournament.id, _currentUser!.id);
+          _tournament.id, _currentUser!.id);
       if (!mounted) return;
       setState(() {
         _hasUpvoted = hasUpvoted;
@@ -120,7 +122,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
       final hasJoined = await tournamentService.hasJoinedTournament(
-          widget.tournament.id, _currentUser!.id.toString());
+          _tournament.id, _currentUser!.id.toString());
       if (!mounted) return;
       setState(() {
         _hasJoined = hasJoined;
@@ -156,7 +158,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   Future<void> _loadTeamsToTournament() async {
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
-      final teams = await tournamentService.getTeamsByTournamentId(widget.tournament.id);
+      final teams = await tournamentService.getTeamsByTournamentId(_tournament.id);
       if (!mounted) return;
       setState(() {
         _teams = teams;
@@ -175,6 +177,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
   void showNotificationToast(BuildContext context, String message,
       {Color? backgroundColor, Color? textColor}) {
+    debugPrint('Showing notification toast: $message');
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
@@ -238,7 +241,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                       title: Text('${team.name} (${team.members.length} members)'),
                       onTap: () {
                         Navigator.pop(context);
-                        _joinTournament(context, widget.tournament.id, team.id);
+                        _joinTournament(context, _tournament.id, team.id);
                       },
                     );
                   },
@@ -299,13 +302,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     );
   }
 
-
   Future<void> _sendInvite(int teamId, String teamName) async {
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
 
     try {
       await tournamentService.inviteTeamToTournament(
-        widget.tournament.id,
+        _tournament.id,
         teamId,
         teamName,
       );
@@ -350,12 +352,14 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
       try {
         final imageUrl = await _uploadImage(File(pickedFile.path));
+        debugPrint('Image uploaded successfully: $imageUrl');
         setState(() {
-          widget.tournament.image = imageUrl;
+          _tournament = _tournament.copyWith(image: imageUrl);
           _isUploadingImage = false;
         });
         showNotificationToast(context, 'Image uploaded successfully', backgroundColor: Colors.green);
       } catch (e) {
+        debugPrint('Error during image upload: $e');
         setState(() {
           _isUploadingImage = false;
         });
@@ -369,10 +373,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   Future<String> _uploadImage(File imageFile) async {
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
-      final imageUrl = await tournamentService.uploadTournamentImage(widget.tournament.id, imageFile);
+      final imageUrl = await tournamentService.uploadTournamentImage(_tournament.id, imageFile);
       if (imageUrl == null) {
         throw Exception('Uploaded image URL is null');
       }
+      debugPrint('Image URL: $imageUrl');
       return imageUrl;
     } catch (e) {
       if (e is DioException) {
@@ -389,7 +394,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
 
     try {
-      await tournamentService.generateBracket(widget.tournament.id);
+      await tournamentService.generateBracket(_tournament.id);
       if (!mounted) return;
       showNotificationToast(context, 'Bracket generated',
           backgroundColor: Colors.green);
@@ -413,7 +418,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
     try {
       await tournamentService.upvoteTournament(
-          widget.tournament.id, _currentUser!.id.toString());
+          _tournament.id, _currentUser!.id.toString());
       if (!mounted) return;
       setState(() {
         _hasUpvoted = !_hasUpvoted;
@@ -460,7 +465,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 onTap: () {
                   Navigator.pop(context);
                   _confirmLeaveTournament(
-                      context, widget.tournament.id, team.id);
+                      context, _tournament.id, team.id);
                 },
               );
             }).toList(),
@@ -558,8 +563,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
   @override
   Widget build(BuildContext context) {
-    var isOwner = widget.tournament.ownerId == _currentUser?.id;
-    var isPrivate = widget.tournament.isPrivate;
+    var isOwner = _tournament.ownerId == _currentUser?.id;
+    var isPrivate = _tournament.isPrivate;
     AppLocalizations l = AppLocalizations.of(context);
 
     return DefaultTabController(
@@ -571,7 +576,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
             children: [
               Expanded(
                 child: Text(
-                  widget.tournament.name,
+                  _tournament.name,
                   overflow: TextOverflow.ellipsis,
                 ),
               ),
@@ -582,7 +587,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditTournamentScreen(tournament: widget.tournament),
+                        builder: (context) => EditTournamentScreen(tournament: _tournament),
                       ),
                     );
                   },
@@ -600,7 +605,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
           children: [
             _pageDetail(),
             _currentUser != null
-                ? TournamentBracketPage(tournamentId: widget.tournament.id)
+                ? TournamentBracketPage(tournamentId: _tournament.id)
                 : Center(
               child: Text(l.mustBeLoggedInToViewBracket),
             ),
@@ -623,7 +628,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
         },
         child: const Icon(Icons.list),
       );
-    } else if (!isPrivate && widget.tournament.ownerId == _currentUser?.id) {
+    } else if (!isPrivate && _tournament.ownerId == _currentUser?.id) {
       return FloatingActionButton(
         onPressed: _showJoinTeamsModal,
         child: const Icon(Icons.list),
@@ -635,7 +640,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
   Widget _pageDetail() {
     final DateFormat dateFormat = DateFormat.yMMMd();
-    var isOwner = widget.tournament.ownerId == _currentUser?.id;
+    var isOwner = _tournament.ownerId == _currentUser?.id;
     AppLocalizations l = AppLocalizations.of(context);
 
     return SingleChildScrollView(
@@ -645,13 +650,13 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Hero(
-              tag: 'tournamentHero${widget.tournament.id}',
+              tag: 'tournamentHero${_tournament.id}',
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(12.0),
                 child: Stack(
                   children: [
                     Image.network(
-                      widget.tournament.image,
+                      _tournament.image,
                       fit: BoxFit.cover,
                       width: double.infinity,
                       height: 200,
@@ -689,7 +694,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
               children: [
                 Expanded(
                   child: Text(
-                    widget.tournament.name,
+                    _tournament.name,
                     style: Theme.of(context)
                         .textTheme
                         .headlineMedium
@@ -698,9 +703,9 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                   ),
                 ),
                 Icon(
-                  widget.tournament.isPrivate ? Icons.lock : Icons.lock_open,
+                  _tournament.isPrivate ? Icons.lock : Icons.lock_open,
                   color:
-                  widget.tournament.isPrivate ? Colors.red : Colors.green,
+                  _tournament.isPrivate ? Colors.red : Colors.green,
                 ),
               ],
             ),
@@ -711,7 +716,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
             ),
             const SizedBox(height: 4),
             Text(
-              widget.tournament.description,
+              _tournament.description,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
             const SizedBox(height: 16),
@@ -721,7 +726,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '${l.location} ${widget.tournament.location}',
+                    '${l.location} ${_tournament.location}',
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -746,7 +751,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                       }
                     },
                     child: Text(
-                      '${l.game} ${widget.game?.name ?? widget.tournament.game.name}',
+                      '${l.game} ${widget.game?.name ?? _tournament.game.name}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                         color: Theme.of(context).primaryColor,
                         decoration: TextDecoration.underline,
@@ -762,7 +767,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const Icon(Icons.date_range, color: Colors.blue),
                 const SizedBox(width: 8),
                 Text(
-                  '${l.startDate} ${dateFormat.format(widget.tournament.startDate)}',
+                  '${l.startDate} ${dateFormat.format(_tournament.startDate)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
@@ -773,7 +778,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const Icon(Icons.date_range, color: Colors.blue),
                 const SizedBox(width: 8),
                 Text(
-                  '${l.endDate} ${dateFormat.format(widget.tournament.endDate)}',
+                  '${l.endDate} ${dateFormat.format(_tournament.endDate)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
@@ -784,7 +789,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const SizedBox(width: 5),
                 Expanded(
                   child: Text(
-                    '${l.teamPlayersCount} ${widget.tournament.nbPlayers}',
+                    '${l.teamPlayersCount} ${_tournament.nbPlayers}',
                     style: const TextStyle(fontSize: 16),
                     overflow: TextOverflow.ellipsis,
                   ),
@@ -847,7 +852,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                               },
                             ),
                             const SizedBox(width: 4),
-                            Text('${widget.tournament.upvotes + (_hasUpvoted ? 1 : 0)}'),
+                            Text('${_tournament.upvotes + (_hasUpvoted ? 1 : 0)}'),
                           ],
                         ),
                       ),
@@ -866,11 +871,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                       const SizedBox(height: 4),
                       Column(
                         children: List.generate(
-                          widget.tournament.teams.length > 3
+                          _tournament.teams.length > 3
                               ? 3
-                              : widget.tournament.teams.length,
+                              : _tournament.teams.length,
                               (index) {
-                            final team = widget.tournament.teams[index];
+                            final team = _tournament.teams[index];
                             return Padding(
                               padding: const EdgeInsets.symmetric(vertical: 4.0),
                               child: Row(
@@ -898,7 +903,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                         ),
                       ),
                       const SizedBox(height: 8),
-                      if (widget.tournament.teams.length > 3)
+                      if (_tournament.teams.length > 3)
                         GestureDetector(
                           onTap: () {
                             Navigator.push(
@@ -906,7 +911,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                               MaterialPageRoute(
                                 builder: (context) =>
                                     TournamentParticipantsScreen(
-                                      tournament: widget.tournament,
+                                      tournament: _tournament,
                                     ),
                               ),
                             );
@@ -954,8 +959,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 ),
               ),
             if (
-            widget.tournament.ownerId != _currentUser?.id &&
-                !widget.tournament.isPrivate)
+            _tournament.ownerId != _currentUser?.id &&
+                !_tournament.isPrivate)
               Center(
                 child: ElevatedButton(
                   onPressed: _currentUser != null
@@ -972,8 +977,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
               ),
             const SizedBox(height: 16),
             if (_hasJoined &&
-                widget.tournament.ownerId != _currentUser?.id &&
-                !widget.tournament.isPrivate &&
+                _tournament.ownerId != _currentUser?.id &&
+                !_tournament.isPrivate &&
                 _isLoggedIn)
               Center(
                 child: ElevatedButton(
@@ -990,7 +995,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
             const SizedBox(height: 16),
             if (_currentUser != null)
               RatingWidget(
-                tournamentId: widget.tournament.id,
+                tournamentId: _tournament.id,
                 showCustomToast: showNotificationToast,
                 userId: _currentUser!.id,
               ),
