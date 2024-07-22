@@ -184,27 +184,27 @@ class FilterBottomSheetState extends State<FilterBottomSheet> {
           runSpacing: 8,
           children: widget.availableTags
               .where((tag) =>
-              tag.toLowerCase().contains(_searchQuery.toLowerCase()))
+                  tag.toLowerCase().contains(_searchQuery.toLowerCase()))
               .map((tag) => FilterChip(
-            label: Text(tag),
-            selected: _selectedTags.contains(tag),
-            onSelected: (selected) {
-              setState(() {
-                if (widget.isSingleSelection) {
-                  _selectedTags = [tag];
-                } else {
-                  if (selected) {
-                    _selectedTags.add(tag);
-                  } else {
-                    _selectedTags.remove(tag);
-                  }
-                }
-              });
-            },
-            selectedColor:
-            Theme.of(context).primaryColor.withOpacity(0.3),
-            checkmarkColor: Theme.of(context).primaryColor,
-          ))
+                    label: Text(tag),
+                    selected: _selectedTags.contains(tag),
+                    onSelected: (selected) {
+                      setState(() {
+                        if (widget.isSingleSelection) {
+                          _selectedTags = [tag];
+                        } else {
+                          if (selected) {
+                            _selectedTags.add(tag);
+                          } else {
+                            _selectedTags.remove(tag);
+                          }
+                        }
+                      });
+                    },
+                    selectedColor:
+                        Theme.of(context).primaryColor.withOpacity(0.3),
+                    checkmarkColor: Theme.of(context).primaryColor,
+                  ))
               .toList(),
         ),
       ],
@@ -218,16 +218,16 @@ class FilterBottomSheetState extends State<FilterBottomSheet> {
         Text(AppLocalizations.of(context).sort,
             style: Theme.of(context).textTheme.titleMedium),
         ...widget.sortOptions.map((option) => RadioListTile<String>(
-          title: Text(option),
-          value: option,
-          groupValue: _sortOption,
-          onChanged: (value) {
-            setState(() {
-              _sortOption = value!;
-            });
-          },
-          activeColor: Theme.of(context).primaryColor,
-        )),
+              title: Text(option),
+              value: option,
+              groupValue: _sortOption,
+              onChanged: (value) {
+                setState(() {
+                  _sortOption = value!;
+                });
+              },
+              activeColor: Theme.of(context).primaryColor,
+            )),
       ],
     );
   }

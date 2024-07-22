@@ -971,7 +971,8 @@ class AppLocalizations {
     return Intl.message(
       'Erreur pour quitter le tournoi',
       name: 'leaveTournamentError',
-      desc: 'Message displayed when an unknown error occurs while leaving the tournament',
+      desc:
+          'Message displayed when an unknown error occurs while leaving the tournament',
     );
   }
 
@@ -1147,7 +1148,8 @@ class AppLocalizations {
     return Intl.message(
       'Erreur lors du join',
       name: 'joinError',
-      desc: 'Message displayed when an unknown error occurs while joining the tournament',
+      desc:
+          'Message displayed when an unknown error occurs while joining the tournament',
     );
   }
 
@@ -2352,7 +2354,6 @@ class AppLocalizations {
       desc: 'Message displayed when no tournament is available for the game',
     );
   }
-
 
   String get profileImageUpdated {
     return Intl.message(

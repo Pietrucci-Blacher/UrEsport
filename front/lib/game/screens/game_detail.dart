@@ -87,8 +87,7 @@ class GameDetailPageState extends State<GameDetailPage> {
   Future<void> _createLike() async {
     AppLocalizations l = AppLocalizations.of(context);
     if (_currentUser == null) {
-      _showToast(
-          context, l.needConnected, Colors.red);
+      _showToast(context, l.needConnected, Colors.red);
       return;
     }
 
@@ -126,8 +125,7 @@ class GameDetailPageState extends State<GameDetailPage> {
       _showToast(context, l.removedFromGameList, Colors.red);
     } catch (e) {
       debugPrint('Error: $e');
-      _showToast(context, '${l.errorUnfollowingGame} : $e',
-          Colors.red);
+      _showToast(context, '${l.errorUnfollowingGame} : $e', Colors.red);
     }
   }
 
@@ -192,8 +190,8 @@ class GameDetailPageState extends State<GameDetailPage> {
               Text(
                 l.gameDescription,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 10),
               Text(
@@ -204,8 +202,8 @@ class GameDetailPageState extends State<GameDetailPage> {
               Text(
                 l.tags,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 10),
               Wrap(
@@ -225,8 +223,8 @@ class GameDetailPageState extends State<GameDetailPage> {
               Text(
                 l.tournamentText,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               const SizedBox(height: 10),
               FutureBuilder<List<Tournament>>(
@@ -254,8 +252,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                                   .textTheme
                                   .headlineSmall
                                   ?.copyWith(
-                                color: Colors.grey,
-                              ),
+                                    color: Colors.grey,
+                                  ),
                             ),
                           ],
                         ),
@@ -302,11 +300,11 @@ class GameDetailPageState extends State<GameDetailPage> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                                            MainAxisAlignment.spaceBetween,
                                         children: [
                                           Expanded(
                                             child: Text(
@@ -315,8 +313,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                                                   .textTheme
                                                   .titleLarge
                                                   ?.copyWith(
-                                                fontWeight: FontWeight.bold,
-                                              ),
+                                                    fontWeight: FontWeight.bold,
+                                                  ),
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                           ),
@@ -362,7 +360,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                                               color: Colors.blue),
                                           const SizedBox(width: 8),
                                           Text(
-                                            '${l.startDate}' '${dateFormat.format(tournament.startDate)}',
+                                            '${l.startDate}'
+                                            '${dateFormat.format(tournament.startDate)}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
@@ -376,7 +375,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                                               color: Colors.blue),
                                           const SizedBox(width: 8),
                                           Text(
-                                            '${l.endDate}' '${dateFormat.format(tournament.endDate)}',
+                                            '${l.endDate}'
+                                            '${dateFormat.format(tournament.endDate)}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,

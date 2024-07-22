@@ -83,7 +83,8 @@ class VerificationScreenState extends State<VerificationScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Text('${AppLocalizations.of(context).verificationCodeSent}: ${widget.email}'),
+                  Text(
+                      '${AppLocalizations.of(context).verificationCodeSent}: ${widget.email}'),
                   const SizedBox(height: 20),
                   _buildCodeField(context),
                   const SizedBox(height: 20),
