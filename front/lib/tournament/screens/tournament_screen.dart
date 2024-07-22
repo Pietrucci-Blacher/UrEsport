@@ -106,7 +106,7 @@ class TournamentScreenState extends State<TournamentScreen> {
         floatingActionButton: FilterButton(
           availableTags: _filterOptions,
           selectedTags: [_currentFilter],
-          sortOptions: [],
+          sortOptions: const [],
           currentSortOption: '',
           onFilterChanged: (selectedTags, sortOption) {
             setState(() {
@@ -273,7 +273,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                     );
                   },
                 );
-              }).toList(),
+              }),
             ],
           ),
         );

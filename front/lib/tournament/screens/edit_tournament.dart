@@ -54,6 +54,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
 
   Future<void> _loadGames() async {
     try {
+
       final gameService = Provider.of<IGameService>(context, listen: false);
       final games = await gameService.fetchGames();
       setState(() {
@@ -61,6 +62,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       });
       debugPrint('Games loaded: ${_games.length}');
     } catch (e) {
+      if(!context.mounted) return;
       debugPrint('Failed to load games: $e');
       _showToast(context, '${AppLocalizations.of(context).failedToLoadGames} $e', Colors.red);
     }

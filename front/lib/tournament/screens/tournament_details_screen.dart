@@ -67,7 +67,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
   Future<void> _loadCurrentUser() async {
     final authService = Provider.of<IAuthService>(context, listen: false);
-    final teamService = Provider.of<ITeamService>(context, listen: false);
+    Provider.of<ITeamService>(context, listen: false);
     try {
       final user = await authService.getUser();
       if (!mounted) return;
@@ -371,9 +371,6 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
       final imageUrl = await tournamentService.uploadTournamentImage(_tournament.id, imageFile);
-      if (imageUrl == null) {
-        throw Exception('Uploaded image URL is null');
-      }
       debugPrint('Image URL: $imageUrl');
       return imageUrl;
     } catch (e) {
