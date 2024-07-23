@@ -5,9 +5,10 @@ import 'package:uresport/core/models/user.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
-import 'package:uresport/core/services/auth_service.dart'; // Assurez-vous d'importer le service
+import 'package:uresport/core/services/auth_service.dart';
 
-import 'edit_user.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/dashboard/screens/edit_user.dart';
 
 class UsersPage extends StatefulWidget {
   const UsersPage({super.key});
@@ -57,13 +58,14 @@ class UsersPageState extends State<UsersPage> {
   }
 
   Widget _buildSearchBar() {
+    AppLocalizations l = AppLocalizations.of(context);
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: TextField(
-        decoration: const InputDecoration(
-          labelText: 'Search Users',
-          prefixIcon: Icon(Icons.search),
-          border: OutlineInputBorder(),
+        decoration: InputDecoration(
+          labelText: l.searchUsers,
+          prefixIcon: const Icon(Icons.search),
+          border: const OutlineInputBorder(),
         ),
         onChanged: (value) {
           setState(() {
@@ -97,6 +99,7 @@ class UsersPageState extends State<UsersPage> {
   }
 
   Widget _buildUserTable(List<User> users) {
+    AppLocalizations l = AppLocalizations.of(context);
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
       child: DataTable(
@@ -105,23 +108,23 @@ class UsersPageState extends State<UsersPage> {
         sortAscending: _sortAscending,
         columns: [
           DataColumn(
-            label: const Text('Username'),
+            label: Text(l.username),
             onSort: (columnIndex, _) => _onSort('username'),
           ),
           DataColumn(
-            label: const Text('First Name'),
+            label: Text(l.firstName),
             onSort: (columnIndex, _) => _onSort('firstname'),
           ),
           DataColumn(
-            label: const Text('Last Name'),
+            label: Text(l.lastName),
             onSort: (columnIndex, _) => _onSort('lastname'),
           ),
           DataColumn(
-            label: const Text('Email'),
+            label: Text(l.email),
             onSort: (columnIndex, _) => _onSort('email'),
           ),
-          const DataColumn(label: Text('Roles')),
-          const DataColumn(label: Text('Actions')),
+          DataColumn(label: Text(l.rolesText)),
+          DataColumn(label: Text(l.actionsText)),
         ],
         rows: users.map((user) {
           return DataRow(
@@ -208,6 +211,7 @@ class UsersPageState extends State<UsersPage> {
   }
 
   void _viewUser(User user) {
+    AppLocalizations l = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -216,16 +220,16 @@ class UsersPageState extends State<UsersPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('ID: ${user.id}'),
-            Text('Username: ${user.username}'),
-            Text('Name: ${user.firstname} ${user.lastname}'),
-            Text('Email: ${user.email}'),
-            Text('Roles: ${user.roles.join(', ')}'),
+            Text('${l.idText}: ${user.id}'),
+            Text('${l.username}: ${user.username}'),
+            Text('${l.name}: ${user.firstname} ${user.lastname}'),
+            Text('${l.email}: ${user.email}'),
+            Text('${l.rolesText}: ${user.roles.join(', ')}'),
           ],
         ),
         actions: [
           TextButton(
-            child: const Text('Close'),
+            child: Text(l.closeButton),
             onPressed: () => Navigator.of(context).pop(),
           ),
         ],
@@ -248,18 +252,19 @@ class UsersPageState extends State<UsersPage> {
   }
 
   void _deleteUser(User user) {
+    AppLocalizations l = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Delete User'),
-        content: Text('Are you sure you want to delete ${user.username}?'),
+        title: Text(l.deleteUserTitle),
+        content: Text('${l.confirmDeleteUser}: ${user.username}?'),
         actions: [
           TextButton(
-            child: const Text('Cancel'),
+            child: Text(l.cancel),
             onPressed: () => Navigator.of(context).pop(),
           ),
           TextButton(
-            child: const Text('Delete'),
+            child: Text(l.delete),
             onPressed: () async {
               try {
                 await _authService.deleteAccount(user.id);
@@ -269,7 +274,7 @@ class UsersPageState extends State<UsersPage> {
               } catch (e) {
                 Navigator.of(context).pop();
                 ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text('Failed to delete user: $e')),
+                  SnackBar(content: Text('${l.failedToDeleteUser}: $e')),
                 );
               }
             },

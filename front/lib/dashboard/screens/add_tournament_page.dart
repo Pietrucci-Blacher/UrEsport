@@ -170,24 +170,24 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         _startDateTime != null &&
         _endDateTime != null) {
       final newTournament = {
-        'name': _nameController.text,
-        'description': _descriptionController.text,
-        'start_date': _apiDateFormat
+        l.name: _nameController.text,
+        l.description: _descriptionController.text,
+        l.startDateText: _apiDateFormat
             .format(_startDateTime!), // Use API format for start date
-        'end_date':
+        l.endDateText:
             _apiDateFormat.format(_endDateTime!), // Use API format for end date
-        'location': _locationController.text.isNotEmpty
+        l.locationText: _locationController.text.isNotEmpty
             ? _locationController.text
             : null,
-        'latitude': _latitudeController.text.isNotEmpty
+        l.latitude: _latitudeController.text.isNotEmpty
             ? double.tryParse(_latitudeController.text)
             : null,
-        'longitude': _longitudeController.text.isNotEmpty
+        l.longitude: _longitudeController.text.isNotEmpty
             ? double.tryParse(_longitudeController.text)
             : null,
-        'private': _isPrivate,
-        'game_id': int.tryParse(_gameIdController.text) ?? 0,
-        'nb_player': int.tryParse(_nbPlayerController.text) ?? 0,
+        l.private: _isPrivate,
+        l.gameId: int.tryParse(_gameIdController.text) ?? 0,
+        l.numberOfPlayers: int.tryParse(_nbPlayerController.text) ?? 0,
       };
 
       if (kDebugMode) {
@@ -329,7 +329,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                     ),
                     TextFormField(
                       controller: _locationController,
-                      decoration: const InputDecoration(labelText: 'Location'),
+                      decoration: InputDecoration(labelText: l.location),
                     ),
                     TextFormField(
                       controller: _latitudeController,

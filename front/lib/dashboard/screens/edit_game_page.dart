@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/game.dart';
 
+import 'package:uresport/l10n/app_localizations.dart';
+
 class EditGamePage extends StatefulWidget {
   final Game? game;
 
@@ -88,9 +90,10 @@ class EditGamePageState extends State<EditGamePage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.game == null ? 'Add Game' : 'Edit Game'),
+        title: Text(widget.game == null ? l.addGame : l.editGame),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -99,24 +102,24 @@ class EditGamePageState extends State<EditGamePage> {
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(labelText: l.name),
               ),
               TextField(
                 controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(labelText: l.description),
               ),
               TextField(
                 controller: imageUrlController,
-                decoration: const InputDecoration(labelText: 'Image URL'),
+                decoration: InputDecoration(labelText: l.imageText),
               ),
               TextField(
                 controller: tagsController,
-                decoration: const InputDecoration(labelText: 'Tags'),
+                decoration: InputDecoration(labelText: l.tags),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveGame,
-                child: const Text('Save'),
+                child: Text(l.save),
               ),
             ],
           ),

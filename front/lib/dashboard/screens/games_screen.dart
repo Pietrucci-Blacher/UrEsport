@@ -5,6 +5,8 @@ import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 import 'package:uresport/dashboard/screens/edit_game_page.dart';
 
+import 'package:uresport/l10n/app_localizations.dart';
+
 class GamesScreen extends StatelessWidget {
   final DashboardLoaded state;
 
@@ -12,6 +14,7 @@ class GamesScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     final ScrollController scrollController = ScrollController();
 
     return Stack(
@@ -21,15 +24,15 @@ class GamesScreen extends StatelessWidget {
           child: SingleChildScrollView(
             controller: scrollController,
             child: DataTable(
-              columns: const [
-                DataColumn(label: Text('ID')),
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Description')),
-                DataColumn(label: Text('Image URL')),
-                DataColumn(label: Text('Tags')),
-                DataColumn(label: Text('Created At')),
-                DataColumn(label: Text('Updated At')),
-                DataColumn(label: Text('')), // Empty column for spacing
+              columns: [
+                DataColumn(label: Text(l.idText)),
+                DataColumn(label: Text(l.name)),
+                DataColumn(label: Text(l.description)),
+                DataColumn(label: Text(l.imageText)),
+                DataColumn(label: Text(l.tags)),
+                DataColumn(label: Text(l.createdAtText)),
+                DataColumn(label: Text(l.updatedAtText)),
+                const DataColumn(label: Text('')), // Empty column for spacing
               ],
               rows: state.games.map((game) {
                 return DataRow(cells: [
@@ -51,8 +54,8 @@ class GamesScreen extends StatelessWidget {
           child: SizedBox(
             width: 100, // Set the width for the fixed column
             child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Actions')),
+              columns: [
+                DataColumn(label: Text(l.actionsText)),
               ],
               rows: state.games.map((game) {
                 return DataRow(cells: [
@@ -89,16 +92,17 @@ class GamesScreen extends StatelessWidget {
   }
 
   void _showDeleteConfirmationDialog(BuildContext context, int gameId) {
+    AppLocalizations l = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Delete Game'),
-          content: const Text('Are you sure you want to delete this game?'),
+          title: Text(l.deleteGameButton),
+          content: Text(l.confirmDeleteGame),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text(l.cancel),
             ),
             TextButton(
               onPressed: () {
@@ -106,7 +110,7 @@ class GamesScreen extends StatelessWidget {
                     .add(DeleteGameEvent(gameId));
                 Navigator.of(dialogContext).pop();
               },
-              child: const Text('Delete'),
+              child: Text(l.delete),
             ),
           ],
         );

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:uresport/core/models/log.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 
+import 'package:uresport/l10n/app_localizations.dart';
+
 class LogsScreen extends StatefulWidget {
   final DashboardLoaded state;
 
@@ -18,6 +20,7 @@ class LogsScreenState extends State<LogsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     List<Log> filteredLogs = _filterAndSortLogs(widget.state.recentLogs);
     return Column(
       children: [
@@ -32,15 +35,15 @@ class LogsScreenState extends State<LogsScreen> {
                 sortAscending: _sortAscending,
                 columns: [
                   DataColumn(
-                    label: const Text('Date'),
+                    label: Text(l.dateText),
                     onSort: (columnIndex, _) => _onSort('date'),
                   ),
                   DataColumn(
-                    label: const Text('Type'),
+                    label: Text(l.typeText),
                     onSort: (columnIndex, _) => _onSort('type'),
                   ),
-                  const DataColumn(label: Text('Tags')),
-                  const DataColumn(label: Text('Text')),
+                  DataColumn(label: Text(l.tags)),
+                  DataColumn(label: Text(l.textText)),
                 ],
                 rows: filteredLogs.map((log) {
                   return DataRow(cells: [

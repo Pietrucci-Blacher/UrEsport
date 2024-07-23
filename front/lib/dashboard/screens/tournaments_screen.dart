@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 import 'package:uresport/dashboard/screens/edit_tournament_page.dart';
 
+import 'package:uresport/l10n/app_localizations.dart';
+
 class TournamentsScreen extends StatelessWidget {
   final DashboardLoaded state;
 
@@ -9,6 +11,7 @@ class TournamentsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     final ScrollController scrollController = ScrollController();
 
     return Stack(
@@ -18,23 +21,23 @@ class TournamentsScreen extends StatelessWidget {
           child: SingleChildScrollView(
             controller: scrollController,
             child: DataTable(
-              columns: const [
-                DataColumn(label: Text('ID')),
-                DataColumn(label: Text('Name')),
-                DataColumn(label: Text('Description')),
-                DataColumn(label: Text('Start Date')),
-                DataColumn(label: Text('End Date')),
-                DataColumn(label: Text('Location')),
-                DataColumn(label: Text('Latitude')),
-                DataColumn(label: Text('Longitude')),
-                DataColumn(label: Text('Owner ID')),
-                DataColumn(label: Text('Image')),
-                DataColumn(label: Text('Private')),
-                DataColumn(label: Text('Nb Players')),
-                DataColumn(label: Text('Created At')),
-                DataColumn(label: Text('Updated At')),
-                DataColumn(label: Text('Upvotes')),
-                DataColumn(label: Text('')), // Empty column for spacing
+              columns: [
+                DataColumn(label: Text(l.idText)),
+                DataColumn(label: Text(l.name)),
+                DataColumn(label: Text(l.description)),
+                DataColumn(label: Text(l.startDate)),
+                DataColumn(label: Text(l.endDate)),
+                DataColumn(label: Text(l.location)),
+                DataColumn(label: Text(l.latitude)),
+                DataColumn(label: Text(l.longitude)),
+                DataColumn(label: Text(l.ownerIDText)),
+                DataColumn(label: Text(l.imageText)),
+                DataColumn(label: Text(l.private)),
+                DataColumn(label: Text(l.numberOfPlayers)),
+                DataColumn(label: Text(l.createdAtText)),
+                DataColumn(label: Text(l.updatedAtText)),
+                DataColumn(label: Text(l.upvotes)),
+                const DataColumn(label: Text('')), // Empty column for spacing
               ],
               rows: state.tournaments.map((tournament) {
                 return DataRow(cells: [
@@ -64,8 +67,8 @@ class TournamentsScreen extends StatelessWidget {
           child: SizedBox(
             width: 100, // Set the width for the fixed column
             child: DataTable(
-              columns: const [
-                DataColumn(label: Text('Actions')),
+              columns: [
+                DataColumn(label: Text(l.actionsText)),
               ],
               rows: state.tournaments.map((tournament) {
                 return DataRow(cells: [
@@ -79,7 +82,9 @@ class TournamentsScreen extends StatelessWidget {
                               context,
                               MaterialPageRoute(
                                   builder: (context) => EditTournamentPage(
-                                      tournament: tournament)),
+                                      tournament: tournament
+                                  )
+                              ),
                             );
                           },
                         ),
@@ -103,17 +108,18 @@ class TournamentsScreen extends StatelessWidget {
   }
 
   void _showDeleteConfirmationDialog(BuildContext context, int tournamentId) {
+    AppLocalizations l = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext dialogContext) {
         return AlertDialog(
-          title: const Text('Delete Tournament'),
+          title: Text(l.deleteTournament),
           content:
-              const Text('Are you sure you want to delete this tournament?'),
+            Text(l.confirmDeleteTournament),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
-              child: const Text('Cancel'),
+              child: Text(l.cancel),
             ),
             /*TextButton(
               onPressed: () {

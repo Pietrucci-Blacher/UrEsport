@@ -4,6 +4,8 @@ import 'package:uresport/dashboard/bloc/dashboard_state.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 
+import 'package:uresport/l10n/app_localizations.dart';
+
 class FeatureFlippingScreen extends StatefulWidget {
   final DashboardLoaded state;
 
@@ -19,6 +21,7 @@ class FeatureFlippingScreenState extends State<FeatureFlippingScreen> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     return Column(
       children: [
         Expanded(
@@ -31,15 +34,15 @@ class FeatureFlippingScreenState extends State<FeatureFlippingScreen> {
                 sortAscending: _sortAscending,
                 columns: [
                   DataColumn(
-                    label: const Text('Name'),
+                    label: Text(l.name),
                     onSort: (columnIndex, _) => _onSort('name'),
                   ),
                   DataColumn(
-                    label: const Text('Description'),
+                    label: Text(l.description),
                     onSort: (columnIndex, _) => _onSort('description'),
                   ),
                   DataColumn(
-                    label: const Text('Active'),
+                    label: Text(l.activeText),
                     onSort: (columnIndex, _) => _onSort('active'),
                   ),
                 ],

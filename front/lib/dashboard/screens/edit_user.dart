@@ -4,6 +4,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/cache_service.dart';
 
+import 'package:uresport/l10n/app_localizations.dart';
+
 class EditUserPage extends StatefulWidget {
   final User? user;
 
@@ -68,11 +70,15 @@ class EditUserPageState extends State<EditUserPage> {
   }
 
   Future<void> _saveUser() async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (widget.user == null) {
       // Logic for adding a new user
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Adding new user functionality not implemented')),
+         SnackBar(
+             content: Text(
+                 l.addingNewUserFunctionalityNotImplemented
+             )
+         ),
       );
     } else {
       // Comparer les valeurs initiales avec les valeurs actuelles
@@ -93,7 +99,7 @@ class EditUserPageState extends State<EditUserPage> {
       // Vérifier s'il y a des champs modifiés à envoyer
       if (updatedFields.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('No changes made')),
+          SnackBar(content: Text(l.noChangesMade)),
         );
         return;
       }
@@ -126,7 +132,7 @@ class EditUserPageState extends State<EditUserPage> {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
                 content:
-                    Text('Failed to update user: ${response.statusMessage}')),
+                    Text('${l.failedToUpdateUser}: ${response.statusMessage}')),
           );
         }
       } catch (e) {
@@ -136,7 +142,7 @@ class EditUserPageState extends State<EditUserPage> {
         // Handle error
         if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to update user: $e')),
+          SnackBar(content: Text('${l.failedToUpdateUser}: $e')),
         );
       }
     }
@@ -144,9 +150,10 @@ class EditUserPageState extends State<EditUserPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.user == null ? 'Add User' : 'Edit User'),
+        title: Text(widget.user == null ? l.addUser : l.editUser),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -155,24 +162,24 @@ class EditUserPageState extends State<EditUserPage> {
             children: [
               TextField(
                 controller: usernameController,
-                decoration: const InputDecoration(labelText: 'Username'),
+                decoration: InputDecoration(labelText: l.username),
               ),
               TextField(
                 controller: firstnameController,
-                decoration: const InputDecoration(labelText: 'First Name'),
+                decoration:  InputDecoration(labelText: l.firstName),
               ),
               TextField(
                 controller: lastnameController,
-                decoration: const InputDecoration(labelText: 'Last Name'),
+                decoration:  InputDecoration(labelText: l.lastName),
               ),
               TextField(
                 controller: emailController,
-                decoration: const InputDecoration(labelText: 'Email'),
+                decoration:  InputDecoration(labelText: l.email),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveUser,
-                child: const Text('Save'),
+                child:  Text(l.save),
               ),
             ],
           ),

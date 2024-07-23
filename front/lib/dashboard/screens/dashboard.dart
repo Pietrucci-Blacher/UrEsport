@@ -14,7 +14,7 @@ import 'package:uresport/dashboard/screens/tournaments_screen.dart';
 import 'package:uresport/dashboard/screens/users_screen.dart';
 import 'package:uresport/dashboard/screens/feature_flipping_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
-
+import 'package:uresport/l10n/app_localizations.dart';
 import 'add_game_page.dart';
 import 'add_tournament_page.dart';
 
@@ -77,27 +77,28 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildSidebar() {
+    AppLocalizations l = AppLocalizations.of(context);
     return Container(
       width: 250,
       color: Colors.white,
       child: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+           Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Text(
-              'Admin Dashboard',
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              l.adminDashboardTitle,
+              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
           ),
           Expanded(
             child: ListView(
               children: [
-                _buildNavItem(0, 'Dashboard', Icons.dashboard),
-                _buildNavItem(1, 'Feature Flipping', Icons.tune),
-                _buildNavItem(2, 'Logs', Icons.list),
-                _buildNavItem(3, 'Tournaments', Icons.emoji_events),
-                _buildNavItem(4, 'Games', Icons.games),
-                _buildNavItem(5, 'Users', Icons.people),
+                _buildNavItem(0, l.dashboardTitle, Icons.dashboard),
+                _buildNavItem(1, l.featureFlippingTitle, Icons.tune),
+                _buildNavItem(2, l.logsTitle, Icons.list),
+                _buildNavItem(3, l.tournamentsTitle, Icons.emoji_events),
+                _buildNavItem(4, l.gamesTitle, Icons.games),
+                _buildNavItem(5, l.usersTitle, Icons.people),
               ],
             ),
           ),
@@ -171,6 +172,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildDashboardContent(DashboardLoaded state) {
+    AppLocalizations l = AppLocalizations.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -179,15 +181,15 @@ class _DashboardState extends State<Dashboard> {
           children: [
             Expanded(
                 child: _buildStatCard(
-                    'Logged Users', state.loggedInUsers, Colors.blue)),
+                    l.dashboardTitle, state.loggedInUsers, Colors.blue)),
             const SizedBox(width: 16),
             Expanded(
                 child: _buildStatCard(
-                    'Anonymous Users', state.anonymousUsers, Colors.green)),
+                    l.dashboardTitle, state.anonymousUsers, Colors.green)),
             const SizedBox(width: 16),
             Expanded(
                 child: _buildStatCard(
-                    'Subscribed Users', state.subscribedUsers, Colors.purple)),
+                    l.dashboardTitle, state.subscribedUsers, Colors.purple)),
           ],
         ),
         const SizedBox(height: 24),
@@ -230,6 +232,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildUserChart(DashboardLoaded state) {
+    AppLocalizations l = AppLocalizations.of(context);
     return Card(
       elevation: 4,
       child: Padding(
@@ -237,9 +240,9 @@ class _DashboardState extends State<Dashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'User Distribution',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+             Text(
+              l.userDistribution,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Expanded(
@@ -260,12 +263,13 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildLegend() {
+    AppLocalizations l = AppLocalizations.of(context);
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        _buildLegendItem(Colors.blue, 'Logged Users'),
-        _buildLegendItem(Colors.green, 'Anonymous Users'),
-        _buildLegendItem(Colors.purple, 'Subscribed Users'),
+        _buildLegendItem(Colors.blue, l.loggedUsers),
+        _buildLegendItem(Colors.green, l.anonymousUsers),
+        _buildLegendItem(Colors.purple, l.subscribedUsers),
       ],
     );
   }
@@ -285,6 +289,7 @@ class _DashboardState extends State<Dashboard> {
   }
 
   Widget _buildRecentActivityCard(DashboardLoaded state) {
+    AppLocalizations l = AppLocalizations.of(context);
     return Card(
       elevation: 4,
       child: Padding(
@@ -292,9 +297,9 @@ class _DashboardState extends State<Dashboard> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Recent Activity',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+             Text(
+              l.recentActivity,
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 8),
             Expanded(

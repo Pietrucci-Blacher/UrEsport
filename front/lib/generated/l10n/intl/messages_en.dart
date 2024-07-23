@@ -36,6 +36,8 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "actionsText": MessageLookupByLibrary.simpleMessage("Actions"),
+        "activeText": MessageLookupByLibrary.simpleMessage("Active"),
         "activeTournaments":
             MessageLookupByLibrary.simpleMessage("Active Tournaments"),
         "activeUsers": MessageLookupByLibrary.simpleMessage("Active Users"),
@@ -43,8 +45,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "addGame": MessageLookupByLibrary.simpleMessage("Add Game"),
         "addTeam": MessageLookupByLibrary.simpleMessage("Add Team"),
         "addTournament": MessageLookupByLibrary.simpleMessage("Add Tournament"),
+        "addUser": MessageLookupByLibrary.simpleMessage("Add User"),
         "addedToGameList":
             MessageLookupByLibrary.simpleMessage("Game added to your list"),
+        "addingNewUserFunctionalityNotImplemented":
+            MessageLookupByLibrary.simpleMessage(
+                "Adding new user functionality not implemented"),
+        "adminDashboardTitle":
+            MessageLookupByLibrary.simpleMessage("Admin Dashboard"),
         "alphabeticalAZ":
             MessageLookupByLibrary.simpleMessage("Alphabetical (A-Z)"),
         "alphabeticalZA":
@@ -53,6 +61,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "You have already joined this tournament"),
         "anErrorOccurred":
             MessageLookupByLibrary.simpleMessage("An error occurred!"),
+        "anonymousUsers":
+            MessageLookupByLibrary.simpleMessage("Anonymous Users"),
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
         "applyFilters": MessageLookupByLibrary.simpleMessage("Apply Filters"),
         "bracket": MessageLookupByLibrary.simpleMessage("Bracket"),
@@ -71,6 +81,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Are you sure you want to delete this friend?"),
         "confirmDeleteGame": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to delete this game?"),
+        "confirmDeleteTournament": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to delete this tournament?"),
+        "confirmDeleteUser": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to delete this user?"),
         "confirmKick": MessageLookupByLibrary.simpleMessage("Confirm Kick"),
         "confirmKickMessage": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to kick this user from the team?"),
@@ -80,24 +94,32 @@ class MessageLookup extends MessageLookupByLibrary {
         "createTeam": MessageLookupByLibrary.simpleMessage("Create Team"),
         "createTournament":
             MessageLookupByLibrary.simpleMessage("Create Tournament"),
+        "createdAtText": MessageLookupByLibrary.simpleMessage("Created At"),
         "customBracket": MessageLookupByLibrary.simpleMessage("Custom Bracket"),
         "customPoules": MessageLookupByLibrary.simpleMessage("Custom Poules"),
         "dangerZone": MessageLookupByLibrary.simpleMessage("Danger Zone"),
         "dashboard": MessageLookupByLibrary.simpleMessage("Dashboard"),
+        "dashboardTitle": MessageLookupByLibrary.simpleMessage("Dashboard"),
+        "dateText": MessageLookupByLibrary.simpleMessage("Date"),
         "delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "deleteAccount": MessageLookupByLibrary.simpleMessage("Delete Account"),
         "deleteGame": MessageLookupByLibrary.simpleMessage("Delete Game"),
         "deleteGameButton": MessageLookupByLibrary.simpleMessage("Delete Game"),
         "deleteTeamConfirmation": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to delete the team"),
+        "deleteTournament":
+            MessageLookupByLibrary.simpleMessage("Delete Tournament"),
+        "deleteUserTitle": MessageLookupByLibrary.simpleMessage("Delete User"),
         "description": MessageLookupByLibrary.simpleMessage("Description:"),
         "descriptionGame": MessageLookupByLibrary.simpleMessage("Description:"),
         "descriptionIsRequired":
             MessageLookupByLibrary.simpleMessage("Description is required"),
         "details": MessageLookupByLibrary.simpleMessage("Details"),
+        "editGame": MessageLookupByLibrary.simpleMessage("Edit Game"),
         "editProfile": MessageLookupByLibrary.simpleMessage("Edit Profile"),
         "editTournament":
             MessageLookupByLibrary.simpleMessage("Edit Tournament"),
+        "editUser": MessageLookupByLibrary.simpleMessage("Edit User"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "end": m0,
         "endDate": MessageLookupByLibrary.simpleMessage("End:"),
@@ -145,6 +167,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Failed to delete friend"),
         "failedToDeleteTeam":
             MessageLookupByLibrary.simpleMessage("Failed to delete the team"),
+        "failedToDeleteUser":
+            MessageLookupByLibrary.simpleMessage("Failed to delete user"),
         "failedToLeaveTeam":
             MessageLookupByLibrary.simpleMessage("Failed to leave the team"),
         "failedToLoadBracket":
@@ -161,6 +185,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Failed to update favorite status"),
         "failedToUpdateTournament":
             MessageLookupByLibrary.simpleMessage("Failed to update tournament"),
+        "failedToUpdateUser":
+            MessageLookupByLibrary.simpleMessage("Failed to update user"),
         "favorites": MessageLookupByLibrary.simpleMessage("Favorites"),
         "filterAndSort":
             MessageLookupByLibrary.simpleMessage("Filter and Sort"),
@@ -191,11 +217,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "gameScreenWelcome":
             MessageLookupByLibrary.simpleMessage("Welcome to the Game Screen!"),
         "games": MessageLookupByLibrary.simpleMessage("Games"),
+        "gamesTitle": MessageLookupByLibrary.simpleMessage("Games"),
         "generateBracket":
             MessageLookupByLibrary.simpleMessage("Generate Bracket"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home"),
         "homeScreenWelcome":
             MessageLookupByLibrary.simpleMessage("Welcome to the Home Screen!"),
+        "idText": MessageLookupByLibrary.simpleMessage("ID"),
+        "imageText": MessageLookupByLibrary.simpleMessage("Image"),
         "imageUrl": MessageLookupByLibrary.simpleMessage("Image URL"),
         "inviteButton": MessageLookupByLibrary.simpleMessage("Invite"),
         "inviteError": MessageLookupByLibrary.simpleMessage(
@@ -231,9 +260,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "location": MessageLookupByLibrary.simpleMessage("Location:"),
         "locationText": MessageLookupByLibrary.simpleMessage("Location:"),
         "logIn": MessageLookupByLibrary.simpleMessage("Log In"),
+        "loggedUsers": MessageLookupByLibrary.simpleMessage("Logged Users"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
         "logout": MessageLookupByLibrary.simpleMessage("Logout"),
         "logs": MessageLookupByLibrary.simpleMessage("Logs"),
+        "logsTitle": MessageLookupByLibrary.simpleMessage("Logs"),
         "longitude": MessageLookupByLibrary.simpleMessage("Longitude"),
         "matchDetails": MessageLookupByLibrary.simpleMessage("Match Details"),
         "membersInTeam": MessageLookupByLibrary.simpleMessage("Members"),
@@ -253,6 +284,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "needConnected": MessageLookupByLibrary.simpleMessage(
             "You must be logged in to access this page"),
         "no": MessageLookupByLibrary.simpleMessage("No"),
+        "noChangesMade":
+            MessageLookupByLibrary.simpleMessage("No changes made"),
         "noFriendsFound":
             MessageLookupByLibrary.simpleMessage("No friends found"),
         "noGamesAvailable":
@@ -293,6 +326,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Number of Players per Team"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "orLoginWith": MessageLookupByLibrary.simpleMessage("Or login with"),
+        "ownerIDText": MessageLookupByLibrary.simpleMessage("Owner ID"),
         "participants": MessageLookupByLibrary.simpleMessage("Participants:"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordResetEmailSent":
@@ -351,6 +385,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Rating fetched successfully"),
         "ratingSavedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Rating saved successfully"),
+        "recentActivity":
+            MessageLookupByLibrary.simpleMessage("Recent Activity"),
         "register": MessageLookupByLibrary.simpleMessage("Register"),
         "removedFromGameList":
             MessageLookupByLibrary.simpleMessage("Game removed from your list"),
@@ -361,10 +397,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "resetPassword": MessageLookupByLibrary.simpleMessage("Reset Password"),
         "resourceNotFound404":
             MessageLookupByLibrary.simpleMessage("Resource not found (404)"),
+        "rolesText": MessageLookupByLibrary.simpleMessage("Roles"),
         "save": MessageLookupByLibrary.simpleMessage("Save"),
         "score": MessageLookupByLibrary.simpleMessage("Score"),
         "searchTags": MessageLookupByLibrary.simpleMessage("Search tags"),
         "searchUser": MessageLookupByLibrary.simpleMessage("Search User"),
+        "searchUsers": MessageLookupByLibrary.simpleMessage("Search Users"),
         "selectEndDate":
             MessageLookupByLibrary.simpleMessage("Select End Date"),
         "selectStartDate":
@@ -386,6 +424,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "startDateTime":
             MessageLookupByLibrary.simpleMessage("Start Date & Time"),
         "status": MessageLookupByLibrary.simpleMessage("Status"),
+        "subscribedUsers":
+            MessageLookupByLibrary.simpleMessage("Subscribed Users"),
         "tags": MessageLookupByLibrary.simpleMessage("Tags"),
         "team": MessageLookupByLibrary.simpleMessage("Team"),
         "team1Score": MessageLookupByLibrary.simpleMessage("Team 1 Score"),
@@ -402,6 +442,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "This team is not registered in the tournament"),
         "teamPlayersCount":
             MessageLookupByLibrary.simpleMessage("Joueurs par team: "),
+        "textText": MessageLookupByLibrary.simpleMessage("Text"),
         "totalGames": MessageLookupByLibrary.simpleMessage("Total Games"),
         "tournamentAdded":
             MessageLookupByLibrary.simpleMessage("Tournament added"),
@@ -420,8 +461,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "tournaments": MessageLookupByLibrary.simpleMessage("Tournaments"),
         "tournamentsInTeam":
             MessageLookupByLibrary.simpleMessage("Tournaments"),
+        "tournamentsTitle": MessageLookupByLibrary.simpleMessage("Tournaments"),
         "trendingTournamentsTitle":
             MessageLookupByLibrary.simpleMessage("Trending Tournaments"),
+        "typeText": MessageLookupByLibrary.simpleMessage("Type"),
         "unknown": MessageLookupByLibrary.simpleMessage("Unknown"),
         "unknownError": MessageLookupByLibrary.simpleMessage("Unknown error"),
         "unknownJoinError": MessageLookupByLibrary.simpleMessage(
@@ -430,13 +473,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "unknownState": MessageLookupByLibrary.simpleMessage("Unknown state"),
         "updateMatch": MessageLookupByLibrary.simpleMessage("Update Match"),
         "updateScore": MessageLookupByLibrary.simpleMessage("Update Score"),
+        "updatedAtText": MessageLookupByLibrary.simpleMessage("Updated At"),
         "upvoteAdded": MessageLookupByLibrary.simpleMessage("Upvote added"),
         "upvoteRemoved": MessageLookupByLibrary.simpleMessage("Upvote removed"),
         "upvotes": MessageLookupByLibrary.simpleMessage("Upvotes:"),
+        "userDistribution":
+            MessageLookupByLibrary.simpleMessage("User Distribution"),
         "userKickedSuccess":
             MessageLookupByLibrary.simpleMessage("User kicked successfully"),
         "username": MessageLookupByLibrary.simpleMessage("Username"),
         "users": MessageLookupByLibrary.simpleMessage("Users"),
+        "usersTitle": MessageLookupByLibrary.simpleMessage("Users"),
         "validate": MessageLookupByLibrary.simpleMessage("Validate"),
         "verificationCodeSent": MessageLookupByLibrary.simpleMessage(
             "A verification code has been sent to your email."),

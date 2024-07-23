@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/l10n/app_localizations.dart';
@@ -33,10 +34,10 @@ class AddGamePageState extends State<AddGamePage> {
           .toList();
 
       final newGame = {
-        'name': _nameController.text,
-        'description': _descriptionController.text,
-        'image': _imageController.text,
-        'tags': tags,
+        l.name: _nameController.text,
+        l.description: _descriptionController.text,
+        l.imageText: _imageController.text,
+        l.tags: tags,
       };
 
       // Log des données envoyées
@@ -48,7 +49,7 @@ class AddGamePageState extends State<AddGamePage> {
         final token = await _cacheService.getString('token');
         if (token == null) throw Exception('No token found');
         final response = await _dio.post(
-          'http://localhost:8080/games/',
+          '${dotenv.env['API_ENDPOINT']}/games/',
           data: newGame,
           options: Options(headers: {
             'Authorization': token,

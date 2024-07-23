@@ -7,6 +7,8 @@ import 'package:uresport/core/models/tournament.dart';
 
 import 'package:uresport/core/services/cache_service.dart';
 
+import 'package:uresport/l10n/app_localizations.dart';
+
 class EditTournamentPage extends StatefulWidget {
   final Tournament? tournament;
 
@@ -77,6 +79,7 @@ class EditTournamentPageState extends State<EditTournamentPage> {
   }
 
   Future<void> _saveTournament() async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (widget.tournament == null) {
       // Add new tournament logic
       // Implement your own logic for adding a new tournament
@@ -120,14 +123,14 @@ class EditTournamentPageState extends State<EditTournamentPage> {
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                   content: Text(
-                      'Failed to update tournament: ${response.statusMessage}')),
+                      '${l.failedToUpdateTournament}: ${response.statusMessage}')),
             );
           }
         }
       } catch (e) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to update tournament: $e')),
+            SnackBar(content: Text('${l.failedToUpdateTournament}: $e')),
           );
         }
       }
@@ -182,10 +185,11 @@ class EditTournamentPageState extends State<EditTournamentPage> {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(
-            widget.tournament == null ? 'Add Tournament' : 'Edit Tournament'),
+            widget.tournament == null ? l.addTournament : l.editTournament),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -194,18 +198,18 @@ class EditTournamentPageState extends State<EditTournamentPage> {
             children: [
               TextField(
                 controller: nameController,
-                decoration: const InputDecoration(labelText: 'Name'),
+                decoration: InputDecoration(labelText: l.name),
               ),
               TextField(
                 controller: descriptionController,
-                decoration: const InputDecoration(labelText: 'Description'),
+                decoration: InputDecoration(labelText: l.description),
               ),
               GestureDetector(
                 onTap: () => _selectStartDate(context),
                 child: AbsorbPointer(
                   child: TextField(
                     decoration: InputDecoration(
-                      labelText: 'Start Date & Time',
+                      labelText: l.startDateTime,
                       hintText: _startDateTime != null
                           ? _dateFormat.format(_startDateTime!)
                           : '',
@@ -218,7 +222,7 @@ class EditTournamentPageState extends State<EditTournamentPage> {
                 child: AbsorbPointer(
                   child: TextField(
                     decoration: InputDecoration(
-                      labelText: 'End Date & Time',
+                      labelText: l.endDateTime,
                       hintText: _endDateTime != null
                           ? _dateFormat.format(_endDateTime!)
                           : '',
@@ -228,34 +232,34 @@ class EditTournamentPageState extends State<EditTournamentPage> {
               ),
               TextField(
                 controller: locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                decoration:  InputDecoration(labelText: l.location),
               ),
               TextField(
                 controller: latitudeController,
-                decoration: const InputDecoration(labelText: 'Latitude'),
+                decoration:  InputDecoration(labelText: l.latitude),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: longitudeController,
-                decoration: const InputDecoration(labelText: 'Longitude'),
+                decoration:  InputDecoration(labelText: l.longitude),
                 keyboardType: TextInputType.number,
               ),
               TextField(
                 controller: imageController,
-                decoration: const InputDecoration(labelText: 'Image'),
+                decoration:  InputDecoration(labelText: l.imageText),
               ),
               TextField(
                 controller: privateController,
-                decoration: const InputDecoration(labelText: 'Private'),
+                decoration:  InputDecoration(labelText: l.private),
               ),
               TextField(
                 controller: nbPlayerController,
-                decoration: const InputDecoration(labelText: 'Nb Players'),
+                decoration:  InputDecoration(labelText: l.numberOfPlayers),
               ),
               const SizedBox(height: 20),
               ElevatedButton(
                 onPressed: _saveTournament,
-                child: const Text('Save'),
+                child: Text(l.save),
               ),
             ],
           ),
