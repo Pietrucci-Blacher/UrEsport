@@ -6,7 +6,6 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/l10n/app_localizations.dart';
-
 import 'package:uresport/core/services/cache_service.dart';
 
 class AddGamePage extends StatefulWidget {
@@ -20,7 +19,6 @@ class AddGamePageState extends State<AddGamePage> {
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
   final _descriptionController = TextEditingController();
-  final _imageController = TextEditingController();
   final _tagsController = TextEditingController();
   final Dio _dio = Dio();
   final CacheService _cacheService = CacheService.instance;
@@ -34,10 +32,9 @@ class AddGamePageState extends State<AddGamePage> {
           .toList();
 
       final newGame = {
-        l.name: _nameController.text,
-        l.description: _descriptionController.text,
-        l.imageText: _imageController.text,
-        l.tags: tags,
+        'name': _nameController.text,  // Assurez-vous que les noms des champs sont corrects
+        'description': _descriptionController.text,
+        'tags': tags,
       };
 
       // Log des données envoyées
@@ -53,14 +50,13 @@ class AddGamePageState extends State<AddGamePage> {
           data: newGame,
           options: Options(headers: {
             'Authorization': token,
+            'Content-Type': 'application/json',  // Assurez-vous d'envoyer du JSON
           }),
         );
 
         // Log de la réponse complète du serveur
         if (kDebugMode) {
           print('Response status: ${response.statusCode}');
-        }
-        if (kDebugMode) {
           print('Response data: ${response.data}');
         }
 
@@ -109,7 +105,6 @@ class AddGamePageState extends State<AddGamePage> {
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
-    _imageController.dispose();
     _tagsController.dispose();
     super.dispose();
   }
@@ -148,16 +143,6 @@ class AddGamePageState extends State<AddGamePage> {
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return l.pleaseEnterGameDescription;
-                        }
-                        return null;
-                      },
-                    ),
-                    TextFormField(
-                      controller: _imageController,
-                      decoration: InputDecoration(labelText: l.imageUrl),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return l.pleaseEnterImageUrl;
                         }
                         return null;
                       },

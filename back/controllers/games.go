@@ -74,8 +74,8 @@ func CreateGame(c *gin.Context) {
 	game = models.Game{
 		Name:        body.Name,
 		Description: body.Description,
-		Image:       body.Image,
-		Tags:        body.Tags,
+		//Image:       body.Image,
+		Tags: body.Tags,
 	}
 
 	if err := game.Save(); err != nil {

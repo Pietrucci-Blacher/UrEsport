@@ -49,22 +49,23 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   }
 
   Future<void> _submitForm() async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (_formKey.currentState!.validate()) {
       final tournamentData = {
-        'name': _nameController.text,
-        'description': _descriptionController.text,
-        'start_date': _startDateController.text,
-        'end_date': _endDateController.text,
-        'location': _locationController.text,
-        'latitude': _latitudeController.text.isEmpty
+        l.name: _nameController.text,
+        l.description: _descriptionController.text,
+        l.startDateText: _startDateController.text,
+        l.endDateText: _endDateController.text,
+        l.location: _locationController.text,
+        l.latitude: _latitudeController.text.isEmpty
             ? null
             : double.tryParse(_latitudeController.text),
-        'longitude': _longitudeController.text.isEmpty
+        l.longitude: _longitudeController.text.isEmpty
             ? null
             : double.tryParse(_longitudeController.text),
-        'private': _isPrivate,
-        'game_id': _selectedGameId,
-        'nb_player': int.tryParse(_nbPlayerController.text),
+        l.private: _isPrivate,
+        l.game: _selectedGameId,
+        l.numberOfPlayers: int.tryParse(_nbPlayerController.text),
       };
 
       try {
@@ -196,7 +197,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               ),
               TextFormField(
                 controller: _startDateController,
-                decoration: const InputDecoration(labelText: 'Start Date'),
+                decoration: InputDecoration(labelText: l.startDate),
                 readOnly: true,
                 onTap: () => _selectDateTime(context, _startDateController),
                 validator: (value) {
@@ -208,7 +209,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               ),
               TextFormField(
                 controller: _endDateController,
-                decoration: const InputDecoration(labelText: 'End Date'),
+                decoration: InputDecoration(labelText: l.endDate),
                 readOnly: true,
                 onTap: () => _selectDateTime(context, _endDateController),
                 validator: (value) {

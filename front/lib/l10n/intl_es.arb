@@ -343,5 +343,6 @@
   "rolesText": "Roles",
   "deleteUserTitle": "Eliminar usuario",
   "confirmDeleteUser": "¿Estás seguro de que quieres eliminar este usuario?",
-  "failedToDeleteUser": "Error al eliminar el usuario"
+  "failedToDeleteUser": "Error al eliminar el usuario",
+  "errorLoadingGames": "Error al cargar los juegos"
 }

@@ -150,6 +150,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Error loading data"),
         "errorLoadingCurrentUser": MessageLookupByLibrary.simpleMessage(
             "Error loading current user: \$e"),
+        "errorLoadingGames":
+            MessageLookupByLibrary.simpleMessage("Error loading games"),
         "errorLoadingTeams":
             MessageLookupByLibrary.simpleMessage("Error loading teams: \$e"),
         "errorLoadingTournaments":

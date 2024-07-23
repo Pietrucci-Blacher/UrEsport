@@ -2658,6 +2658,14 @@ class AppLocalizations {
     );
   }
 
+  String get errorLoadingGames {
+    return Intl.message(
+      'Error loading games',
+      name: 'errorLoadingGames',
+      desc: 'Message shown when loading games fails',
+    );
+  }
+
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

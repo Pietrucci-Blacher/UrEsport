@@ -3179,6 +3179,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Error loading games`
+  String get errorLoadingGames {
+    return Intl.message(
+      'Error loading games',
+      name: 'errorLoadingGames',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

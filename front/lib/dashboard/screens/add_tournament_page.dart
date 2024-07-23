@@ -1,5 +1,4 @@
 import 'package:dio/dio.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -25,10 +24,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   final _latitudeController = TextEditingController();
   final _longitudeController = TextEditingController();
   final _imageController = TextEditingController();
-  final _gameIdController = TextEditingController();
   final _nbPlayerController = TextEditingController();
-  final TextEditingController _startDateTimeController =
-      TextEditingController();
+  final TextEditingController _startDateTimeController = TextEditingController();
   final TextEditingController _endDateTimeController = TextEditingController();
   final Dio _dio = Dio();
   bool _isPrivate = false;
@@ -39,6 +36,48 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
   DateTime? _startDateTime;
   DateTime? _endDateTime;
+  List<Map<String, dynamic>> _games = [];
+  int? _selectedGameId;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      _loadGames();
+    });
+  }
+
+  Future<void> _loadGames() async {
+    final l = AppLocalizations.of(context);
+    if (l == null) return;
+    try {
+      final token = await _cacheService.getString('token');
+      if (token == null) throw Exception('No token found');
+      final response = await _dio.get(
+        '${dotenv.env['API_ENDPOINT']}/games/',
+        options: Options(headers: {
+          'Authorization': token,
+        }),
+      );
+
+      if (response.statusCode == 200 && response.data != null) {
+        final data = response.data as List<dynamic>;
+        setState(() {
+          _games = data.map((e) {
+            return {
+              'id': e['id'] ?? 0,
+              'name': e['name'] ?? 'Unknown',
+              'imageUrl': e['image'] ?? ''
+            };
+          }).toList();
+        });
+      } else {
+        _showAlertDialog('${l.errorLoadingGames}: ${response.statusMessage}');
+      }
+    } catch (e) {
+      _showAlertDialog('${l.errorLoadingGames}: $e');
+    }
+  }
 
   void _updateDateTimeField(bool isStartDate) {
     setState(() {
@@ -55,7 +94,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   }
 
   Future<void> _selectDateTime(BuildContext context, bool isStartDate) async {
-    AppLocalizations l = AppLocalizations.of(context);
+    final l = AppLocalizations.of(context);
+    if (l == null) return;
     DateTime today = DateTime.now();
 
     await showDialog(
@@ -72,8 +112,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               minDate: isStartDate
                   ? today
                   : (_startDateTime != null
-                      ? _startDateTime!.add(const Duration(minutes: 1))
-                      : today),
+                  ? _startDateTime!.add(const Duration(minutes: 1))
+                  : today),
               showActionButtons: true,
               onSubmit: (Object? value) {
                 if (value is DateTime) {
@@ -165,7 +205,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   }
 
   Future<void> _saveTournament() async {
-    AppLocalizations l = AppLocalizations.of(context);
+    final l = AppLocalizations.of(context);
+    if (l == null) return;
     if (_formKey.currentState!.validate() &&
         _startDateTime != null &&
         _endDateTime != null) {
@@ -175,7 +216,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         l.startDateText: _apiDateFormat
             .format(_startDateTime!), // Use API format for start date
         l.endDateText:
-            _apiDateFormat.format(_endDateTime!), // Use API format for end date
+        _apiDateFormat.format(_endDateTime!), // Use API format for end date
         l.locationText: _locationController.text.isNotEmpty
             ? _locationController.text
             : null,
@@ -186,13 +227,9 @@ class AddTournamentPageState extends State<AddTournamentPage> {
             ? double.tryParse(_longitudeController.text)
             : null,
         l.private: _isPrivate,
-        l.gameId: int.tryParse(_gameIdController.text) ?? 0,
+        l.gameId: _selectedGameId,
         l.numberOfPlayers: int.tryParse(_nbPlayerController.text) ?? 0,
       };
-
-      if (kDebugMode) {
-        print('Sending data: $newTournament');
-      }
 
       try {
         final token = await _cacheService.getString('token');
@@ -205,13 +242,6 @@ class AddTournamentPageState extends State<AddTournamentPage> {
           }),
         );
 
-        if (kDebugMode) {
-          print('Response status: ${response.statusCode}');
-          print('Response data: ${response.data}');
-        }
-
-        if (!mounted) return;
-
         if (response.statusCode == 201) {
           _handleSuccessfulResponse();
         } else {
@@ -219,10 +249,6 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               '${l.errorAddingTournament}: ${response.statusMessage}');
         }
       } catch (e) {
-        if (kDebugMode) {
-          print('Exception: $e');
-        }
-        if (!mounted) return;
         _showAlertDialog('${l.errorAddingTournament}: $e');
       }
     } else {
@@ -231,7 +257,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   }
 
   void _handleSuccessfulResponse() {
-    AppLocalizations l = AppLocalizations.of(context);
+    final l = AppLocalizations.of(context);
+    if (l == null) return;
     Navigator.of(context).pop(true);
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(l.tournamentAdded)));
@@ -239,9 +266,6 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   }
 
   void _showAlertDialog(String message) {
-    if (kDebugMode) {
-      print(message);
-    }
     ScaffoldMessenger.of(context)
         .showSnackBar(SnackBar(content: Text(message)));
   }
@@ -254,7 +278,6 @@ class AddTournamentPageState extends State<AddTournamentPage> {
     _latitudeController.dispose();
     _longitudeController.dispose();
     _imageController.dispose();
-    _gameIdController.dispose();
     _nbPlayerController.dispose();
     _startDateTimeController.dispose();
     _endDateTimeController.dispose();
@@ -263,7 +286,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
   @override
   Widget build(BuildContext context) {
-    AppLocalizations l = AppLocalizations.of(context);
+    final l = AppLocalizations.of(context);
+    if (l == null) return Container();
 
     return Dialog(
       insetPadding: const EdgeInsets.all(20),
@@ -341,26 +365,50 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                       decoration: InputDecoration(labelText: l.longitude),
                       keyboardType: TextInputType.number,
                     ),
-                    SwitchListTile(
-                      title: Text(l.private),
-                      value: _isPrivate,
-                      onChanged: (bool value) {
+                    _games.isNotEmpty
+                        ? DropdownButtonFormField<int>(
+                      decoration: InputDecoration(labelText: l.game),
+                      items: _games.map((game) {
+                        return DropdownMenuItem<int>(
+                          value: game['id'] as int?,
+                          child: Row(
+                            children: [
+                              SizedBox(
+                                width: 40,
+                                height: 40,
+                                child: Image.network(
+                                  game['imageUrl'] as String,
+                                  fit: BoxFit.cover,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return const Icon(Icons.error);
+                                  },
+                                  loadingBuilder: (context, child, loadingProgress) {
+                                    if (loadingProgress == null) {
+                                      return child;
+                                    }
+                                    return const CircularProgressIndicator();
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 10),
+                              Text(game['name'] as String),
+                            ],
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (int? newValue) {
                         setState(() {
-                          _isPrivate = value;
+                          _selectedGameId = newValue;
                         });
                       },
-                    ),
-                    TextFormField(
-                      controller: _gameIdController,
-                      decoration: InputDecoration(labelText: l.gameId),
-                      keyboardType: TextInputType.number,
                       validator: (value) {
-                        if (value == null || value.isEmpty) {
+                        if (value == null) {
                           return l.pleaseEnterGameId;
                         }
                         return null;
                       },
-                    ),
+                    )
+                        : const CircularProgressIndicator(),
                     TextFormField(
                       controller: _nbPlayerController,
                       decoration: InputDecoration(labelText: l.numberOfPlayers),
@@ -370,6 +418,15 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                           return l.pleaseEnterNumberOfPlayers;
                         }
                         return null;
+                      },
+                    ),
+                    SwitchListTile(
+                      title: Text(l.private),
+                      value: _isPrivate,
+                      onChanged: (bool value) {
+                        setState(() {
+                          _isPrivate = value;
+                        });
                       },
                     ),
                   ],

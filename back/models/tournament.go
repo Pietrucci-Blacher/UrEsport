@@ -84,7 +84,7 @@ func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
 	var tournaments []Tournament
 
 	value := DB.Model(&Tournament{}).
-		Where("deleted_at IS NULL").
+		//Where("deleted_at IS NULL").
 		Offset(query.GetSkip()).
 		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
@@ -106,7 +106,7 @@ func FindTournamentsByUserID(userID int) ([]Tournament, error) {
 	var tournaments []Tournament
 
 	err := DB.Model(&Tournament{}).
-		Where("deleted_at IS NULL").
+		//Where("deleted_at IS NULL").
 		Where("owner_id", userID).
 		Preload("Teams").
 		Preload("Owner").
@@ -258,7 +258,7 @@ func (t *Tournament) FindOneById(id int) error {
 
 func (t *Tournament) FindOne(key string, value any) error {
 	return DB.Model(&Tournament{}).
-		Where("deleted_at IS NULL").
+		//Where("deleted_at IS NULL").
 		Preload("Teams").
 		Preload("Owner").
 		Preload("Game").

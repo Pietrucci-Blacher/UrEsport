@@ -18,10 +18,10 @@ type Game struct {
 }
 
 type CreateGameDto struct {
-	Name        string   `json:"name" validate:"required"`
-	Description string   `json:"description" validate:"required"`
-	Image       string   `json:"image" validate:"required"`
-	Tags        []string `json:"tags" validate:"required"`
+	Name        string `json:"name" validate:"required"`
+	Description string `json:"description" validate:"required"`
+	//Image       string   `json:"image" validate:"required"`
+	Tags []string `json:"tags" validate:"required"`
 }
 
 type UpdateGameDto struct {
