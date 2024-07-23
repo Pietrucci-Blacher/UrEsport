@@ -2666,6 +2666,14 @@ class AppLocalizations {
     );
   }
 
+  String get selectLanguage {
+    return Intl.message(
+      'Select Language',
+      name: 'selectLanguage',
+      desc: 'Title for the select language dialog',
+    );
+  }
+
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

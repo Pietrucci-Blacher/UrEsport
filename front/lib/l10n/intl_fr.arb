@@ -346,5 +346,6 @@
   "deleteUserTitle": "Supprimer l'utilisateur",
   "confirmDeleteUser": "Êtes-vous sûr de vouloir supprimer cet utilisateur ?",
   "failedToDeleteUser": "Échec de la suppression de l'utilisateur",
-  "errorLoadingGames": "Erreur lors du chargement des jeux"
+  "errorLoadingGames": "Erreur lors du chargement des jeux",
+  "selectLanguage": "Sélectionner la langue"
 }

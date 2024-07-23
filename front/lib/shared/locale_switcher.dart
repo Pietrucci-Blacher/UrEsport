@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 
+import '../l10n/app_localizations.dart';
+
 class LocaleSwitcher extends StatelessWidget {
   final Function(Locale) onLocaleChanged;
 
   const LocaleSwitcher({super.key, required this.onLocaleChanged});
 
   void _showLocaleDialog(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     const List<Locale> locales = [
       Locale('en', ''),
       Locale('es', ''),
@@ -16,7 +19,7 @@ class LocaleSwitcher extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Select Language'),
+          title: Text(l.selectLanguage),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: locales.map((Locale locale) {

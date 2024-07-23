@@ -407,6 +407,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "searchUsers": MessageLookupByLibrary.simpleMessage("Search Users"),
         "selectEndDate":
             MessageLookupByLibrary.simpleMessage("Select End Date"),
+        "selectLanguage":
+            MessageLookupByLibrary.simpleMessage("Select Language"),
         "selectStartDate":
             MessageLookupByLibrary.simpleMessage("Select Start Date"),
         "selectTeamToJoin":
