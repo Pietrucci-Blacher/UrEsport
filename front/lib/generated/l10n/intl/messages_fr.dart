@@ -29,15 +29,13 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m3(error) =>
       "Erreur lors de l\'arrêt du suivi du jeu : ${error}";
 
-  static String m4(count) => "Filtres (${count})";
+  static String m4(count) => "+${count} de plus";
 
-  static String m5(count) => "+${count} de plus";
+  static String m5(username) => "Bienvenue sur votre profil, ${username} !";
 
-  static String m6(username) => "Bienvenue sur votre profil, ${username} !";
+  static String m6(date) => "Début : ${date}";
 
-  static String m7(date) => "Début : ${date}";
-
-  static String m8(email) => "Un code de vérification a été envoyé à ${email}.";
+  static String m7(email) => "Un code de vérification a été envoyé à ${email}.";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -52,6 +50,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Alphabétique (A-Z)"),
         "alphabeticalZA":
             MessageLookupByLibrary.simpleMessage("Alphabétique (Z-A)"),
+        "alreadyJoinedTournament": MessageLookupByLibrary.simpleMessage(
+            "Vous avez déjà rejoint ce tournoi"),
         "anErrorOccurred": MessageLookupByLibrary.simpleMessage(
             "Une erreur s\'est produite !"),
         "appTitle": MessageLookupByLibrary.simpleMessage("UrEsport"),
@@ -75,16 +75,20 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Modifier le profil"),
         "email": MessageLookupByLibrary.simpleMessage("Email"),
         "end": m0,
+        "errorFetchingRating": MessageLookupByLibrary.simpleMessage(
+            "Erreur lors de la récupération de la note"),
         "errorFollowingGame": m1,
         "errorLoading": MessageLookupByLibrary.simpleMessage(
             "Erreur de chargement des données"),
         "errorLoadingTournaments": m2,
+        "errorSavingRating": MessageLookupByLibrary.simpleMessage(
+            "Erreur lors de l\'enregistrement de la note"),
         "errorUnfollowingGame": m3,
         "filterAndSort":
             MessageLookupByLibrary.simpleMessage("Filtrer et trier"),
         "filterByTags":
             MessageLookupByLibrary.simpleMessage("FILTRER PAR TAGS"),
-        "filters": m4,
+        "filters": MessageLookupByLibrary.simpleMessage("Filtres"),
         "firstName": MessageLookupByLibrary.simpleMessage("Prénom"),
         "forgotPassword":
             MessageLookupByLibrary.simpleMessage("Mot de passe oublié ?"),
@@ -98,6 +102,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "gameScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Bienvenue à l\'écran des jeux !"),
         "games": MessageLookupByLibrary.simpleMessage("Jeux"),
+        "generateBracket":
+            MessageLookupByLibrary.simpleMessage("Générer le bracket"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Accueil"),
         "homeScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Bienvenue à l\'écran d\'accueil !"),
@@ -107,9 +113,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "inviteSuccess":
             MessageLookupByLibrary.simpleMessage("Vous avez bien été invité"),
         "joinButton": MessageLookupByLibrary.simpleMessage("Rejoindre"),
+        "joinTournament":
+            MessageLookupByLibrary.simpleMessage("Rejoindre le tournoi"),
+        "joinedTournaments": MessageLookupByLibrary.simpleMessage(
+            "Vous avez bien rejoint le tournoi"),
         "lastName": MessageLookupByLibrary.simpleMessage("Nom"),
         "latestMessage":
             MessageLookupByLibrary.simpleMessage("Dernier message"),
+        "leaveTournament":
+            MessageLookupByLibrary.simpleMessage("Quitter le tournoi"),
+        "leftTournament":
+            MessageLookupByLibrary.simpleMessage("Vous avez quitté le tournoi"),
         "listAllTournaments":
             MessageLookupByLibrary.simpleMessage("Liste tournois"),
         "listMyTeamsJoined":
@@ -120,15 +134,22 @@ class MessageLookup extends MessageLookupByLibrary {
         "login": MessageLookupByLibrary.simpleMessage("Connexion"),
         "logout": MessageLookupByLibrary.simpleMessage("Déconnexion"),
         "logs": MessageLookupByLibrary.simpleMessage("Journaux"),
+        "membersInTeam": MessageLookupByLibrary.simpleMessage("Membres"),
         "modifyGameButton":
             MessageLookupByLibrary.simpleMessage("Modifier le jeu"),
-        "moreTagsCount": m5,
+        "moreTagsCount": m4,
         "mustBeLoggedIn": MessageLookupByLibrary.simpleMessage(
             "Vous devez être connecté pour voir vos tournois"),
+        "needConnected": MessageLookupByLibrary.simpleMessage(
+            "Vous devez être connecté pour accéder à cette page"),
         "noGamesAvailable":
             MessageLookupByLibrary.simpleMessage("Aucun jeu disponible."),
+        "noJoinedTournaments":
+            MessageLookupByLibrary.simpleMessage("Aucun tournoi rejoint"),
         "noLikeToDelete":
             MessageLookupByLibrary.simpleMessage("Aucun like à supprimer"),
+        "noRatingFetched":
+            MessageLookupByLibrary.simpleMessage("Aucune note récupérée"),
         "noTournamentsForGame":
             MessageLookupByLibrary.simpleMessage("Aucun tournoi pour ce jeu"),
         "noTournamentsFound":
@@ -139,6 +160,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Bienvenue à l\'écran des notifications !"),
         "orLoginWith":
             MessageLookupByLibrary.simpleMessage("Ou connectez-vous avec"),
+        "participants": MessageLookupByLibrary.simpleMessage("Participants"),
         "password": MessageLookupByLibrary.simpleMessage("Mot de passe"),
         "passwordResetEmailSent": MessageLookupByLibrary.simpleMessage(
             "E-mail de réinitialisation du mot de passe envoyé"),
@@ -147,10 +169,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "popularGamesTitle":
             MessageLookupByLibrary.simpleMessage("Jeux populaires"),
         "profileScreenTitle": MessageLookupByLibrary.simpleMessage("Profil"),
-        "profileScreenWelcome": m6,
+        "profileScreenWelcome": m5,
+        "ratingCannotBeZero": MessageLookupByLibrary.simpleMessage(
+            "La note ne peut pas être zéro"),
+        "ratingFetchedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("Note récupérée avec succès"),
+        "ratingSavedSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Note enregistrée avec succès"),
         "register": MessageLookupByLibrary.simpleMessage("Inscription"),
         "removedFromGameList":
             MessageLookupByLibrary.simpleMessage("Jeu retiré de votre liste"),
+        "removedFromLikedGames": MessageLookupByLibrary.simpleMessage(
+            "Jeu retiré de vos jeux aimés"),
         "resendCode":
             MessageLookupByLibrary.simpleMessage("Ré-envoyer le code"),
         "reset": MessageLookupByLibrary.simpleMessage("Réinitialiser"),
@@ -162,27 +192,35 @@ class MessageLookup extends MessageLookupByLibrary {
         "sendResetEmail": MessageLookupByLibrary.simpleMessage(
             "Envoyer l\'email de réinitialisation"),
         "sort": MessageLookupByLibrary.simpleMessage("TRIER"),
-        "start": m7,
+        "start": m6,
         "tags": MessageLookupByLibrary.simpleMessage("Tags"),
+        "teamCreatedSuccessfully":
+            MessageLookupByLibrary.simpleMessage("Équipe créée avec succès"),
         "totalGames": MessageLookupByLibrary.simpleMessage("Jeux totaux"),
+        "tournamentEndDate": MessageLookupByLibrary.simpleMessage("Fin"),
         "tournamentScreenTitle":
             MessageLookupByLibrary.simpleMessage("Tournois"),
         "tournamentScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Bienvenue à l\'écran des tournois !"),
+        "tournamentStartDate": MessageLookupByLibrary.simpleMessage("Début"),
         "tournaments": MessageLookupByLibrary.simpleMessage("Tournois"),
         "trendingTournamentsTitle":
             MessageLookupByLibrary.simpleMessage("Tournois en tendance"),
         "unknownPage": MessageLookupByLibrary.simpleMessage("Page inconnue"),
+        "upvoteAdded": MessageLookupByLibrary.simpleMessage("Upvote ajouté"),
         "username": MessageLookupByLibrary.simpleMessage("Nom d\'utilisateur"),
         "users": MessageLookupByLibrary.simpleMessage("Utilisateurs"),
-        "verificationCodeSent": m8,
+        "verificationCodeSent": m7,
         "verify": MessageLookupByLibrary.simpleMessage("Vérifier"),
         "viewAll": MessageLookupByLibrary.simpleMessage("Afficher tout"),
+        "viewAllParticipants":
+            MessageLookupByLibrary.simpleMessage("Voir tous les participants"),
         "welcome":
             MessageLookupByLibrary.simpleMessage("Bienvenue sur UrEsport"),
         "youAreNotLoggedIn":
             MessageLookupByLibrary.simpleMessage("Vous n\'êtes pas connecté"),
         "youMustBeLoggedIn": MessageLookupByLibrary.simpleMessage(
-            "Vous devez être connecté pour suivre ce jeu")
+            "Vous devez être connecté pour suivre ce jeu"),
+        "yourRating": MessageLookupByLibrary.simpleMessage("Votre note:")
       };
 }

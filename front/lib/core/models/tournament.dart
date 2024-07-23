@@ -90,10 +90,9 @@ class Tournament {
       isPrivate: json['private'],
       ownerId: json['owner_id'],
       owner: Owner.fromJson(json['owner']),
-      teams: ((json['teams'] ?? []) as List?)
-              ?.map((team) => Team.fromJson(team))
-              .toList() ??
-          [],
+      teams: ((json['teams'] ?? []) as List)
+          .map((team) => Team.fromJson(team))
+          .toList(), // Gérer les équipes nulles
       nbPlayers: json['nb_player'] ?? 1,
       upvotes: json['upvotes'] ?? 0,
       game: Game.fromJson(json['game']),

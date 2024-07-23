@@ -31,14 +31,11 @@ class TeamMembersPage extends StatelessWidget {
       if (!context.mounted) return;
       _showToast(
           context,
-          AppLocalizations.of(context).userKickedSuccess(username),
+          '${AppLocalizations.of(context).userKickedSuccess}: $username',
           Colors.green);
     } catch (e) {
-      debugPrint(AppLocalizations.of(context).errorKickingUser(e.toString()));
-      _showToast(
-          context,
-          AppLocalizations.of(context).errorKickingUser(e.toString()),
-          Colors.red);
+      _showToast(context,
+          '${AppLocalizations.of(context).errorKickingUser}: $e', Colors.red);
     }
   }
 
@@ -130,7 +127,7 @@ class TeamMembersPage extends StatelessWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text(l.confirmKick),
-              content: Text(l.confirmKickMessage(username)),
+              content: Text('${l.confirmKickMessage}: $username'),
               actions: <Widget>[
                 TextButton(
                   child: Text(l.cancel),
@@ -157,13 +154,13 @@ class TeamMembersPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l.membersOfTeam(teamName)),
+        title: Text('${l.membersOfTeam}: $teamName'),
       ),
       body: ListView.builder(
         itemCount: members.length,
         itemBuilder: (context, index) {
           final member = members[index];
-          return ownerId == currentId
+          return ownerId == currentId && member.id != ownerId
               ? Dismissible(
                   key: Key(member.id.toString()),
                   direction: DismissDirection.endToStart,

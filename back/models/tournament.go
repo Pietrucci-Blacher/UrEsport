@@ -21,14 +21,14 @@ type Tournament struct {
 	OwnerID     int        `json:"owner_id"`
 	Owner       User       `json:"owner" gorm:"foreignKey:OwnerID"`
 	Teams       []Team     `json:"teams" gorm:"many2many:tournament_teams;"`
-	Image       string     `json:"image" gorm:"type:text"`
+	Image       string     `json:"image" gorm:"type:varchar(255)"`
 	Private     bool       `json:"private" gorm:"default:false"`
 	GameID      int        `json:"game_id"`
 	Game        Game       `json:"game" gorm:"foreignKey:GameID"`
 	NbPlayer    int        `json:"nb_player" gorm:"default:1"`
-	Upvotes     int        `json:"upvote" gorm:"default:0"`
 	CreatedAt   time.Time  `json:"created_at"`
 	UpdatedAt   time.Time  `json:"updated_at"`
+	Upvotes     int        `json:"upvote" gorm:"default:0"`
 	DeletedAt   *time.Time `json:"deleted_at"`
 }
 
@@ -86,6 +86,7 @@ func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
 	value := DB.Model(&Tournament{}).
 		Where("deleted_at IS NULL").
 		Offset(query.GetSkip()).
+		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
 		Order(query.GetSort()).
 		Preload("Teams").
@@ -323,4 +324,22 @@ func GetUpvoteByUserAndTournament(userID, tournamentID uint) (*Upvote, error) {
 	var upvote Upvote
 	err := DB.Where("user_id = ? AND tournament_id = ?", userID, tournamentID).First(&upvote).Error
 	return &upvote, err
+}
+
+/*func (t *Tournament) GetTeamsByTournamentID(tournamentID int) ([]Team, error) {
+	var teams []Team
+	err := DB.Model(&Tournament{}).
+		Where("id = ?", tournamentID).
+		Preload("Teams").
+		First(&teams).Error
+	return teams, err
+}*/
+
+func (t *Tournament) GetTeamsByTournamentID(tournamentID int) ([]Team, error) {
+	var tournament Tournament
+	err := DB.Preload("Teams").First(&tournament, tournamentID).Error
+	if err != nil {
+		return nil, err
+	}
+	return tournament.Teams, nil
 }

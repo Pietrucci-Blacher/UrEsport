@@ -198,8 +198,7 @@ class FriendsTabState extends State<FriendsTab> {
                                                 title:
                                                     const Text('Confirmation'),
                                                 content: Text(
-                                                    l.confirmDeleteFriend(
-                                                        friend.name)),
+                                                    '${l.confirmDeleteFriend} ${friend.name} ?'),
                                                 actions: [
                                                   TextButton(
                                                     onPressed: () =>

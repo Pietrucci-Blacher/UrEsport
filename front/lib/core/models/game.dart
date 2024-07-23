@@ -1,11 +1,11 @@
 class Game {
   final int id;
-  late final String name;
-  late final String description;
-  late final String imageUrl;
-  late final List<String> tags;
-  late final String createdAt;
-  late final String updatedAt;
+  final String name;
+  final String description;
+  final String imageUrl;
+  final List<String> tags;
+  final String createdAt;
+  final String updatedAt;
 
   Game({
     required this.id,

@@ -652,3 +652,47 @@ func GetUpvoteById(c *gin.Context) {
 	models.ErrorLogf([]string{"tournament", "GetUpvoteById"}, "Upvote found: %v", upvote)
 	c.JSON(http.StatusOK, upvote)
 }
+
+// GetTeamsToTournamentId godoc
+//
+//	@Summary		get teams by tournament ID
+//	@Description	get teams by tournament ID
+//	@Tags			tournament
+//	@Param			id	path	int	true	"Tournament ID"
+//	@Success		200	{object}	[]models.Team
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/teams [get]
+func GetTeamsToTournamentId(c *gin.Context) {
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+
+	teams, err := tournament.GetTeamsByTournamentID(tournament.ID)
+	if err != nil {
+		models.ErrorLogf([]string{"tournament", "GetTeamsToTournamentId"}, "%s", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	models.PrintLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Fetched %d teams for tournament %s", len(teams), tournament.Name)
+	c.JSON(http.StatusOK, teams)
+}
+
+/*func GetTeamsToTournamentId(c *gin.Context) {
+	tournamentID := c.Param("id")
+
+	var tournament models.Tournament
+	if err := models.DB.Preload("Teams").First(&tournament, tournamentID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			models.ErrorLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Tournament not found: %s", err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
+		} else {
+			models.ErrorLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Database error: %s", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		}
+		return
+	}
+
+	teams := tournament.Teams
+	models.PrintLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Fetched %d teams for tournament %s", len(teams), tournament.Name)
+	c.JSON(http.StatusOK, teams)
+}*/

@@ -446,6 +446,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
   }
 
   Future<void> _showImagePickerOptions(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     return showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -454,7 +455,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: Text(AppLocalizations.of(context).photoLibrary),
+                title: Text(l.photoLibrary),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImage(context, ImageSource.gallery);
@@ -462,7 +463,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_camera),
-                title: Text(AppLocalizations.of(context).camera),
+                title: Text(l.camera),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImage(context, ImageSource.camera);
@@ -569,7 +570,6 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
       final updatedImageUrl =
           '$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}';
       onImageUpdated(updatedImageUrl);
-
       if (mounted) {
         setState(() {
           _localProfileImageUrl = updatedImageUrl;
@@ -577,7 +577,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
       }
 
       scaffoldMessenger.showSnackBar(
-        const SnackBar(content: Text('Profile image updated')),
+        SnackBar(content: Text(localizations.profileImageUpdated)),
       );
     } catch (e) {
       debugPrint('Error uploading profile image: $e');
@@ -751,7 +751,7 @@ class LikedGamesList extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text(l.errorFetchingLikedGames));
+          return Center(child: Text(l.noLikedGames));
         } else if (snapshot.hasData) {
           final likes = snapshot.data!;
           if (likes.isEmpty) {
@@ -785,8 +785,8 @@ class LikedGamesList extends StatelessWidget {
                   await likeService.deleteLike(like.id!);
 
                   if (!context.mounted) return;
-                  _showToast(context, '${game.name} supprimé de vos likes',
-                      Colors.red);
+                  _showToast(context,
+                      '${game.name}: ${l.removedFromLikedGames}', Colors.red);
                 },
                 background: Container(
                   color: Colors.red,

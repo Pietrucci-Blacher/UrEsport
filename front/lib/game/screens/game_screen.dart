@@ -123,6 +123,7 @@ class GamesScreenState extends State<GamesScreen> {
             });
             _filterGames(context);
           },
+          isSingleSelection: false, // Activer la sélection multiple
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),

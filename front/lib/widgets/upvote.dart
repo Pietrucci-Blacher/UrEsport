@@ -138,17 +138,17 @@ class TournamentScreen extends StatelessWidget {
             ),
             const SizedBox(height: 10),
             Text(
-              l.location(tournament.location),
+              '${l.location}: ${tournament.location}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 5),
             Text(
-              l.startDate(dateFormat.format(tournament.startDate)),
+              '${l.startDate}: ${dateFormat.format(tournament.startDate)}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 5),
             Text(
-              l.endDate(dateFormat.format(tournament.endDate)),
+              '${l.endDate}: ${dateFormat.format(tournament.endDate)}',
               style: const TextStyle(fontSize: 16),
             ),
             const SizedBox(height: 5),

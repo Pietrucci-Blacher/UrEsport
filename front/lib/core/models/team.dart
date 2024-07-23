@@ -48,4 +48,6 @@ class Team {
       'updated_at': updatedAt.toIso8601String(),
     };
   }
+
+  int get memberCount => members.length;
 }
