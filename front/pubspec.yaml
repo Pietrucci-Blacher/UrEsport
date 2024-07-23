@@ -20,7 +20,7 @@ dependencies:
   flutter_bloc: ^8.1.6
   bloc: ^8.1.4
   equatable: ^2.0.5
-  web_socket_channel: ^3.0.0
+  web_socket_channel: ^3.0.1
   provider: ^6.1.2
   font_awesome_flutter: ^10.7.0
   google_sign_in: ^6.2.1
