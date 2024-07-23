@@ -354,12 +354,14 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
           _tournament = _tournament.copyWith(image: imageUrl);
           _isUploadingImage = false;
         });
+        if(!mounted) return;
         showNotificationToast(context, 'Image uploaded successfully', backgroundColor: Colors.green);
       } catch (e) {
         debugPrint('Error during image upload: $e');
         setState(() {
           _isUploadingImage = false;
         });
+        if(!mounted) return;
         showNotificationToast(context, 'Error uploading image: $e', backgroundColor: Colors.red);
       }
     } else {

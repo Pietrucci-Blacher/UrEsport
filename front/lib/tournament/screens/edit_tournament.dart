@@ -64,6 +64,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     } catch (e) {
       if(!context.mounted) return;
       debugPrint('Failed to load games: $e');
+      if(!mounted) return;
       _showToast(context, '${AppLocalizations.of(context).failedToLoadGames} $e', Colors.red);
     }
   }

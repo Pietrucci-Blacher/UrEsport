@@ -7,15 +7,6 @@ import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 
-import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:provider/provider.dart';
-import 'package:uresport/core/services/friends_services.dart';
-import 'package:uresport/shared/provider/notification_provider.dart';
-import 'package:uresport/widgets/custom_toast.dart';
-import 'package:uresport/l10n/app_localizations.dart';
-
 class AddFriendPage extends StatefulWidget {
   final int userId;
   final String currentUser;
@@ -127,6 +118,7 @@ class AddFriendPageState extends State<AddFriendPage> {
                     try {
                       final isAlreadyFriend = await friendService.isFriend(widget.userId, friendId);
                       if (isAlreadyFriend) {
+                        if(!context.mounted) return;
                         showNotificationToast(
                           context,
                           l.friendAlreadyAdded,
@@ -137,6 +129,7 @@ class AddFriendPageState extends State<AddFriendPage> {
                       }
 
                       await friendService.addFriend(widget.userId, friendId);
+                      if(!context.mounted) return;
                       showNotificationToast(context, l.friendAddedSuccessfully);
                       Provider.of<NotificationProvider>(context, listen: false)
                           .addNotification('$currentUser vous a ajouté en ami: ${user['firstname']}');
