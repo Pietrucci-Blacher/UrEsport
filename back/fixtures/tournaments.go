@@ -162,7 +162,7 @@ func addTeamToTournament(tournamentID int, teamPool []int, teamsAdded map[int]bo
 		return err
 	}
 
-	if tournament.HasTeam(team) {
+	if tournament.HasTeam(team) || tournament.IsUserHasTeamInTournament(team.OwnerID) {
 		return addTeamToTournament(tournamentID, teamPool, teamsAdded)
 	}
 

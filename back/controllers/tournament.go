@@ -260,6 +260,12 @@ func JoinTournament(c *gin.Context) {
 		return
 	}
 
+	if tournament.IsUserHasTeamInTournament(team.OwnerID) {
+		models.ErrorLogf([]string{"tournament", "JoinTournament"}, "User %d already has a team in this tournament", team.OwnerID)
+		c.JSON(http.StatusConflict, gin.H{"error": "You already have a team in this tournament"})
+		return
+	}
+
 	if len(team.Members) != tournament.NbPlayer {
 		models.ErrorLogf([]string{"tournament", "JoinTournament"}, "Team %s must contain %d members", team.Name, tournament.NbPlayer)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -338,6 +344,12 @@ func InviteTeamToTournament(c *gin.Context) {
 	if err := team.FindOne("name", body.Name); err != nil {
 		models.ErrorLogf([]string{"tournament", "InviteTeamToTournament"}, "Team %s not found", body.Name)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Team not found"})
+		return
+	}
+
+	if tournament.IsUserHasTeamInTournament(team.OwnerID) {
+		models.ErrorLogf([]string{"tournament", "InviteTeamToTournament"}, "User %d already has a team in this tournament", team.OwnerID)
+		c.JSON(http.StatusConflict, gin.H{"error": "User already has a team in this tournament"})
 		return
 	}
 
