@@ -126,8 +126,8 @@
   "failedToLeaveTeam": "Échec de la sortie de l'équipe",
   "failedToLoadTournaments": "Vous ne possédez aucun tournois",
   "unknownState": "État inconnu",
-  "gameName": "Jeu : ",
-  "teamPlayersCount": "Joueurs par équipe : ",
+  "gameName": "Jeu ",
+  "teamPlayersCount": "Joueurs par équipe",
   "viewDetails": "Voir les détails",
   "errorLoadingCurrentUser": "Erreur lors du chargement de l'utilisateur actuel : {error}",
   "errorCheckingIfUpvoted": "Erreur lors de la vérification du vote positif : {error}",
@@ -150,7 +150,7 @@
   "bracket": "Bracket",
   "mustBeLoggedInToViewBracket": "Vous devez être connecté pour voir votre bracket",
   "description": "Description :",
-  "location": "Emplacement :",
+  "location": "Emplacement",
   "startDateText": "Date de début :",
   "endDateText": "Date de fin :",
   "locationText": "Emplacement :",
@@ -311,5 +311,11 @@
   "amiAjouteAvecSucces": "Ami ajouté avec succès",
   "amiDejaAjoute": "Ami déjà ajouté",
   "erreurAjoutAmi": "Erreur lors de l'ajout de l'ami",
-  "failedToLoadUserTeams": "Vous appartenez à aucune team"
+  "failedToLoadUserTeams": "Vous appartenez à aucune team",
+  "changeImage": "Changer l'image",
+  "tournamentSchedule": "Calendrier des tournois",
+  "allTournaments": "Tous les tournois",
+  "nowTournaments": "Aujourd'hui",
+  "selectDate": "Sélectionner une date",
+  "noTournamentForDate": "Aucun tournoi pour cette date"
 }

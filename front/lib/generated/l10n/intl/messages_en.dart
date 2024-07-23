@@ -45,6 +45,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "addTournament": MessageLookupByLibrary.simpleMessage("Add Tournament"),
         "addedToGameList":
             MessageLookupByLibrary.simpleMessage("Game added to your list"),
+        "allTournaments":
+            MessageLookupByLibrary.simpleMessage("All Tournaments"),
         "alphabeticalAZ":
             MessageLookupByLibrary.simpleMessage("Alphabetical (A-Z)"),
         "alphabeticalZA":
@@ -63,6 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancelCloseMatch":
             MessageLookupByLibrary.simpleMessage("Cancel Close Match"),
         "cancelEditing": MessageLookupByLibrary.simpleMessage("Cancel Editing"),
+        "changeImage": MessageLookupByLibrary.simpleMessage("Change Image"),
         "closeButton": MessageLookupByLibrary.simpleMessage("Close"),
         "closeMatch": MessageLookupByLibrary.simpleMessage("Close Match"),
         "confirm": MessageLookupByLibrary.simpleMessage("Confirm"),
@@ -186,7 +189,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "gameId": MessageLookupByLibrary.simpleMessage("Game"),
         "gameIdIsRequired":
             MessageLookupByLibrary.simpleMessage("Game ID is required"),
-        "gameName": MessageLookupByLibrary.simpleMessage("Game: "),
+        "gameName": MessageLookupByLibrary.simpleMessage("Game "),
         "gameScreenTitle": MessageLookupByLibrary.simpleMessage("Games"),
         "gameScreenWelcome":
             MessageLookupByLibrary.simpleMessage("Welcome to the Game Screen!"),
@@ -228,7 +231,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "listMyTournaments":
             MessageLookupByLibrary.simpleMessage("My Tournaments"),
         "loading": MessageLookupByLibrary.simpleMessage("Loading..."),
-        "location": MessageLookupByLibrary.simpleMessage("Location:"),
+        "location": MessageLookupByLibrary.simpleMessage("Location"),
         "locationText": MessageLookupByLibrary.simpleMessage("Location:"),
         "logIn": MessageLookupByLibrary.simpleMessage("Log In"),
         "login": MessageLookupByLibrary.simpleMessage("Login"),
@@ -270,6 +273,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "No teams available for the current user."),
         "noTeamsFoundForUser":
             MessageLookupByLibrary.simpleMessage("No teams found for the user"),
+        "noTournamentForDate":
+            MessageLookupByLibrary.simpleMessage("No tournament for this date"),
         "noTournamentsForGame": MessageLookupByLibrary.simpleMessage(
             "No tournaments for this game"),
         "noTournamentsFound":
@@ -285,6 +290,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "notificationScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Welcome to the Notification screen!"),
         "notifications": MessageLookupByLibrary.simpleMessage("Notifications"),
+        "nowTournaments": MessageLookupByLibrary.simpleMessage("Now"),
         "numberOfPlayers":
             MessageLookupByLibrary.simpleMessage("Number of Players"),
         "numberOfPlayersIsRequired": MessageLookupByLibrary.simpleMessage(
@@ -365,6 +371,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "score": MessageLookupByLibrary.simpleMessage("Score"),
         "searchTags": MessageLookupByLibrary.simpleMessage("Search tags"),
         "searchUser": MessageLookupByLibrary.simpleMessage("Search User"),
+        "selectDate": MessageLookupByLibrary.simpleMessage("Select Date"),
         "selectEndDate":
             MessageLookupByLibrary.simpleMessage("Select End Date"),
         "selectStartDate":
@@ -382,7 +389,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "startDate": MessageLookupByLibrary.simpleMessage("Start:"),
         "startDateIsRequired":
             MessageLookupByLibrary.simpleMessage("Start Date is required"),
-        "startDateText": MessageLookupByLibrary.simpleMessage("Start Date:"),
+        "startDateText": MessageLookupByLibrary.simpleMessage("Start:"),
         "startDateTime":
             MessageLookupByLibrary.simpleMessage("Start Date & Time"),
         "status": MessageLookupByLibrary.simpleMessage("Status"),
@@ -401,20 +408,22 @@ class MessageLookup extends MessageLookupByLibrary {
         "teamNotRegistered": MessageLookupByLibrary.simpleMessage(
             "This team is not registered in the tournament"),
         "teamPlayersCount":
-            MessageLookupByLibrary.simpleMessage("Joueurs par team: "),
+            MessageLookupByLibrary.simpleMessage("Players per team"),
         "totalGames": MessageLookupByLibrary.simpleMessage("Total Games"),
         "tournamentAdded":
             MessageLookupByLibrary.simpleMessage("Tournament added"),
         "tournamentCreatedSuccessfully": MessageLookupByLibrary.simpleMessage(
             "Tournament created successfully"),
-        "tournamentEndDate": MessageLookupByLibrary.simpleMessage("End: "),
+        "tournamentEndDate": MessageLookupByLibrary.simpleMessage("End "),
         "tournamentParticipants":
             MessageLookupByLibrary.simpleMessage("Tournament participants"),
+        "tournamentSchedule":
+            MessageLookupByLibrary.simpleMessage("Tournament Schedule"),
         "tournamentScreenTitle":
             MessageLookupByLibrary.simpleMessage("Tournaments"),
         "tournamentScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Welcome to the Tournament Screen!"),
-        "tournamentStartDate": MessageLookupByLibrary.simpleMessage("Start: "),
+        "tournamentStartDate": MessageLookupByLibrary.simpleMessage("Start "),
         "tournamentUpdatedSuccessfully": MessageLookupByLibrary.simpleMessage(
             "Tournament updated successfully"),
         "tournaments": MessageLookupByLibrary.simpleMessage("Tournaments"),

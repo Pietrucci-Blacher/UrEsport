@@ -702,7 +702,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                     padding: const EdgeInsets.symmetric(
                         horizontal: 32, vertical: 16),
                   ),
-                  child: const Text('Change Image'),
+                  child: Text(l.changeImage),
                 ),
               ),
             const SizedBox(height: 16),
@@ -742,7 +742,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    '${l.location} ${_tournament.location}',
+                    _tournament.location,
                     style: Theme.of(context).textTheme.titleMedium,
                   ),
                 ),
@@ -767,7 +767,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                       }
                     },
                     child: Text(
-                      '${l.game} ${widget.game?.name ?? _tournament.game.name}',
+                      widget.game?.name ?? _tournament.game.name,
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
                             color: Theme.of(context).primaryColor,
                             decoration: TextDecoration.underline,
@@ -783,7 +783,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const Icon(Icons.date_range, color: Colors.blue),
                 const SizedBox(width: 8),
                 Text(
-                  '${l.startDate} ${dateFormat.format(_tournament.startDate)}',
+                  '${l.tournamentStartDate}: ${dateFormat.format(_tournament.startDate)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
@@ -794,7 +794,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const Icon(Icons.date_range, color: Colors.blue),
                 const SizedBox(width: 8),
                 Text(
-                  '${l.endDate} ${dateFormat.format(_tournament.endDate)}',
+                  '${l.tournamentEndDate}: ${dateFormat.format(_tournament.endDate)}',
                   style: Theme.of(context).textTheme.bodyLarge,
                 ),
               ],
@@ -805,7 +805,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 const SizedBox(width: 5),
                 Expanded(
                   child: Text(
-                    '${l.teamPlayersCount} ${_tournament.nbPlayers}',
+                    '${l.teamPlayersCount}: ${_tournament.nbPlayers}',
                     style: const TextStyle(fontSize: 16),
                     overflow: TextOverflow.ellipsis,
                   ),

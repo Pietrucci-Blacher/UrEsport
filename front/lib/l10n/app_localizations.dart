@@ -8,17 +8,26 @@ import 'package:uresport/generated/l10n/intl/messages_all.dart';
 class AppLocalizations {
   String get myTeams => 'My Teams';
 
-  static Future<AppLocalizations> load(Locale locale) {
+  static Future<AppLocalizations> load(Locale locale) async {
     final String name = locale.countryCode?.isEmpty ?? false
         ? locale.languageCode
         : locale.toString();
     final String localeName = Intl.canonicalizedLocale(name);
 
-    return initializeMessages(localeName).then((_) {
-      Intl.defaultLocale = localeName;
-      return AppLocalizations();
-    });
+    print('Attempting to load localization for locale: $localeName');
+
+    try {
+      await initializeMessages(localeName);
+      print('Localization for $localeName loaded successfully.');
+    } catch (e) {
+      print('Error loading messages for locale $localeName: $e');
+    }
+
+    Intl.defaultLocale = localeName;
+    print('Default locale set to $localeName');
+    return AppLocalizations();
   }
+
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
@@ -817,7 +826,7 @@ class AppLocalizations {
 
   String get teamPlayersCount {
     return Intl.message(
-      'Joueurs par team: ',
+      'Players per team',
       name: 'teamPlayersCount',
       desc: 'Team players count display',
     );
@@ -1018,7 +1027,7 @@ class AppLocalizations {
 
   String get location {
     return Intl.message(
-      'Location:',
+      'Location',
       name: 'location',
       desc: 'Location label text',
     );
@@ -1034,8 +1043,8 @@ class AppLocalizations {
 
   String get startDateText {
     return Intl.message(
-      'Start :',
-      name: 'startDate',
+      'Start: ',
+      name: 'startDateText',
       desc: 'Start date label text',
     );
   }
@@ -1058,7 +1067,7 @@ class AppLocalizations {
 
   String get startDate {
     return Intl.message(
-      'Start:',
+      'Start: ',
       name: 'startDate',
       desc: 'Start date display text',
     );
@@ -2376,6 +2385,54 @@ class AppLocalizations {
       'You must be logged in to access this page',
       name: 'needConnected',
       desc: 'Message shown when user is not connected',
+    );
+  }
+
+  String get changeImage {
+    return Intl.message(
+      'Change Image',
+      name: 'Change Image',
+      desc: 'Button text to change image',
+    );
+  }
+
+  String get tournamentSchedule {
+    return Intl.message(
+      'Tournament Schedule',
+      name: 'tournamentSchedule',
+      desc: 'Title for the tournament schedule page',
+    );
+  }
+
+  String get allTournaments {
+    return Intl.message(
+      'All Tournaments',
+      name: 'allTournaments',
+      desc: 'Title for the all tournaments page',
+    );
+  }
+
+  String get nowTournaments {
+    return Intl.message(
+      'Now Tournaments',
+      name: 'nowTournaments',
+      desc: 'Title for the now tournaments page',
+    );
+  }
+
+  String get selectDate {
+    return Intl.message(
+      'Select Date',
+      name: 'selectDate',
+      desc: 'Title for the select date dialog',
+    );
+  }
+
+  String get noTournamentForDate {
+    return Intl.message(
+      'No tournament for this date',
+      name: 'noTournamentForDate',
+      desc: 'Message shown when there are no tournaments now',
     );
   }
 }

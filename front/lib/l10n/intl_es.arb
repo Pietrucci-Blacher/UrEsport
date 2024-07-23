@@ -125,8 +125,8 @@
   "failedToLeaveTeam": "Error al dejar el equipo",
   "failedToLoadTournaments": "No eres dueño de ningún torneo",
   "unknownState": "Estado desconocido",
-  "gameName": "Juego: ",
-  "teamPlayersCount": "Jugadores por equipo: ",
+  "gameName": "Juego ",
+  "teamPlayersCount": "Jugadores por equipo",
   "viewDetails": "Ver detalles",
   "errorLoadingCurrentUser": "Error al cargar el usuario actual: $e",
   "errorCheckingIfUpvoted": "Error al verificar si votó a favor: $e",
@@ -149,7 +149,7 @@
   "bracket": "Soporte",
   "mustBeLoggedInToViewBracket": "Debes estar conectado para ver tu soporte",
   "description": "Descripción:",
-  "location": "Ubicación:",
+  "location": "Ubicación",
   "startDateText": "Fecha de inicio:",
   "endDateText": "Fecha de fin:",
   "locationText": "Ubicación:",
@@ -309,5 +309,11 @@
   "amigoAñadidoConÉxito": "Amigo añadido con éxito",
   "amigoYaAñadido": "Amigo ya añadido",
   "errorAñadiendoAmigo": "Error añadiendo amigo",
-  "failedToLoadUserTeams": "No perteneces a ningún equipo"
+  "failedToLoadUserTeams": "No perteneces a ningún equipo",
+  "changeImage": "Cambiar imagen",
+  "tournamentSchedule": "Horario del torneo",
+  "allTournaments": "Todos los torneos",
+  "nowTournaments": "Ahora",
+  "selectDate": "Seleccionar fecha",
+  "noTournamentForDate": "No hay torneos para esta fecha"
 }

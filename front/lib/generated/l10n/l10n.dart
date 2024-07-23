@@ -900,40 +900,40 @@ class S {
     );
   }
 
-  /// `Start: `
+  /// `Start `
   String get tournamentStartDate {
     return Intl.message(
-      'Start: ',
+      'Start ',
       name: 'tournamentStartDate',
       desc: '',
       args: [],
     );
   }
 
-  /// `End: `
+  /// `End `
   String get tournamentEndDate {
     return Intl.message(
-      'End: ',
+      'End ',
       name: 'tournamentEndDate',
       desc: '',
       args: [],
     );
   }
 
-  /// `Game: `
+  /// `Game `
   String get gameName {
     return Intl.message(
-      'Game: ',
+      'Game ',
       name: 'gameName',
       desc: '',
       args: [],
     );
   }
 
-  /// `Joueurs par team: `
+  /// `Players per team`
   String get teamPlayersCount {
     return Intl.message(
-      'Joueurs par team: ',
+      'Players per team',
       name: 'teamPlayersCount',
       desc: '',
       args: [],
@@ -1180,10 +1180,10 @@ class S {
     );
   }
 
-  /// `Location:`
+  /// `Location`
   String get location {
     return Intl.message(
-      'Location:',
+      'Location',
       name: 'location',
       desc: '',
       args: [],
@@ -1200,10 +1200,10 @@ class S {
     );
   }
 
-  /// `Start Date:`
+  /// `Start:`
   String get startDateText {
     return Intl.message(
-      'Start Date:',
+      'Start:',
       name: 'startDateText',
       desc: '',
       args: [],
@@ -2835,6 +2835,66 @@ class S {
     return Intl.message(
       'No tournaments for this game',
       name: 'nothingTournamentforGame',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Image`
+  String get changeImage {
+    return Intl.message(
+      'Change Image',
+      name: 'changeImage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tournament Schedule`
+  String get tournamentSchedule {
+    return Intl.message(
+      'Tournament Schedule',
+      name: 'tournamentSchedule',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Tournaments`
+  String get allTournaments {
+    return Intl.message(
+      'All Tournaments',
+      name: 'allTournaments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Now`
+  String get nowTournaments {
+    return Intl.message(
+      'Now',
+      name: 'nowTournaments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Date`
+  String get selectDate {
+    return Intl.message(
+      'Select Date',
+      name: 'selectDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No tournament for this date`
+  String get noTournamentForDate {
+    return Intl.message(
+      'No tournament for this date',
+      name: 'noTournamentForDate',
       desc: '',
       args: [],
     );

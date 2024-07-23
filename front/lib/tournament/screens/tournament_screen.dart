@@ -22,6 +22,9 @@ import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 
+import 'package:uresport/bracket/screens/custom_schedule.dart';
+import 'package:uresport/core/services/game_service.dart';
+
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
 
@@ -33,7 +36,7 @@ class TournamentScreenState extends State<TournamentScreen> {
   User? _currentUser;
   bool _isLoggedIn = false;
 
-  final List<String> _filterOptions = ['Public', 'Privé', 'Tous'];
+  final List<String> _filterOptions = [ 'Tous', 'Public', 'Privé'];
   String _currentFilter = 'Tous';
 
   Future<void> _loadCurrentUser() async {
@@ -140,7 +143,6 @@ class TournamentScreenState extends State<TournamentScreen> {
           return Center(child: Text(l.noTeamsFoundForUser));
         } else {
           final teams = snapshot.data as List<Team>;
-          debugPrint('Teams data: $teams');
           return RefreshIndicator(
             onRefresh: () async {
               setState(() {});
@@ -153,10 +155,6 @@ class TournamentScreenState extends State<TournamentScreen> {
                 final isOwner = team.ownerId == _currentUser!.id;
                 return GestureDetector(
                   onTap: () {
-                    debugPrint('Navigating to TeamMembersPage avec:');
-                    debugPrint('Team Name: ${team.name}');
-                    debugPrint('Members: ${team.members}');
-
                     List<User> userMembers = team.members.map((memberJson) {
                       return User.fromJson(memberJson);
                     }).toList();
@@ -481,6 +479,27 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 },
                                 child: const Icon(Icons.add),
                               ),
+                            const SizedBox(height: 16),
+                            FloatingActionButton(
+                              heroTag: 'schedule',
+                              onPressed: () {
+                                final dio = Dio();
+                                final gameService = GameService(dio);
+                                final tournamentService = TournamentService(dio);
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CustomSchedulePage(
+                                      gameService: gameService,
+                                      tournamentService: tournamentService,
+                                    ),
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.schedule),
+                            ),
+
                           ],
                         ),
                       ),
@@ -595,7 +614,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    '${l.gameName} ${tournament.game.name}',
+                                    tournament.game.name,
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),
