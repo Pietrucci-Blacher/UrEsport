@@ -37,16 +37,22 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
   void initState() {
     super.initState();
     _nameController = TextEditingController(text: widget.tournament.name);
-    _descriptionController = TextEditingController(text: widget.tournament.description);
+    _descriptionController =
+        TextEditingController(text: widget.tournament.description);
     _startDateController = TextEditingController(
         text: DateFormat('yyyy-MM-dd').format(widget.tournament.startDate));
     _endDateController = TextEditingController(
         text: DateFormat('yyyy-MM-dd').format(widget.tournament.endDate));
-    _locationController = TextEditingController(text: widget.tournament.location);
-    _latitudeController = TextEditingController(text: widget.tournament.latitude.toString());
-    _longitudeController = TextEditingController(text: widget.tournament.longitude.toString());
-    _gameIdController = TextEditingController(text: widget.tournament.game.id.toString());
-    _nbPlayerController = TextEditingController(text: widget.tournament.nbPlayers.toString());
+    _locationController =
+        TextEditingController(text: widget.tournament.location);
+    _latitudeController =
+        TextEditingController(text: widget.tournament.latitude.toString());
+    _longitudeController =
+        TextEditingController(text: widget.tournament.longitude.toString());
+    _gameIdController =
+        TextEditingController(text: widget.tournament.game.id.toString());
+    _nbPlayerController =
+        TextEditingController(text: widget.tournament.nbPlayers.toString());
     _isPrivate = widget.tournament.isPrivate;
     _selectedGameId = widget.tournament.game.id;
     _loadGames();
@@ -54,7 +60,6 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
 
   Future<void> _loadGames() async {
     try {
-
       final gameService = Provider.of<IGameService>(context, listen: false);
       final games = await gameService.fetchGames();
       setState(() {
@@ -62,7 +67,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       });
       debugPrint('Games loaded: ${_games.length}');
     } catch (e) {
-      if(!context.mounted) return;
+      if (!context.mounted) return;
       debugPrint('Failed to load games: $e');
       if(!mounted) return;
       _showToast(context, '${AppLocalizations.of(context).failedToLoadGames} $e', Colors.red);
@@ -133,15 +138,20 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       final tournamentJson = updatedTournament.toJson();
       debugPrint('Tournament JSON: ${jsonEncode(tournamentJson)}');
 
-      final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+      final tournamentService =
+          Provider.of<ITournamentService>(context, listen: false);
       try {
         await tournamentService.updateTournament(updatedTournament);
         if (!mounted) return;
-        _showToast(context, AppLocalizations.of(context).tournamentUpdatedSuccessfully, Colors.green);
+        _showToast(
+            context,
+            AppLocalizations.of(context).tournamentUpdatedSuccessfully,
+            Colors.green);
         Navigator.pop(context, updatedTournament);
       } catch (e) {
         debugPrint('Failed to update tournament: $e');
-        _showToast(context, AppLocalizations.of(context).failedToUpdateTournament, Colors.red);
+        _showToast(context,
+            AppLocalizations.of(context).failedToUpdateTournament, Colors.red);
       }
     }
   }

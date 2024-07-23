@@ -25,14 +25,15 @@ class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
   final Game? game;
 
-  const TournamentDetailsScreen({super.key, required this.tournament, this.game});
+  const TournamentDetailsScreen(
+      {super.key, required this.tournament, this.game});
 
   @override
   TournamentDetailsScreenState createState() => TournamentDetailsScreenState();
 }
 
 class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with SingleTickerProviderStateMixin {
-  late tournament_model.Tournament _tournament; // Declare a mutable tournament object
+  late tournament_model.Tournament _tournament;
   bool _hasJoined = false;
   User? _currentUser;
   List<team_model.Team> _teams = [];
@@ -87,10 +88,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
   Future<void> _checkIfUpvoted() async {
     if (_currentUser == null) return;
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
     try {
-      final hasUpvoted = await tournamentService.hasUpvoted(
-          _tournament.id, _currentUser!.id);
+      final hasUpvoted =
+          await tournamentService.hasUpvoted(_tournament.id, _currentUser!.id);
       if (!mounted) return;
       setState(() {
         _hasUpvoted = hasUpvoted;
@@ -115,7 +117,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
   Future<void> _checkIfJoined() async {
     if (_currentUser == null) return;
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
     try {
       final hasJoined = await tournamentService.hasJoinedTournament(
           _tournament.id, _currentUser!.id.toString());
@@ -133,7 +136,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   }
 
   Future<void> _loadAllTeams() async {
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
     try {
       final teams = await tournamentService.fetchTeams();
       if (!mounted) return;
@@ -152,14 +156,18 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   }
 
   Future<void> _loadTeamsToTournament() async {
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
     try {
-      final teams = await tournamentService.getTeamsByTournamentId(_tournament.id);
-      debugPrint('Teams from API: ${teams.map((team) => team.name).toList()}'); // Log des équipes reçues de l'API
+      final teams =
+          await tournamentService.getTeamsByTournamentId(_tournament.id);
+      debugPrint(
+          'Teams from API: ${teams.map((team) => team.name).toList()}'); // Log des équipes reçues de l'API
       if (!mounted) return;
       setState(() {
         _teams = teams;
-        debugPrint('Teams loaded in TournamentDetailsScreen: ${_teams.map((team) => team.name).toList()}');
+        debugPrint(
+            'Teams loaded in TournamentDetailsScreen: ${_teams.map((team) => team.name).toList()}');
       });
     } catch (e) {
       if (kDebugMode) {
@@ -221,28 +229,29 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 _teams.isEmpty
                     ? Text(AppLocalizations.of(context).noTeamsAvailable)
                     : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _teams.length,
-                  itemBuilder: (context, index) {
-                    final team = _teams[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Colors.blueAccent,
-                        child: Text(
-                          team.name[0],
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _teams.length,
+                        itemBuilder: (context, index) {
+                          final team = _teams[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.blueAccent,
+                              child: Text(
+                                team.name[0],
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            title: Text(
+                                '${team.name} (${team.members.length} members)'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _joinTournament(context, _tournament.id, team.id);
+                            },
+                          );
+                        },
                       ),
-                      title: Text('${team.name} (${team.members.length} members)'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        _joinTournament(context, _tournament.id, team.id);
-                      },
-                    );
-                  },
-                ),
               ],
             ),
           ),
@@ -257,7 +266,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
       isScrollControlled: true,
       builder: (BuildContext context) {
         return Container(
-          height: MediaQuery.of(context).size.height / 2, // Hauteur de moitié d'écran
+          height: MediaQuery.of(context).size.height /
+              2, // Hauteur de moitié d'écran
           padding: const EdgeInsets.all(16.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -269,29 +279,31 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
               const SizedBox(height: 8),
               _teams.isEmpty
                   ? Text(AppLocalizations.of(context).noTeamsAvailable)
-                  : Expanded( // Wrap ListView.builder with Expanded
-                child: ListView.builder(
-                  itemCount: _teams.length,
-                  itemBuilder: (context, index) {
-                    final team = _teams[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Colors.blueAccent,
-                        child: Text(
-                          team.name[0],
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                  : Expanded(
+                      // Wrap ListView.builder with Expanded
+                      child: ListView.builder(
+                        itemCount: _teams.length,
+                        itemBuilder: (context, index) {
+                          final team = _teams[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.blueAccent,
+                              child: Text(
+                                team.name[0],
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            title: Text(
+                                '${team.name} (${team.members.length} members)'),
+                            onTap: () async {
+                              Navigator.pop(context); // Close the modal
+                              await _sendInvite(team.id, team.name);
+                            },
+                          );
+                        },
                       ),
-                      title: Text('${team.name} (${team.members.length} members)'),
-                      onTap: () async {
-                        Navigator.pop(context); // Close the modal
-                        await _sendInvite(team.id, team.name);
-                      },
-                    );
-                  },
-                ),
-              ),
+                    ),
             ],
           ),
         );
@@ -300,7 +312,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   }
 
   Future<void> _sendInvite(int teamId, String teamName) async {
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
 
     try {
       await tournamentService.inviteTeamToTournament(
@@ -321,13 +334,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
               context, 'Une invitation a déjà été envoyée à cette équipe',
               backgroundColor: Colors.red);
         } else if (e.response?.statusCode == 401) {
-          showNotificationToast(
-              context, 'La Team doit contenir 5 joueurs',
+          showNotificationToast(context, 'La Team doit contenir 5 joueurs',
               backgroundColor: Colors.red);
         } else {
           final errorMessage = e.response?.data['error'];
-          showNotificationToast(
-              context, 'Erreur lors de l\'envoi de l\'invitation: $errorMessage',
+          showNotificationToast(context,
+              'Erreur lors de l\'envoi de l\'invitation: $errorMessage',
               backgroundColor: Colors.red);
         }
       } else {
@@ -340,7 +352,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();
-    final XFile? pickedFile = await picker.pickImage(source: ImageSource.gallery);
+    final XFile? pickedFile =
+        await picker.pickImage(source: ImageSource.gallery);
 
     if (pickedFile != null) {
       setState(() {
@@ -370,9 +383,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   }
 
   Future<String> _uploadImage(File imageFile) async {
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
     try {
-      final imageUrl = await tournamentService.uploadTournamentImage(_tournament.id, imageFile);
+      final imageUrl = await tournamentService.uploadTournamentImage(
+          _tournament.id, imageFile);
       debugPrint('Image URL: $imageUrl');
       return imageUrl;
     } catch (e) {
@@ -387,7 +402,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   }
 
   Future<void> generateBracket() async {
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
 
     try {
       await tournamentService.generateBracket(_tournament.id);
@@ -410,7 +426,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
       return;
     }
 
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
 
     try {
       await tournamentService.upvoteTournament(
@@ -454,18 +471,18 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
           content: _currentUser!.teams.isEmpty
               ? Text(AppLocalizations.of(context).noTeamsAvailable)
               : Column(
-            mainAxisSize: MainAxisSize.min,
-            children: _currentUser!.teams.map((team) {
-              return ListTile(
-                title: Text(team.name),
-                onTap: () {
-                  Navigator.pop(context);
-                  _confirmLeaveTournament(
-                      context, _tournament.id, team.id);
-                },
-              );
-            }).toList(),
-          ),
+                  mainAxisSize: MainAxisSize.min,
+                  children: _currentUser!.teams.map((team) {
+                    return ListTile(
+                      title: Text(team.name),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _confirmLeaveTournament(
+                            context, _tournament.id, team.id);
+                      },
+                    );
+                  }).toList(),
+                ),
           actions: [
             TextButton(
               onPressed: () {
@@ -479,7 +496,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     );
   }
 
-  Future<void> _confirmLeaveTournament(BuildContext context, int tournamentId, int teamId) async {
+  Future<void> _confirmLeaveTournament(
+      BuildContext context, int tournamentId, int teamId) async {
     final confirm = await showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
@@ -510,7 +528,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   }
 
   Future<void> _leaveTournament(int tournamentId, int teamId) async {
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
 
     try {
       await tournamentService.leaveTournament(tournamentId, teamId);
@@ -583,7 +602,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                     Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => EditTournamentScreen(tournament: _tournament),
+                        builder: (context) =>
+                            EditTournamentScreen(tournament: _tournament),
                       ),
                     );
                   },
@@ -603,15 +623,14 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
             _currentUser != null
                 ? TournamentBracketPage(tournamentId: _tournament.id)
                 : Center(
-              child: Text(l.mustBeLoggedInToViewBracket),
-            ),
+                    child: Text(l.mustBeLoggedInToViewBracket),
+                  ),
           ],
         ),
         floatingActionButton: _buildFloatingActionButton(isOwner, isPrivate),
       ),
     );
   }
-
 
   Widget? _buildFloatingActionButton(bool isOwner, bool isPrivate) {
     if (_currentUser == null) return null;
@@ -680,7 +699,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
                   ),
                   child: const Text('Change Image'),
                 ),
@@ -701,8 +721,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                 ),
                 Icon(
                   _tournament.isPrivate ? Icons.lock : Icons.lock_open,
-                  color:
-                  _tournament.isPrivate ? Colors.red : Colors.green,
+                  color: _tournament.isPrivate ? Colors.red : Colors.green,
                 ),
               ],
             ),
@@ -750,9 +769,9 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                     child: Text(
                       '${l.game} ${widget.game?.name ?? _tournament.game.name}',
                       style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                        color: Theme.of(context).primaryColor,
-                        decoration: TextDecoration.underline,
-                      ),
+                            color: Theme.of(context).primaryColor,
+                            decoration: TextDecoration.underline,
+                          ),
                     ),
                   ),
                 ),
@@ -825,14 +844,14 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                                       gradient: LinearGradient(
                                         colors: _hasUpvoted
                                             ? [
-                                          Colors.red,
-                                          Colors.orange,
-                                          Colors.yellow
-                                        ]
+                                                Colors.red,
+                                                Colors.orange,
+                                                Colors.yellow
+                                              ]
                                             : [
-                                          Colors.grey,
-                                          Colors.grey.shade600
-                                        ],
+                                                Colors.grey,
+                                                Colors.grey.shade600
+                                              ],
                                         begin: Alignment.topLeft,
                                         end: Alignment.bottomRight,
                                       ),
@@ -849,7 +868,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                               },
                             ),
                             const SizedBox(width: 4),
-                            Text('${_tournament.upvotes + (_hasUpvoted ? 1 : 0)}'),
+                            Text(
+                                '${_tournament.upvotes + (_hasUpvoted ? 1 : 0)}'),
                           ],
                         ),
                       ),
@@ -868,13 +888,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                       const SizedBox(height: 4),
                       Column(
                         children: List.generate(
-                          _teams.length > 3
-                              ? 3
-                              : _teams.length,
-                              (index) {
+                          _teams.length > 3 ? 3 : _teams.length,
+                          (index) {
                             final team = _teams[index];
                             return Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 4.0),
+                              padding:
+                                  const EdgeInsets.symmetric(vertical: 4.0),
                               child: Row(
                                 children: [
                                   CircleAvatar(
@@ -882,14 +901,16 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                                     backgroundColor: Colors.blueAccent,
                                     child: Text(
                                       team.name[0],
-                                      style: const TextStyle(color: Colors.white),
+                                      style:
+                                          const TextStyle(color: Colors.white),
                                     ),
                                   ),
                                   const SizedBox(width: 8),
                                   Expanded(
                                     child: Text(
                                       team.name,
-                                      style: Theme.of(context).textTheme.bodyLarge,
+                                      style:
+                                          Theme.of(context).textTheme.bodyLarge,
                                       overflow: TextOverflow.ellipsis,
                                     ),
                                   ),
@@ -908,8 +929,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                               MaterialPageRoute(
                                 builder: (context) =>
                                     TournamentParticipantsScreen(
-                                      tournament: _tournament,
-                                    ),
+                                  tournament: _tournament,
+                                ),
                               ),
                             );
                           },
@@ -950,13 +971,13 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
                   ),
                   child: Text(l.generateBracket),
                 ),
               ),
-            if (
-            _tournament.ownerId != _currentUser?.id &&
+            if (_tournament.ownerId != _currentUser?.id &&
                 !_tournament.isPrivate)
               Center(
                 child: ElevatedButton(
@@ -967,7 +988,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
                   ),
                   child: Text(l.joinTournament),
                 ),
@@ -984,7 +1006,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(20),
                     ),
-                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 32, vertical: 16),
                   ),
                   child: Text(l.leaveTournament),
                 ),
@@ -1002,8 +1025,10 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     );
   }
 
-  Future<void> _joinTournament(BuildContext context, int tournamentId, int teamId) async {
-    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+  Future<void> _joinTournament(
+      BuildContext context, int tournamentId, int teamId) async {
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
     AppLocalizations l = AppLocalizations.of(context);
 
     final joinedTournamentMessage = l.joinedTournament;

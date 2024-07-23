@@ -121,7 +121,6 @@ class Tournament {
   }
 }
 
-
 class Owner {
   final int id;
   final String username;
@@ -148,7 +147,7 @@ class Owner {
       firstname: json['firstname'],
       lastname: json['lastname'],
       teams:
-      (json['teams'] as List?)?.map((team) => Team.fromJson(team)).toList(),
+          (json['teams'] as List?)?.map((team) => Team.fromJson(team)).toList(),
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
     );

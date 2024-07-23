@@ -70,7 +70,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
       try {
         final tournamentService =
-        Provider.of<ITournamentService>(context, listen: false);
+            Provider.of<ITournamentService>(context, listen: false);
         await tournamentService.createTournament(tournamentData);
         if (!mounted) return;
         showCustomToast(
@@ -80,8 +80,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         Navigator.pop(context);
       } catch (e) {
         showCustomToast(
-            AppLocalizations.of(context).failedToCreateTournament,
-            Colors.red);
+            AppLocalizations.of(context).failedToCreateTournament, Colors.red);
       }
     }
   }
@@ -103,11 +102,11 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         pickedTime = await showTimePicker(
           context: context,
           initialTime:
-          TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
+              TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
           builder: (BuildContext context, Widget? child) {
             return MediaQuery(
               data:
-              MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
               child: child!,
             );
           },
@@ -119,7 +118,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
           builder: (BuildContext context, Widget? child) {
             return MediaQuery(
               data:
-              MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
               child: child!,
             );
           },
@@ -135,7 +134,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
           pickedTime.minute,
         );
         final formattedDate =
-        DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
+            DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
         setState(() {
           controller.text = formattedDate;
         });
@@ -271,7 +270,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                 const Center(child: CircularProgressIndicator()),
               TextFormField(
                 controller: _nbPlayerController,
-                decoration: InputDecoration(labelText: l.numberOfPlayersPerTeam),
+                decoration:
+                    InputDecoration(labelText: l.numberOfPlayersPerTeam),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {
