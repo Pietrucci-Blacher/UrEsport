@@ -39,9 +39,8 @@ class InviteButton extends StatelessWidget {
     } else {
       scaffoldMessenger.showSnackBar(
         SnackBar(
-          content: Text(success
-              ? l.invitationSentSuccessfully
-              : l.invitationSendError),
+          content: Text(
+              success ? l.invitationSentSuccessfully : l.invitationSendError),
         ),
       );
     }
@@ -53,7 +52,8 @@ class InviteButton extends StatelessWidget {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(success ? l.invitationSentSuccessfully: l.invitationSendError),
+          title: Text(
+              success ? l.invitationSentSuccessfully : l.invitationSendError),
           content: Text(success
               ? '${l.hello} $username, ${AppLocalizations.of(context).inviteSuccess}'
               : l.inviteError),

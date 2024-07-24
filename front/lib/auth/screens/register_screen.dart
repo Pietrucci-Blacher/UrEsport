@@ -98,7 +98,9 @@ class RegisterScreenState extends State<RegisterScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('${AppLocalizations.of(context).error}: ${snapshot.error}'));
+                    return Center(
+                        child: Text(
+                            '${AppLocalizations.of(context).error}: ${snapshot.error}'));
                   } else {
                     return snapshot.data ?? Container();
                   }

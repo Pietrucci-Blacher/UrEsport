@@ -23,11 +23,13 @@ class ResetPasswordScreen extends StatelessWidget {
               ScaffoldMessenger.of(context)
                   .showSnackBar(SnackBar(content: Text(state.error)));
             } else if (state is PasswordResetEmailSent) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context).passwordResetEmailSent)));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      AppLocalizations.of(context).passwordResetEmailSent)));
             } else if (state is PasswordResetConfirmed) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(content: Text(AppLocalizations.of(context).passwordResetSuccessful)));
+              ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      AppLocalizations.of(context).passwordResetSuccessful)));
             }
           },
           child: Padding(
