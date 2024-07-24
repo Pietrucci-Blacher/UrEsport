@@ -194,7 +194,9 @@ func TestDelete(t *testing.T) {
 
 	assert.Nil(t, err)
 	var count int64
-	DB.Model(&Tournament{}).Count(&count)
+	DB.Model(&Tournament{}).
+		Where("deleted_at IS NULL").
+		Count(&count)
 	assert.Equal(t, int64(0), count)
 }
 

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/friends/screens/friends_tab.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/notification/screens/notif_tab.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
-import 'package:uresport/l10n/app_localizations.dart';
 
 class NotificationScreen extends StatelessWidget {
   const NotificationScreen({super.key});
@@ -13,10 +13,11 @@ class NotificationScreen extends StatelessWidget {
     AppLocalizations l = AppLocalizations.of(context);
 
     return DefaultTabController(
-      length: 2, // Number of tabs
+      length: 2,
       child: Scaffold(
-        appBar: AppBar(
-          bottom: TabBar(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: TabBar(
             tabs: [
               Consumer<NotificationProvider>(
                 builder: (context, notificationProvider, child) {
@@ -27,21 +28,21 @@ class NotificationScreen extends StatelessWidget {
                         Text(l.notifications),
                         if (notificationProvider.notificationCount > 0)
                           Container(
-                            margin: const EdgeInsets.only(left: 8),
+                            margin: const EdgeInsets.only(left: 4),
                             padding: const EdgeInsets.all(2),
                             decoration: BoxDecoration(
                               color: Colors.red,
                               borderRadius: BorderRadius.circular(6),
                             ),
                             constraints: const BoxConstraints(
-                              minWidth: 18,
-                              minHeight: 18,
+                              minWidth: 16,
+                              minHeight: 16,
                             ),
                             child: Text(
                               '${notificationProvider.notificationCount}',
                               style: const TextStyle(
                                 color: Colors.white,
-                                fontSize: 12,
+                                fontSize: 10,
                               ),
                               textAlign: TextAlign.center,
                             ),

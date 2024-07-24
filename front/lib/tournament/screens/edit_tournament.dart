@@ -4,8 +4,10 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/core/models/game.dart';
 
 class EditTournamentScreen extends StatefulWidget {
   final Tournament tournament;
@@ -25,10 +27,11 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
   late TextEditingController _locationController;
   late TextEditingController _latitudeController;
   late TextEditingController _longitudeController;
-  late TextEditingController _imageController;
   late TextEditingController _gameIdController;
   late TextEditingController _nbPlayerController;
   bool _isPrivate = false;
+  List<Game> _games = [];
+  int? _selectedGameId;
 
   @override
   void initState() {
@@ -46,12 +49,30 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
         TextEditingController(text: widget.tournament.latitude.toString());
     _longitudeController =
         TextEditingController(text: widget.tournament.longitude.toString());
-    _imageController = TextEditingController(text: widget.tournament.image);
     _gameIdController =
         TextEditingController(text: widget.tournament.game.id.toString());
     _nbPlayerController =
         TextEditingController(text: widget.tournament.nbPlayers.toString());
     _isPrivate = widget.tournament.isPrivate;
+    _selectedGameId = widget.tournament.game.id;
+    _loadGames();
+  }
+
+  Future<void> _loadGames() async {
+    try {
+      final gameService = Provider.of<IGameService>(context, listen: false);
+      final games = await gameService.fetchGames();
+      setState(() {
+        _games = games;
+      });
+      debugPrint('Games loaded: ${_games.length}');
+    } catch (e) {
+      if (!context.mounted) return;
+      debugPrint('Failed to load games: $e');
+      if (!mounted) return;
+      _showToast(context,
+          '${AppLocalizations.of(context).failedToLoadGames} $e', Colors.red);
+    }
   }
 
   @override
@@ -63,22 +84,19 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     _locationController.dispose();
     _latitudeController.dispose();
     _longitudeController.dispose();
-    _imageController.dispose();
     _gameIdController.dispose();
     _nbPlayerController.dispose();
     super.dispose();
   }
 
-  void showNotificationToast(BuildContext context, String message,
-      {Color? backgroundColor, Color? textColor}) {
+  void _showToast(BuildContext context, String message, Color backgroundColor) {
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
     overlayEntry = OverlayEntry(
       builder: (context) => CustomToast(
         message: message,
-        backgroundColor: backgroundColor ?? Colors.blue,
-        textColor: textColor ?? Colors.white,
+        backgroundColor: backgroundColor,
         onClose: () {
           overlayEntry.remove();
         },
@@ -100,12 +118,16 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
           dateFormat.format(DateTime.parse(_startDateController.text));
       final endDate =
           dateFormat.format(DateTime.parse(_endDateController.text));
-      final location = _locationController.text;
-      final latitude = double.parse(_latitudeController.text);
-      final longitude = double.parse(_longitudeController.text);
-      final image = _imageController.text;
+      final location =
+          _locationController.text.isNotEmpty ? _locationController.text : '';
+      final latitude = _latitudeController.text.isNotEmpty
+          ? double.parse(_latitudeController.text)
+          : 0.0;
+      final longitude = _longitudeController.text.isNotEmpty
+          ? double.parse(_longitudeController.text)
+          : 0.0;
       final isPrivate = _isPrivate;
-      final gameId = int.parse(_gameIdController.text);
+      final gameId = _selectedGameId;
       final nbPlayers = int.parse(_nbPlayerController.text);
 
       final updatedTournament = widget.tournament.copyWith(
@@ -116,7 +138,6 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
         location: location,
         latitude: latitude,
         longitude: longitude,
-        image: image,
         isPrivate: isPrivate,
         game: widget.tournament.game.copyWith(id: gameId),
         nbPlayers: nbPlayers,
@@ -130,14 +151,15 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       try {
         await tournamentService.updateTournament(updatedTournament);
         if (!mounted) return;
-        showNotificationToast(
-            context, AppLocalizations.of(context).tournamentUpdatedSuccessfully,
-            backgroundColor: Colors.green);
+        _showToast(
+            context,
+            AppLocalizations.of(context).tournamentUpdatedSuccessfully,
+            Colors.green);
         Navigator.pop(context, updatedTournament);
       } catch (e) {
-        showNotificationToast(context,
-            AppLocalizations.of(context).failedToUpdateTournament(e.toString()),
-            backgroundColor: Colors.red);
+        debugPrint('Failed to update tournament: $e');
+        _showToast(context,
+            AppLocalizations.of(context).failedToUpdateTournament, Colors.red);
       }
     }
   }
@@ -184,7 +206,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               ),
               TextFormField(
                 controller: _startDateController,
-                decoration: InputDecoration(labelText: l.startDate.toString()),
+                decoration: InputDecoration(labelText: l.startDateText),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.pleaseEnterStartDate;
@@ -194,7 +216,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               ),
               TextFormField(
                 controller: _endDateController,
-                decoration: InputDecoration(labelText: l.endDate.toString()),
+                decoration: InputDecoration(labelText: l.endDateText),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.pleaseEnterEndDate;
@@ -204,43 +226,15 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               ),
               TextFormField(
                 controller: _locationController,
-                decoration: InputDecoration(labelText: l.location.toString()),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.pleaseEnterLocation;
-                  }
-                  return null;
-                },
+                decoration: InputDecoration(labelText: l.location),
               ),
               TextFormField(
                 controller: _latitudeController,
                 decoration: InputDecoration(labelText: l.latitude),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.pleaseEnterLatitude;
-                  }
-                  return null;
-                },
               ),
               TextFormField(
                 controller: _longitudeController,
                 decoration: InputDecoration(labelText: l.longitude),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.pleaseEnterLongitude;
-                  }
-                  return null;
-                },
-              ),
-              TextFormField(
-                controller: _imageController,
-                decoration: InputDecoration(labelText: l.imageUrl),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.pleaseEnterImageUrl;
-                  }
-                  return null;
-                },
               ),
               SwitchListTile(
                 title: Text(l.private),
@@ -251,16 +245,43 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
                   });
                 },
               ),
-              TextFormField(
-                controller: _gameIdController,
-                decoration: InputDecoration(labelText: l.gameId),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.pleaseEnterGameId;
-                  }
-                  return null;
-                },
-              ),
+              if (_games.isNotEmpty)
+                DropdownButtonFormField<int>(
+                  decoration: InputDecoration(labelText: l.gameId),
+                  items: _games.map((Game game) {
+                    return DropdownMenuItem<int>(
+                      value: game.id,
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Image.network(
+                              game.imageUrl,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(game.name),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _selectedGameId = newValue;
+                    });
+                  },
+                  value: _selectedGameId,
+                  validator: (value) {
+                    if (value == null) {
+                      return l.pleaseEnterGameId;
+                    }
+                    return null;
+                  },
+                )
+              else
+                const Center(child: CircularProgressIndicator()),
               TextFormField(
                 controller: _nbPlayerController,
                 decoration: InputDecoration(labelText: l.numberOfPlayers),

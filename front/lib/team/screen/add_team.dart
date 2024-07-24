@@ -14,17 +14,12 @@ class AddTeamPage extends StatefulWidget {
 class AddTeamPageState extends State<AddTeamPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
-  bool _isPrivate = false;
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
       final teamData = {
         'name': _nameController.text,
-        'private': _isPrivate,
       };
-
-      debugPrint(
-          'Team data: $teamData'); // Ajout d'un log pour les données de l'équipe
 
       try {
         final teamService = Provider.of<ITeamService>(context, listen: false);
@@ -33,10 +28,10 @@ class AddTeamPageState extends State<AddTeamPage> {
         showCustomToast(
             AppLocalizations.of(context).teamCreatedSuccessfully, Colors.green);
         if (!mounted) return;
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       } catch (e) {
         showCustomToast(
-            AppLocalizations.of(context).failedToCreateTeam(e.toString()),
+            '${AppLocalizations.of(context).failedToCreateTeam}: $e',
             Colors.red);
       }
     }
@@ -82,15 +77,6 @@ class AddTeamPageState extends State<AddTeamPage> {
                     return l.nameIsRequired;
                   }
                   return null;
-                },
-              ),
-              SwitchListTile(
-                title: Text(l.private),
-                value: _isPrivate,
-                onChanged: (bool value) {
-                  setState(() {
-                    _isPrivate = value;
-                  });
                 },
               ),
               const SizedBox(height: 20),

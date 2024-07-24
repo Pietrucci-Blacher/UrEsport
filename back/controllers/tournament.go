@@ -79,6 +79,13 @@ func CreateTournament(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	body, _ := c.MustGet("body").(models.CreateTournamentDto)
 
+	defaultImageURL := "https://www.mucem.org/sites/default/files/styles/default-thumbnail.jpg"
+
+	imageURL := body.Image
+	if imageURL == "" {
+		imageURL = defaultImageURL
+	}
+
 	tournament := models.Tournament{
 		Name:        body.Name,
 		Description: body.Description,
@@ -88,6 +95,7 @@ func CreateTournament(c *gin.Context) {
 		Latitude:    body.Latitude,
 		Longitude:   body.Longitude,
 		OwnerID:     connectedUser.ID,
+		Image:       imageURL,
 		//Image:       body.Image,
 		Private:  body.Private,
 		GameID:   body.GameID,
@@ -260,6 +268,12 @@ func JoinTournament(c *gin.Context) {
 		return
 	}
 
+	if tournament.IsUserHasTeamInTournament(team.OwnerID) {
+		models.ErrorLogf([]string{"tournament", "JoinTournament"}, "User %d already has a team in this tournament", team.OwnerID)
+		c.JSON(http.StatusConflict, gin.H{"error": "You already have a team in this tournament"})
+		return
+	}
+
 	if len(team.Members) != tournament.NbPlayer {
 		models.ErrorLogf([]string{"tournament", "JoinTournament"}, "Team %s must contain %d members", team.Name, tournament.NbPlayer)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -338,6 +352,12 @@ func InviteTeamToTournament(c *gin.Context) {
 	if err := team.FindOne("name", body.Name); err != nil {
 		models.ErrorLogf([]string{"tournament", "InviteTeamToTournament"}, "Team %s not found", body.Name)
 		c.JSON(http.StatusNotFound, gin.H{"error": "Team not found"})
+		return
+	}
+
+	if tournament.IsUserHasTeamInTournament(team.OwnerID) {
+		models.ErrorLogf([]string{"tournament", "InviteTeamToTournament"}, "User %d already has a team in this tournament", team.OwnerID)
+		c.JSON(http.StatusConflict, gin.H{"error": "User already has a team in this tournament"})
 		return
 	}
 
@@ -652,3 +672,47 @@ func GetUpvoteById(c *gin.Context) {
 	models.ErrorLogf([]string{"tournament", "GetUpvoteById"}, "Upvote found: %v", upvote)
 	c.JSON(http.StatusOK, upvote)
 }
+
+// GetTeamsToTournamentId godoc
+//
+//	@Summary		get teams by tournament ID
+//	@Description	get teams by tournament ID
+//	@Tags			tournament
+//	@Param			id	path	int	true	"Tournament ID"
+//	@Success		200	{object}	[]models.Team
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			/tournaments/{id}/teams [get]
+func GetTeamsToTournamentId(c *gin.Context) {
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
+
+	teams, err := tournament.GetTeamsByTournamentID(tournament.ID)
+	if err != nil {
+		models.ErrorLogf([]string{"tournament", "GetTeamsToTournamentId"}, "%s", err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	models.PrintLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Fetched %d teams for tournament %s", len(teams), tournament.Name)
+	c.JSON(http.StatusOK, teams)
+}
+
+/*func GetTeamsToTournamentId(c *gin.Context) {
+	tournamentID := c.Param("id")
+
+	var tournament models.Tournament
+	if err := models.DB.Preload("Teams").First(&tournament, tournamentID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			models.ErrorLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Tournament not found: %s", err.Error())
+			c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
+		} else {
+			models.ErrorLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Database error: %s", err.Error())
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+		}
+		return
+	}
+
+	teams := tournament.Teams
+	models.PrintLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Fetched %d teams for tournament %s", len(teams), tournament.Name)
+	c.JSON(http.StatusOK, teams)
+}*/

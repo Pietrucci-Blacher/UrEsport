@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
@@ -9,7 +10,6 @@ import 'package:uresport/auth/screens/register_screen.dart';
 import 'package:uresport/auth/screens/reset_password_screen.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 
 class AuthScreen extends StatelessWidget {
   final IAuthService authService;
@@ -84,11 +84,10 @@ class AuthScreen extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => LoginScreen(authService: authService),
                   ),
-                ).then(
-                    (_) {
-                        if (!context.mounted) return;
-                        return context.read<AuthBloc>().add(AuthCheckRequested());
-                    });
+                ).then((_) {
+                  if (!context.mounted) return;
+                  return context.read<AuthBloc>().add(AuthCheckRequested());
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
@@ -110,11 +109,10 @@ class AuthScreen extends StatelessWidget {
                     builder: (context) =>
                         RegisterScreen(authService: authService),
                   ),
-                ).then(
-                    (_) {
-                        if (!context.mounted) return;
-                        return context.read<AuthBloc>().add(AuthCheckRequested());
-                    });
+                ).then((_) {
+                  if (!context.mounted) return;
+                  return context.read<AuthBloc>().add(AuthCheckRequested());
+                });
               },
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.green,
@@ -169,17 +167,18 @@ class AuthScreen extends StatelessWidget {
 
   Widget _buildOAuthButton(
       BuildContext context, IconData icon, Color color, String provider) {
-    return GestureDetector(
-      onTap: () => context.read<AuthBloc>().add(OAuthLoginRequested(provider)),
-      child: Container(
-        width: 50,
-        height: 50,
-        decoration: BoxDecoration(
-          color: color,
-          shape: BoxShape.circle,
-        ),
-        child: Center(
-          child: FaIcon(icon, color: Colors.white, size: 24),
+    return Container(
+      width: 50,
+      height: 50,
+      decoration: BoxDecoration(
+        color: Colors.grey[400],
+        shape: BoxShape.circle,
+      ),
+      child: Center(
+        child: FaIcon(
+          icon,
+          color: Colors.white.withOpacity(0.5),
+          size: 24,
         ),
       ),
     );

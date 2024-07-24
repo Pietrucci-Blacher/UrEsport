@@ -12,12 +12,12 @@ import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
 import 'package:uresport/core/services/like_service.dart';
 import 'package:uresport/cubit/locale_cubit.dart';
+import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/main_screen.dart';
 import 'package:uresport/shared/locale_switcher.dart';
-import 'package:uresport/shared/utils/image_util.dart' as image_util;
-import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/shared/navigation/bottom_navigation.dart';
+import 'package:uresport/shared/utils/image_util.dart' as image_util;
 
 class ProfileScreen extends StatefulWidget {
   final IAuthService authService;
@@ -323,6 +323,7 @@ class ProfileScreenState extends State<ProfileScreen>
     required String content,
     required VoidCallback confirmAction,
   }) {
+    AppLocalizations l = AppLocalizations.of(context);
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -331,13 +332,13 @@ class ProfileScreenState extends State<ProfileScreen>
           content: Text(content),
           actions: <Widget>[
             TextButton(
-              child: Text(AppLocalizations.of(context).cancel),
+              child: Text(l.cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text(AppLocalizations.of(context).confirm),
+              child: Text(l.confirm),
               onPressed: () {
                 confirmAction();
                 Navigator.of(context).pop();
@@ -446,6 +447,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
   }
 
   Future<void> _showImagePickerOptions(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     return showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
@@ -454,7 +456,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
             children: <Widget>[
               ListTile(
                 leading: const Icon(Icons.photo_library),
-                title: Text(AppLocalizations.of(context).photoLibrary),
+                title: Text(l.photoLibrary),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImage(context, ImageSource.gallery);
@@ -462,7 +464,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
               ),
               ListTile(
                 leading: const Icon(Icons.photo_camera),
-                title: Text(AppLocalizations.of(context).camera),
+                title: Text(l.camera),
                 onTap: () {
                   Navigator.of(context).pop();
                   _pickImage(context, ImageSource.camera);
@@ -569,7 +571,6 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
       final updatedImageUrl =
           '$imageUrl?v=${DateTime.now().millisecondsSinceEpoch}';
       onImageUpdated(updatedImageUrl);
-
       if (mounted) {
         setState(() {
           _localProfileImageUrl = updatedImageUrl;
@@ -577,7 +578,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
       }
 
       scaffoldMessenger.showSnackBar(
-        const SnackBar(content: Text('Profile image updated')),
+        SnackBar(content: Text(localizations.profileImageUpdated)),
       );
     } catch (e) {
       debugPrint('Error uploading profile image: $e');
@@ -751,11 +752,25 @@ class LikedGamesList extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
-          return Center(child: Text(l.errorFetchingLikedGames));
+          return Center(child: Text(l.noLikedGames));
         } else if (snapshot.hasData) {
           final likes = snapshot.data!;
           if (likes.isEmpty) {
-            return Center(child: Text(l.noLikedGames));
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Icon(Icons.favorite_border,
+                      size: 64, color: Colors.grey),
+                  const SizedBox(height: 16),
+                  Text(
+                    l.noLikedGames,
+                    style: const TextStyle(fontSize: 18, color: Colors.grey),
+                    textAlign: TextAlign.center,
+                  ),
+                ],
+              ),
+            );
           }
 
           return ListView.builder(
@@ -767,14 +782,12 @@ class LikedGamesList extends StatelessWidget {
                 key: Key(game.id.toString()),
                 direction: DismissDirection.endToStart,
                 onDismissed: (direction) async {
-                  // Appeler le service pour supprimer le like
                   final likeService = LikeService(Dio());
                   await likeService.deleteLike(like.id!);
 
-                  // Montrer un message de confirmation
                   if (!context.mounted) return;
-                  _showToast(context, '${game.name} supprimé de vos likes',
-                      Colors.red);
+                  _showToast(context,
+                      '${game.name}: ${l.removedFromLikedGames}', Colors.red);
                 },
                 background: Container(
                   color: Colors.red,

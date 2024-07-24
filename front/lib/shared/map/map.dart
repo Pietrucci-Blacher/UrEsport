@@ -11,6 +11,7 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/map_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/map/bloc/map_bloc.dart';
 import 'package:uresport/shared/map/bloc/map_event.dart';
 import 'package:uresport/shared/map/bloc/map_state.dart';
@@ -34,7 +35,6 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   final List<String> _recentSearches = ["La Trésor", "Gymnase René Rousseau"];
   bool _isListening = false;
   final stt.SpeechToText _speechToText = stt.SpeechToText();
-  late MapboxApi _directions;
 
   @override
   void initState() {
@@ -49,7 +49,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   void _initializeNavigation() {
     String? token = dotenv.env['SDK_REGISTRY_TOKEN'];
     if (token != null) {
-      _directions = MapboxApi(
+      MapboxApi(
         accessToken: token,
       );
     } else {
@@ -186,8 +186,10 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Informations générales',
-                                  style: TextStyle(
+                              Text(
+                                  AppLocalizations.of(context)
+                                      .generalInformation,
+                                  style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
                               const SizedBox(height: 10),
@@ -196,7 +198,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                               _buildInfoRow(
                                   Icons.location_on, tournament.location),
                               _buildInfoRow(Icons.person,
-                                  'Organisateur: ${tournament.owner.firstname} ${tournament.owner.lastname}'),
+                                  '${AppLocalizations.of(context).organizer}: ${tournament.owner.firstname} ${tournament.owner.lastname}'),
                             ],
                           ),
                         ),
@@ -209,8 +211,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Description',
-                                  style: TextStyle(
+                              Text(AppLocalizations.of(context).description,
+                                  style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
                               const SizedBox(height: 10),
@@ -227,8 +229,10 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Text('Équipes participantes',
-                                  style: TextStyle(
+                              Text(
+                                  AppLocalizations.of(context)
+                                      .participatingTeams,
+                                  style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
                               const SizedBox(height: 10),
@@ -245,7 +249,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           children: [
                             ElevatedButton.icon(
                               icon: const Icon(Icons.add),
-                              label: const Text('Voir la fiche du tournoi'),
+                              label: Text(AppLocalizations.of(context)
+                                  .viewTournamentDetails),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.red,
@@ -265,19 +270,24 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                             ),
                             const SizedBox(height: 10),
                             ElevatedButton.icon(
-                              icon: const Icon(Icons.directions),
-                              label: const Text('Obtenir l\'itinéraire'),
+                              icon: const Icon(Icons.directions,
+                                  color: Colors.grey),
+                              label: Text(
+                                  AppLocalizations.of(context).getDirections,
+                                  style: const TextStyle(color: Colors.grey)),
                               style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.grey,
+                                backgroundColor: Colors.grey[300],
                                 minimumSize: const ui.Size(double.infinity, 50),
+                                elevation: 0,
                               ),
-                              onPressed: () => _startDirections(tournament),
+                              onPressed: null,
                             ),
                             const SizedBox(height: 10),
                             ElevatedButton.icon(
                               icon: const Icon(Icons.share),
-                              label: const Text('Exporter l\'itinéraire'),
+                              label: Text(AppLocalizations.of(context)
+                                  .exportDirections),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.green,
@@ -324,42 +334,6 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
-  }
-
-  void _startDirections(Tournament tournament) async {
-    final state = context.read<MapBloc>().state;
-    if (state is MapLoaded && _isMapInitialized()) {
-      final currentLocation = await mapService.getCurrentLocation();
-
-      final latitude = currentLocation['latitude'];
-      final longitude = currentLocation['longitude'];
-
-      if (latitude != null && longitude != null) {
-        final response = await _directions.directions.request(
-          coordinates: [
-            [longitude, latitude],
-            [tournament.longitude, tournament.latitude]
-          ],
-          profile: NavigationProfile.DRIVING,
-          geometries: NavigationGeometries.GEOJSON,
-        );
-
-        final routes = response.routes;
-        if (routes != null && routes.isNotEmpty) {
-          final route = routes.first;
-          final coordinates = route.geometry?.coordinates;
-          if (coordinates != null) {
-            final points = coordinates.map((coord) {
-              return Point(coordinates: Position(coord[0], coord[1]));
-            }).toList();
-
-            if (points.isNotEmpty) {
-              mapService.addPolyline(points);
-            }
-          }
-        }
-      }
-    }
   }
 
   void _exportDirections(Tournament tournament) async {
@@ -517,7 +491,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
               title: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Search for a tournament',
+                  hintText: AppLocalizations.of(context).searchForTournament,
                   border: InputBorder.none,
                   prefixIcon: const Icon(Icons.search),
                   suffixIcon: IconButton(

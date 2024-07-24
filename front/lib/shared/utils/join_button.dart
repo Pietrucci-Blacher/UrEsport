@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:uresport/l10n/app_localizations.dart';
+
 class JoinButton extends StatelessWidget {
   final String username;
   final String tournamentId;
@@ -12,9 +14,10 @@ class JoinButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     return ElevatedButton(
       onPressed: () => _showJoinDialog(context, _attemptJoinTournament()),
-      child: const Text('Rejoindre'),
+      child: Text(l.joinButton),
     );
   }
 
@@ -23,20 +26,19 @@ class JoinButton extends StatelessWidget {
   }
 
   void _showJoinDialog(BuildContext context, bool joinSuccess) {
+    AppLocalizations l = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(joinSuccess ? 'Succès' : 'Échec'),
+          title: Text(joinSuccess ? l.success : l.failure),
           content: Text(
-            joinSuccess
-                ? 'Vous avez bien rejoint le tournoi !'
-                : 'Impossible de rejoindre le tournoi.',
+            joinSuccess ? l.joinedTournament : l.joinError,
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Fermer'),
+              child: Text(l.closeButton),
             ),
           ],
         );

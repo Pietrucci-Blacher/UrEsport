@@ -120,10 +120,21 @@ class AddFriendPageState extends State<AddFriendPage> {
                     final friendId = user['id'];
                     final currentUser = widget.currentUser;
                     try {
-                      friendService.addFriend(
-                        widget.userId,
-                        friendId,
-                      );
+                      final isAlreadyFriend =
+                          await friendService.isFriend(widget.userId, friendId);
+                      if (isAlreadyFriend) {
+                        if (!context.mounted) return;
+                        showNotificationToast(
+                          context,
+                          l.friendAlreadyAdded,
+                          backgroundColor: Colors.red,
+                          textColor: Colors.white,
+                        );
+                        return;
+                      }
+
+                      await friendService.addFriend(widget.userId, friendId);
+                      if (!context.mounted) return;
                       showNotificationToast(context, l.friendAddedSuccessfully);
                       Provider.of<NotificationProvider>(context, listen: false)
                           .addNotification(

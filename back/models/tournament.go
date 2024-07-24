@@ -10,25 +10,26 @@ import (
 )
 
 type Tournament struct {
-	ID          int       `json:"id" gorm:"primaryKey"`
-	Name        string    `json:"name" gorm:"type:varchar(100)"`
-	Description string    `json:"description" gorm:"type:varchar(255)"`
-	StartDate   time.Time `json:"start_date"`
-	EndDate     time.Time `json:"end_date"`
-	Location    string    `json:"location" gorm:"type:varchar(100)"`
-	Latitude    float64   `json:"latitude" gorm:"type:decimal(10,8)"`
-	Longitude   float64   `json:"longitude" gorm:"type:decimal(11,8)"`
-	OwnerID     int       `json:"owner_id"`
-	Owner       User      `json:"owner" gorm:"foreignKey:OwnerID"`
-	Teams       []Team    `json:"teams" gorm:"many2many:tournament_teams;"`
-	Image       string    `json:"image" gorm:"type:text"`
-	Private     bool      `json:"private" gorm:"default:false"`
-	GameID      int       `json:"game_id"`
-	Game        Game      `json:"game" gorm:"foreignKey:GameID"`
-	NbPlayer    int       `json:"nb_player" gorm:"default:1"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
-	Upvotes     int       `json:"upvote" gorm:"default:0"`
+	ID          int        `json:"id" gorm:"primaryKey"`
+	Name        string     `json:"name" gorm:"type:varchar(100)"`
+	Description string     `json:"description" gorm:"type:varchar(255)"`
+	StartDate   time.Time  `json:"start_date"`
+	EndDate     time.Time  `json:"end_date"`
+	Location    string     `json:"location" gorm:"type:varchar(100)"`
+	Latitude    float64    `json:"latitude" gorm:"type:decimal(10,8)"`
+	Longitude   float64    `json:"longitude" gorm:"type:decimal(11,8)"`
+	OwnerID     int        `json:"owner_id"`
+	Owner       User       `json:"owner" gorm:"foreignKey:OwnerID"`
+	Teams       []Team     `json:"teams" gorm:"many2many:tournament_teams;"`
+	Image       string     `json:"image" gorm:"type:varchar(255)"`
+	Private     bool       `json:"private" gorm:"default:false"`
+	GameID      int        `json:"game_id"`
+	Game        Game       `json:"game" gorm:"foreignKey:GameID"`
+	NbPlayer    int        `json:"nb_player" gorm:"default:1"`
+	CreatedAt   time.Time  `json:"created_at"`
+	UpdatedAt   time.Time  `json:"updated_at"`
+	Upvotes     int        `json:"upvote" gorm:"default:0"`
+	DeletedAt   *time.Time `json:"deleted_at"`
 }
 
 type CreateTournamentDto struct {
@@ -39,6 +40,7 @@ type CreateTournamentDto struct {
 	Location    string    `json:"location"`
 	Latitude    float64   `json:"latitude"`
 	Longitude   float64   `json:"longitude"`
+	Image       string    `json:"image"`
 	Private     bool      `json:"private"`
 	GameID      int       `json:"game_id" validate:"required"`
 	NbPlayer    int       `json:"nb_player" validate:"required"`
@@ -83,6 +85,7 @@ func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
 	var tournaments []Tournament
 
 	value := DB.Model(&Tournament{}).
+		Where("deleted_at IS NULL").
 		Offset(query.GetSkip()).
 		//Limit(query.GetLimit()).
 		Where(query.GetWhere()).
@@ -95,15 +98,16 @@ func FindAllTournaments(query services.QueryFilter) ([]Tournament, error) {
 		value.Limit(query.GetLimit())
 	}
 
-	value.Find(&tournaments)
+	err := value.Find(&tournaments).Error
 
-	return tournaments, value.Error
+	return tournaments, err
 }
 
 func FindTournamentsByUserID(userID int) ([]Tournament, error) {
 	var tournaments []Tournament
 
 	err := DB.Model(&Tournament{}).
+		Where("deleted_at IS NULL").
 		Where("owner_id", userID).
 		Preload("Teams").
 		Preload("Owner").
@@ -241,6 +245,21 @@ func (t *Tournament) HasTeam(team Team) bool {
 	return false
 }
 
+func (r *Tournament) IsUserHasTeamInTournament(userID int) bool {
+	teams, err := FindTeamsByUserID(userID)
+	if err != nil {
+		return false
+	}
+
+	for _, team := range teams {
+		if r.HasTeam(team) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (t *Tournament) Save() error {
 	return DB.Save(t).Error
 }
@@ -255,6 +274,7 @@ func (t *Tournament) FindOneById(id int) error {
 
 func (t *Tournament) FindOne(key string, value any) error {
 	return DB.Model(&Tournament{}).
+		Where("deleted_at IS NULL").
 		Preload("Teams").
 		Preload("Owner").
 		Preload("Game").
@@ -263,10 +283,14 @@ func (t *Tournament) FindOne(key string, value any) error {
 }
 
 func (t *Tournament) Delete() error {
-	if err := t.RemoveAllTeams(); err != nil {
-		return err
-	}
-	return DB.Delete(t).Error
+	del := time.Now()
+	t.DeletedAt = &del
+	t.Name = "[deleted]"
+	t.Description = "[deleted]"
+	t.Location = "[deleted]"
+	t.Image = "[deleted]"
+
+	return t.Save()
 }
 
 func ClearTournaments() error {
@@ -316,4 +340,22 @@ func GetUpvoteByUserAndTournament(userID, tournamentID uint) (*Upvote, error) {
 	var upvote Upvote
 	err := DB.Where("user_id = ? AND tournament_id = ?", userID, tournamentID).First(&upvote).Error
 	return &upvote, err
+}
+
+/*func (t *Tournament) GetTeamsByTournamentID(tournamentID int) ([]Team, error) {
+	var teams []Team
+	err := DB.Model(&Tournament{}).
+		Where("id = ?", tournamentID).
+		Preload("Teams").
+		First(&teams).Error
+	return teams, err
+}*/
+
+func (t *Tournament) GetTeamsByTournamentID(tournamentID int) ([]Team, error) {
+	var tournament Tournament
+	err := DB.Preload("Teams").First(&tournament, tournamentID).Error
+	if err != nil {
+		return nil, err
+	}
+	return tournament.Teams, nil
 }

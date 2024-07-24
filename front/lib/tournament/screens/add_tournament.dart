@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/widgets/custom_toast.dart';
+import 'package:uresport/core/models/game.dart';
 
 class AddTournamentPage extends StatefulWidget {
   const AddTournamentPage({super.key});
@@ -21,9 +23,32 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   final TextEditingController _locationController = TextEditingController();
   final TextEditingController _latitudeController = TextEditingController();
   final TextEditingController _longitudeController = TextEditingController();
-  final TextEditingController _gameIdController = TextEditingController();
   final TextEditingController _nbPlayerController = TextEditingController();
   bool _isPrivate = false;
+  int? _selectedGameId;
+  List<Game> _games = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _loadGames();
+  }
+
+  Future<void> _loadGames() async {
+    try {
+      final gameService = Provider.of<IGameService>(context, listen: false);
+      final games = await gameService.fetchGames();
+      setState(() {
+        _games = games;
+      });
+      debugPrint('Games loaded: ${_games.length}');
+    } catch (e) {
+      debugPrint('Failed to load games: $e');
+      if (!mounted) return;
+      showCustomToast(
+          '${AppLocalizations.of(context).failedToLoadGames}: $e ', Colors.red);
+    }
+  }
 
   Future<void> _submitForm() async {
     if (_formKey.currentState!.validate()) {
@@ -40,7 +65,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
             ? null
             : double.tryParse(_longitudeController.text),
         'private': _isPrivate,
-        'game_id': int.tryParse(_gameIdController.text),
+        'game_id': _selectedGameId,
         'nb_player': int.tryParse(_nbPlayerController.text),
       };
 
@@ -56,8 +81,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         Navigator.pop(context);
       } catch (e) {
         showCustomToast(
-            AppLocalizations.of(context).failedToCreateTournament(e.toString()),
-            Colors.red);
+            AppLocalizations.of(context).failedToCreateTournament, Colors.red);
       }
     }
   }
@@ -197,7 +221,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               ),
               TextFormField(
                 controller: _locationController,
-                decoration: const InputDecoration(labelText: 'Location'),
+                decoration: InputDecoration(labelText: l.location),
               ),
               TextFormField(
                 controller: _latitudeController,
@@ -209,17 +233,42 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                 decoration: InputDecoration(labelText: l.longitude),
                 keyboardType: TextInputType.number,
               ),
-              TextFormField(
-                controller: _gameIdController,
-                decoration: InputDecoration(labelText: l.gameId),
-                keyboardType: TextInputType.number,
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return l.gameIdIsRequired;
-                  }
-                  return null;
-                },
-              ),
+              if (_games.isNotEmpty)
+                DropdownButtonFormField<int>(
+                  decoration: InputDecoration(labelText: l.gameId),
+                  items: _games.map((Game game) {
+                    return DropdownMenuItem<int>(
+                      value: game.id,
+                      child: Row(
+                        children: [
+                          SizedBox(
+                            width: 40,
+                            height: 40,
+                            child: Image.network(
+                              game.imageUrl,
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Text(game.name),
+                        ],
+                      ),
+                    );
+                  }).toList(),
+                  onChanged: (int? newValue) {
+                    setState(() {
+                      _selectedGameId = newValue;
+                    });
+                  },
+                  validator: (value) {
+                    if (value == null) {
+                      return l.gameIdIsRequired;
+                    }
+                    return null;
+                  },
+                )
+              else
+                const Center(child: CircularProgressIndicator()),
               TextFormField(
                 controller: _nbPlayerController,
                 decoration:

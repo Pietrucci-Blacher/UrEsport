@@ -10,7 +10,8 @@ import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/like_service.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/core/models/like.dart';
-import 'package:uresport/widgets/custom_toast.dart'; // Assurez-vous d'importer le fichier CustomToast
+import 'package:uresport/widgets/custom_toast.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class GameDetailPage extends StatefulWidget {
   final Game game;
@@ -84,9 +85,9 @@ class GameDetailPageState extends State<GameDetailPage> {
   }
 
   Future<void> _createLike() async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (_currentUser == null) {
-      _showToast(
-          context, 'Vous devez être connecté pour suivre ce jeu', Colors.red);
+      _showToast(context, l.needConnected, Colors.red);
       return;
     }
 
@@ -100,16 +101,17 @@ class GameDetailPageState extends State<GameDetailPage> {
         _currentLike = createdLike; // Update the current like
       });
       if (!mounted) return;
-      _showToast(context, 'Ajout du jeux dans votre liste', Colors.green);
+      _showToast(context, l.addedToGameList, Colors.green);
     } catch (e) {
       debugPrint('Error: $e');
-      _showToast(context, 'Erreur lors du suivi du jeu : $e', Colors.red);
+      _showToast(context, '${l.errorFollowingGame} : $e', Colors.red);
     }
   }
 
   Future<void> _deleteLike() async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (_currentLike == null) {
-      _showToast(context, 'Aucun like à supprimer', Colors.red);
+      _showToast(context, l.noLikeToDelete, Colors.red);
       return;
     }
 
@@ -120,11 +122,10 @@ class GameDetailPageState extends State<GameDetailPage> {
         _currentLike = null; // Clear the current like
       });
       if (!mounted) return;
-      _showToast(context, 'Suppression du jeux de votre liste', Colors.red);
+      _showToast(context, l.removedFromGameList, Colors.red);
     } catch (e) {
       debugPrint('Error: $e');
-      _showToast(context, 'Erreur lors de la suppression du suivi du jeu : $e',
-          Colors.red);
+      _showToast(context, '${l.errorUnfollowingGame} : $e', Colors.red);
     }
   }
 
@@ -151,6 +152,8 @@ class GameDetailPageState extends State<GameDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final DateFormat dateFormat = DateFormat.yMMMd();
+    AppLocalizations l = AppLocalizations.of(context);
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.game.name),
@@ -160,9 +163,9 @@ class GameDetailPageState extends State<GameDetailPage> {
                 color: _isLiked ? Colors.red : null),
             onPressed: () {
               if (_isLiked) {
-                _deleteLike(); // Supprimer le like s'il existe déjà
+                _deleteLike();
               } else {
-                _createLike(); // Créer un like s'il n'existe pas
+                _createLike();
               }
             },
           ),
@@ -185,7 +188,7 @@ class GameDetailPageState extends State<GameDetailPage> {
               ),
               const SizedBox(height: 16),
               Text(
-                'Description du Jeu',
+                l.gameDescription,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -197,7 +200,7 @@ class GameDetailPageState extends State<GameDetailPage> {
               ),
               const SizedBox(height: 20),
               Text(
-                'Tags',
+                l.tags,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -218,7 +221,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                 thickness: 3,
               ),
               Text(
-                'Tournois',
+                l.tournamentText,
                 style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
@@ -230,7 +233,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Erreur: ${snapshot.error}'));
+                    return Center(child: Text('${l.error}: ${snapshot.error}'));
                   } else if (snapshot.hasData) {
                     final tournaments = snapshot.data!;
                     if (tournaments.isEmpty) {
@@ -244,7 +247,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              'Aucun tournoi pour ce jeu',
+                              l.nothingTournamentforGame,
                               style: Theme.of(context)
                                   .textTheme
                                   .headlineSmall
@@ -357,7 +360,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                                               color: Colors.blue),
                                           const SizedBox(width: 8),
                                           Text(
-                                            'Début: ${DateFormat.yMMMd().format(tournament.startDate)}',
+                                            '${l.startDate}'
+                                            '${dateFormat.format(tournament.startDate)}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
@@ -371,7 +375,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                                               color: Colors.blue),
                                           const SizedBox(width: 8),
                                           Text(
-                                            'Fin: ${DateFormat.yMMMd().format(tournament.endDate)}',
+                                            '${l.endDate}'
+                                            '${dateFormat.format(tournament.endDate)}',
                                             style: Theme.of(context)
                                                 .textTheme
                                                 .bodyMedium,
@@ -388,7 +393,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                       },
                     );
                   } else {
-                    return const Center(child: Text('Aucun tournoi trouvé'));
+                    return Center(child: Text(l.noTournamentsFound));
                   }
                 },
               ),

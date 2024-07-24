@@ -7,6 +7,7 @@ class FilterButton extends StatelessWidget {
   final List<String> sortOptions;
   final String currentSortOption;
   final Function(List<String>, String) onFilterChanged;
+  final bool isSingleSelection;
 
   const FilterButton({
     super.key,
@@ -15,6 +16,7 @@ class FilterButton extends StatelessWidget {
     required this.sortOptions,
     required this.currentSortOption,
     required this.onFilterChanged,
+    this.isSingleSelection = false,
   });
 
   @override
@@ -24,7 +26,7 @@ class FilterButton extends StatelessWidget {
       child: FloatingActionButton.extended(
         onPressed: () => _showFilterBottomSheet(context),
         label: Text(
-          AppLocalizations.of(context).filters(selectedTags.length),
+          '${AppLocalizations.of(context).filters}:(${selectedTags.length})',
           style: const TextStyle(
             color: Colors.black87,
             fontSize: 13,
@@ -50,6 +52,7 @@ class FilterButton extends StatelessWidget {
         sortOptions: sortOptions,
         currentSortOption: currentSortOption,
         onFilterChanged: onFilterChanged,
+        isSingleSelection: isSingleSelection,
       ),
     );
   }
@@ -61,6 +64,7 @@ class FilterBottomSheet extends StatefulWidget {
   final List<String> sortOptions;
   final String currentSortOption;
   final Function(List<String>, String) onFilterChanged;
+  final bool isSingleSelection;
 
   const FilterBottomSheet({
     super.key,
@@ -69,6 +73,7 @@ class FilterBottomSheet extends StatefulWidget {
     required this.sortOptions,
     required this.currentSortOption,
     required this.onFilterChanged,
+    this.isSingleSelection = false,
   });
 
   @override
@@ -185,10 +190,14 @@ class FilterBottomSheetState extends State<FilterBottomSheet> {
                     selected: _selectedTags.contains(tag),
                     onSelected: (selected) {
                       setState(() {
-                        if (selected) {
-                          _selectedTags.add(tag);
+                        if (widget.isSingleSelection) {
+                          _selectedTags = [tag];
                         } else {
-                          _selectedTags.remove(tag);
+                          if (selected) {
+                            _selectedTags.add(tag);
+                          } else {
+                            _selectedTags.remove(tag);
+                          }
                         }
                       });
                     },
