@@ -202,7 +202,8 @@ class BracketContentState extends State<BracketContent> {
                       borderRadious: 15,
                       color: Colors.black,
                     ),
-                    stageIndicatorBoxDecroction: BracketStageIndicatorBoxDecroction(
+                    stageIndicatorBoxDecroction:
+                        BracketStageIndicatorBoxDecroction(
                       borderRadious: const Radius.circular(15),
                       primaryColor: const Color.fromARGB(255, 236, 236, 236),
                       secondaryColor: const Color.fromARGB(15, 194, 236, 147),
