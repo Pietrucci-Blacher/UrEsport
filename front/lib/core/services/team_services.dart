@@ -32,6 +32,9 @@ class TeamService implements ITeamService {
       final response =
           await _dio.get('${dotenv.env['API_ENDPOINT']}/teams/user/$userId');
       if (response.statusCode == 200) {
+        if (response.data == null || response.data is! List) {
+          return [];
+        }
         final data = response.data as List;
         final teams = data.map((json) => Team.fromJson(json)).toList();
 

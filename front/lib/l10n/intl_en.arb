@@ -71,7 +71,7 @@
   "errorFetchingLikedGames": "Error fetching liked games",
   "noLikedGames": "No liked games",
   "failedToLoadUserTeams": "Failed to load user teams",
-  "noTeamsFoundForUser": "No teams found for the user",
+  "noTeamsFoundForUser": "No teams found",
   "membersInTeam": "Members",
   "tournamentsInTeam": "Tournaments",
   "confirmAction": "Confirm Action",
