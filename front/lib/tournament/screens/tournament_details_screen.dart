@@ -383,6 +383,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
   }
 
   Future<String> _uploadImage(File imageFile) async {
+    AppLocalizations l = AppLocalizations.of(context);
     final tournamentService =
         Provider.of<ITournamentService>(context, listen: false);
     try {
@@ -396,7 +397,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
         rethrow;
       } else {
         debugPrint('Unexpected error: $e');
-        throw Exception(AppLocalizations.of(context).anErrorOccurred);
+        throw Exception(l.anErrorOccurred);
       }
     }
   }
