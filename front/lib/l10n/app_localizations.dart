@@ -4,7 +4,6 @@ import 'package:intl/intl.dart';
 import 'package:uresport/generated/l10n/intl/messages_all.dart';
 
 class AppLocalizations {
-
   static Future<AppLocalizations> load(Locale locale) async {
     final String name = locale.countryCode?.isEmpty ?? false
         ? locale.languageCode
@@ -24,7 +23,6 @@ class AppLocalizations {
     debugPrint('Default locale set to $localeName');
     return AppLocalizations();
   }
-
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
@@ -1153,7 +1151,8 @@ class AppLocalizations {
     return Intl.message(
       'Error to joining',
       name: 'joinError',
-      desc: 'Message displayed when an unknown error occurs while joining the tournament',
+      desc:
+          'Message displayed when an unknown error occurs while joining the tournament',
     );
   }
 
@@ -2718,7 +2717,7 @@ class AppLocalizations {
       desc: 'Private text',
     );
   }
-
+  
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

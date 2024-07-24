@@ -1,13 +1,14 @@
-import 'package:uresport/core/models/team.dart';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:uresport/core/models/team.dart';
 
 import 'cache_service.dart';
 
 abstract class ITeamService {
+  ValueNotifier<List<Team>> get teamsNotifier;
   Future<List<Team>> getUserTeams(int current);
-  Future<void> createTeam(Map<String, dynamic> teamData);
+  Future<Team> createTeam(Map<String, dynamic> teamData);
   Future<void> leaveTeam(int userId, int teamId);
   Future<void> deleteTeam(int teamId);
   Future<void> kickUserFromTeam(int teamId, String username);
@@ -17,7 +18,13 @@ abstract class ITeamService {
 class TeamService implements ITeamService {
   final Dio _dio;
   final CacheService _cacheService = CacheService.instance;
+  final ValueNotifier<List<Team>> _teamsNotifier =
+      ValueNotifier<List<Team>>([]);
+
   TeamService(this._dio);
+
+  @override
+  ValueNotifier<List<Team>> get teamsNotifier => _teamsNotifier;
 
   @override
   Future<List<Team>> getUserTeams(int userId) async {
@@ -26,7 +33,12 @@ class TeamService implements ITeamService {
           await _dio.get('${dotenv.env['API_ENDPOINT']}/teams/user/$userId');
       if (response.statusCode == 200) {
         final data = response.data as List;
-        return data.map((json) => Team.fromJson(json)).toList();
+        final teams = data.map((json) => Team.fromJson(json)).toList();
+
+        teams.sort((a, b) => a.name.compareTo(b.name));
+
+        _teamsNotifier.value = teams;
+        return teams;
       } else {
         throw Exception('Failed to load teams');
       }
@@ -37,7 +49,7 @@ class TeamService implements ITeamService {
   }
 
   @override
-  Future<void> createTeam(Map<String, dynamic> teamData) async {
+  Future<Team> createTeam(Map<String, dynamic> teamData) async {
     final token = await _cacheService.getString('token');
     try {
       final response = await _dio.post(
@@ -53,7 +65,11 @@ class TeamService implements ITeamService {
           },
         ),
       );
-      if (response.statusCode != 201) {
+      if (response.statusCode == 201) {
+        final newTeam = Team.fromJson(response.data);
+        _teamsNotifier.value = [..._teamsNotifier.value, newTeam];
+        return newTeam;
+      } else {
         final errorMessage =
             response.data['error'] ?? 'Failed to create the team';
         throw DioException(

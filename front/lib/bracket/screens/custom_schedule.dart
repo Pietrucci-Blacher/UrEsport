@@ -12,7 +12,8 @@ class CustomSchedulePage extends StatefulWidget {
   final GameService gameService;
   final TournamentService tournamentService;
 
-  const CustomSchedulePage({super.key, required this.gameService, required this.tournamentService});
+  const CustomSchedulePage(
+      {super.key, required this.gameService, required this.tournamentService});
 
   @override
   CustomSchedulePageState createState() => CustomSchedulePageState();
@@ -32,7 +33,8 @@ class CustomSchedulePageState extends State<CustomSchedulePage> {
 
   Future<void> fetchTournaments() async {
     try {
-      List<Tournament> fetchedTournaments = await widget.tournamentService.fetchTournaments();
+      List<Tournament> fetchedTournaments =
+          await widget.tournamentService.fetchTournaments();
       setState(() {
         tournaments = fetchedTournaments;
         isLoading = false;
@@ -78,9 +80,9 @@ class CustomSchedulePageState extends State<CustomSchedulePage> {
     List<Tournament> filteredTournaments = selectedDate == null
         ? tournaments
         : tournaments.where((tournament) {
-      return DateFormat('yyyy-MM-dd').format(tournament.startDate) ==
-          DateFormat('yyyy-MM-dd').format(selectedDate!);
-    }).toList();
+            return DateFormat('yyyy-MM-dd').format(tournament.startDate) ==
+                DateFormat('yyyy-MM-dd').format(selectedDate!);
+          }).toList();
 
     // Trier les tournois par date de début
     filteredTournaments.sort((a, b) => a.startDate.compareTo(b.startDate));
@@ -150,177 +152,177 @@ class CustomSchedulePageState extends State<CustomSchedulePage> {
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : filteredTournaments.isEmpty
-          ?  Center(
-        child: Text(
-          l.noTournamentForDate,
-          style: const TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: Colors.grey,
-          ),
-        ),
-      )
-          : ListView.builder(
-        itemCount: filteredTournaments.length,
-        itemBuilder: (context, index) {
-          final tournament = filteredTournaments[index];
-          bool isNewDate = index == 0 ||
-              filteredTournaments[index].startDate.day !=
-                  filteredTournaments[index - 1].startDate.day;
-
-          // Formatter la date en fonction de la locale
-          final String formattedDate = DateFormat('EEEE - d MMMM', locale)
-              .format(tournament.startDate)
-              .toUpperCase();
-
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              if (isNewDate)
-                Padding(
-                  padding: const EdgeInsets.symmetric(
-                      vertical: 10.0, horizontal: 15.0),
+              ? Center(
                   child: Text(
-                    formattedDate,
+                    l.noTournamentForDate,
                     style: const TextStyle(
-                      fontSize: 18,
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.grey,
                     ),
                   ),
-                ),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                    vertical: 10.0, horizontal: 15.0),
-                child: GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TournamentDetailsScreen(
-                          tournament: tournament,
-                          game: tournament.game,
+                )
+              : ListView.builder(
+                  itemCount: filteredTournaments.length,
+                  itemBuilder: (context, index) {
+                    final tournament = filteredTournaments[index];
+                    bool isNewDate = index == 0 ||
+                        filteredTournaments[index].startDate.day !=
+                            filteredTournaments[index - 1].startDate.day;
+
+                    // Formatter la date en fonction de la locale
+                    final String formattedDate =
+                        DateFormat('EEEE - d MMMM', locale)
+                            .format(tournament.startDate)
+                            .toUpperCase();
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        if (isNewDate)
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                                vertical: 10.0, horizontal: 15.0),
+                            child: Text(
+                              formattedDate,
+                              style: const TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(
+                              vertical: 10.0, horizontal: 15.0),
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => TournamentDetailsScreen(
+                                    tournament: tournament,
+                                    game: tournament.game,
+                                  ),
+                                ),
+                              );
+                            },
+                            child: MouseRegion(
+                              cursor: SystemMouseCursors.click,
+                              child: AnimatedContainer(
+                                duration: const Duration(milliseconds: 300),
+                                curve: Curves.easeInOut,
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(10),
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withOpacity(0.2),
+                                      spreadRadius: 2,
+                                      blurRadius: 5,
+                                      offset: const Offset(0, 3),
+                                    ),
+                                  ],
+                                ),
+                                padding: const EdgeInsets.all(16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          backgroundImage:
+                                              AssetImage(tournament.image),
+                                          radius: 20,
+                                          backgroundColor: Colors.grey.shade200,
+                                        ),
+                                        const SizedBox(width: 10),
+                                        Expanded(
+                                          child: Text(
+                                            tournament.name,
+                                            style: const TextStyle(
+                                              fontSize: 18,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    const Divider(
+                                      color: Colors.grey,
+                                      thickness: 1,
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.calendar_today,
+                                            color: Colors.black, size: 16),
+                                        const SizedBox(width: 5),
+                                        Text(
+                                          DateFormat('dd/MM/yyyy')
+                                              .format(tournament.startDate),
+                                          style: const TextStyle(
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.black,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.location_on,
+                                            color: Colors.black, size: 16),
+                                        const SizedBox(width: 5),
+                                        Expanded(
+                                          child: Text(
+                                            tournament.location,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 10),
+                                    Row(
+                                      children: [
+                                        const Icon(Icons.videogame_asset,
+                                            color: Colors.black, size: 16),
+                                        const SizedBox(width: 5),
+                                        Expanded(
+                                          child: Text(
+                                            tournament.game.name,
+                                            style: const TextStyle(
+                                              fontSize: 16,
+                                              fontWeight: FontWeight.bold,
+                                              color: Colors.black,
+                                            ),
+                                            overflow: TextOverflow.ellipsis,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
-                      ),
+                        if (index < filteredTournaments.length - 1 &&
+                            filteredTournaments[index].startDate.day !=
+                                filteredTournaments[index + 1].startDate.day)
+                          const Divider(thickness: 1, color: Colors.grey),
+                      ],
                     );
                   },
-                  child: MouseRegion(
-                    cursor: SystemMouseCursors.click,
-                    child: AnimatedContainer(
-                      duration: const Duration(milliseconds: 300),
-                      curve: Curves.easeInOut,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(10),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.2),
-                            spreadRadius: 2,
-                            blurRadius: 5,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundImage:
-                                AssetImage(tournament.image),
-                                radius: 20,
-                                backgroundColor:
-                                Colors.grey.shade200,
-                              ),
-                              const SizedBox(width: 10),
-                              Expanded(
-                                child: Text(
-                                  tournament.name,
-                                  style: const TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          const Divider(
-                            color: Colors.grey,
-                            thickness: 1,
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              const Icon(Icons.calendar_today,
-                                  color: Colors.black, size: 16),
-                              const SizedBox(width: 5),
-                              Text(
-                                DateFormat('dd/MM/yyyy')
-                                    .format(tournament.startDate),
-                                style: const TextStyle(
-                                  fontSize: 16,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              const Icon(Icons.location_on,
-                                  color: Colors.black, size: 16),
-                              const SizedBox(width: 5),
-                              Expanded(
-                                child: Text(
-                                  tournament.location,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                          const SizedBox(height: 10),
-                          Row(
-                            children: [
-                              const Icon(Icons.videogame_asset,
-                                  color: Colors.black, size: 16),
-                              const SizedBox(width: 5),
-                              Expanded(
-                                child: Text(
-                                  tournament.game.name,
-                                  style: const TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: Colors.black,
-                                  ),
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
                 ),
-              ),
-              if (index < filteredTournaments.length - 1 &&
-                  filteredTournaments[index].startDate.day !=
-                      filteredTournaments[index + 1].startDate.day)
-                const Divider(thickness: 1, color: Colors.grey),
-            ],
-          );
-        },
-      ),
     );
   }
 }

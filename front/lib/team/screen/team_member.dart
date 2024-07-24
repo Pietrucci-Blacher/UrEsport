@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/models/user.dart';
-import 'package:uresport/core/services/team_services.dart';
-import 'package:uresport/widgets/custom_toast.dart';
-import 'package:uresport/l10n/app_localizations.dart';
-
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/team_services.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/shared/utils/image_util.dart';
+import 'package:uresport/widgets/custom_toast.dart';
 
 class TeamMembersPage extends StatelessWidget {
   final int teamId;
@@ -76,8 +76,14 @@ class TeamMembersPage extends StatelessWidget {
                   final user = users[index];
                   return ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: NetworkImage(user.profileImageUrl ??
-                          'https://via.placeholder.com/150'),
+                      radius: 20, // Adjust radius as per your need
+                      child: ClipOval(
+                        child: CachedImageWidget(
+                          url: user.profileImageUrl ??
+                              'https://via.placeholder.com/150',
+                          size: 40,
+                        ),
+                      ),
                     ),
                     title: Text(user.username),
                     subtitle: Text('${user.firstname} ${user.lastname}'),
@@ -181,8 +187,14 @@ class TeamMembersPage extends StatelessWidget {
                   ),
                   child: ListTile(
                     leading: CircleAvatar(
-                      backgroundImage: NetworkImage(member.profileImageUrl ??
-                          'https://via.placeholder.com/150'),
+                      radius: 20, // Adjust radius as per your need
+                      child: ClipOval(
+                        child: CachedImageWidget(
+                          url: member.profileImageUrl ??
+                              'https://via.placeholder.com/150',
+                          size: 40,
+                        ),
+                      ),
                     ),
                     title: Row(
                       children: [
@@ -199,8 +211,14 @@ class TeamMembersPage extends StatelessWidget {
                 )
               : ListTile(
                   leading: CircleAvatar(
-                    backgroundImage: NetworkImage(member.profileImageUrl ??
-                        'https://via.placeholder.com/150'),
+                    radius: 20, // Adjust radius as per your need
+                    child: ClipOval(
+                      child: CachedImageWidget(
+                        url: member.profileImageUrl ??
+                            'https://via.placeholder.com/150',
+                        size: 40,
+                      ),
+                    ),
                   ),
                   title: Row(
                     children: [
@@ -218,6 +236,7 @@ class TeamMembersPage extends StatelessWidget {
       ),
       floatingActionButton: ownerId == currentId
           ? FloatingActionButton(
+              heroTag: 'ownerAddMember',
               onPressed: () => _showInviteDialog(context),
               child: const Icon(Icons.person_add),
             )

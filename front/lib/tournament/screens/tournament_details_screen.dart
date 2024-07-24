@@ -32,7 +32,8 @@ class TournamentDetailsScreen extends StatefulWidget {
   TournamentDetailsScreenState createState() => TournamentDetailsScreenState();
 }
 
-class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with SingleTickerProviderStateMixin {
+class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
+    with SingleTickerProviderStateMixin {
   late tournament_model.Tournament _tournament;
   bool _hasJoined = false;
   User? _currentUser;
