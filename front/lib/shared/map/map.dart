@@ -11,12 +11,11 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/map_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/map/bloc/map_bloc.dart';
 import 'package:uresport/shared/map/bloc/map_event.dart';
 import 'package:uresport/shared/map/bloc/map_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
-
-import 'package:uresport/l10n/app_localizations.dart';
 
 class TournamentMapWidget extends StatefulWidget {
   final List<Tournament> tournaments;
@@ -36,7 +35,6 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   final List<String> _recentSearches = ["La Trésor", "Gymnase René Rousseau"];
   bool _isListening = false;
   final stt.SpeechToText _speechToText = stt.SpeechToText();
-  late MapboxApi _directions;
 
   @override
   void initState() {
@@ -51,7 +49,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
   void _initializeNavigation() {
     String? token = dotenv.env['SDK_REGISTRY_TOKEN'];
     if (token != null) {
-      _directions = MapboxApi(
+      MapboxApi(
         accessToken: token,
       );
     } else {
@@ -272,15 +270,18 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                             ),
                             const SizedBox(height: 10),
                             ElevatedButton.icon(
-                              icon: const Icon(Icons.directions),
+                              icon: const Icon(Icons.directions,
+                                  color: Colors.grey),
                               label: Text(
-                                  AppLocalizations.of(context).getDirections),
+                                  AppLocalizations.of(context).getDirections,
+                                  style: const TextStyle(color: Colors.grey)),
                               style: ElevatedButton.styleFrom(
-                                foregroundColor: Colors.white,
-                                backgroundColor: Colors.blue,
+                                foregroundColor: Colors.grey,
+                                backgroundColor: Colors.grey[300],
                                 minimumSize: const ui.Size(double.infinity, 50),
+                                elevation: 0,
                               ),
-                              onPressed: () => _startDirections(tournament),
+                              onPressed: null,
                             ),
                             const SizedBox(height: 10),
                             ElevatedButton.icon(
@@ -333,42 +334,6 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
 
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
-  }
-
-  void _startDirections(Tournament tournament) async {
-    final state = context.read<MapBloc>().state;
-    if (state is MapLoaded && _isMapInitialized()) {
-      final currentLocation = await mapService.getCurrentLocation();
-
-      final latitude = currentLocation['latitude'];
-      final longitude = currentLocation['longitude'];
-
-      if (latitude != null && longitude != null) {
-        final response = await _directions.directions.request(
-          coordinates: [
-            [longitude, latitude],
-            [tournament.longitude, tournament.latitude]
-          ],
-          profile: NavigationProfile.DRIVING,
-          geometries: NavigationGeometries.GEOJSON,
-        );
-
-        final routes = response.routes;
-        if (routes != null && routes.isNotEmpty) {
-          final route = routes.first;
-          final coordinates = route.geometry?.coordinates;
-          if (coordinates != null) {
-            final points = coordinates.map((coord) {
-              return Point(coordinates: Position(coord[0], coord[1]));
-            }).toList();
-
-            if (points.isNotEmpty) {
-              mapService.addPolyline(points);
-            }
-          }
-        }
-      }
-    }
   }
 
   void _exportDirections(Tournament tournament) async {
