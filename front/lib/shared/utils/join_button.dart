@@ -33,9 +33,7 @@ class JoinButton extends StatelessWidget {
         return AlertDialog(
           title: Text(joinSuccess ? l.success : l.failure),
           content: Text(
-            joinSuccess
-                ? l.joinedTournament
-                : l.joinError,
+            joinSuccess ? l.joinedTournament : l.joinError,
           ),
           actions: [
             TextButton(

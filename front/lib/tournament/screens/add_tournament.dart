@@ -44,8 +44,9 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       debugPrint('Games loaded: ${_games.length}');
     } catch (e) {
       debugPrint('Failed to load games: $e');
-      if(!mounted) return;
-      showCustomToast('${AppLocalizations.of(context).failedToLoadGames}: $e ', Colors.red);
+      if (!mounted) return;
+      showCustomToast(
+          '${AppLocalizations.of(context).failedToLoadGames}: $e ', Colors.red);
     }
   }
 

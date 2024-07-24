@@ -188,7 +188,9 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                                Text(AppLocalizations.of(context).generalInformation,
+                              Text(
+                                  AppLocalizations.of(context)
+                                      .generalInformation,
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
@@ -211,7 +213,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                               Text(AppLocalizations.of(context).description,
+                              Text(AppLocalizations.of(context).description,
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
@@ -229,7 +231,9 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                               Text(AppLocalizations.of(context).participatingTeams,
+                              Text(
+                                  AppLocalizations.of(context)
+                                      .participatingTeams,
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
@@ -247,7 +251,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           children: [
                             ElevatedButton.icon(
                               icon: const Icon(Icons.add),
-                              label: Text(AppLocalizations.of(context).viewTournamentDetails),
+                              label: Text(AppLocalizations.of(context)
+                                  .viewTournamentDetails),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.red,
@@ -268,7 +273,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                             const SizedBox(height: 10),
                             ElevatedButton.icon(
                               icon: const Icon(Icons.directions),
-                              label: Text(AppLocalizations.of(context).getDirections),
+                              label: Text(
+                                  AppLocalizations.of(context).getDirections),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.blue,
@@ -279,7 +285,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                             const SizedBox(height: 10),
                             ElevatedButton.icon(
                               icon: const Icon(Icons.share),
-                              label: Text(AppLocalizations.of(context).exportDirections),
+                              label: Text(AppLocalizations.of(context)
+                                  .exportDirections),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.green,

@@ -195,8 +195,7 @@ class FriendsTabState extends State<FriendsTab> {
                                             context: context,
                                             builder: (BuildContext context) {
                                               return AlertDialog(
-                                                title:
-                                                     Text(l.confirm),
+                                                title: Text(l.confirm),
                                                 content: Text(
                                                     '${l.confirmDeleteFriend} ${friend.name} ?'),
                                                 actions: [

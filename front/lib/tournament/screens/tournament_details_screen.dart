@@ -32,7 +32,8 @@ class TournamentDetailsScreen extends StatefulWidget {
   TournamentDetailsScreenState createState() => TournamentDetailsScreenState();
 }
 
-class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with SingleTickerProviderStateMixin {
+class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
+    with SingleTickerProviderStateMixin {
   late tournament_model.Tournament _tournament;
   bool _hasJoined = false;
   User? _currentUser;
@@ -367,15 +368,17 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
           _tournament = _tournament.copyWith(image: imageUrl);
           _isUploadingImage = false;
         });
-        if(!mounted) return;
-        showNotificationToast(context, 'Image uploaded successfully', backgroundColor: Colors.green);
+        if (!mounted) return;
+        showNotificationToast(context, 'Image uploaded successfully',
+            backgroundColor: Colors.green);
       } catch (e) {
         debugPrint('Error during image upload: $e');
         setState(() {
           _isUploadingImage = false;
         });
-        if(!mounted) return;
-        showNotificationToast(context, 'Error uploading image: $e', backgroundColor: Colors.red);
+        if (!mounted) return;
+        showNotificationToast(context, 'Error uploading image: $e',
+            backgroundColor: Colors.red);
       }
     } else {
       debugPrint('No image selected.');
