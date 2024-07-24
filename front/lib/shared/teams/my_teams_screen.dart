@@ -64,10 +64,10 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
             return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             debugPrint('Error in FutureBuilder: ${snapshot.error}');
-            return const Center(child: Text('Failed to load user teams'));
+            return Center(child: Text(l.failedToLoadUserTeams));
           } else if (!snapshot.hasData ||
               (snapshot.data as List<Team>).isEmpty) {
-            return const Center(child: Text('No teams found for the user'));
+            return Center(child: Text(l.noTeamsFoundForUser));
           } else {
             final teams = snapshot.data as List<Team>;
             debugPrint('Teams data: $teams');
@@ -80,7 +80,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold)),
                   subtitle: Text(
-                      'Members: ${team.members.length} | Tournaments: ${team.tournaments.length}',
+                      '${l.membersInTeam}: ${team.members.length} | ${l.tournamentsInTeam}: ${team.tournaments.length}',
                       style: const TextStyle(fontSize: 14, color: Colors.grey)),
                   trailing: IconButton(
                     icon: const Icon(Icons.exit_to_app, color: Colors.red),
@@ -102,10 +102,10 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                                'Start: ${DateFormat.yMMMd().format(tournament.startDate)}',
+                                '${l.start}: ${DateFormat.yMMMd().format(tournament.startDate)}',
                                 style: const TextStyle(fontSize: 14)),
                             Text(
-                                'End: ${DateFormat.yMMMd().format(tournament.endDate)}',
+                                '${l.end}: ${DateFormat.yMMMd().format(tournament.endDate)}',
                                 style: const TextStyle(fontSize: 14)),
                             Text(tournament.description,
                                 style: const TextStyle(
@@ -137,21 +137,22 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
   }
 
   Future<void> _confirmLeaveTeam(int teamId, String teamName) async {
+    AppLocalizations l = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Confirm Leave'),
-          content: Text('Are you sure you want to leave the team $teamName?'),
+          title:  Text(l.confirmLeave),
+          content: Text('${l.leaveTeamConfirmation} $teamName?'),
           actions: <Widget>[
             TextButton(
-              child: const Text('Cancel'),
+              child: Text(l.cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Leave'),
+              child: Text(l.leave),
               onPressed: () {
                 Navigator.of(context).pop();
                 _leaveTeam(teamId, teamName);
@@ -164,6 +165,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
   }
 
   Future<void> _leaveTeam(int teamId, String teamName) async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (_currentUser == null) return;
 
     final userId = _currentUser!.id;
@@ -173,15 +175,15 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
       setState(() {
         _loadUserTeams();
       });
-      _showToast('Vous avez bien quitté la team $teamName', Colors.green);
+      _showToast('${l.confirmLeaveTeam} $teamName', Colors.green);
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 409) {
         final errorResponse = e.response?.data;
         final errorMessage =
-            errorResponse['error'] ?? 'Failed to leave the team';
+            errorResponse['error'] ?? l.failedToLeaveTeam;
         _showToast(errorMessage, Colors.red);
       } else {
-        _showToast('Failed to leave the team: $e', Colors.red);
+        _showToast('${l.failedToLeaveTeam}: $e', Colors.red);
       }
     }
   }
@@ -212,8 +214,9 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
   }
 
   Future<List<Team>> _loadUserTeams() async {
+    AppLocalizations l = AppLocalizations.of(context);
     if (_currentUser == null) {
-      throw Exception('User is not logged in');
+      throw Exception(l.userIsNotLogin);
     }
 
     final userId = _currentUser!.id;

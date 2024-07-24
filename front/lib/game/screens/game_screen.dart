@@ -281,7 +281,7 @@ class GameCard extends StatelessWidget {
       visibleTags.add(
         Chip(
           label:
-              Text(AppLocalizations.of(context).moreTagsCount(hiddenTagsCount)),
+              Text('${AppLocalizations.of(context).moreTagsCount} $hiddenTagsCount ${AppLocalizations.of(context).more}'),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
         ),
       );

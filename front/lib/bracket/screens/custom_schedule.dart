@@ -7,7 +7,7 @@ import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 
-import '../../l10n/app_localizations.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
 class CustomSchedulePage extends StatefulWidget {
   final GameService gameService;

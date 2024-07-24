@@ -98,7 +98,7 @@ class RegisterScreenState extends State<RegisterScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
+                    return Center(child: Text('${AppLocalizations.of(context).error}: ${snapshot.error}'));
                   } else {
                     return snapshot.data ?? Container();
                   }
@@ -128,7 +128,7 @@ class RegisterScreenState extends State<RegisterScreen> {
         children: [
           const SizedBox(height: 20),
           Text(
-            'Register is disabled',
+            AppLocalizations.of(context).registerDisabled,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
         ],
