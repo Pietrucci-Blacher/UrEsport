@@ -290,6 +290,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "noLikeToDelete":
             MessageLookupByLibrary.simpleMessage("No like to delete"),
         "noLikedGames": MessageLookupByLibrary.simpleMessage("No liked games"),
+        "noNotifications":
+            MessageLookupByLibrary.simpleMessage("No notifications"),
         "noRatingFetched":
             MessageLookupByLibrary.simpleMessage("No rating fetched"),
         "noTeamsAvailable":

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/widgets/custom_toast.dart'; // Importer le widget personnalisé
 import 'package:uresport/widgets/notification_card.dart';
-import 'package:uresport/l10n/app_localizations.dart';
 
 class NotificationsTab extends StatelessWidget {
   const NotificationsTab({super.key});
@@ -15,32 +15,55 @@ class NotificationsTab extends StatelessWidget {
         final notifications = notificationProvider.notifications;
         return Stack(
           children: [
-            ListView.builder(
-              itemCount: notifications.length,
-              itemBuilder: (context, index) {
-                final notification = notifications[index];
-                return Dismissible(
-                  key: UniqueKey(),
-                  direction: DismissDirection.endToStart,
-                  onDismissed: (direction) {
-                    notificationProvider.removeNotification(index);
-                    showNotificationToast(context,
-                        AppLocalizations.of(context).notificationDeleted);
-                  },
-                  background: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: const Icon(Icons.delete, color: Colors.white),
-                  ),
-                  child: NotificationCard(
-                    message: notification,
-                    imageUrl: notification,
-                    // Ajoutez la logique pour récupérer l'image si nécessaire
-                  ),
-                );
-              },
-            ),
+            if (notifications.isEmpty)
+              Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    const Icon(
+                      Icons.notifications_off,
+                      size: 80,
+                      color: Colors.grey,
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      AppLocalizations.of(context).noNotifications,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+              )
+            else
+              ListView.builder(
+                itemCount: notifications.length,
+                itemBuilder: (context, index) {
+                  final notification = notifications[index];
+                  return Dismissible(
+                    key: UniqueKey(),
+                    direction: DismissDirection.endToStart,
+                    onDismissed: (direction) {
+                      notificationProvider.removeNotification(index);
+                      showNotificationToast(
+                        context,
+                        AppLocalizations.of(context).notificationDeleted,
+                      );
+                    },
+                    background: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      child: const Icon(Icons.delete, color: Colors.white),
+                    ),
+                    child: NotificationCard(
+                      message: notification,
+                      imageUrl: notification,
+                    ),
+                  );
+                },
+              ),
           ],
         );
       },

@@ -308,6 +308,7 @@
   "amigoAñadidoConÉxito": "Amigo añadido con éxito",
   "amigoYaAñadido": "Amigo ya añadido",
   "errorAñadiendoAmigo": "Error añadiendo amigo",
+  "noNotifications": "No tienes notificaciones",
   "failedToLoadUserTeams": "Error al cargar los equipos del usuario",
   "changeImage": "Cambiar imagen",
   "tournamentSchedule": "Horario del torneo",

@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:uresport/core/services/friends_services.dart';
 import 'package:uresport/core/models/friend.dart';
+import 'package:uresport/core/services/friends_services.dart';
 import 'package:uresport/friends/bloc/friends_event.dart';
 import 'package:uresport/friends/bloc/friends_state.dart';
 
@@ -20,11 +20,10 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
     try {
       final friends = await friendService.fetchFriends(event.userId);
       friends.sort((a, b) =>
-          a.name.compareTo(b.name)); // Trie par ordre alphabétique par défaut
+          a.firstname.compareTo(b.firstname)); // Sort alphabetically by default
       emit(FriendsLoaded(
           friends: friends,
-          isSorted:
-              true)); // Indique que la liste est triée par ordre alphabétique
+          isSorted: true)); // Indicate that the list is sorted alphabetically
     } catch (e) {
       emit(FriendsError('Failed to load friends: $e'));
     }
@@ -73,8 +72,8 @@ class FriendsBloc extends Bloc<FriendsEvent, FriendsState> {
       final sortedFriends = List<Friend>.from(currentState.friends);
       sortedFriends.sort((a, b) {
         return currentState.isSorted
-            ? b.name.compareTo(a.name)
-            : a.name.compareTo(b.name);
+            ? b.firstname.compareTo(a.firstname)
+            : a.firstname.compareTo(b.firstname);
       });
       emit(FriendsLoaded(
           friends: sortedFriends, isSorted: !currentState.isSorted));

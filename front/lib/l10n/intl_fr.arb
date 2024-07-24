@@ -310,6 +310,7 @@
   "amiAjouteAvecSucces": "Ami ajouté avec succès",
   "amiDejaAjoute": "Ami déjà ajouté",
   "erreurAjoutAmi": "Erreur lors de l'ajout de l'ami",
+  "noNotifications": "Aucune notification",
   "failedToLoadUserTeams": "Échec du chargement des équipes de l'utilisateur",
   "changeImage": "Changer l'image",
   "tournamentSchedule": "Calendrier des tournois",

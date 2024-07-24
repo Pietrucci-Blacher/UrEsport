@@ -1,4 +1,5 @@
 import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/friend.dart';
@@ -34,8 +35,22 @@ class FriendService implements IFriendService {
       if (jsonResponse is String) {
         jsonResponse = json.decode(jsonResponse);
       }
-      if (jsonResponse is List) {
-        return jsonResponse.map((friend) => Friend.fromJson(friend)).toList();
+      if (jsonResponse is Map<String, dynamic>) {
+        List<Friend> allFriends = [];
+
+        if (jsonResponse.containsKey('favorites')) {
+          List<dynamic> favoritesList = jsonResponse['favorites'];
+          allFriends.addAll(favoritesList
+              .map((friend) => Friend.fromJson(friend, isFavorite: true)));
+        }
+
+        if (jsonResponse.containsKey('friends')) {
+          List<dynamic> friendsList = jsonResponse['friends'];
+          allFriends.addAll(friendsList
+              .map((friend) => Friend.fromJson(friend, isFavorite: false)));
+        }
+
+        return allFriends;
       } else {
         throw Exception('Invalid response format');
       }

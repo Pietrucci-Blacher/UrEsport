@@ -2830,6 +2830,16 @@ class S {
     );
   }
 
+  /// `No notifications`
+  String get noNotifications {
+    return Intl.message(
+      'No notifications',
+      name: 'noNotifications',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Change Image`
   String get changeImage {
     return Intl.message(
