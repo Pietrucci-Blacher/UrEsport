@@ -244,6 +244,21 @@ func (t *Tournament) HasTeam(team Team) bool {
 	return false
 }
 
+func (r *Tournament) IsUserHasTeamInTournament(userID int) bool {
+	teams, err := FindTeamsByUserID(userID)
+	if err != nil {
+		return false
+	}
+
+	for _, team := range teams {
+		if r.HasTeam(team) {
+			return true
+		}
+	}
+
+	return false
+}
+
 func (t *Tournament) Save() error {
 	return DB.Save(t).Error
 }

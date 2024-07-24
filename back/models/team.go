@@ -72,6 +72,7 @@ func FindTeamsByUserID(userID int) ([]Team, error) {
 	var teams []Team
 
 	err := DB.Model(&Team{}).
+		Where("deleted_at IS NULL").
 		Where("owner_id", userID).
 		Preload("Members").
 		Preload("Owner").

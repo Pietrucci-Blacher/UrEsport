@@ -12,6 +12,17 @@ import 'package:uresport/core/websocket/websocket.dart';
 import 'package:uresport/bracket/screens/match_details_page.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 
+class BracketNotifier extends ChangeNotifier {
+  BracketService bracket;
+
+  BracketNotifier(List<Match> matches) : bracket = BracketService(matches);
+
+  void updateMatch(Match match) {
+    bracket.updateMatch(match);
+    notifyListeners();
+  }
+}
+
 class TournamentBracketPage extends StatelessWidget {
   final int tournamentId;
 
@@ -30,9 +41,9 @@ class TournamentBracketPage extends StatelessWidget {
             if (state is BracketLoading) {
               return Center(child: Text(l.loading));
             } else if (state is BracketLoaded) {
-              BracketService bracket = BracketService(state.matches);
+              // BracketService bracket = BracketService(state.matches);
               return BracketContent(
-                  bracket: bracket,
+                  matches: state.matches,
                   roundNames: state.roundNames,
                   tournamentId: tournamentId);
             } else if (state is BracketUpdate) {
@@ -50,12 +61,13 @@ class TournamentBracketPage extends StatelessWidget {
 }
 
 class BracketContent extends StatefulWidget {
-  final BracketService bracket;
+  // final BracketService bracket;
+  final List<Match> matches;
   final List<String> roundNames;
   final int tournamentId;
 
   const BracketContent(
-      {required this.bracket,
+      {required this.matches,
       required this.roundNames,
       required this.tournamentId,
       super.key});
@@ -68,6 +80,7 @@ class BracketContentState extends State<BracketContent> {
   int selectedLevel = 0;
   final ScrollController _scrollController = ScrollController();
   final Websocket ws = Websocket.getInstance();
+  late BracketNotifier bracketNotifier;
 
   @override
   void dispose() {
@@ -76,9 +89,9 @@ class BracketContentState extends State<BracketContent> {
   }
 
   void websocket() {
-    ws.on('match:update', (socket, data) async {
+    ws.on('bracket:update', (socket, data) async {
       final match = Match.fromJson(data);
-      widget.bracket.updateMatch(match);
+      bracketNotifier.updateMatch(match);
     });
 
     ws.emit('tournament:add-to-room', {
@@ -87,151 +100,163 @@ class BracketContentState extends State<BracketContent> {
   }
 
   @override
+  void initState() {
+    super.initState();
+    bracketNotifier = BracketNotifier(widget.matches);
+    websocket();
+  }
+
+  @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
-    websocket();
-    return Column(
-      children: [
-        SizedBox(
-          height: 130,
-          child: ListView.builder(
-            scrollDirection: Axis.horizontal,
-            itemCount: widget.bracket.getBracket().length,
-            itemBuilder: (context, index) => GestureDetector(
-              onTap: () {
-                setState(() {
-                  selectedLevel = index;
-                });
-                WidgetsBinding.instance.addPostFrameCallback((_) {
-                  _scrollToLevel(index);
-                });
-              },
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      widget.roundNames[index +
-                          (widget.roundNames.length -
-                              widget.bracket.getBracket().length)],
-                      style: TextStyle(
-                        fontWeight: selectedLevel == index
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                    Container(
-                      alignment: Alignment.center,
-                      width: 100,
-                      padding: const EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          width: 1,
-                          color: selectedLevel == index
-                              ? Colors.blue
-                              : Colors.black,
+    return ListenableBuilder(
+      listenable: bracketNotifier,
+      builder: (context, child) {
+        return Column(
+          children: [
+            SizedBox(
+              height: 130,
+              child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: bracketNotifier.bracket.getBracket().length,
+                itemBuilder: (context, index) => GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selectedLevel = index;
+                    });
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      _scrollToLevel(index);
+                    });
+                  },
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          widget.roundNames[index +
+                              (widget.roundNames.length -
+                                  bracketNotifier.bracket.getBracket().length)],
+                          style: TextStyle(
+                            fontWeight: selectedLevel == index
+                                ? FontWeight.bold
+                                : FontWeight.normal,
+                          ),
                         ),
-                      ),
-                      child: _buildRoundButton(index),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
-        Expanded(
-          child: SingleChildScrollView(
-            controller: _scrollController,
-            scrollDirection: Axis.horizontal,
-            child: Center(
-              child: TBracket<Match>(
-                space: _getSpace(selectedLevel),
-                separation: _getSeparation(selectedLevel),
-                stageWidth: 200,
-                onSameTeam: (match1, match2) {
-                  if (match1 != null && match2 != null) {
-                    return match1.id == match2.id;
-                  }
-                  return false;
-                },
-                hadderBuilder: (context, index, count) => Transform.scale(
-                  scale: selectedLevel == index ? 1.5 : 1.0,
-                  child: Container(
-                    width: 100,
-                    height: 30,
-                    alignment: Alignment.center,
-                    child: Text(
-                      widget.roundNames[index +
-                          (widget.roundNames.length -
-                              widget.bracket.getBracket().length)],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
+                        const SizedBox(height: 8),
+                        Container(
+                          alignment: Alignment.center,
+                          width: 100,
+                          padding: const EdgeInsets.all(15),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(10),
+                            border: Border.all(
+                              width: 1,
+                              color: selectedLevel == index
+                                  ? Colors.blue
+                                  : Colors.black,
+                            ),
+                          ),
+                          child: _buildRoundButton(index),
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                connectorColor: const Color.fromARGB(144, 244, 67, 54),
-                winnerConnectorColor: Colors.green,
-                teamContainerDecoration: BracketBoxDecroction(
-                  borderRadious: 15,
-                  color: Colors.black,
-                ),
-                stageIndicatorBoxDecroction: BracketStageIndicatorBoxDecroction(
-                  borderRadious: const Radius.circular(15),
-                  primaryColor: const Color.fromARGB(255, 236, 236, 236),
-                  secondaryColor: const Color.fromARGB(15, 194, 236, 147),
-                ),
-                containt: widget.bracket.getBracket(),
-                teamNameBuilder: (Match m) {
-                  var team1 = m.team1?.name ?? '';
-                  var team2 = m.team2?.name ?? '';
-
-                  if (team1.isEmpty) {
-                    team1 = l.waiting;
-                  }
-                  if (team2.isEmpty) {
-                    team2 = l.waiting;
-                  }
-
-                  return BracketText(
-                      text: '$team1 (${m.score1})\n$team2 (${m.score2})',
-                      textStyle: const TextStyle(
-                        color: Colors.black,
-                        fontWeight: FontWeight.normal,
-                      ));
-                },
-                onContainerTapDown:
-                    (Match? model, TapDownDetails tapDownDetails) {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) =>
-                          MatchDetailsPage(match: model as Match),
-                    ),
-                  );
-                },
-                onLineIconPress: (match1, match2, tapDownDetails) {
-                  if (match1 != null && match2 != null) {
-                    debugPrint("${match1.id} and ${match2.id}");
-                  } else {
-                    debugPrint(null);
-                  }
-                },
-                context: context,
               ),
             ),
-          ),
-        ),
-      ],
+            Expanded(
+              child: SingleChildScrollView(
+                controller: _scrollController,
+                scrollDirection: Axis.horizontal,
+                child: Center(
+                  child: TBracket<Match>(
+                    space: _getSpace(selectedLevel),
+                    separation: _getSeparation(selectedLevel),
+                    stageWidth: 200,
+                    onSameTeam: (match1, match2) {
+                      if (match1 != null && match2 != null) {
+                        return match1.id == match2.id;
+                      }
+                      return false;
+                    },
+                    hadderBuilder: (context, index, count) => Transform.scale(
+                      scale: selectedLevel == index ? 1.5 : 1.0,
+                      child: Container(
+                        width: 100,
+                        height: 30,
+                        alignment: Alignment.center,
+                        child: Text(
+                          widget.roundNames[index +
+                              (widget.roundNames.length -
+                                  bracketNotifier.bracket.getBracket().length)],
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                    connectorColor: const Color.fromARGB(144, 244, 67, 54),
+                    winnerConnectorColor: Colors.green,
+                    teamContainerDecoration: BracketBoxDecroction(
+                      borderRadious: 15,
+                      color: Colors.black,
+                    ),
+                    stageIndicatorBoxDecroction:
+                        BracketStageIndicatorBoxDecroction(
+                      borderRadious: const Radius.circular(15),
+                      primaryColor: const Color.fromARGB(255, 236, 236, 236),
+                      secondaryColor: const Color.fromARGB(15, 194, 236, 147),
+                    ),
+                    containt: bracketNotifier.bracket.getBracket(),
+                    teamNameBuilder: (Match m) {
+                      var team1 = m.team1?.name ?? '';
+                      var team2 = m.team2?.name ?? '';
+
+                      if (team1.isEmpty) {
+                        team1 = l.waiting;
+                      }
+                      if (team2.isEmpty) {
+                        team2 = l.waiting;
+                      }
+
+                      return BracketText(
+                          text: '$team1 (${m.score1})\n$team2 (${m.score2})',
+                          textStyle: const TextStyle(
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                          ));
+                    },
+                    onContainerTapDown:
+                        (Match? model, TapDownDetails tapDownDetails) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              MatchDetailsPage(match: model as Match),
+                        ),
+                      );
+                    },
+                    onLineIconPress: (match1, match2, tapDownDetails) {
+                      if (match1 != null && match2 != null) {
+                        debugPrint("${match1.id} and ${match2.id}");
+                      } else {
+                        debugPrint(null);
+                      }
+                    },
+                    context: context,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
   Widget _buildRoundButton(int index) {
-    int numMatches = widget.bracket.getBracket().length ~/ 2;
+    int numMatches = bracketNotifier.bracket.getBracket().length ~/ 2;
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: List.generate(numMatches, (i) => const Divider(thickness: 2)),
