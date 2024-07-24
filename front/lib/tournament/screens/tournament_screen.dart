@@ -52,13 +52,14 @@ class TournamentScreenState extends State<TournamentScreen> {
 
     if (!_isInitialized) {
       _filterOptions = newFilterOptions;
-      _currentFilter = _filterOptions.first;
+      _currentFilter = _filterOptions.first; // Assurez-vous que "All" est le premier
       _isInitialized = true;
     } else {
-      _currentFilter = _filterOptions.indexOf(_currentFilter) >= 0
-          ? _currentFilter
-          : _filterOptions.first;
       _filterOptions = newFilterOptions;
+      // Réinitialisez le filtre actuel si l'option précédente n'existe plus
+      if (!_filterOptions.contains(_currentFilter)) {
+        _currentFilter = _filterOptions.first;
+      }
     }
   }
 
