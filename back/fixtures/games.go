@@ -68,7 +68,7 @@ var VIDEO_GAME_URL = []string{
 	"https://tinyurl.com/c2zwc8b8",
 	"https://tinyurl.com/fz8smvkz",
 	"https://tinyurl.com/4bk9zj5w",
-	"https://tinyurl.com/22f3tjsb",
+	"https://tinyurl.com/bdfec2ap",
 	"https://tinyurl.com/mawrnw24",
 }
 

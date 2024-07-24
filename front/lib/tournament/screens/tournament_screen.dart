@@ -187,7 +187,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                   direction: DismissDirection.endToStart,
                   confirmDismiss: (direction) async {
                     final bool? result =
-                        await _confirmLeaveTeam(team.id, team.name, isOwner);
+                    await _confirmLeaveTeam(team.id, team.name, isOwner);
                     if (result == true) {
                       if (isOwner) {
                         await _deleteTeam(team.id, team.name);
@@ -197,20 +197,13 @@ class TournamentScreenState extends State<TournamentScreen> {
                     }
                     return result;
                   },
-                  child: Dismissible(
-                    key: Key(team.id.toString()),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (direction) {
-                      _confirmLeaveTeam(team.id, team.name, isOwner);
-                    },
-                    background: Container(
-                      color: Colors.red,
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.only(right: 20.0),
-                      child: const Icon(
-                        Icons.delete,
-                        color: Colors.white,
-                      ),
+                  background: Container(
+                    color: Colors.red,
+                    alignment: Alignment.centerRight,
+                    padding: const EdgeInsets.only(right: 20.0),
+                    child: const Icon(
+                      Icons.delete,
+                      color: Colors.white,
                     ),
                   ),
                   child: GestureDetector(
@@ -254,6 +247,7 @@ class TournamentScreenState extends State<TournamentScreen> {
       },
     );
   }
+
 
   void _showTeamTournaments(BuildContext context, Team team) {
     final String locale = Localizations.localeOf(context).toString();
