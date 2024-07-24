@@ -119,9 +119,9 @@ class HomeScreen extends StatelessWidget {
         } else if (state is TournamentLoadSuccess) {
           return _buildTrendingTournament(context, state.tournaments);
         } else if (state is TournamentLoadFailure) {
-          return const Center(child: Text('Failed to load data'));
+          return Center(child: Text(AppLocalizations.of(context).dataLoadFailed));
         } else {
-          return const Center(child: Text('No tournaments available.'));
+          return Center(child: Text(AppLocalizations.of(context).noTournamentsAvailable));
         }
       },
     );
@@ -221,9 +221,9 @@ class HomeScreen extends StatelessWidget {
         } else if (state is GameLoaded) {
           return _buildGames(context, state.games);
         } else if (state is GameError) {
-          return const Center(child: Text('Failed to load data'));
+          return Center(child: Text(AppLocalizations.of(context).dataLoadFailed));
         } else {
-          return const Center(child: Text('No games available.'));
+          return Center(child: Text(AppLocalizations.of(context).noTournamentsAvailable));
         }
       },
     );

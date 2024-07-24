@@ -1,131 +1,176 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:dio/dio.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:uresport/core/models/tournament.dart';
+import 'package:uresport/core/services/game_service.dart';
+import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/tournament/screens/tournament_details_screen.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 
-class Match {
-  final String team1;
-  final String team2;
-  final String date;
-  final String time;
-  final String? team1Image;
-  final String? team2Image;
+class CustomSchedulePage extends StatefulWidget {
+  final GameService gameService;
+  final TournamentService tournamentService;
 
-  const Match({
-    required this.team1,
-    required this.team2,
-    required this.date,
-    required this.time,
-    this.team1Image,
-    this.team2Image,
-  });
+  const CustomSchedulePage({super.key, required this.gameService, required this.tournamentService});
+
+  @override
+  CustomSchedulePageState createState() => CustomSchedulePageState();
 }
 
-class CustomSchedulePage extends StatelessWidget {
-  const CustomSchedulePage({super.key});
+class CustomSchedulePageState extends State<CustomSchedulePage> {
+  List<Tournament> tournaments = [];
+  bool isLoading = true;
+  DateTime? selectedDate;
+  String selectedFilter = 'All';
 
-  final List<Match> matches = const [
-    Match(
-      team1: 'TEAM A',
-      team2: 'TEAM B',
-      date: '10/03',
-      time: '05:30',
-      team1Image: 'assets/team_a.png',
-      team2Image: 'assets/team_b.png',
-    ),
-    Match(
-      team1: 'TEAM 1',
-      team2: 'TEAM 2',
-      date: '10/03',
-      time: '10:00',
-      team1Image: 'assets/team_a.png',
-      team2Image: 'assets/team_b.png',
-    ),
-    Match(
-      team1: 'TEAM C',
-      team2: 'TEAM D',
-      date: '10/05',
-      time: '06:30',
-      team1Image: 'assets/team_c.png',
-      team2Image: 'assets/team_d.png',
-    ),
-    Match(
-      team1: 'TEAM 3',
-      team2: 'TEAM 4',
-      date: '10/05',
-      time: '03:00',
-      team1Image: 'assets/team_c.png',
-      team2Image: 'assets/team_d.png',
-    ),
-    Match(
-      team1: 'TEAM E',
-      team2: 'TEAM F',
-      date: '10/07',
-      time: '03:30',
-      team1Image: 'assets/team_e.png',
-      team2Image: 'assets/team_f.png',
-    ),
-    Match(
-      team1: 'TEAM G',
-      team2: 'TEAM H',
-      date: '10/09',
-      time: '07:30',
-      team1Image: 'assets/team_g.png',
-      team2Image: 'assets/team_h.png',
-    ),
-    Match(
-      team1: 'TEAM I',
-      team2: 'TEAM J',
-      date: '10/10',
-      time: '08:30',
-      team1Image: 'assets/team_i.png',
-      team2Image: 'assets/team_j.png',
-    ),
-  ];
+  @override
+  void initState() {
+    super.initState();
+    fetchTournaments();
+  }
 
-  DateTime _parseDateTime(String date, String time) {
-    final dateFormat = DateFormat('MM/dd');
-    final timeFormat = DateFormat('HH:mm');
-    DateTime parsedDate = dateFormat.parse(date);
-    DateTime parsedTime = timeFormat.parse(time);
-    return DateTime(parsedDate.year, parsedDate.month, parsedDate.day,
-        parsedTime.hour, parsedTime.minute);
+  Future<void> fetchTournaments() async {
+    try {
+      List<Tournament> fetchedTournaments = await widget.tournamentService.fetchTournaments();
+      setState(() {
+        tournaments = fetchedTournaments;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: selectedDate ?? DateTime.now(),
+      firstDate: DateTime(2000),
+      lastDate: DateTime(2101),
+    );
+    if (picked != null) {
+      setState(() {
+        selectedDate = picked;
+        selectedFilter = 'Date';
+      });
+    }
+  }
+
+  void _filterChanged(String? filter) {
+    setState(() {
+      selectedFilter = filter ?? 'All';
+      if (selectedFilter == 'Now') {
+        selectedDate = DateTime.now();
+      } else if (selectedFilter == 'All') {
+        selectedDate = null;
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Créer une copie mutable de la liste des matchs
-    List<Match> sortedMatches = List.from(matches);
+    AppLocalizations l = AppLocalizations.of(context);
+    // Récupérer la locale actuelle pour formater les dates
+    String locale = Localizations.localeOf(context).languageCode;
+    List<Tournament> filteredTournaments = selectedDate == null
+        ? tournaments
+        : tournaments.where((tournament) {
+      return DateFormat('yyyy-MM-dd').format(tournament.startDate) ==
+          DateFormat('yyyy-MM-dd').format(selectedDate!);
+    }).toList();
 
-    // Convertir les dates et trier les matchs par date et heure
-    sortedMatches.sort((a, b) {
-      DateTime dateTimeA = _parseDateTime(a.date, a.time);
-      DateTime dateTimeB = _parseDateTime(b.date, b.time);
-      return dateTimeA.compareTo(dateTimeB);
-    });
+    // Trier les tournois par date de début
+    filteredTournaments.sort((a, b) => a.startDate.compareTo(b.startDate));
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Custom Schedule'),
+        title: Text(l.tournamentSchedule),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: DropdownButtonHideUnderline(
+              child: DropdownButton<String>(
+                value: selectedFilter,
+                icon: const Icon(Icons.filter_list, color: Colors.white),
+                items: [
+                  DropdownMenuItem(
+                    value: 'All',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.list, color: Colors.blue),
+                        const SizedBox(width: 8),
+                        Text(l.allTournaments),
+                      ],
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Now',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.today, color: Colors.green),
+                        const SizedBox(width: 8),
+                        Text(l.nowTournaments),
+                      ],
+                    ),
+                  ),
+                  DropdownMenuItem(
+                    value: 'Date',
+                    child: Row(
+                      children: [
+                        const Icon(Icons.calendar_today, color: Colors.orange),
+                        const SizedBox(width: 8),
+                        Text(l.selectDate),
+                      ],
+                    ),
+                  ),
+                ],
+                onChanged: (value) {
+                  if (value == 'Date') {
+                    _selectDate(context);
+                  } else {
+                    _filterChanged(value);
+                  }
+                },
+                dropdownColor: Colors.white,
+                style: const TextStyle(color: Colors.black),
+              ),
+            ),
+          ),
+        ],
       ),
-      body: ListView.builder(
-        itemCount: sortedMatches.length,
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : filteredTournaments.isEmpty
+          ?  Center(
+        child: Text(
+          l.noTournamentForDate,
+          style: const TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.grey,
+          ),
+        ),
+      )
+          : ListView.builder(
+        itemCount: filteredTournaments.length,
         itemBuilder: (context, index) {
-          final match = sortedMatches[index];
+          final tournament = filteredTournaments[index];
           bool isNewDate = index == 0 ||
-              _parseDateTime(match.date, match.time).day !=
-                  _parseDateTime(sortedMatches[index - 1].date,
-                          sortedMatches[index - 1].time)
-                      .day;
+              filteredTournaments[index].startDate.day !=
+                  filteredTournaments[index - 1].startDate.day;
 
-          // Formatter la date dans le format souhaité
-          final DateTime matchDate = _parseDateTime(match.date, match.time);
-          final String formattedDate = DateFormat('EEEE - d MMMM', 'fr_FR')
-              .format(matchDate)
+          // Formatter la date en fonction de la locale
+          final String formattedDate = DateFormat('EEEE - d MMMM', locale)
+              .format(tournament.startDate)
               .toUpperCase();
 
           return Column(
@@ -148,14 +193,17 @@ class CustomSchedulePage extends StatelessWidget {
                 padding: const EdgeInsets.symmetric(
                     vertical: 10.0, horizontal: 15.0),
                 child: GestureDetector(
-                  // onTap: () {
-                  //   Navigator.push(
-                  //     context,
-                  //     MaterialPageRoute(
-                  //       builder: (context) => MatchDetailsPage(match: match),
-                  //     ),
-                  //   );
-                  // },
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => TournamentDetailsScreen(
+                          tournament: tournament,
+                          game: tournament.game,
+                        ),
+                      ),
+                    );
+                  },
                   child: MouseRegion(
                     cursor: SystemMouseCursors.click,
                     child: AnimatedContainer(
@@ -179,65 +227,22 @@ class CustomSchedulePage extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Expanded(
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      backgroundImage: match.team1Image != null
-                                          ? AssetImage(match.team1Image!)
-                                          : null,
-                                      radius: 20,
-                                      backgroundColor: Colors.grey.shade200,
-                                      child: match.team1Image == null
-                                          ? const Icon(Icons.sports_soccer,
-                                              color: Colors.black)
-                                          : null,
-                                    ),
-                                    const SizedBox(width: 10),
-                                    Text(
-                                      match.team1,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              CircleAvatar(
+                                backgroundImage:
+                                AssetImage(tournament.image),
+                                radius: 20,
+                                backgroundColor:
+                                Colors.grey.shade200,
                               ),
-                              const Text(
-                                'VS',
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black,
-                                ),
-                              ),
+                              const SizedBox(width: 10),
                               Expanded(
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.end,
-                                  children: [
-                                    Text(
-                                      match.team2,
-                                      style: const TextStyle(
-                                        fontSize: 18,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 10),
-                                    CircleAvatar(
-                                      backgroundImage: match.team2Image != null
-                                          ? AssetImage(match.team2Image!)
-                                          : null,
-                                      radius: 20,
-                                      backgroundColor: Colors.grey.shade200,
-                                      child: match.team2Image == null
-                                          ? const Icon(Icons.sports_soccer,
-                                              color: Colors.black)
-                                          : null,
-                                    ),
-                                  ],
+                                child: Text(
+                                  tournament.name,
+                                  style: const TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
                                 ),
                               ),
                             ],
@@ -249,22 +254,56 @@ class CustomSchedulePage extends StatelessWidget {
                           ),
                           const SizedBox(height: 10),
                           Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  const Icon(Icons.access_time,
-                                      color: Colors.black, size: 16),
-                                  const SizedBox(width: 5),
-                                  Text(
-                                    match.time,
-                                    style: const TextStyle(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.black,
-                                    ),
+                              const Icon(Icons.calendar_today,
+                                  color: Colors.black, size: 16),
+                              const SizedBox(width: 5),
+                              Text(
+                                DateFormat('dd/MM/yyyy')
+                                    .format(tournament.startDate),
+                                style: const TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              const Icon(Icons.location_on,
+                                  color: Colors.black, size: 16),
+                              const SizedBox(width: 5),
+                              Expanded(
+                                child: Text(
+                                  tournament.location,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
                                   ),
-                                ],
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                            children: [
+                              const Icon(Icons.videogame_asset,
+                                  color: Colors.black, size: 16),
+                              const SizedBox(width: 5),
+                              Expanded(
+                                child: Text(
+                                  tournament.game.name,
+                                  style: const TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
                               ),
                             ],
                           ),
@@ -274,14 +313,9 @@ class CustomSchedulePage extends StatelessWidget {
                   ),
                 ),
               ),
-              // Ajouter une barre de séparation uniquement si le prochain match a une date différente
-              if (index < sortedMatches.length - 1 &&
-                  _parseDateTime(sortedMatches[index].date,
-                              sortedMatches[index].time)
-                          .day !=
-                      _parseDateTime(sortedMatches[index + 1].date,
-                              sortedMatches[index + 1].time)
-                          .day)
+              if (index < filteredTournaments.length - 1 &&
+                  filteredTournaments[index].startDate.day !=
+                      filteredTournaments[index + 1].startDate.day)
                 const Divider(thickness: 1, color: Colors.grey),
             ],
           );
@@ -289,4 +323,18 @@ class CustomSchedulePage extends StatelessWidget {
       ),
     );
   }
+}
+
+void main() async {
+  await dotenv.load();
+  final dio = Dio();
+  final gameService = GameService(dio);
+  final tournamentService = TournamentService(dio);
+
+  runApp(MaterialApp(
+    home: CustomSchedulePage(
+      gameService: gameService,
+      tournamentService: tournamentService,
+    ),
+  ));
 }

@@ -127,7 +127,7 @@ class TeamMembersPage extends StatelessWidget {
           builder: (BuildContext context) {
             return AlertDialog(
               title: Text(l.confirmKick),
-              content: Text('${l.confirmKickMessage}: $username'),
+              content: Text('${l.confirmKickMessage}: $username ?'),
               actions: <Widget>[
                 TextButton(
                   child: Text(l.cancel),

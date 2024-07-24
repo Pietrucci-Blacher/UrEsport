@@ -163,9 +163,9 @@ class GameDetailPageState extends State<GameDetailPage> {
                 color: _isLiked ? Colors.red : null),
             onPressed: () {
               if (_isLiked) {
-                _deleteLike(); // Supprimer le like s'il existe déjà
+                _deleteLike();
               } else {
-                _createLike(); // Créer un like s'il n'existe pas
+                _createLike();
               }
             },
           ),
@@ -233,7 +233,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Erreur: ${snapshot.error}'));
+                    return Center(child: Text('${l.error}: ${snapshot.error}'));
                   } else if (snapshot.hasData) {
                     final tournaments = snapshot.data!;
                     if (tournaments.isEmpty) {

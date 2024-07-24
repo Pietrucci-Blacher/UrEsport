@@ -103,7 +103,7 @@ class LoginScreenState extends State<LoginScreen> {
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   } else if (snapshot.hasError) {
-                    return Center(child: Text('Error: ${snapshot.error}'));
+                    return Center(child: Text('${AppLocalizations.of(context).error}: ${snapshot.error}'));
                   } else {
                     return snapshot.data ?? Container();
                   }
@@ -140,7 +140,7 @@ class LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 24),
             _buildTextField(
               controller: _emailController,
-              label: 'Email',
+              label: AppLocalizations.of(context).email,
               hint: AutofillHints.email,
               keyboardType: TextInputType.emailAddress,
             ),
@@ -163,7 +163,7 @@ class LoginScreenState extends State<LoginScreen> {
                     ),
                     elevation: 0,
                   ),
-                  child: const Text('Login'),
+                  child: Text(AppLocalizations.of(context).login),
                 );
               },
             ),
@@ -192,7 +192,7 @@ class LoginScreenState extends State<LoginScreen> {
         children: [
           const SizedBox(height: 20),
           Text(
-            'Login is disabled',
+            AppLocalizations.of(context).loginDisabled,
             style: Theme.of(context).textTheme.headlineSmall,
           ),
         ],
