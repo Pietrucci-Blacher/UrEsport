@@ -53,10 +53,10 @@ func GetFriendsByUserID(userID int) (map[string][]*User, error) {
 	var friendIDs []int
 	var favoriteFriendIDs []int
 	for _, friend := range friends {
-	    if friend.Favorite {
-	        favoriteFriendIDs = append(favoriteFriendIDs, friend.FriendID)
-        } else {
-		    friendIDs = append(friendIDs, friend.FriendID)
+		if friend.Favorite {
+			favoriteFriendIDs = append(favoriteFriendIDs, friend.FriendID)
+		} else {
+			friendIDs = append(friendIDs, friend.FriendID)
 		}
 	}
 
@@ -65,14 +65,14 @@ func GetFriendsByUserID(userID int) (map[string][]*User, error) {
 		return nil, err
 	}
 
-    var favoriteUsers []*User
+	var favoriteUsers []*User
 	if err := DB.Where("id IN (?)", favoriteFriendIDs).Find(&favoriteUsers).Error; err != nil {
 		return nil, err
 	}
 
 	return map[string][]*User{
-	    "friends":  users,
-	    "favorites": favoriteUsers,
+		"friends":   users,
+		"favorites": favoriteUsers,
 	}, nil
 }
 

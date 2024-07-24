@@ -144,18 +144,18 @@ func DeleteFriend(c *gin.Context) {
 // @Failure 500 {object} utils.HttpError
 // @Router /users/{id}/friends/{friend_id} [patch]
 func UpdateFriend(c *gin.Context) {
-    var err error
-    var favorite bool
+	var err error
+	var favorite bool
 
 	user, _ := c.MustGet("user").(*models.User)
 	friend, _ := c.MustGet("friend").(*models.User)
 	favorite, err = strconv.ParseBool(c.Query("favorite"))
 
-    if err != nil {
-        models.ErrorLogf([]string{"friend", "UpdateFriend"}, "%s", err.Error())
-        c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-        return
-    }
+	if err != nil {
+		models.ErrorLogf([]string{"friend", "UpdateFriend"}, "%s", err.Error())
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
 
 	// Mettre à jour le statut favori de l'ami
 	err = models.UpdateFriend(user.ID, friend.ID, favorite)
