@@ -4,15 +4,19 @@ import 'package:dio/dio.dart';
 import 'package:extended_image/extended_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:xml/xml.dart' as xml;
-
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:xml/xml.dart' as xml;
 
 class CachedImageWidget extends StatelessWidget {
   final String url;
   final double size;
+  final bool isNeutral;
 
-  const CachedImageWidget({super.key, required this.url, required this.size});
+  const CachedImageWidget(
+      {super.key,
+      required this.url,
+      required this.size,
+      this.isNeutral = false});
 
   @override
   Widget build(BuildContext context) {
@@ -27,10 +31,17 @@ class CachedImageWidget extends StatelessWidget {
             child: CircularProgressIndicator(),
           );
         } else if (snapshot.hasError || !snapshot.hasData) {
-          return const CircleAvatar(
-            radius: 50,
-            backgroundImage: AssetImage('assets/default_avatar.png'),
-          );
+          if (!isNeutral) {
+            return const CircleAvatar(
+              radius: 50,
+              backgroundImage: AssetImage('assets/default_avatar.png'),
+            );
+          } else {
+            return CircleAvatar(
+              radius: 50,
+              backgroundColor: Colors.grey.shade200,
+            );
+          }
         } else if (snapshot.data!) {
           return FutureBuilder<String>(
             future: _cleanSvg(url),
@@ -75,15 +86,29 @@ class CachedImageWidget extends StatelessWidget {
                     ),
                   );
                 case LoadState.failed:
-                  return const CircleAvatar(
-                    radius: 50,
-                    backgroundImage: AssetImage('assets/default_avatar.png'),
-                  );
+                  if (!isNeutral) {
+                    return const CircleAvatar(
+                      radius: 50,
+                      backgroundImage: AssetImage('assets/default_avatar.png'),
+                    );
+                  } else {
+                    return CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.grey.shade200,
+                    );
+                  }
                 default:
-                  return const CircleAvatar(
-                    radius: 50,
-                    backgroundImage: AssetImage('assets/default_avatar.png'),
-                  );
+                  if (!isNeutral) {
+                    return const CircleAvatar(
+                      radius: 50,
+                      backgroundImage: AssetImage('assets/default_avatar.png'),
+                    );
+                  } else {
+                    return CircleAvatar(
+                      radius: 50,
+                      backgroundColor: Colors.grey.shade200,
+                    );
+                  }
               }
             },
           );

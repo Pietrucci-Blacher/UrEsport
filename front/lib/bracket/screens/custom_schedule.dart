@@ -1,12 +1,13 @@
-import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:intl/intl.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/shared/utils/image_util.dart';
+import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 
 class CustomSchedulePage extends StatefulWidget {
   final GameService gameService;
@@ -230,12 +231,10 @@ class CustomSchedulePageState extends State<CustomSchedulePage> {
                                   children: [
                                     Row(
                                       children: [
-                                        CircleAvatar(
-                                          backgroundImage:
-                                              AssetImage(tournament.image),
-                                          radius: 20,
-                                          backgroundColor: Colors.grey.shade200,
-                                        ),
+                                        CachedImageWidget(
+                                            url: tournament.image,
+                                            size: 40,
+                                            isNeutral: true),
                                         const SizedBox(width: 10),
                                         Expanded(
                                           child: Text(
