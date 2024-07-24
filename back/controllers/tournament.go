@@ -79,6 +79,13 @@ func CreateTournament(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	body, _ := c.MustGet("body").(models.CreateTournamentDto)
 
+	defaultImageURL := "https://www.mucem.org/sites/default/files/styles/default-thumbnail.jpg"
+
+	imageURL := body.Image
+	if imageURL == "" {
+		imageURL = defaultImageURL
+	}
+
 	tournament := models.Tournament{
 		Name:        body.Name,
 		Description: body.Description,
@@ -88,6 +95,7 @@ func CreateTournament(c *gin.Context) {
 		Latitude:    body.Latitude,
 		Longitude:   body.Longitude,
 		OwnerID:     connectedUser.ID,
+		Image:       imageURL,
 		//Image:       body.Image,
 		Private:  body.Private,
 		GameID:   body.GameID,
