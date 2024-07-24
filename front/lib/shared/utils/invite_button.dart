@@ -22,6 +22,7 @@ class InviteButton extends StatelessWidget {
   }
 
   Future<void> _onInvitePressed(BuildContext context) async {
+    AppLocalizations l = AppLocalizations.of(context);
     final scaffoldMessenger = ScaffoldMessenger.of(context);
     bool success = false;
 
@@ -39,26 +40,27 @@ class InviteButton extends StatelessWidget {
       scaffoldMessenger.showSnackBar(
         SnackBar(
           content: Text(success
-              ? 'Invitation envoyée avec succès'
-              : 'Erreur lors de l\'envoi de l\'invitation'),
+              ? l.invitationSentSuccessfully
+              : l.invitationSendError),
         ),
       );
     }
   }
 
   void _showInviteDialog(BuildContext context, {required bool success}) {
+    AppLocalizations l = AppLocalizations.of(context);
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(success ? 'Invitation envoyée' : 'Erreur'),
+          title: Text(success ? l.invitationSentSuccessfully: l.invitationSendError),
           content: Text(success
-              ? 'Bonjour $username, ${AppLocalizations.of(context).inviteSuccess}'
-              : 'Échec de l\'invitation.'),
+              ? '${l.hello} $username, ${AppLocalizations.of(context).inviteSuccess}'
+              : l.inviteError),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Fermer'),
+              child: Text(l.closeButton),
             ),
           ],
         );

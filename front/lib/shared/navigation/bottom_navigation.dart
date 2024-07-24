@@ -104,7 +104,7 @@ class CustomBottomNavigation extends StatelessWidget {
       onTap: (index) {
         if (index == 3 && !isLoggedIn) {
           _showErrorToast(context,
-              'Vous devez être connecté pour accéder aux notifications.');
+              AppLocalizations.of(context).loginRequiredForNotifications);
         } else {
           onTap(index);
         }
