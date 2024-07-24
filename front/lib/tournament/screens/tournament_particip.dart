@@ -11,11 +11,13 @@ class TournamentParticipantsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
 
+    debugPrint('Number of teams: ${tournament.teams.length}'); // Vérifiez le nombre d'équipes
     return Scaffold(
       appBar: AppBar(
         title: Text(l.tournamentParticipants),
       ),
-      body: ListView.builder(
+      body: tournament.teams.isNotEmpty
+          ? ListView.builder(
         padding: const EdgeInsets.all(16.0),
         itemCount: tournament.teams.length,
         itemBuilder: (context, index) {
@@ -37,7 +39,8 @@ class TournamentParticipantsScreen extends StatelessWidget {
             ),
           );
         },
-      ),
+      )
+          : Center(child: Text(l.noParticipantsFound)),
     );
   }
 }

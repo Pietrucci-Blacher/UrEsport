@@ -3349,6 +3349,16 @@ class S {
       args: [],
     );
   }
+
+  /// `No participants found`
+  String get noParticipantsFound {
+    return Intl.message(
+      'No participants found',
+      name: 'noParticipantsFound',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

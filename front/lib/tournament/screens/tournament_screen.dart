@@ -168,7 +168,7 @@ class TournamentScreenState extends State<TournamentScreen> {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           debugPrint('Error in FutureBuilder: ${snapshot.error}');
-          return Center(child: Text(l.failedToLoadUserTeams));
+          return Center(child: Text(l.noTeamsFoundForUser));
         } else if (!snapshot.hasData || (snapshot.data as List<Team>).isEmpty) {
           return Center(child: Text(l.noTeamsFoundForUser));
         } else {

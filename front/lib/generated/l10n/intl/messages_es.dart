@@ -313,6 +313,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "No te has unido a ningún torneo"),
         "noLikeToDelete": MessageLookupByLibrary.simpleMessage(
             "No hay me gusta para eliminar"),
+        "noNotifications":
+            MessageLookupByLibrary.simpleMessage("No tienes notificaciones"),
+        "noParticipantsFound": MessageLookupByLibrary.simpleMessage(
+            "No se encontraron participantes"),
         "noRatingFetched": MessageLookupByLibrary.simpleMessage(
             "No se pudo recuperar la calificación"),
         "noTeamsAvailable":

@@ -367,5 +367,6 @@
   "failedToGenerateBracket": "Échec de la génération du bracket",
   "allText": "Tous",
   "publicText": "Public",
-    "privateText": "Privé"
+  "privateText": "Privé",
+  "noParticipantsFound": "Aucun participant trouvé"
 }

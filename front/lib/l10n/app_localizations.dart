@@ -2725,6 +2725,14 @@ class AppLocalizations {
       desc: 'Private text',
     );
   }
+
+  String get noParticipantsFound {
+    return Intl.message(
+      'No participants found',
+      name: 'noParticipantsFound',
+      desc: 'Message shown when no participants are found',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

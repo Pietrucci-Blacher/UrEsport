@@ -367,5 +367,6 @@
   "failedToGenerateBracket": "Error al generar el soporte",
   "allText": "Todos",
   "publicText": "Público",
-    "privateText": "Privado"
+  "privateText": "Privado",
+  "noParticipantsFound": "No se encontraron participantes"
 }
