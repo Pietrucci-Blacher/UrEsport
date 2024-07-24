@@ -21,9 +21,6 @@ class AddTeamPageState extends State<AddTeamPage> {
         'name': _nameController.text,
       };
 
-      debugPrint(
-          'Team data: $teamData'); // Ajout d'un log pour les données de l'équipe
-
       try {
         final teamService = Provider.of<ITeamService>(context, listen: false);
         await teamService.createTeam(teamData);
@@ -31,7 +28,7 @@ class AddTeamPageState extends State<AddTeamPage> {
         showCustomToast(
             AppLocalizations.of(context).teamCreatedSuccessfully, Colors.green);
         if (!mounted) return;
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       } catch (e) {
         showCustomToast(
             '${AppLocalizations.of(context).failedToCreateTeam}: $e',

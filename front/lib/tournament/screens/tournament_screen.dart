@@ -88,13 +88,18 @@ class TournamentScreenState extends State<TournamentScreen> {
                     right: 16.0,
                     child: FloatingActionButton(
                       heroTag: 'add-team',
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const AddTeamPage(),
                           ),
                         );
+                        if (result == true) {
+                          setState(() {
+                            _loadUserTeams();
+                          });
+                        }
                       },
                       child: const Icon(Icons.add),
                     ),
