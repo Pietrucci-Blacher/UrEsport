@@ -1,24 +1,30 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:uresport/generated/l10n/intl/messages_all.dart';
 
 class AppLocalizations {
-  String get myTeams => 'My Teams';
 
-  static Future<AppLocalizations> load(Locale locale) {
+  static Future<AppLocalizations> load(Locale locale) async {
     final String name = locale.countryCode?.isEmpty ?? false
         ? locale.languageCode
         : locale.toString();
     final String localeName = Intl.canonicalizedLocale(name);
 
-    return initializeMessages(localeName).then((_) {
-      Intl.defaultLocale = localeName;
-      return AppLocalizations();
-    });
+    debugPrint('Attempting to load localization for locale: $localeName');
+
+    try {
+      await initializeMessages(localeName);
+      debugPrint('Localization for $localeName loaded successfully.');
+    } catch (e) {
+      debugPrint('Error loading messages for locale $localeName: $e');
+    }
+
+    Intl.defaultLocale = localeName;
+    debugPrint('Default locale set to $localeName');
+    return AppLocalizations();
   }
+
 
   static AppLocalizations of(BuildContext context) {
     return Localizations.of<AppLocalizations>(context, AppLocalizations)!;
@@ -598,12 +604,11 @@ class AppLocalizations {
     );
   }
 
-  String moreTagsCount(int count) {
+  String get moreTagsCount {
     return Intl.message(
-      '+$count more',
+      'moreTagsCount',
       name: 'moreTagsCount',
-      desc: 'More tags count',
-      args: [count],
+      desc: 'More tags',
     );
   }
 
@@ -618,7 +623,7 @@ class AppLocalizations {
   String get listAllTournaments {
     return Intl.message(
       'List Tournaments',
-      name: 'listAllTournaments ',
+      name: 'listAllTournaments',
       desc: 'List Tournaments button text',
     );
   }
@@ -817,7 +822,7 @@ class AppLocalizations {
 
   String get teamPlayersCount {
     return Intl.message(
-      'Joueurs par team: ',
+      'Players per team',
       name: 'teamPlayersCount',
       desc: 'Team players count display',
     );
@@ -833,7 +838,7 @@ class AppLocalizations {
 
   String get errorLoadingCurrentUser {
     return Intl.message(
-      'Error loading current user: $e',
+      'Error loading current user:',
       name: 'errorLoadingCurrentUser',
       desc: 'Error message when loading current user fails',
     );
@@ -841,7 +846,7 @@ class AppLocalizations {
 
   String get errorCheckingIfUpvoted {
     return Intl.message(
-      'Error checking if upvoted: $e',
+      'Error checking if upvoted:',
       name: 'errorCheckingIfUpvoted',
       desc: 'Error message when checking if upvoted fails',
     );
@@ -849,7 +854,7 @@ class AppLocalizations {
 
   String get errorCheckingIfJoined {
     return Intl.message(
-      'Error checking if joined: $e',
+      'Error checking if joined:',
       name: 'errorCheckingIfJoined',
       desc: 'Error message when checking if joined fails',
     );
@@ -857,7 +862,7 @@ class AppLocalizations {
 
   String get errorLoadingTeams {
     return Intl.message(
-      'Error loading teams: $e',
+      'Error loading teams:',
       name: 'errorLoadingTeams',
       desc: 'Error message when loading teams fails',
     );
@@ -895,10 +900,10 @@ class AppLocalizations {
     );
   }
 
-  String get confirmLeave {
+  String get confirmLeaveTeam {
     return Intl.message(
-      'Confirm Leave',
-      name: 'confirmLeave',
+      'You left the team',
+      name: 'confirmLeaveTeam',
       desc: 'Title for confirming leave',
     );
   }
@@ -1018,7 +1023,7 @@ class AppLocalizations {
 
   String get location {
     return Intl.message(
-      'Location:',
+      'Location',
       name: 'location',
       desc: 'Location label text',
     );
@@ -1034,8 +1039,8 @@ class AppLocalizations {
 
   String get startDateText {
     return Intl.message(
-      'Start :',
-      name: 'startDate',
+      'Start Date: ',
+      name: 'startDateText',
       desc: 'Start date label text',
     );
   }
@@ -1048,17 +1053,17 @@ class AppLocalizations {
     );
   }
 
-  String get locationText {
+  /*String get locationText {
     return Intl.message(
       'Location:',
-      name: 'location',
+      name: 'locationText',
       desc: 'Location display text',
     );
-  }
+  }*/
 
   String get startDate {
     return Intl.message(
-      'Start:',
+      'Start: ',
       name: 'startDate',
       desc: 'Start date display text',
     );
@@ -1146,16 +1151,15 @@ class AppLocalizations {
 
   String get joinError {
     return Intl.message(
-      'Erreur lors du join',
+      'Error to joining',
       name: 'joinError',
-      desc:
-          'Message displayed when an unknown error occurs while joining the tournament',
+      desc: 'Message displayed when an unknown error occurs while joining the tournament',
     );
   }
 
   String get unknownJoinError {
     return Intl.message(
-      'Erreur pour rejoindre le tournoi',
+      'Unknown error joining tournament',
       name: 'unknownJoinError',
       desc:
           'Message displayed when an unknown error occurs while joining the tournament',
@@ -1164,7 +1168,7 @@ class AppLocalizations {
 
   String get tournamentParticipants {
     return Intl.message(
-      'Participants du tournoi',
+      'Tournament participants',
       name: 'tournamentParticipants',
       desc: 'Title for the tournament participants screen',
     );
@@ -1308,7 +1312,7 @@ class AppLocalizations {
 
   String get pleaseEnterGameId {
     return Intl.message(
-      'Please enter a game ID',
+      'Please enter a game',
       name: 'pleaseEnterGameId',
       desc: 'Validation message for the game ID field',
     );
@@ -1332,7 +1336,7 @@ class AppLocalizations {
 
   String get validate {
     return Intl.message(
-      'Valider',
+      'Validate',
       name: 'validate',
       desc: 'Text for the validate button',
     );
@@ -1396,7 +1400,7 @@ class AppLocalizations {
 
   String get gameIdIsRequired {
     return Intl.message(
-      'Game ID is required',
+      'Game is required',
       name: 'gameIdIsRequired',
       desc: 'Validation message for the game ID field',
     );
@@ -1444,7 +1448,7 @@ class AppLocalizations {
 
   String get confirmKickMessage {
     return Intl.message(
-      'Are you sure you want to kick this user from the team?',
+      'Are you sure you want to kick this user from the team',
       name: 'confirmKickMessage',
       desc: 'Message for the confirm kick dialog',
     );
@@ -1612,7 +1616,7 @@ class AppLocalizations {
 
   String get viewGames {
     return Intl.message(
-      'Voir les jeux',
+      'View Games',
       name: 'viewGames',
       desc: 'Button text to view games',
     );
@@ -1628,7 +1632,7 @@ class AppLocalizations {
 
   String get friends {
     return Intl.message(
-      'Amis',
+      'Friends',
       name: 'friends',
       desc: 'Tab title for friends',
     );
@@ -1668,7 +1672,7 @@ class AppLocalizations {
 
   String get friendAddedSuccessfully {
     return Intl.message(
-      'Ami ajouté avec succès',
+      'Friend added successfully',
       name: 'friendAddedSuccessfully',
       desc: 'Notification message when a friend is added successfully',
     );
@@ -1676,7 +1680,7 @@ class AppLocalizations {
 
   String get friendAlreadyAdded {
     return Intl.message(
-      'Ami déjà ajouté',
+      'Friend already added',
       name: 'friendAlreadyAdded',
       desc: 'Error message when the friend is already added',
     );
@@ -1684,7 +1688,7 @@ class AppLocalizations {
 
   String get errorAddingFriend {
     return Intl.message(
-      'Erreur lors de l\'ajout de l\'ami',
+      'Error adding friend',
       name: 'errorAddingFriend',
       desc: 'Error message when there is an error adding a friend',
     );
@@ -1692,7 +1696,7 @@ class AppLocalizations {
 
   String get friendDetails {
     return Intl.message(
-      'Détails de l\'ami',
+      'Friend Details',
       name: 'friendDetails',
       desc: 'Title for the friend details page',
     );
@@ -1732,7 +1736,7 @@ class AppLocalizations {
 
   String get favorites {
     return Intl.message(
-      'Favoris',
+      'Favorites',
       name: 'favorites',
       desc: 'Section title for favorite friends',
     );
@@ -1740,7 +1744,7 @@ class AppLocalizations {
 
   String get confirmDeleteFriend {
     return Intl.message(
-      'Voulez-vous vraiment supprimer cet ami ?',
+      'Are you sure you want to delete this friend',
       name: 'confirmDeleteFriend',
       desc: 'Confirmation message to delete a friend',
     );
@@ -1748,7 +1752,7 @@ class AppLocalizations {
 
   String get no {
     return Intl.message(
-      'Non',
+      'No',
       name: 'no',
       desc: 'Text for no button',
     );
@@ -1756,7 +1760,7 @@ class AppLocalizations {
 
   String get yes {
     return Intl.message(
-      'Oui',
+      'Yes',
       name: 'yes',
       desc: 'Text for yes button',
     );
@@ -1820,7 +1824,7 @@ class AppLocalizations {
 
   String get poulesTitle {
     return Intl.message(
-      'Poules de Tournois',
+      'Tournament Pools',
       name: 'poulesTitle',
       desc: 'Title for the poules page',
     );
@@ -1828,7 +1832,7 @@ class AppLocalizations {
 
   String get viewBrackets {
     return Intl.message(
-      'Voir les Brackets',
+      'View Brackets',
       name: 'viewBrackets',
       desc: 'Button text to view the brackets',
     );
@@ -1908,7 +1912,7 @@ class AppLocalizations {
 
   String get cancelCloseMatch {
     return Intl.message(
-      'Annuler la cloture',
+      'Cancel Close Match',
       name: 'cancelCloseMatch',
       desc: 'Button text for canceling the closure of the match',
     );
@@ -1932,7 +1936,7 @@ class AppLocalizations {
 
   String get team1Score {
     return Intl.message(
-      'Score team 1',
+      'Team 1 Score',
       name: 'team1Score',
       desc: 'Label for team 1 score',
     );
@@ -1940,7 +1944,7 @@ class AppLocalizations {
 
   String get team2Score {
     return Intl.message(
-      'Score team 2',
+      'Team 2 Score',
       name: 'team2Score',
       desc: 'Label for team 2 score',
     );
@@ -1948,7 +1952,7 @@ class AppLocalizations {
 
   String get pouleBrackets {
     return Intl.message(
-      'Brackets des Poules',
+      'Poule Brackets',
       name: 'pouleBrackets',
       desc: 'Title for the poule brackets page',
     );
@@ -2245,7 +2249,7 @@ class AppLocalizations {
 
   String get errorFollowingGame {
     return Intl.message(
-      'Error following the game:',
+      'Error following the game',
       name: 'errorFollowingGame',
       desc: 'Message shown when there is an error following the game',
     );
@@ -2269,7 +2273,7 @@ class AppLocalizations {
 
   String get errorUnfollowingGame {
     return Intl.message(
-      'Error unfollowing the game:',
+      'Error unfollowing the game',
       name: 'errorUnfollowingGame',
       desc: 'Message shown when there is an error unfollowing the game',
     );
@@ -2301,7 +2305,7 @@ class AppLocalizations {
 
   String get start {
     return Intl.message(
-      'Start:',
+      'Start',
       name: 'start',
       desc: 'Label for the start date',
     );
@@ -2309,7 +2313,7 @@ class AppLocalizations {
 
   String get end {
     return Intl.message(
-      'End:',
+      'End',
       name: 'end',
       desc: 'Label for the end date',
     );
@@ -2341,7 +2345,7 @@ class AppLocalizations {
 
   String get tournamentText {
     return Intl.message(
-      'Tournois',
+      'Tournaments',
       name: 'tournamentText',
       desc: 'Label for the tournament field',
     );
@@ -2349,8 +2353,8 @@ class AppLocalizations {
 
   String get nothingTournamentforGame {
     return Intl.message(
-      'Aucun tournoi pour ce jeu',
-      name: 'nothinTournamentforGame',
+      'No tournaments for this game',
+      name: 'nothingTournamentforGame',
       desc: 'Message displayed when no tournament is available for the game',
     );
   }
@@ -2378,6 +2382,263 @@ class AppLocalizations {
       desc: 'Message shown when user is not connected',
     );
   }
+
+  String get changeImage {
+    return Intl.message(
+      'Change Image',
+      name: 'changeImage',
+      desc: 'Button text to change image',
+    );
+  }
+
+  String get tournamentSchedule {
+    return Intl.message(
+      'Tournament Schedule',
+      name: 'tournamentSchedule',
+      desc: 'Title for the tournament schedule page',
+    );
+  }
+
+  String get allTournaments {
+    return Intl.message(
+      'All Tournaments',
+      name: 'allTournaments',
+      desc: 'Title for the all tournaments page',
+    );
+  }
+
+  String get nowTournaments {
+    return Intl.message(
+      'Now',
+      name: 'nowTournaments',
+      desc: 'Title for the now tournaments page',
+    );
+  }
+
+  String get selectDate {
+    return Intl.message(
+      'Select Date',
+      name: 'selectDate',
+      desc: 'Title for the select date dialog',
+    );
+  }
+
+  String get noTournamentForDate {
+    return Intl.message(
+      'No tournament for this date',
+      name: 'noTournamentForDate',
+      desc: 'Message shown when there are no tournaments now',
+    );
+  }
+
+  String get myTeams {
+    return Intl.message(
+      'My Teams',
+      name: 'myTeams',
+      desc: 'Title for the my teams page',
+    );
+  }
+
+  String get userIsNotLogin {
+    return Intl.message(
+      'User is not logged in',
+      name: 'userIsNotLogin',
+      desc: 'Message shown when user is not login',
+    );
+  }
+
+  String get accessDeniedMessage {
+    return Intl.message(
+      'Sorry, you do not have permission to access this page.',
+      name: 'accessDeniedMessage',
+      desc: 'Message shown when user is not authorized to access the page',
+    );
+  }
+
+  String get back {
+    return Intl.message(
+      'Back',
+      name: 'back',
+      desc: 'Text for back button',
+    );
+  }
+
+  String get svgLoadError {
+    return Intl.message(
+      'Error loading SVG',
+      name: 'svgLoadError',
+      desc: 'Error message when loading SVG fails',
+    );
+  }
+
+  String get invitationSentSuccessfully {
+    return Intl.message(
+      'Invitation sent successfully',
+      name: 'invitationSentSuccessfully',
+      desc: 'Message displayed when the invitation is sent successfully',
+    );
+  }
+
+  String get invitationSendError {
+    return Intl.message(
+      'Error sending invitation',
+      name: 'invitationSendError',
+      desc: 'Message displayed when the invitation send fails',
+    );
+  }
+
+  String get hello {
+    return Intl.message(
+      'Hello',
+      name: 'hello',
+      desc: 'Hello text',
+    );
+  }
+
+  String get success {
+    return Intl.message(
+      'Success',
+      name: 'success',
+      desc: 'Success text',
+    );
+  }
+
+  String get failure {
+    return Intl.message(
+      'Failure',
+      name: 'failure',
+      desc: 'Failure text',
+    );
+  }
+
+  String get confirmLeave {
+    return Intl.message(
+      'Confirm Leave',
+      name: 'confirmLeave',
+      desc: 'Title for the confirm leave team dialog',
+    );
+  }
+
+  String get error {
+    return Intl.message(
+      'Error',
+      name: 'error',
+      desc: 'Error text',
+    );
+  }
+
+  String get loginRequiredForNotifications {
+    return Intl.message(
+      'You must be logged in to receive notifications',
+      name: 'loginRequiredForNotifications',
+      desc: 'Message shown when user is not logged in to receive notifications',
+    );
+  }
+
+  String get invalidCurrentLocation {
+    return Intl.message(
+      'Invalid current location',
+      name: 'invalidCurrentLocation',
+      desc: 'Message shown when the current location is invalid',
+    );
+  }
+
+  String get dataLoadFailed {
+    return Intl.message(
+      'Data load failed',
+      name: 'dataLoadFailed',
+      desc: 'Message shown when data load fails',
+    );
+  }
+
+  String get noTournamentsAvailable {
+    return Intl.message(
+      'No tournaments available',
+      name: 'noTournamentsAvailable',
+      desc: 'Message shown when no tournaments are available',
+    );
+  }
+
+  String get more {
+    return Intl.message(
+      'More',
+      name: 'more',
+      desc: 'More text',
+    );
+  }
+
+  String get loginDisabled {
+    return Intl.message(
+      'Login is disabled',
+      name: 'loginDisabled',
+      desc: 'Message indicating that the login functionality is disabled',
+    );
+  }
+
+  String get registerDisabled {
+    return Intl.message(
+      'Register is disabled',
+      name: 'registerDisabled',
+      desc: 'Message indicating that the register functionality is disabled',
+    );
+  }
+
+  String get generalInformation {
+    return Intl.message(
+      'General Information',
+      name: 'generalInformation',
+      desc: 'Label for general information section',
+    );
+  }
+
+  String get organizer {
+    return Intl.message(
+      'Organizer',
+      name: 'organizer',
+      desc: 'Label for organizer or event planner',
+    );
+  }
+
+  String get participatingTeams {
+    return Intl.message(
+      'Participating Teams',
+      name: 'participatingTeams',
+      desc: 'Label for the teams participating in a tournament or event',
+    );
+  }
+
+  String get viewTournamentDetails {
+    return Intl.message(
+      'View Tournament Details',
+      name: 'viewTournamentDetails',
+      desc: 'Button text to view the details of the tournament',
+    );
+  }
+
+  String get getDirections {
+    return Intl.message(
+      'Get Directions',
+      name: 'getDirections',
+      desc: 'Button text to get directions to a location',
+    );
+  }
+
+  String get exportDirections {
+    return Intl.message(
+      'Export Directions',
+      name: 'exportDirections',
+      desc: 'Button text to export directions to a file or other format',
+    );
+  }
+
+  String get searchForTournament {
+    return Intl.message(
+      'Search for a tournament',
+      name: 'searchForTournament',
+      desc: 'Placeholder or label text for searching for a tournament',
+    );
+  }
+
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

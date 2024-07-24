@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
+import 'package:uresport/l10n/app_localizations.dart';
+
 class ForbiddenScreen extends StatelessWidget {
   const ForbiddenScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -51,7 +54,7 @@ class ForbiddenScreen extends StatelessWidget {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: Text(
-                    "Désolé, vous n'avez pas l'autorisation d'accéder à cette page.",
+                    l.accessDeniedMessage,
                     style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                           color: Colors.white70,
                         ),
@@ -64,7 +67,7 @@ class ForbiddenScreen extends StatelessWidget {
                     Navigator.of(context).pushReplacementNamed('/');
                   },
                   icon: const Icon(Icons.arrow_back),
-                  label: const Text("Retour"),
+                  label: Text(l.back),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
                     foregroundColor: Theme.of(context).colorScheme.primary,

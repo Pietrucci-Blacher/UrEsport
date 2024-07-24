@@ -6,6 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:xml/xml.dart' as xml;
 
+import 'package:uresport/l10n/app_localizations.dart';
+
 class CachedImageWidget extends StatelessWidget {
   final String url;
   final double size;
@@ -14,6 +16,7 @@ class CachedImageWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    AppLocalizations l = AppLocalizations.of(context);
     return FutureBuilder<bool>(
       future: _isSvg(url),
       builder: (context, snapshot) {
@@ -35,7 +38,7 @@ class CachedImageWidget extends StatelessWidget {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
               } else if (snapshot.hasError || !snapshot.hasData) {
-                return const Text('Erreur lors du chargement de l\'image SVG');
+                return Text(l.svgLoadError);
               } else {
                 return SvgPicture.string(
                   snapshot.data!,
