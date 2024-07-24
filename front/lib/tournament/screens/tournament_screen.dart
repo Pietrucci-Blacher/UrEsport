@@ -52,7 +52,8 @@ class TournamentScreenState extends State<TournamentScreen> {
 
     if (!_isInitialized) {
       _filterOptions = newFilterOptions;
-      _currentFilter = _filterOptions.first; // Assurez-vous que "All" est le premier
+      _currentFilter =
+          _filterOptions.first; // Assurez-vous que "All" est le premier
       _isInitialized = true;
     } else {
       _filterOptions = newFilterOptions;
@@ -238,7 +239,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                               fontSize: 18, fontWeight: FontWeight.bold)),
                       subtitle: Text(
                         '${l.membersInTeam}: ${team.members.length} | ${l.tournamentsInTeam}: ${team.tournaments.length}',
-                        style: const TextStyle(fontSize: 14, color: Colors.grey),
+                        style:
+                            const TextStyle(fontSize: 14, color: Colors.grey),
                       ),
                       trailing: IconButton(
                         icon: const Icon(Icons.info, color: Colors.grey),
@@ -267,61 +269,61 @@ class TournamentScreenState extends State<TournamentScreen> {
           child: SingleChildScrollView(
             child: team.tournaments.isEmpty
                 ? Center(
-              child: Text(
-                l.noJoinedTournaments,
-                style: const TextStyle(
-                    fontSize: 18, fontWeight: FontWeight.bold),
-              ),
-            )
-                : Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Text(
-                  l.tournaments,
-                  style: const TextStyle(
-                      fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-                const SizedBox(height: 10),
-                ...team.tournaments.map((tournamentJson) {
-                  Tournament tournament =
-                  Tournament.fromJson(tournamentJson);
-                  return ListTile(
-                    contentPadding: const EdgeInsets.all(10.0),
-                    leading: Image.network(tournament.image,
-                        width: 50, height: 50, fit: BoxFit.cover),
-                    title: Text(tournament.name,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600)),
-                    subtitle: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                            '${l.tournamentStartDate}: ${dateFormat.format(tournament.startDate)}',
-                            style: const TextStyle(fontSize: 14)),
-                        Text(
-                            '${l.tournamentEndDate}: ${dateFormat.format(tournament.startDate)}',
-                            style: const TextStyle(fontSize: 14)),
-                        Text(tournament.description,
-                            style: const TextStyle(
-                                fontSize: 12, color: Colors.grey),
-                            overflow: TextOverflow.ellipsis),
-                      ],
+                    child: Text(
+                      l.noJoinedTournaments,
+                      style: const TextStyle(
+                          fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => TournamentDetailsScreen(
-                              tournament: tournament,
-                              game: tournament.game),
-                        ),
-                      );
-                    },
-                  );
-                }),
-              ],
-            ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l.tournaments,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
+                      ...team.tournaments.map((tournamentJson) {
+                        Tournament tournament =
+                            Tournament.fromJson(tournamentJson);
+                        return ListTile(
+                          contentPadding: const EdgeInsets.all(10.0),
+                          leading: Image.network(tournament.image,
+                              width: 50, height: 50, fit: BoxFit.cover),
+                          title: Text(tournament.name,
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  '${l.tournamentStartDate}: ${dateFormat.format(tournament.startDate)}',
+                                  style: const TextStyle(fontSize: 14)),
+                              Text(
+                                  '${l.tournamentEndDate}: ${dateFormat.format(tournament.startDate)}',
+                                  style: const TextStyle(fontSize: 14)),
+                              Text(tournament.description,
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.grey),
+                                  overflow: TextOverflow.ellipsis),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TournamentDetailsScreen(
+                                    tournament: tournament,
+                                    game: tournament.game),
+                              ),
+                            );
+                          },
+                        );
+                      }),
+                    ],
+                  ),
           ),
         );
       },
@@ -467,7 +469,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is TournamentLoadSuccess) {
                 final filteredTournaments =
-                state.tournaments.where((tournament) {
+                    state.tournaments.where((tournament) {
                   if (_currentFilter == l.publicText) {
                     return !tournament.isPrivate;
                   } else if (_currentFilter == l.privateText) {
@@ -515,7 +517,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                     context,
                                     MaterialPageRoute(
                                       builder: (context) =>
-                                      const AddTournamentPage(),
+                                          const AddTournamentPage(),
                                     ),
                                   );
                                 },
@@ -528,8 +530,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 final dio = Dio();
                                 final gameService = GameService(dio);
                                 final tournamentService =
-                                TournamentService(dio);
-
+                                    TournamentService(dio);
 
                                 Navigator.push(
                                   context,
@@ -563,7 +564,7 @@ class TournamentScreenState extends State<TournamentScreen> {
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     AppLocalizations l = AppLocalizations.of(context);
     final DateFormat dateFormat =
-    DateFormat.yMMMd(); // Créer une instance de DateFormat
+        DateFormat.yMMMd(); // Créer une instance de DateFormat
 
     return GestureDetector(
       onTap: () {
@@ -743,11 +744,10 @@ class TournamentScreenState extends State<TournamentScreen> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      TournamentDetailsScreen(
-                                        tournament: tournament,
-                                        game: tournament.game,
-                                      ),
+                                  builder: (context) => TournamentDetailsScreen(
+                                    tournament: tournament,
+                                    game: tournament.game,
+                                  ),
                                 ),
                               );
                             },

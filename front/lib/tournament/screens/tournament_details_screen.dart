@@ -323,7 +323,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
         teamName,
       );
       if (!mounted) return;
-      showNotificationToast(context, AppLocalizations.of(context).invitationSentSuccessfully,
+      showNotificationToast(
+          context, AppLocalizations.of(context).invitationSentSuccessfully,
           backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error sending invitation: $e');
@@ -335,7 +336,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
               context, AppLocalizations.of(context).invitationAllReadySend,
               backgroundColor: Colors.red);
         } else if (e.response?.statusCode == 401) {
-          showNotificationToast(context, '${AppLocalizations.of(context).teamContainPlayers} ${_tournament.nbPlayers} ${AppLocalizations.of(context).playersText}',
+          showNotificationToast(context,
+              '${AppLocalizations.of(context).teamContainPlayers} ${_tournament.nbPlayers} ${AppLocalizations.of(context).playersText}',
               backgroundColor: Colors.red);
         } else {
           final errorMessage = e.response?.data['error'];
@@ -368,15 +370,19 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
           _tournament = _tournament.copyWith(image: imageUrl);
           _isUploadingImage = false;
         });
-        if(!mounted) return;
-        showNotificationToast(context, AppLocalizations.of(context).imageUploadSuccessfully, backgroundColor: Colors.green);
+        if (!mounted) return;
+        showNotificationToast(
+            context, AppLocalizations.of(context).imageUploadSuccessfully,
+            backgroundColor: Colors.green);
       } catch (e) {
         debugPrint('Error during image upload: $e');
         setState(() {
           _isUploadingImage = false;
         });
-        if(!mounted) return;
-        showNotificationToast(context, '${AppLocalizations.of(context).imageUploadError}: $e', backgroundColor: Colors.red);
+        if (!mounted) return;
+        showNotificationToast(
+            context, '${AppLocalizations.of(context).imageUploadError}: $e',
+            backgroundColor: Colors.red);
       }
     } else {
       debugPrint('No image selected.');
@@ -410,12 +416,14 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     try {
       await tournamentService.generateBracket(_tournament.id);
       if (!mounted) return;
-      showNotificationToast(context, AppLocalizations.of(context).generateBracket,
+      showNotificationToast(
+          context, AppLocalizations.of(context).generateBracket,
           backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error generating bracket: $e');
       if (!mounted) return;
-      showNotificationToast(context, AppLocalizations.of(context).failedToGenerateBracket,
+      showNotificationToast(
+          context, AppLocalizations.of(context).failedToGenerateBracket,
           backgroundColor: Colors.red);
     }
   }
@@ -451,8 +459,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     } catch (e) {
       debugPrint('Upvote failed: $e');
       if (!mounted) return;
-      showNotificationToast(context,
-          AppLocalizations.of(context).failedToChangeUpvoteStatus,
+      showNotificationToast(
+          context, AppLocalizations.of(context).failedToChangeUpvoteStatus,
           backgroundColor: Colors.red);
     }
   }
@@ -560,8 +568,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                 backgroundColor: Colors.red);
           }
         } else {
-          showNotificationToast(context,
-              AppLocalizations.of(context).leaveTournamentError,
+          showNotificationToast(
+              context, AppLocalizations.of(context).leaveTournamentError,
               backgroundColor: Colors.red);
         }
       } else {
