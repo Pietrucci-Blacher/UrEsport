@@ -11,12 +11,11 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/map_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/map/bloc/map_bloc.dart';
 import 'package:uresport/shared/map/bloc/map_event.dart';
 import 'package:uresport/shared/map/bloc/map_state.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
-
-import 'package:uresport/l10n/app_localizations.dart';
 
 class TournamentMapWidget extends StatefulWidget {
   final List<Tournament> tournaments;
@@ -187,7 +186,9 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                                Text(AppLocalizations.of(context).generalInformation,
+                              Text(
+                                  AppLocalizations.of(context)
+                                      .generalInformation,
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
@@ -210,7 +211,7 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                               Text(AppLocalizations.of(context).description,
+                              Text(AppLocalizations.of(context).description,
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
@@ -228,7 +229,9 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                               Text(AppLocalizations.of(context).participatingTeams,
+                              Text(
+                                  AppLocalizations.of(context)
+                                      .participatingTeams,
                                   style: const TextStyle(
                                       fontSize: 18,
                                       fontWeight: FontWeight.bold)),
@@ -246,7 +249,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                           children: [
                             ElevatedButton.icon(
                               icon: const Icon(Icons.add),
-                              label: Text(AppLocalizations.of(context).viewTournamentDetails),
+                              label: Text(AppLocalizations.of(context)
+                                  .viewTournamentDetails),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.red,
@@ -266,10 +270,11 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                             ),
                             const SizedBox(height: 10),
                             ElevatedButton.icon(
-                              icon: const Icon(Icons.directions
+                              icon: const Icon(Icons.directions,
                                   color: Colors.grey),
-                              label: const Text(AppLocalizations.of(context).getDirections,
-                                  style: TextStyle(color: Colors.grey)),
+                              label: Text(
+                                  AppLocalizations.of(context).getDirections,
+                                  style: const TextStyle(color: Colors.grey)),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.grey,
                                 backgroundColor: Colors.grey[300],
@@ -281,7 +286,8 @@ class TournamentMapWidgetState extends State<TournamentMapWidget> {
                             const SizedBox(height: 10),
                             ElevatedButton.icon(
                               icon: const Icon(Icons.share),
-                              label: Text(AppLocalizations.of(context).exportDirections),
+                              label: Text(AppLocalizations.of(context)
+                                  .exportDirections),
                               style: ElevatedButton.styleFrom(
                                 foregroundColor: Colors.white,
                                 backgroundColor: Colors.green,
