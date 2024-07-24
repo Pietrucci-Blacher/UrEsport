@@ -2838,7 +2838,7 @@ class S {
       desc: '',
       args: [],
     );
-   }
+  }
 
   /// `Change Image`
   String get changeImage {

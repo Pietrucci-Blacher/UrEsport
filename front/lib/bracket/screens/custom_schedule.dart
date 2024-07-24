@@ -323,7 +323,6 @@ class CustomSchedulePageState extends State<CustomSchedulePage> {
                     );
                   },
                 ),
-
     );
   }
 }
