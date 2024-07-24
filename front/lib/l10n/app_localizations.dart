@@ -2378,6 +2378,14 @@ class AppLocalizations {
       desc: 'Message shown when user is not connected',
     );
   }
+
+  String get noNotifications {
+    return Intl.message(
+      'No notifications',
+      name: 'noNotifications',
+      desc: 'Message shown when there are no notifications',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

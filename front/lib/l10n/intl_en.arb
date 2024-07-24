@@ -278,5 +278,6 @@
   "noJoinedTournaments": "No joined tournaments",
   "removedFromLikedGames": "Removed from liked games",
   "needConnected": "You must be logged in to access this page",
-  "nothingTournamentforGame": "No tournaments for this game"
+  "nothingTournamentforGame": "No tournaments for this game",
+  "noNotifications": "No notifications"
 }

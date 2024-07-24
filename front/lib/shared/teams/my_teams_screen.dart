@@ -70,7 +70,6 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
             return const Center(child: Text('No teams found for the user'));
           } else {
             final teams = snapshot.data as List<Team>;
-            debugPrint('Teams data: $teams');
             return ListView.builder(
               itemCount: teams.length,
               itemBuilder: (context, index) {

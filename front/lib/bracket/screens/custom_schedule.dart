@@ -274,7 +274,6 @@ class CustomSchedulePage extends StatelessWidget {
                   ),
                 ),
               ),
-              // Ajouter une barre de séparation uniquement si le prochain match a une date différente
               if (index < sortedMatches.length - 1 &&
                   _parseDateTime(sortedMatches[index].date,
                               sortedMatches[index].time)

@@ -309,5 +309,6 @@
   "amigoAñadidoConÉxito": "Amigo añadido con éxito",
   "amigoYaAñadido": "Amigo ya añadido",
   "errorAñadiendoAmigo": "Error añadiendo amigo",
-  "failedToLoadUserTeams": "No perteneces a ningún equipo"
+  "failedToLoadUserTeams": "No perteneces a ningún equipo",
+  "noNotifications": "No tienes notificaciones"
 }

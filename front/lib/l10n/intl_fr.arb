@@ -311,5 +311,6 @@
   "amiAjouteAvecSucces": "Ami ajouté avec succès",
   "amiDejaAjoute": "Ami déjà ajouté",
   "erreurAjoutAmi": "Erreur lors de l'ajout de l'ami",
-  "failedToLoadUserTeams": "Vous appartenez à aucune team"
+  "failedToLoadUserTeams": "Vous appartenez à aucune team",
+  "noNotifications": "Aucune notification"
 }

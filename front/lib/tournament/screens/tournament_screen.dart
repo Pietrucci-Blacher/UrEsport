@@ -145,7 +145,6 @@ class TournamentScreenState extends State<TournamentScreen> {
           return Center(child: Text(l.noTeamsFoundForUser));
         } else {
           final teams = snapshot.data as List<Team>;
-          debugPrint('Teams data: $teams');
           return RefreshIndicator(
             onRefresh: () async {
               setState(() {});

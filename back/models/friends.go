@@ -44,15 +44,20 @@ func DeleteFriend(userID, friendID int) error {
 }
 
 // GetFriendsByUserID récupère la liste d'amis d'un utilisateur donné
-func GetFriendsByUserID(userID int) ([]*User, error) {
+func GetFriendsByUserID(userID int) (map[string][]*User, error) {
 	var friends []*Friend
 	if err := DB.Where("user_id = ?", userID).Find(&friends).Error; err != nil {
 		return nil, err
 	}
 
 	var friendIDs []int
+	var favoriteFriendIDs []int
 	for _, friend := range friends {
-		friendIDs = append(friendIDs, friend.FriendID)
+	    if friend.Favorite {
+	        favoriteFriendIDs = append(favoriteFriendIDs, friend.FriendID)
+        } else {
+		    friendIDs = append(friendIDs, friend.FriendID)
+		}
 	}
 
 	var users []*User
@@ -60,7 +65,15 @@ func GetFriendsByUserID(userID int) ([]*User, error) {
 		return nil, err
 	}
 
-	return users, nil
+    var favoriteUsers []*User
+	if err := DB.Where("id IN (?)", favoriteFriendIDs).Find(&favoriteUsers).Error; err != nil {
+		return nil, err
+	}
+
+	return map[string][]*User{
+	    "friends":  users,
+	    "favorites": favoriteUsers,
+	}, nil
 }
 
 func ClearFriends() interface{} {
