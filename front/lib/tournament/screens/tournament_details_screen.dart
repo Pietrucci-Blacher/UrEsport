@@ -244,7 +244,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                               ),
                             ),
                             title: Text(
-                                '${team.name} (${team.members.length} members)'),
+                                '${team.name} (${team.members.length} ${AppLocalizations.of(context).membersInTeam})'),
                             onTap: () {
                               Navigator.pop(context);
                               _joinTournament(context, _tournament.id, team.id);
@@ -273,7 +273,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Select a team to invite',
+                AppLocalizations.of(context).selectTeamToInvite,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 8),
@@ -295,7 +295,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
                               ),
                             ),
                             title: Text(
-                                '${team.name} (${team.members.length} members)'),
+                                '${team.name} (${team.members.length} ${AppLocalizations.of(context).membersInTeam})'),
                             onTap: () async {
                               Navigator.pop(context); // Close the modal
                               await _sendInvite(team.id, team.name);
@@ -322,7 +322,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
         teamName,
       );
       if (!mounted) return;
-      showNotificationToast(context, 'Invitation envoyée',
+      showNotificationToast(context, AppLocalizations.of(context).invitationSentSuccessfully,
           backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error sending invitation: $e');
@@ -331,20 +331,20 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
       if (e is DioException) {
         if (e.response?.statusCode == 409) {
           showNotificationToast(
-              context, 'Une invitation a déjà été envoyée à cette équipe',
+              context, AppLocalizations.of(context).invitationAllReadySend,
               backgroundColor: Colors.red);
         } else if (e.response?.statusCode == 401) {
-          showNotificationToast(context, 'La Team doit contenir 5 joueurs',
+          showNotificationToast(context, '${AppLocalizations.of(context).teamContainPlayers} ${_tournament.nbPlayers} ${AppLocalizations.of(context).playersText}',
               backgroundColor: Colors.red);
         } else {
           final errorMessage = e.response?.data['error'];
           showNotificationToast(context,
-              'Erreur lors de l\'envoi de l\'invitation: $errorMessage',
+              '${AppLocalizations.of(context).invitationSendError}: $errorMessage',
               backgroundColor: Colors.red);
         }
       } else {
         showNotificationToast(
-            context, 'Erreur lors de l\'envoi de l\'invitation: $e',
+            context, '${AppLocalizations.of(context).invitationSendError}: $e',
             backgroundColor: Colors.red);
       }
     }
@@ -368,14 +368,14 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
           _isUploadingImage = false;
         });
         if(!mounted) return;
-        showNotificationToast(context, 'Image uploaded successfully', backgroundColor: Colors.green);
+        showNotificationToast(context, AppLocalizations.of(context).imageUploadSuccessfully, backgroundColor: Colors.green);
       } catch (e) {
         debugPrint('Error during image upload: $e');
         setState(() {
           _isUploadingImage = false;
         });
         if(!mounted) return;
-        showNotificationToast(context, 'Error uploading image: $e', backgroundColor: Colors.red);
+        showNotificationToast(context, '${AppLocalizations.of(context).imageUploadError}: $e', backgroundColor: Colors.red);
       }
     } else {
       debugPrint('No image selected.');
@@ -396,7 +396,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
         rethrow;
       } else {
         debugPrint('Unexpected error: $e');
-        throw Exception('Unexpected error occurred');
+        throw Exception(AppLocalizations.of(context).anErrorOccurred);
       }
     }
   }
@@ -408,12 +408,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
     try {
       await tournamentService.generateBracket(_tournament.id);
       if (!mounted) return;
-      showNotificationToast(context, 'Bracket generated',
+      showNotificationToast(context, AppLocalizations.of(context).generateBracket,
           backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error generating bracket: $e');
       if (!mounted) return;
-      showNotificationToast(context, 'Failed to generate bracket: $e',
+      showNotificationToast(context, AppLocalizations.of(context).failedToGenerateBracket,
           backgroundColor: Colors.red);
     }
   }
@@ -450,7 +450,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
       debugPrint('Upvote failed: $e');
       if (!mounted) return;
       showNotificationToast(context,
-          '${AppLocalizations.of(context).failedToChangeUpvoteStatus}: $e',
+          AppLocalizations.of(context).failedToChangeUpvoteStatus,
           backgroundColor: Colors.red);
     }
   }
@@ -559,12 +559,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen> with S
           }
         } else {
           showNotificationToast(context,
-              '${AppLocalizations.of(context).leaveTournamentError}: $e',
+              AppLocalizations.of(context).leaveTournamentError,
               backgroundColor: Colors.red);
         }
       } else {
         showNotificationToast(
-            context, '${AppLocalizations.of(context).unknownError}: $e',
+            context, AppLocalizations.of(context).unknownError,
             backgroundColor: Colors.red);
       }
     }

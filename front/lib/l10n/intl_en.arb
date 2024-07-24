@@ -318,5 +318,15 @@
   "viewTournamentDetails": "View Tournament Details",
   "getDirections": "Get Directions",
   "exportDirections": "Export Directions",
-  "searchForTournament": "Search for Tournaments"
+  "searchForTournament": "Search for Tournaments",
+  "selectTeamToInvite": "Select a Team to Invite",
+  "invitationAllReadySend": "Invitation already sent to this team",
+  "teamContainPlayers": "Team contains ",
+  "playersText": "Players",
+  "imageUploadSuccessfully": "Image uploaded successfully",
+  "imageUploadError": "Error uploading image",
+  "failedToGenerateBracket": "Failed to generate bracket",
+  "allText": "All",
+  "publicText": "Public",
+    "privateText": "Private"
 }
