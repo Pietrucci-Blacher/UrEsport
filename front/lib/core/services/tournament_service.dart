@@ -67,7 +67,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to load tournaments',
+          error: response.data['error'] ?? 'Failed to load tournaments',
           type: DioExceptionType.badResponse,
         );
       }
@@ -96,7 +96,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to invite user to tournament',
+          error: response.data['error'] ?? 'Failed to invite user to tournament',
           type: DioExceptionType.badResponse,
         );
       }
@@ -134,7 +134,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to invite team to tournament',
+          error: response.data['error'] ?? 'Failed to invite team to tournament',
           type: DioExceptionType.badResponse,
         );
       }
@@ -209,7 +209,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to check if upvoted',
+          error: response.data['error'] ?? 'Failed to check upvote status',
           type: DioExceptionType.badResponse,
         );
       }
@@ -248,7 +248,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to join tournament',
+          error: response.data['error'] ?? 'Failed to join tournament',
           type: DioExceptionType.badResponse,
         );
       }
@@ -289,7 +289,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to check if joined tournament',
+          error: response.data['error'] ?? 'Failed to check if joined',
           type: DioExceptionType.badResponse,
         );
       }
@@ -324,7 +324,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to load teams',
+          error: response.data['error'] ?? 'Failed to load teams',
           type: DioExceptionType.badResponse,
         );
       }
@@ -351,7 +351,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to load tournament',
+          error: response.data['error'] ?? 'Failed to load tournament',
           type: DioExceptionType.badResponse,
         );
       }
@@ -387,7 +387,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to generate bracket',
+          error: response.data['error'] ?? 'Failed to generate bracket',
           type: DioExceptionType.badResponse,
         );
       }
@@ -428,7 +428,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to join tournament',
+          error: response.data['error'] ?? 'Failed to join tournament with team',
           type: DioExceptionType.badResponse,
         );
       }
@@ -465,7 +465,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to create tournament',
+          error: response.data['error'] ?? 'Failed to create tournament',
           type: DioExceptionType.badResponse,
         );
       }
@@ -503,7 +503,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to leave the tournament',
+          error: response.data['error'] ?? 'Failed to leave tournament',
           type: DioExceptionType.badResponse,
         );
       }
@@ -540,7 +540,7 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: 'Failed to update tournament',
+          error: response.data['error'] ?? 'Failed to update tournament',
           type: DioExceptionType.badResponse,
         );
       }
