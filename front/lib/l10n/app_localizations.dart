@@ -2717,7 +2717,6 @@ class AppLocalizations {
       desc: 'Private text',
     );
   }
-  
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {
