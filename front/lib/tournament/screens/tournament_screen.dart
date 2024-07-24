@@ -36,7 +36,7 @@ class TournamentScreenState extends State<TournamentScreen> {
   User? _currentUser;
   bool _isLoggedIn = false;
 
-  final List<String> _filterOptions = [ 'Tous', 'Public', 'Privé'];
+  final List<String> _filterOptions = ['Tous', 'Public', 'Privé'];
   String _currentFilter = 'Tous';
 
   Future<void> _loadCurrentUser() async {
@@ -494,7 +494,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                               onPressed: () {
                                 final dio = Dio();
                                 final gameService = GameService(dio);
-                                final tournamentService = TournamentService(dio);
+                                final tournamentService =
+                                    TournamentService(dio);
 
                                 Navigator.push(
                                   context,
@@ -508,7 +509,6 @@ class TournamentScreenState extends State<TournamentScreen> {
                               },
                               child: const Icon(Icons.schedule),
                             ),
-
                           ],
                         ),
                       ),

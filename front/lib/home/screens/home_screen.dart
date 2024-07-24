@@ -119,9 +119,11 @@ class HomeScreen extends StatelessWidget {
         } else if (state is TournamentLoadSuccess) {
           return _buildTrendingTournament(context, state.tournaments);
         } else if (state is TournamentLoadFailure) {
-          return Center(child: Text(AppLocalizations.of(context).dataLoadFailed));
+          return Center(
+              child: Text(AppLocalizations.of(context).dataLoadFailed));
         } else {
-          return Center(child: Text(AppLocalizations.of(context).noTournamentsAvailable));
+          return Center(
+              child: Text(AppLocalizations.of(context).noTournamentsAvailable));
         }
       },
     );
@@ -221,9 +223,11 @@ class HomeScreen extends StatelessWidget {
         } else if (state is GameLoaded) {
           return _buildGames(context, state.games);
         } else if (state is GameError) {
-          return Center(child: Text(AppLocalizations.of(context).dataLoadFailed));
+          return Center(
+              child: Text(AppLocalizations.of(context).dataLoadFailed));
         } else {
-          return Center(child: Text(AppLocalizations.of(context).noTournamentsAvailable));
+          return Center(
+              child: Text(AppLocalizations.of(context).noTournamentsAvailable));
         }
       },
     );
