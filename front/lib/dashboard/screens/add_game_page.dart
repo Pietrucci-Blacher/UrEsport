@@ -2,11 +2,11 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:uresport/core/services/cache_service.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/dashboard/bloc/dashboard_event.dart';
 import 'package:uresport/l10n/app_localizations.dart';
-
-import 'package:uresport/core/services/cache_service.dart';
 
 class AddGamePage extends StatefulWidget {
   const AddGamePage({super.key});
@@ -48,20 +48,12 @@ class AddGamePageState extends State<AddGamePage> {
         final token = await _cacheService.getString('token');
         if (token == null) throw Exception('No token found');
         final response = await _dio.post(
-          'http://localhost:8080/games/',
+          '${dotenv.env['API_ENDPOINT']}/games/',
           data: newGame,
           options: Options(headers: {
             'Authorization': token,
           }),
         );
-
-        // Log de la réponse complète du serveur
-        if (kDebugMode) {
-          print('Response status: ${response.statusCode}');
-        }
-        if (kDebugMode) {
-          print('Response data: ${response.data}');
-        }
 
         if (response.statusCode == 201) {
           if (!mounted) return;
@@ -73,7 +65,6 @@ class AddGamePageState extends State<AddGamePage> {
           _showAlertDialog('${l.errorAddingGame}: ${response.statusMessage}');
         }
       } catch (e) {
-        // Log de l'exception complète
         if (kDebugMode) {
           print('Exception: $e');
         }
