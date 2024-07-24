@@ -357,5 +357,15 @@
   "viewTournamentDetails": "Ver detalles del torneo",
   "getDirections": "Obtener direcciones",
   "exportDirections": "Exportar direcciones",
-  "searchForTournament": "Buscar torneos"
+  "searchForTournament": "Buscar torneos",
+  "selectTeamToInvite": "Selecciona un equipo para invitar",
+  "invitationAllReadySend": "Ya se ha enviado una invitación a este equipo.",
+  "teamContainPlayers": "El equipo ya contiene ",
+  "playersText": "Jugadores",
+  "imageUploadSuccessfully": "Imagen subida con éxito",
+  "imageUploadError": "Error al subir la imagen",
+  "failedToGenerateBracket": "Error al generar el soporte",
+  "allText": "Todos",
+  "publicText": "Público",
+    "privateText": "Privado"
 }

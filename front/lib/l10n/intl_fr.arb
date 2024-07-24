@@ -357,5 +357,15 @@
   "viewTournamentDetails": "Voir les détails du tournoi",
   "getDirections": "Obtenir les directions",
   "exportDirections": "Exporter les directions",
-  "searchForTournament": "Rechercher des tournois"
+  "searchForTournament": "Rechercher des tournois",
+  "selectTeamToInvite": "Sélectionner une équipe à inviter",
+  "invitationAllReadySend": "Invitation déjà envoyée à cette équipe",
+  "teamContainPlayers": "La Team doit contenir",
+  "playersText": "Joueurs",
+  "imageUploadSuccessfully": "Image téléchargée avec succès",
+  "imageUploadError": "Erreur lors du téléchargement de l'image",
+  "failedToGenerateBracket": "Échec de la génération du bracket",
+  "allText": "Tous",
+  "publicText": "Public",
+    "privateText": "Privé"
 }

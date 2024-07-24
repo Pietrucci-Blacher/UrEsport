@@ -35,6 +35,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Ajouter un tournoi"),
         "addedToGameList":
             MessageLookupByLibrary.simpleMessage("Jeu ajouté à votre liste"),
+        "allText": MessageLookupByLibrary.simpleMessage("Tous"),
         "allTournaments":
             MessageLookupByLibrary.simpleMessage("Tous les tournois"),
         "alphabeticalAZ":
@@ -170,6 +171,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Échec de la suppression de l\'ami"),
         "failedToDeleteTeam": MessageLookupByLibrary.simpleMessage(
             "Échec de la suppression de l\'équipe"),
+        "failedToGenerateBracket": MessageLookupByLibrary.simpleMessage(
+            "Échec de la génération du bracket"),
         "failedToLeaveTeam": MessageLookupByLibrary.simpleMessage(
             "Échec de la sortie de l\'équipe"),
         "failedToLoadBracket": MessageLookupByLibrary.simpleMessage(
@@ -229,9 +232,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Accueil"),
         "homeScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Bienvenue à l\'écran d\'accueil !"),
+        "imageUploadError": MessageLookupByLibrary.simpleMessage(
+            "Erreur lors du téléchargement de l\'image"),
+        "imageUploadSuccessfully": MessageLookupByLibrary.simpleMessage(
+            "Image téléchargée avec succès"),
         "imageUrl": MessageLookupByLibrary.simpleMessage("URL de l\'image"),
         "invalidCurrentLocation":
             MessageLookupByLibrary.simpleMessage("Emplacement actuel invalide"),
+        "invitationAllReadySend": MessageLookupByLibrary.simpleMessage(
+            "Invitation déjà envoyée à cette équipe"),
         "invitationSendError": MessageLookupByLibrary.simpleMessage(
             "Erreur lors de l\'envoi de l\'invitation"),
         "invitationSentSuccessfully": MessageLookupByLibrary.simpleMessage(
@@ -363,6 +372,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Réinitialisation du mot de passe réussie"),
         "photoLibrary":
             MessageLookupByLibrary.simpleMessage("Bibliothèque de photos"),
+        "playersText": MessageLookupByLibrary.simpleMessage("Joueurs"),
         "pleaseEnterDescription": MessageLookupByLibrary.simpleMessage(
             "Veuillez entrer une description"),
         "pleaseEnterEndDate": MessageLookupByLibrary.simpleMessage(
@@ -406,6 +416,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "poulesTitle":
             MessageLookupByLibrary.simpleMessage("Poules de tournois"),
         "private": MessageLookupByLibrary.simpleMessage("Privé"),
+        "privateText": MessageLookupByLibrary.simpleMessage("Privé"),
         "profileImageUpdated":
             MessageLookupByLibrary.simpleMessage("Image de profil mise à jour"),
         "profileScreenTitle": MessageLookupByLibrary.simpleMessage("Profil"),
@@ -413,6 +424,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Bienvenue sur votre profil !"),
         "proposeToClose":
             MessageLookupByLibrary.simpleMessage("Proposer de clôturer"),
+        "publicText": MessageLookupByLibrary.simpleMessage("Public"),
         "ratingCannotBeZero": MessageLookupByLibrary.simpleMessage(
             "La note ne peut pas être zéro"),
         "ratingFetchedSuccessfully":
@@ -447,6 +459,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Sélectionnez la date de fin"),
         "selectStartDate": MessageLookupByLibrary.simpleMessage(
             "Sélectionnez la date de début"),
+        "selectTeamToInvite": MessageLookupByLibrary.simpleMessage(
+            "Sélectionner une équipe à inviter"),
         "selectTeamToJoin": MessageLookupByLibrary.simpleMessage(
             "Sélectionner une équipe à rejoindre"),
         "selectTeamToLeave": MessageLookupByLibrary.simpleMessage(
@@ -476,6 +490,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Score de l\'équipe 2"),
         "teamAlreadyInTournament":
             MessageLookupByLibrary.simpleMessage("Équipe déjà dans ce tournoi"),
+        "teamContainPlayers":
+            MessageLookupByLibrary.simpleMessage("La Team doit contenir"),
         "teamCreatedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Équipe créée avec succès"),
         "teamDeleted": MessageLookupByLibrary.simpleMessage(

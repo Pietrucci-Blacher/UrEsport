@@ -36,8 +36,33 @@ class TournamentScreenState extends State<TournamentScreen> {
   User? _currentUser;
   bool _isLoggedIn = false;
 
-  final List<String> _filterOptions = ['Tous', 'Public', 'Privé'];
-  String _currentFilter = 'Tous';
+  late String _currentFilter;
+  late List<String> _filterOptions;
+  bool _isInitialized = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _updateFilterOptions();
+  }
+
+  void _updateFilterOptions() {
+    final l = AppLocalizations.of(context);
+    final newFilterOptions = [l.allText, l.publicText, l.privateText];
+
+    if (!_isInitialized) {
+      _filterOptions = newFilterOptions;
+      _currentFilter =
+          _filterOptions.first; // Assurez-vous que "All" est le premier
+      _isInitialized = true;
+    } else {
+      _filterOptions = newFilterOptions;
+      // Réinitialisez le filtre actuel si l'option précédente n'existe plus
+      if (!_filterOptions.contains(_currentFilter)) {
+        _currentFilter = _filterOptions.first;
+      }
+    }
+  }
 
   Future<void> _loadCurrentUser() async {
     final authService = Provider.of<IAuthService>(context, listen: false);
@@ -121,7 +146,7 @@ class TournamentScreenState extends State<TournamentScreen> {
               _currentFilter = selectedTags.first;
             });
           },
-          isSingleSelection: true, // Activer la sélection unique
+          isSingleSelection: true,
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       ),
@@ -226,69 +251,73 @@ class TournamentScreenState extends State<TournamentScreen> {
   }
 
   void _showTeamTournaments(BuildContext context, Team team) {
+    final String locale = Localizations.localeOf(context).toString();
+    final DateFormat dateFormat = DateFormat.yMMMd(locale);
     showModalBottomSheet(
       context: context,
       builder: (BuildContext context) {
         AppLocalizations l = AppLocalizations.of(context);
         return Container(
           padding: const EdgeInsets.all(16.0),
-          child: team.tournaments.isEmpty
-              ? Center(
-                  child: Text(
-                    l.noJoinedTournaments,
-                    style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.bold),
-                  ),
-                )
-              : Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(
-                      l.tournaments,
+          child: SingleChildScrollView(
+            child: team.tournaments.isEmpty
+                ? Center(
+                    child: Text(
+                      l.noJoinedTournaments,
                       style: const TextStyle(
                           fontSize: 18, fontWeight: FontWeight.bold),
                     ),
-                    const SizedBox(height: 10),
-                    ...team.tournaments.map((tournamentJson) {
-                      Tournament tournament =
-                          Tournament.fromJson(tournamentJson);
-                      return ListTile(
-                        contentPadding: const EdgeInsets.all(10.0),
-                        leading: Image.network(tournament.image,
-                            width: 50, height: 50, fit: BoxFit.cover),
-                        title: Text(tournament.name,
-                            style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600)),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                '${l.tournamentStartDate}: ${tournament.startDate}',
-                                style: const TextStyle(fontSize: 14)),
-                            Text(
-                                '${l.tournamentEndDate}: ${tournament.endDate}',
-                                style: const TextStyle(fontSize: 14)),
-                            Text(tournament.description,
-                                style: const TextStyle(
-                                    fontSize: 12, color: Colors.grey),
-                                overflow: TextOverflow.ellipsis),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TournamentDetailsScreen(
-                                  tournament: tournament,
-                                  game: tournament.game),
-                            ),
-                          );
-                        },
-                      );
-                    }),
-                  ],
-                ),
+                  )
+                : Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Text(
+                        l.tournaments,
+                        style: const TextStyle(
+                            fontSize: 18, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 10),
+                      ...team.tournaments.map((tournamentJson) {
+                        Tournament tournament =
+                            Tournament.fromJson(tournamentJson);
+                        return ListTile(
+                          contentPadding: const EdgeInsets.all(10.0),
+                          leading: Image.network(tournament.image,
+                              width: 50, height: 50, fit: BoxFit.cover),
+                          title: Text(tournament.name,
+                              style: const TextStyle(
+                                  fontSize: 16, fontWeight: FontWeight.w600)),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                  '${l.tournamentStartDate}: ${dateFormat.format(tournament.startDate)}',
+                                  style: const TextStyle(fontSize: 14)),
+                              Text(
+                                  '${l.tournamentEndDate}: ${dateFormat.format(tournament.startDate)}',
+                                  style: const TextStyle(fontSize: 14)),
+                              Text(tournament.description,
+                                  style: const TextStyle(
+                                      fontSize: 12, color: Colors.grey),
+                                  overflow: TextOverflow.ellipsis),
+                            ],
+                          ),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => TournamentDetailsScreen(
+                                    tournament: tournament,
+                                    game: tournament.game),
+                              ),
+                            );
+                          },
+                        );
+                      }),
+                    ],
+                  ),
+          ),
         );
       },
     );
@@ -434,9 +463,9 @@ class TournamentScreenState extends State<TournamentScreen> {
               } else if (state is TournamentLoadSuccess) {
                 final filteredTournaments =
                     state.tournaments.where((tournament) {
-                  if (_currentFilter == 'Public') {
+                  if (_currentFilter == l.publicText) {
                     return !tournament.isPrivate;
-                  } else if (_currentFilter == 'Privé') {
+                  } else if (_currentFilter == l.privateText) {
                     return tournament.isPrivate;
                   } else {
                     return true;
@@ -473,7 +502,6 @@ class TournamentScreenState extends State<TournamentScreen> {
                               child: const Icon(Icons.map),
                             ),
                             const SizedBox(height: 16),
-                            //if (_currentUser != null)
                             if (_isLoggedIn)
                               FloatingActionButton(
                                 heroTag: 'create tournament',
@@ -638,7 +666,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    '${l.tournamentStartDate}: ${dateFormat.format(tournament.startDate)}', // Utiliser DateFormat ici
+                                    '${l.tournamentStartDate}: ${dateFormat.format(tournament.startDate)}',
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),

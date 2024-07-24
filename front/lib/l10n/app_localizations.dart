@@ -2645,6 +2645,86 @@ class AppLocalizations {
       desc: 'Placeholder or label text for searching for a tournament',
     );
   }
+
+  String get selectTeamToInvite {
+    return Intl.message(
+      'Select a team to invite',
+      name: 'selectTeamToInvite',
+      desc: 'Message shown when no team is selected to invite',
+    );
+  }
+
+  String get invitationAllReadySend {
+    return Intl.message(
+      'An invitation has already been sent to this team',
+      name: 'invitationAllReadySend',
+      desc: 'Message shown when an invitation is already sent to the team',
+    );
+  }
+
+  String get teamContainPlayers {
+    return Intl.message(
+      'This team contains players',
+      name: 'teamContainPlayers',
+      desc: 'Message shown when the team contains players',
+    );
+  }
+
+  String get playersText {
+    return Intl.message(
+      'Players',
+      name: 'playersText',
+      desc: 'Label for the players section',
+    );
+  }
+
+  String get imageUploadSuccessfully {
+    return Intl.message(
+      'Image uploaded successfully',
+      name: 'imageUploadSuccessfully',
+      desc: 'Title for the image upload successfully dialog',
+    );
+  }
+
+  String get imageUploadError {
+    return Intl.message(
+      'Error uploading image',
+      name: 'imageUploadError',
+      desc: 'Title for the image upload error dialog',
+    );
+  }
+
+  String get failedToGenerateBracket {
+    return Intl.message(
+      'Failed to generate bracket',
+      name: 'failedToGenerateBracket',
+      desc: 'Error message when generate the bracket fails',
+    );
+  }
+
+  String get allText {
+    return Intl.message(
+      'All',
+      name: 'allText',
+      desc: 'All text',
+    );
+  }
+
+  String get publicText {
+    return Intl.message(
+      'Public',
+      name: 'publicText',
+      desc: 'Public text',
+    );
+  }
+
+  String get privateText {
+    return Intl.message(
+      'Private',
+      name: 'privateText',
+      desc: 'Private text',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

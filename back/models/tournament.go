@@ -40,6 +40,7 @@ type CreateTournamentDto struct {
 	Location    string    `json:"location"`
 	Latitude    float64   `json:"latitude"`
 	Longitude   float64   `json:"longitude"`
+	Image       string    `json:"image"`
 	Private     bool      `json:"private"`
 	GameID      int       `json:"game_id" validate:"required"`
 	NbPlayer    int       `json:"nb_player" validate:"required"`

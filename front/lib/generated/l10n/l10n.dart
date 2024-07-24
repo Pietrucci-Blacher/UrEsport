@@ -3249,6 +3249,106 @@ class S {
       args: [],
     );
   }
+
+  /// `Select a Team to Invite`
+  String get selectTeamToInvite {
+    return Intl.message(
+      'Select a Team to Invite',
+      name: 'selectTeamToInvite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invitation already sent to this team`
+  String get invitationAllReadySend {
+    return Intl.message(
+      'Invitation already sent to this team',
+      name: 'invitationAllReadySend',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Team contains `
+  String get teamContainPlayers {
+    return Intl.message(
+      'Team contains ',
+      name: 'teamContainPlayers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Players`
+  String get playersText {
+    return Intl.message(
+      'Players',
+      name: 'playersText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Image uploaded successfully`
+  String get imageUploadSuccessfully {
+    return Intl.message(
+      'Image uploaded successfully',
+      name: 'imageUploadSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error uploading image`
+  String get imageUploadError {
+    return Intl.message(
+      'Error uploading image',
+      name: 'imageUploadError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to generate bracket`
+  String get failedToGenerateBracket {
+    return Intl.message(
+      'Failed to generate bracket',
+      name: 'failedToGenerateBracket',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All`
+  String get allText {
+    return Intl.message(
+      'All',
+      name: 'allText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Public`
+  String get publicText {
+    return Intl.message(
+      'Public',
+      name: 'publicText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Private`
+  String get privateText {
+    return Intl.message(
+      'Private',
+      name: 'privateText',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
