@@ -19,7 +19,6 @@ class BracketNotifier extends ChangeNotifier {
 
   void updateMatch(Match match) {
     bracket.updateMatch(match);
-    print('Match updated');
     notifyListeners();
   }
 }
@@ -91,7 +90,6 @@ class BracketContentState extends State<BracketContent> {
 
   void websocket() {
     ws.on('bracket:update', (socket, data) async {
-      print('event match');
       final match = Match.fromJson(data);
       bracketNotifier.updateMatch(match);
     });
