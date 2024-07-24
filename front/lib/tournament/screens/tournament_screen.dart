@@ -188,7 +188,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                   direction: DismissDirection.endToStart,
                   confirmDismiss: (direction) async {
                     final bool? result =
-                    await _confirmLeaveTeam(team.id, team.name, isOwner);
+                        await _confirmLeaveTeam(team.id, team.name, isOwner);
                     if (result == true) {
                       if (isOwner) {
                         await _deleteTeam(team.id, team.name);
@@ -249,7 +249,6 @@ class TournamentScreenState extends State<TournamentScreen> {
       },
     );
   }
-
 
   void _showTeamTournaments(BuildContext context, Team team) {
     final String locale = Localizations.localeOf(context).toString();
