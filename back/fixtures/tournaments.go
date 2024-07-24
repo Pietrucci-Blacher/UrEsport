@@ -77,7 +77,7 @@ func LoadTournaments(games []models.Game) error {
 			Image:       game.Image, // Ensure the image corresponds to the game
 			Private:     fake.Bool(),
 			GameID:      game.ID,
-			NbPlayer:    TEAM_MEMBERS_NB + 1,
+			NbPlayer:    TEAM_MEMBERS_NB,
 		}
 
 		if err := tournament.Save(); err != nil {
@@ -117,7 +117,7 @@ func LoadTournaments(games []models.Game) error {
 			Image:       tournamentGame.Image, // Ensure the image corresponds to the game
 			Private:     fake.Bool(),
 			GameID:      tournamentGame.ID,
-			NbPlayer:    TEAM_MEMBERS_NB + 1,
+			NbPlayer:    TEAM_MEMBERS_NB,
 		}
 
 		if err := tournament.Save(); err != nil {
