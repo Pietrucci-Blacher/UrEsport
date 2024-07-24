@@ -625,7 +625,7 @@ class AppLocalizations {
   String get listAllTournaments {
     return Intl.message(
       'List Tournaments',
-      name: 'listAllTournaments ',
+      name: 'listAllTournaments',
       desc: 'List Tournaments button text',
     );
   }
@@ -2582,6 +2582,62 @@ class AppLocalizations {
       'Register is disabled',
       name: 'registerDisabled',
       desc: 'Message indicating that the register functionality is disabled',
+    );
+  }
+
+  String get generalInformation {
+    return Intl.message(
+      'General Information',
+      name: 'generalInformation',
+      desc: 'Label for general information section',
+    );
+  }
+
+  String get organizer {
+    return Intl.message(
+      'Organizer',
+      name: 'organizer',
+      desc: 'Label for organizer or event planner',
+    );
+  }
+
+  String get participatingTeams {
+    return Intl.message(
+      'Participating Teams',
+      name: 'participatingTeams',
+      desc: 'Label for the teams participating in a tournament or event',
+    );
+  }
+
+  String get viewTournamentDetails {
+    return Intl.message(
+      'View Tournament Details',
+      name: 'viewTournamentDetails',
+      desc: 'Button text to view the details of the tournament',
+    );
+  }
+
+  String get getDirections {
+    return Intl.message(
+      'Get Directions',
+      name: 'getDirections',
+      desc: 'Button text to get directions to a location',
+    );
+  }
+
+  String get exportDirections {
+    return Intl.message(
+      'Export Directions',
+      name: 'exportDirections',
+      desc: 'Button text to export directions to a file or other format',
+    );
+  }
+
+  String get searchForTournament {
+    return Intl.message(
+      'Search for a tournament',
+      name: 'searchForTournament',
+      desc: 'Placeholder or label text for searching for a tournament',
     );
   }
 

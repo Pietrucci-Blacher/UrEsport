@@ -311,5 +311,12 @@
   "tournamentText": "Tournaments",
   "more": "More",
   "loginDisabled": "Login disabled",
-  "registerDisabled": "Register disabled"
+  "registerDisabled": "Register disabled",
+  "generalInformation": "General Information",
+  "organizer": "Organizer",
+  "participatingTeams": "Participating Teams",
+  "viewTournamentDetails": "View Tournament Details",
+  "getDirections": "Get Directions",
+  "exportDirections": "Export Directions",
+  "searchForTournament": "Search for Tournaments"
 }

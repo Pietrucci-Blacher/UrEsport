@@ -144,6 +144,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Error unfollowing the game"),
         "errorUploadingProfileImage": MessageLookupByLibrary.simpleMessage(
             "Error uploading profile image"),
+        "exportDirections":
+            MessageLookupByLibrary.simpleMessage("Export Directions"),
         "failedToChangeUpvoteStatus": MessageLookupByLibrary.simpleMessage(
             "Failed to change upvote status"),
         "failedToCreateTeam":
@@ -201,8 +203,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "gameScreenWelcome":
             MessageLookupByLibrary.simpleMessage("Welcome to the Game Screen!"),
         "games": MessageLookupByLibrary.simpleMessage("Games"),
+        "generalInformation":
+            MessageLookupByLibrary.simpleMessage("General Information"),
         "generateBracket":
             MessageLookupByLibrary.simpleMessage("Generate Bracket"),
+        "getDirections": MessageLookupByLibrary.simpleMessage("Get Directions"),
         "hello": MessageLookupByLibrary.simpleMessage("Hello"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Home"),
         "homeScreenWelcome":
@@ -321,7 +326,10 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Number of Players per Team"),
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "orLoginWith": MessageLookupByLibrary.simpleMessage("Or login with"),
+        "organizer": MessageLookupByLibrary.simpleMessage("Organizer"),
         "participants": MessageLookupByLibrary.simpleMessage("Participants:"),
+        "participatingTeams":
+            MessageLookupByLibrary.simpleMessage("Participating Teams"),
         "password": MessageLookupByLibrary.simpleMessage("Password"),
         "passwordResetEmailSent":
             MessageLookupByLibrary.simpleMessage("Password reset email sent"),
@@ -397,6 +405,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Resource not found (404)"),
         "save": MessageLookupByLibrary.simpleMessage("Save"),
         "score": MessageLookupByLibrary.simpleMessage("Score"),
+        "searchForTournament":
+            MessageLookupByLibrary.simpleMessage("Search for Tournaments"),
         "searchTags": MessageLookupByLibrary.simpleMessage("Search tags"),
         "searchUser": MessageLookupByLibrary.simpleMessage("Search User"),
         "selectDate": MessageLookupByLibrary.simpleMessage("Select Date"),
@@ -490,6 +500,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewBrackets": MessageLookupByLibrary.simpleMessage("View Brackets"),
         "viewDetails": MessageLookupByLibrary.simpleMessage("View Details"),
         "viewGames": MessageLookupByLibrary.simpleMessage("View Games"),
+        "viewTournamentDetails":
+            MessageLookupByLibrary.simpleMessage("View Tournament Details"),
         "vs": MessageLookupByLibrary.simpleMessage("VS"),
         "waiting": MessageLookupByLibrary.simpleMessage("waiting"),
         "welcome": MessageLookupByLibrary.simpleMessage("Welcome to UrEsport!"),

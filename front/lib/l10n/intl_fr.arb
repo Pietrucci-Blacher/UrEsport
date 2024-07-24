@@ -349,5 +349,12 @@
   "more": "Plus",
   "loginDisabled": "La connexion est désactivée",
   "registerDisabled": "L'inscription est désactivée",
-  "enterEmailToResetPassword": "Entrez votre email pour réinitialiser votre mot de passe"
+  "enterEmailToResetPassword": "Entrez votre email pour réinitialiser votre mot de passe",
+  "generalInformation": "Informations générales",
+  "organizer": "Organisateur",
+  "participatingTeams": "Équipes participantes",
+  "viewTournamentDetails": "Voir les détails du tournoi",
+  "getDirections": "Obtenir les directions",
+  "exportDirections": "Exporter les directions",
+  "searchForTournament": "Rechercher des tournois"
 }

@@ -151,6 +151,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Error al dejar de seguir el juego"),
         "errorUploadingProfileImage": MessageLookupByLibrary.simpleMessage(
             "Error al subir la imagen de perfil"),
+        "exportDirections":
+            MessageLookupByLibrary.simpleMessage("Exportar direcciones"),
         "failedToChangeUpvoteStatus": MessageLookupByLibrary.simpleMessage(
             "Error al cambiar el estado del voto a favor"),
         "failedToCreateTeam":
@@ -210,8 +212,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "gameScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "¡Bienvenido a la pantalla de juegos!"),
         "games": MessageLookupByLibrary.simpleMessage("Juegos"),
+        "generalInformation":
+            MessageLookupByLibrary.simpleMessage("Información general"),
         "generateBracket":
             MessageLookupByLibrary.simpleMessage("Generar soporte"),
+        "getDirections":
+            MessageLookupByLibrary.simpleMessage("Obtener direcciones"),
         "hello": MessageLookupByLibrary.simpleMessage("Hola"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Inicio"),
         "homeScreenWelcome": MessageLookupByLibrary.simpleMessage(
@@ -337,7 +343,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "orLoginWith":
             MessageLookupByLibrary.simpleMessage("O iniciar sesión con"),
+        "organizer": MessageLookupByLibrary.simpleMessage("Organizador"),
         "participants": MessageLookupByLibrary.simpleMessage("Participantes:"),
+        "participatingTeams":
+            MessageLookupByLibrary.simpleMessage("Equipos participantes"),
         "password": MessageLookupByLibrary.simpleMessage("Contraseña"),
         "passwordResetEmailSent": MessageLookupByLibrary.simpleMessage(
             "Correo electrónico de restablecimiento de contraseña enviado"),
@@ -416,6 +425,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Recurso no encontrado (404)"),
         "save": MessageLookupByLibrary.simpleMessage("Guardar"),
         "score": MessageLookupByLibrary.simpleMessage("Puntuación"),
+        "searchForTournament":
+            MessageLookupByLibrary.simpleMessage("Buscar torneos"),
         "searchTags": MessageLookupByLibrary.simpleMessage("Buscar etiquetas"),
         "searchUser": MessageLookupByLibrary.simpleMessage("Buscar usuario"),
         "selectDate": MessageLookupByLibrary.simpleMessage("Seleccionar fecha"),
@@ -518,6 +529,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "viewBrackets": MessageLookupByLibrary.simpleMessage("Ver soportes"),
         "viewDetails": MessageLookupByLibrary.simpleMessage("Ver detalles"),
         "viewGames": MessageLookupByLibrary.simpleMessage("Ver juegos"),
+        "viewTournamentDetails":
+            MessageLookupByLibrary.simpleMessage("Ver detalles del torneo"),
         "vs": MessageLookupByLibrary.simpleMessage("VS"),
         "waiting": MessageLookupByLibrary.simpleMessage("esperando"),
         "welcome":

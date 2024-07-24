@@ -158,6 +158,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Erreur lors de l\'arrêt du suivi du jeu"),
         "errorUploadingProfileImage": MessageLookupByLibrary.simpleMessage(
             "Erreur lors du téléchargement de l\'image de profil"),
+        "exportDirections":
+            MessageLookupByLibrary.simpleMessage("Exporter les directions"),
         "failedToChangeUpvoteStatus": MessageLookupByLibrary.simpleMessage(
             "Échec du changement de statut du vote positif"),
         "failedToCreateTeam": MessageLookupByLibrary.simpleMessage(
@@ -217,8 +219,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "gameScreenWelcome": MessageLookupByLibrary.simpleMessage(
             "Bienvenue à l\'écran des jeux !"),
         "games": MessageLookupByLibrary.simpleMessage("Jeux"),
+        "generalInformation":
+            MessageLookupByLibrary.simpleMessage("Informations générales"),
         "generateBracket":
             MessageLookupByLibrary.simpleMessage("Générer le bracket"),
+        "getDirections":
+            MessageLookupByLibrary.simpleMessage("Obtenir les directions"),
         "hello": MessageLookupByLibrary.simpleMessage("Bonjour"),
         "homeScreenTitle": MessageLookupByLibrary.simpleMessage("Accueil"),
         "homeScreenWelcome": MessageLookupByLibrary.simpleMessage(
@@ -346,7 +352,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "ok": MessageLookupByLibrary.simpleMessage("OK"),
         "orLoginWith":
             MessageLookupByLibrary.simpleMessage("Ou connectez-vous avec"),
+        "organizer": MessageLookupByLibrary.simpleMessage("Organisateur"),
         "participants": MessageLookupByLibrary.simpleMessage("Participants:"),
+        "participatingTeams":
+            MessageLookupByLibrary.simpleMessage("Équipes participantes"),
         "password": MessageLookupByLibrary.simpleMessage("Mot de passe"),
         "passwordResetEmailSent": MessageLookupByLibrary.simpleMessage(
             "E-mail de réinitialisation du mot de passe envoyé"),
@@ -426,6 +435,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Ressource non trouvée (404)"),
         "save": MessageLookupByLibrary.simpleMessage("Enregistrer"),
         "score": MessageLookupByLibrary.simpleMessage("Score"),
+        "searchForTournament":
+            MessageLookupByLibrary.simpleMessage("Rechercher des tournois"),
         "searchTags":
             MessageLookupByLibrary.simpleMessage("Rechercher des tags"),
         "searchUser":
@@ -528,6 +539,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Voir les brackets"),
         "viewDetails": MessageLookupByLibrary.simpleMessage("Voir les détails"),
         "viewGames": MessageLookupByLibrary.simpleMessage("Voir les jeux"),
+        "viewTournamentDetails":
+            MessageLookupByLibrary.simpleMessage("Voir les détails du tournoi"),
         "vs": MessageLookupByLibrary.simpleMessage("VS"),
         "waiting": MessageLookupByLibrary.simpleMessage("en attente"),
         "welcome":

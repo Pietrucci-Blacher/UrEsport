@@ -6,7 +6,6 @@ import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
-
 import 'package:uresport/l10n/app_localizations.dart';
 
 class CustomSchedulePage extends StatefulWidget {
@@ -74,6 +73,8 @@ class _CustomSchedulePageState extends State<CustomSchedulePage> {
   @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
+    // Récupérer la locale actuelle pour formater les dates
+    String locale = Localizations.localeOf(context).languageCode;
     List<Tournament> filteredTournaments = selectedDate == null
         ? tournaments
         : tournaments.where((tournament) {
@@ -167,9 +168,8 @@ class _CustomSchedulePageState extends State<CustomSchedulePage> {
               filteredTournaments[index].startDate.day !=
                   filteredTournaments[index - 1].startDate.day;
 
-          // Formatter la date dans le format souhaité
-          final String formattedDate =
-          DateFormat('EEEE - d MMMM', 'fr_FR')
+          // Formatter la date en fonction de la locale
+          final String formattedDate = DateFormat('EEEE - d MMMM', locale)
               .format(tournament.startDate)
               .toUpperCase();
 

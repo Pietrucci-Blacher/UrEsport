@@ -3169,6 +3169,76 @@ class S {
       args: [],
     );
   }
+
+  /// `General Information`
+  String get generalInformation {
+    return Intl.message(
+      'General Information',
+      name: 'generalInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Organizer`
+  String get organizer {
+    return Intl.message(
+      'Organizer',
+      name: 'organizer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Participating Teams`
+  String get participatingTeams {
+    return Intl.message(
+      'Participating Teams',
+      name: 'participatingTeams',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View Tournament Details`
+  String get viewTournamentDetails {
+    return Intl.message(
+      'View Tournament Details',
+      name: 'viewTournamentDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Get Directions`
+  String get getDirections {
+    return Intl.message(
+      'Get Directions',
+      name: 'getDirections',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Export Directions`
+  String get exportDirections {
+    return Intl.message(
+      'Export Directions',
+      name: 'exportDirections',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search for Tournaments`
+  String get searchForTournament {
+    return Intl.message(
+      'Search for Tournaments',
+      name: 'searchForTournament',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

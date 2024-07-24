@@ -349,5 +349,12 @@
   "more": "Más",
   "loginDisabled": "Inicio de sesión deshabilitado",
   "registerDisabled": "Registro deshabilitado",
-  "enterEmailToResetPasswordText": "Introduce tu correo electrónico para restablecer la contraseña"
+  "enterEmailToResetPasswordText": "Introduce tu correo electrónico para restablecer la contraseña",
+  "generalInformation": "Información general",
+  "organizer": "Organizador",
+  "participatingTeams": "Equipos participantes",
+  "viewTournamentDetails": "Ver detalles del torneo",
+  "getDirections": "Obtener direcciones",
+  "exportDirections": "Exportar direcciones",
+  "searchForTournament": "Buscar torneos"
 }
