@@ -2387,8 +2387,9 @@ class AppLocalizations {
       'No notifications',
       name: 'noNotifications',
       desc: 'Message shown when there are no notifications',
-   }
-      
+    );
+  }
+
   String get changeImage {
     return Intl.message(
       'Change Image',

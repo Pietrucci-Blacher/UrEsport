@@ -2837,6 +2837,7 @@ class S {
       name: 'noNotifications',
       desc: '',
       args: [],
+    );
    }
 
   /// `Change Image`
