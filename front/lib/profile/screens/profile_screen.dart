@@ -323,6 +323,7 @@ class ProfileScreenState extends State<ProfileScreen>
     required String content,
     required VoidCallback confirmAction,
   }) {
+    AppLocalizations l = AppLocalizations.of(context);
     return showDialog<void>(
       context: context,
       builder: (BuildContext context) {
@@ -331,13 +332,13 @@ class ProfileScreenState extends State<ProfileScreen>
           content: Text(content),
           actions: <Widget>[
             TextButton(
-              child: Text(AppLocalizations.of(context).cancel),
+              child: Text(l.cancel),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: Text(AppLocalizations.of(context).confirm),
+              child: Text(l.confirm),
               onPressed: () {
                 confirmAction();
                 Navigator.of(context).pop();

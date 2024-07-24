@@ -69,8 +69,9 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     } catch (e) {
       if (!context.mounted) return;
       debugPrint('Failed to load games: $e');
-      if(!mounted) return;
-      _showToast(context, '${AppLocalizations.of(context).failedToLoadGames} $e', Colors.red);
+      if (!mounted) return;
+      _showToast(context,
+          '${AppLocalizations.of(context).failedToLoadGames} $e', Colors.red);
     }
   }
 
@@ -113,11 +114,18 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       final name = _nameController.text;
       final description = _descriptionController.text;
       final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss'Z'");
-      final startDate = dateFormat.format(DateTime.parse(_startDateController.text));
-      final endDate = dateFormat.format(DateTime.parse(_endDateController.text));
-      final location = _locationController.text.isNotEmpty ? _locationController.text : '';
-      final latitude = _latitudeController.text.isNotEmpty ? double.parse(_latitudeController.text) : 0.0;
-      final longitude = _longitudeController.text.isNotEmpty ? double.parse(_longitudeController.text) : 0.0;
+      final startDate =
+          dateFormat.format(DateTime.parse(_startDateController.text));
+      final endDate =
+          dateFormat.format(DateTime.parse(_endDateController.text));
+      final location =
+          _locationController.text.isNotEmpty ? _locationController.text : '';
+      final latitude = _latitudeController.text.isNotEmpty
+          ? double.parse(_latitudeController.text)
+          : 0.0;
+      final longitude = _longitudeController.text.isNotEmpty
+          ? double.parse(_longitudeController.text)
+          : 0.0;
       final isPrivate = _isPrivate;
       final gameId = _selectedGameId;
       final nbPlayers = int.parse(_nbPlayerController.text);
@@ -218,7 +226,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               ),
               TextFormField(
                 controller: _locationController,
-                decoration: InputDecoration(labelText: l.locationText),
+                decoration: InputDecoration(labelText: l.location),
               ),
               TextFormField(
                 controller: _latitudeController,

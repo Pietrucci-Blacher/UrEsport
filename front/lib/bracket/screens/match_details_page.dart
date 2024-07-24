@@ -125,13 +125,13 @@ class MatchDetailsPageState extends State<MatchDetailsPage> {
                             _buildStatColumn(
                                 matchNotifier.match.team1?.name ?? '',
                                 matchNotifier.match.team1Close
-                                    ? 'Propose de cloturer'
+                                    ? l.proposeToClose
                                     : ''),
                           if (matchNotifier.match.team2Close)
                             _buildStatColumn(
                                 matchNotifier.match.team2?.name ?? '',
                                 matchNotifier.match.team2Close
-                                    ? 'Propose de cloturer'
+                                    ? l.proposeToClose
                                     : ''),
                           if ((isTeamOwner || isTournamentOwner) &&
                               matchNotifier.match.winnerId == null)

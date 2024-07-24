@@ -44,8 +44,9 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       debugPrint('Games loaded: ${_games.length}');
     } catch (e) {
       debugPrint('Failed to load games: $e');
-      if(!mounted) return;
-      showCustomToast('${AppLocalizations.of(context).failedToLoadGames}: $e ', Colors.red);
+      if (!mounted) return;
+      showCustomToast(
+          '${AppLocalizations.of(context).failedToLoadGames}: $e ', Colors.red);
     }
   }
 
@@ -220,7 +221,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               ),
               TextFormField(
                 controller: _locationController,
-                decoration: InputDecoration(labelText: l.locationText),
+                decoration: InputDecoration(labelText: l.location),
               ),
               TextFormField(
                 controller: _latitudeController,

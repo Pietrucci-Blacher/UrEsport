@@ -175,10 +175,48 @@ class FriendsTabState extends State<FriendsTab> {
                                       fontWeight: FontWeight.bold),
                                 ),
                               ),
-                              ...entry.value.map((friend) => Dismissible(
-                                    key: UniqueKey(),
-                                    direction: DismissDirection.endToStart,
-                                    onDismissed: (direction) {
+                            ...entry.value.map((friend) => Dismissible(
+                                  key: UniqueKey(),
+                                  direction: DismissDirection.horizontal,
+                                  confirmDismiss: (direction) async {
+                                    if (direction ==
+                                        DismissDirection.endToStart) {
+                                      return await showDialog<bool>(
+                                            context: context,
+                                            builder: (BuildContext context) {
+                                              return AlertDialog(
+                                                title: Text(l.confirm),
+                                                content: Text(
+                                                    '${l.confirmDeleteFriend} ${friend.name} ?'),
+                                                actions: [
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(false),
+                                                    child: Text(l.no),
+                                                  ),
+                                                  TextButton(
+                                                    onPressed: () =>
+                                                        Navigator.of(context)
+                                                            .pop(true),
+                                                    child: Text(l.yes),
+                                                  ),
+                                                ],
+                                              );
+                                            },
+                                          ) ??
+                                          false;
+                                    } else {
+                                      return true;
+                                    }
+                                  },
+                                  onDismissed: (direction) {
+                                    if (direction ==
+                                        DismissDirection.endToStart) {
+                                      context.read<FriendsBloc>().add(
+                                          DeleteFriend(
+                                              friend, _currentUser!.id));
+                                    } else {
                                       context.read<FriendsBloc>().add(
                                           ToggleFavorite(
                                               friend, _currentUser!.id));
