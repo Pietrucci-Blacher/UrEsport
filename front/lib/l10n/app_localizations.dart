@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
@@ -13,17 +11,17 @@ class AppLocalizations {
         : locale.toString();
     final String localeName = Intl.canonicalizedLocale(name);
 
-    print('Attempting to load localization for locale: $localeName');
+    debugPrint('Attempting to load localization for locale: $localeName');
 
     try {
       await initializeMessages(localeName);
-      print('Localization for $localeName loaded successfully.');
+      debugPrint('Localization for $localeName loaded successfully.');
     } catch (e) {
-      print('Error loading messages for locale $localeName: $e');
+      debugPrint('Error loading messages for locale $localeName: $e');
     }
 
     Intl.defaultLocale = localeName;
-    print('Default locale set to $localeName');
+    debugPrint('Default locale set to $localeName');
     return AppLocalizations();
   }
 

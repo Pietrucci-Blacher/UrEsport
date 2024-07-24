@@ -15,10 +15,10 @@ class CustomSchedulePage extends StatefulWidget {
   const CustomSchedulePage({super.key, required this.gameService, required this.tournamentService});
 
   @override
-  _CustomSchedulePageState createState() => _CustomSchedulePageState();
+  CustomSchedulePageState createState() => CustomSchedulePageState();
 }
 
-class _CustomSchedulePageState extends State<CustomSchedulePage> {
+class CustomSchedulePageState extends State<CustomSchedulePage> {
   List<Tournament> tournaments = [];
   bool isLoading = true;
   DateTime? selectedDate;
