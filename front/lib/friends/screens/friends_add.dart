@@ -123,7 +123,7 @@ class AddFriendPageState extends State<AddFriendPage> {
                       final isAlreadyFriend =
                           await friendService.isFriend(widget.userId, friendId);
                       if (isAlreadyFriend) {
-                        if(!context.mounted) return;
+                        if (!context.mounted) return;
                         showNotificationToast(
                           context,
                           l.friendAlreadyAdded,
@@ -134,7 +134,7 @@ class AddFriendPageState extends State<AddFriendPage> {
                       }
 
                       await friendService.addFriend(widget.userId, friendId);
-                      if(!context.mounted) return;
+                      if (!context.mounted) return;
                       showNotificationToast(context, l.friendAddedSuccessfully);
                       Provider.of<NotificationProvider>(context, listen: false)
                           .addNotification(
