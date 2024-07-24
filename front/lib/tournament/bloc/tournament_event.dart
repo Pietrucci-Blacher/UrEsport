@@ -4,7 +4,7 @@ abstract class TournamentEvent extends Equatable {
   const TournamentEvent();
 
   @override
-  List<Object?> get props => [];
+  List<Object> get props => [];
 }
 
 class LoadTournaments extends TournamentEvent {
@@ -13,7 +13,10 @@ class LoadTournaments extends TournamentEvent {
   final int? ownerId;
 
   const LoadTournaments({this.limit, this.page, this.ownerId});
+}
 
-  @override
-  List<Object?> get props => [limit, page, ownerId];
+class AddTournament extends TournamentEvent {
+  final Map<String, dynamic> tournamentData;
+
+  const AddTournament(this.tournamentData);
 }

@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:uresport/bracket/screens/custom_schedule.dart';
 import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
@@ -22,9 +24,6 @@ import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 
-import 'package:uresport/bracket/screens/custom_schedule.dart';
-import 'package:uresport/core/services/game_service.dart';
-
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
 
@@ -36,7 +35,7 @@ class TournamentScreenState extends State<TournamentScreen> {
   User? _currentUser;
   bool _isLoggedIn = false;
 
-  final List<String> _filterOptions = [ 'Tous', 'Public', 'Privé'];
+  final List<String> _filterOptions = ['Tous', 'Public', 'Privé'];
   String _currentFilter = 'Tous';
 
   Future<void> _loadCurrentUser() async {
@@ -411,7 +410,12 @@ class TournamentScreenState extends State<TournamentScreen> {
                 .read<TournamentBloc>()
                 .add(LoadTournaments(ownerId: ownerId));
           },
-          child: BlocBuilder<TournamentBloc, TournamentState>(
+          child: BlocConsumer<TournamentBloc, TournamentState>(
+            listener: (context, state) {
+              if (state is TournamentLoadSuccess) {
+                // Rafraîchir la liste des tournois si nécessaire
+              }
+            },
             builder: (context, state) {
               AppLocalizations l = AppLocalizations.of(context);
 
@@ -485,7 +489,8 @@ class TournamentScreenState extends State<TournamentScreen> {
                               onPressed: () {
                                 final dio = Dio();
                                 final gameService = GameService(dio);
-                                final tournamentService = TournamentService(dio);
+                                final tournamentService =
+                                    TournamentService(dio);
 
                                 Navigator.push(
                                   context,
@@ -499,7 +504,6 @@ class TournamentScreenState extends State<TournamentScreen> {
                               },
                               child: const Icon(Icons.schedule),
                             ),
-
                           ],
                         ),
                       ),

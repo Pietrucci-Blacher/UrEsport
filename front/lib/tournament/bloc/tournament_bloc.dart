@@ -20,5 +20,16 @@ class TournamentBloc extends Bloc<TournamentEvent, TournamentState> {
         emit(TournamentLoadFailure());
       }
     });
+
+    on<AddTournament>((event, emit) async {
+      try {
+        await tournamentService.createTournament(event.tournamentData);
+        emit(TournamentLoadSuccess(
+            tournaments: tournamentService.tournamentsNotifier.value));
+      } catch (e) {
+        debugPrint('Error adding tournament: $e');
+        emit(TournamentLoadFailure());
+      }
+    });
   }
 }

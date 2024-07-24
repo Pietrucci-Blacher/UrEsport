@@ -9,6 +9,7 @@ import 'package:uresport/core/models/tournament.dart';
 import 'cache_service.dart';
 
 abstract class ITournamentService {
+  ValueNotifier<List<Tournament>> get tournamentsNotifier;
   Future<List<Tournament>> fetchTournaments(
       {int? limit, int? page, int? ownerId});
   Future<void> inviteUserToTournament(String tournamentId, String username);
@@ -35,8 +36,14 @@ abstract class ITournamentService {
 class TournamentService implements ITournamentService {
   final Dio _dio;
   final CacheService _cacheService = CacheService.instance;
+  final ValueNotifier<List<Tournament>> _tournamentsNotifier =
+      ValueNotifier<List<Tournament>>([]);
 
   TournamentService(this._dio);
+
+  @override
+  ValueNotifier<List<Tournament>> get tournamentsNotifier =>
+      _tournamentsNotifier;
 
   @override
   Future<List<Tournament>> fetchTournaments(
@@ -62,6 +69,7 @@ class TournamentService implements ITournamentService {
         final tournaments = (response.data as List)
             .map((json) => Tournament.fromJson(json))
             .toList();
+        _tournamentsNotifier.value = tournaments;
         return tournaments;
       } else {
         throw DioException(
@@ -448,7 +456,7 @@ class TournamentService implements ITournamentService {
 
     try {
       final response = await _dio.post(
-        "${dotenv.env['API_ENDPOINT']}/tournaments/", // Ensure the URL ends with a trailing slash
+        "${dotenv.env['API_ENDPOINT']}/tournaments/",
         data: tournamentData,
         options: Options(
           headers: {
@@ -469,6 +477,12 @@ class TournamentService implements ITournamentService {
           type: DioExceptionType.badResponse,
         );
       }
+
+      final newTournament = Tournament.fromJson(response.data);
+      _tournamentsNotifier.value = [
+        ..._tournamentsNotifier.value,
+        newTournament
+      ];
     } catch (e) {
       if (e is DioException) {
         debugPrint('DioException: ${e.message}');
