@@ -115,13 +115,18 @@ class TournamentScreenState extends State<TournamentScreen> {
                     right: 16.0,
                     child: FloatingActionButton(
                       heroTag: 'add-team',
-                      onPressed: () {
-                        Navigator.push(
+                      onPressed: () async {
+                        final result = await Navigator.push(
                           context,
                           MaterialPageRoute(
                             builder: (context) => const AddTeamPage(),
                           ),
                         );
+                        if (result == true) {
+                          setState(() {
+                            _loadUserTeams();
+                          });
+                        }
                       },
                       child: const Icon(Icons.add),
                     ),
@@ -177,24 +182,20 @@ class TournamentScreenState extends State<TournamentScreen> {
               itemBuilder: (context, index) {
                 final team = teams[index];
                 final isOwner = team.ownerId == _currentUser!.id;
-                return GestureDetector(
-                  onTap: () {
-                    List<User> userMembers = team.members.map((memberJson) {
-                      return User.fromJson(memberJson);
-                    }).toList();
-
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => TeamMembersPage(
-                          teamId: team.id,
-                          teamName: team.name,
-                          members: userMembers,
-                          ownerId: team.ownerId,
-                          currentId: _currentUser!.id,
-                        ),
-                      ),
-                    );
+                return Dismissible(
+                  key: Key(team.id.toString()),
+                  direction: DismissDirection.endToStart,
+                  confirmDismiss: (direction) async {
+                    final bool? result =
+                        await _confirmLeaveTeam(team.id, team.name, isOwner);
+                    if (result == true) {
+                      if (isOwner) {
+                        await _deleteTeam(team.id, team.name);
+                      } else {
+                        await _leaveTeam(team.id, team.name);
+                      }
+                    }
+                    return result;
                   },
                   child: Dismissible(
                     key: Key(team.id.toString()),
@@ -211,6 +212,26 @@ class TournamentScreenState extends State<TournamentScreen> {
                         color: Colors.white,
                       ),
                     ),
+                  ),
+                  child: GestureDetector(
+                    onTap: () {
+                      List<User> userMembers = team.members.map((memberJson) {
+                        return User.fromJson(memberJson);
+                      }).toList();
+
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TeamMembersPage(
+                            teamId: team.id,
+                            teamName: team.name,
+                            members: userMembers,
+                            ownerId: team.ownerId,
+                            currentId: _currentUser!.id,
+                          ),
+                        ),
+                      );
+                    },
                     child: ListTile(
                       title: Text(team.name,
                           style: const TextStyle(
@@ -307,11 +328,11 @@ class TournamentScreenState extends State<TournamentScreen> {
     );
   }
 
-  Future<void> _confirmLeaveTeam(
+  Future<bool?> _confirmLeaveTeam(
       int teamId, String teamName, bool isOwner) async {
     AppLocalizations l = AppLocalizations.of(context);
 
-    showDialog(
+    return showDialog<bool>(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
@@ -323,18 +344,13 @@ class TournamentScreenState extends State<TournamentScreen> {
             TextButton(
               child: Text(l.cancel),
               onPressed: () {
-                Navigator.of(context).pop();
+                Navigator.of(context).pop(false);
               },
             ),
             TextButton(
               child: Text(isOwner ? l.delete : l.leave),
               onPressed: () {
-                Navigator.of(context).pop();
-                if (isOwner) {
-                  _deleteTeam(teamId, teamName);
-                } else {
-                  _leaveTeam(teamId, teamName);
-                }
+                Navigator.of(context).pop(true);
               },
             ),
           ],
@@ -513,6 +529,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 final gameService = GameService(dio);
                                 final tournamentService =
                                 TournamentService(dio);
+
 
                                 Navigator.push(
                                   context,

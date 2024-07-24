@@ -142,7 +142,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title:  Text(l.confirmLeave),
+          title: Text(l.confirmLeave),
           content: Text('${l.leaveTeamConfirmation} $teamName?'),
           actions: <Widget>[
             TextButton(
@@ -179,8 +179,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 409) {
         final errorResponse = e.response?.data;
-        final errorMessage =
-            errorResponse['error'] ?? l.failedToLeaveTeam;
+        final errorMessage = errorResponse['error'] ?? l.failedToLeaveTeam;
         _showToast(errorMessage, Colors.red);
       } else {
         _showToast('${l.failedToLeaveTeam}: $e', Colors.red);
