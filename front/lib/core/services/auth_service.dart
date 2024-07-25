@@ -325,9 +325,13 @@ class AuthService implements IAuthService {
         }),
       );
 
+      if (response.statusCode != 200) {
+        throw Exception(response.data['error'] ?? 'Failed to upload image');
+      }
+
       return response.data['profile_image_url'];
     } catch (e) {
-      throw Exception('Failed to upload profile image: $e');
+      rethrow;
     }
   }
 

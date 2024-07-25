@@ -572,7 +572,7 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 200) {
-        throw Exception('Failed to upload tournament image');
+        throw Exception(response.data['error'] ?? 'Failed to upload image');
       }
 
       final imageUrl = response.data['image'];
@@ -582,7 +582,7 @@ class TournamentService implements ITournamentService {
       return imageUrl;
     } catch (e) {
       debugPrint('Error uploading tournament image: $e');
-      throw Exception('Unexpected error occurred');
+      rethrow;
     }
   }
 
@@ -598,11 +598,11 @@ class TournamentService implements ITournamentService {
             .map((json) => Team.fromJson(json))
             .toList();
       } else {
-        throw Exception('Failed to load teams');
+        throw Exception(response.data['error'] ?? 'Failed to load teams');
       }
     } catch (e) {
       debugPrint('Error fetching teams by tournament ID: $e');
-      throw Exception('Unexpected error occurred');
+      rethrow;
     }
   }
 }
