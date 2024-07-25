@@ -19,7 +19,6 @@ import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/widgets/rating.dart';
-import 'package:uresport/core/services/team_services.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
@@ -101,6 +100,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       await _checkIfUpvoted();
     } catch (e) {
       if (kDebugMode) {
+        if(!mounted) return;
         debugPrint(AppLocalizations.of(context).errorLoadingCurrentUser);
       }
     }

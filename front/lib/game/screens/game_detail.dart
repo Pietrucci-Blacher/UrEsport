@@ -249,9 +249,9 @@ class GameDetailPageState extends State<GameDetailPage> {
                   } else if (snapshot.hasData) {
                     final tournaments = snapshot.data!;
                     debugPrint('Tournaments loaded: ${tournaments.length}');
-                    tournaments.forEach((tournament) {
+                    for (var tournament in tournaments) {
                       debugPrint('Tournament: ${tournament.name}, Participants: ${tournament.teams.length}');
-                    });
+                    }
                     if (tournaments.isEmpty) {
                       return Center(
                         child: Column(
