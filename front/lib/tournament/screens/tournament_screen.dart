@@ -554,7 +554,24 @@ class TournamentScreenState extends State<TournamentScreen> {
                   ],
                 );
               } else if (state is TournamentLoadFailure) {
-                return Center(child: Text(l.failedToLoadTournaments));
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.emoji_events,
+                        size: 80,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        l.failedToLoadTournaments,
+                        style: const TextStyle(fontSize: 18),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
+                  ),
+                );
               }
               return Center(child: Text(l.unknownState));
             },

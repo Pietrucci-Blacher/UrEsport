@@ -106,7 +106,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Error al eliminar el torneo"),
         "deleteTournamentSucess":
             MessageLookupByLibrary.simpleMessage("Torneo eliminado con éxito"),
-        "description": MessageLookupByLibrary.simpleMessage("Descripción:"),
+        "description": MessageLookupByLibrary.simpleMessage("Descripción"),
         "descriptionGame": MessageLookupByLibrary.simpleMessage("Descripción:"),
         "descriptionIsRequired": MessageLookupByLibrary.simpleMessage(
             "La descripción es obligatoria"),

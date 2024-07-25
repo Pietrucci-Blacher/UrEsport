@@ -3,9 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/services/friends_services.dart';
+import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
 import 'package:uresport/widgets/custom_toast.dart';
-import 'package:uresport/l10n/app_localizations.dart';
 
 class AddFriendPage extends StatefulWidget {
   final int userId;
@@ -37,7 +37,8 @@ class AddFriendPageState extends State<AddFriendPage> {
     try {
       final response = await Dio().get('${dotenv.env['API_ENDPOINT']}/users');
       setState(() {
-        allUsers = response.data;
+        allUsers =
+            response.data.where((user) => user['id'] != widget.userId).toList();
         filteredUsers = List.from(allUsers);
       });
     } catch (e) {
