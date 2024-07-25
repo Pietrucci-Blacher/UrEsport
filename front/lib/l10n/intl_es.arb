@@ -309,7 +309,7 @@
   "amigoYaAñadido": "Amigo ya añadido",
   "errorAñadiendoAmigo": "Error añadiendo amigo",
   "noNotifications": "No tienes notificaciones",
-  "failedToLoadUserTeams": "Error al cargar los equipos del usuario",
+  "failedToLoadUserTeams": "Error al cargar los equipos",
   "changeImage": "Cambiar imagen",
   "tournamentSchedule": "Horario del torneo",
   "allTournaments": "Todos los torneos",
@@ -367,5 +367,6 @@
   "failedToGenerateBracket": "Error al generar el soporte",
   "allText": "Todos",
   "publicText": "Público",
-    "privateText": "Privado"
+  "privateText": "Privado",
+  "noParticipantsFound": "No se encontraron participantes"
 }

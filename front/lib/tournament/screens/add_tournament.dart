@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:google_places_autocomplete_text_field/google_places_autocomplete_text_field.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:uresport/core/services/tournament_service.dart';
@@ -27,6 +29,10 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   bool _isPrivate = false;
   int? _selectedGameId;
   List<Game> _games = [];
+  String?
+      _storedStartDate; // Variable to store the formatted start date for backend
+  String?
+      _storedEndDate; // Variable to store the formatted end date for backend
 
   @override
   void initState() {
@@ -50,44 +56,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
     }
   }
 
-  Future<void> _submitForm() async {
-    if (_formKey.currentState!.validate()) {
-      final tournamentData = {
-        'name': _nameController.text,
-        'description': _descriptionController.text,
-        'start_date': _startDateController.text,
-        'end_date': _endDateController.text,
-        'location': _locationController.text,
-        'latitude': _latitudeController.text.isEmpty
-            ? null
-            : double.tryParse(_latitudeController.text),
-        'longitude': _longitudeController.text.isEmpty
-            ? null
-            : double.tryParse(_longitudeController.text),
-        'private': _isPrivate,
-        'game_id': _selectedGameId,
-        'nb_player': int.tryParse(_nbPlayerController.text),
-      };
-
-      try {
-        final tournamentService =
-            Provider.of<ITournamentService>(context, listen: false);
-        await tournamentService.createTournament(tournamentData);
-        if (!mounted) return;
-        showCustomToast(
-            AppLocalizations.of(context).tournamentCreatedSuccessfully,
-            Colors.green);
-        if (!mounted) return;
-        Navigator.pop(context);
-      } catch (e) {
-        showCustomToast(
-            AppLocalizations.of(context).failedToCreateTournament, Colors.red);
-      }
-    }
-  }
-
-  Future<void> _selectDateTime(
-      BuildContext context, TextEditingController controller) async {
+  Future<void> _selectDateTime(BuildContext context,
+      TextEditingController controller, bool isStartDate) async {
     final DateTime now = DateTime.now();
 
     final DateTime? pickedDate = await showDatePicker(
@@ -135,10 +105,52 @@ class AddTournamentPageState extends State<AddTournamentPage> {
           pickedTime.minute,
         );
         final formattedDate =
-            DateFormat("yyyy-MM-ddTHH:mm:ss'Z'").format(fullDateTime.toUtc());
+            DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fullDateTime.toUtc());
+        final displayDate = DateFormat("yyyy-MM-dd HH:mm").format(fullDateTime);
         setState(() {
-          controller.text = formattedDate;
+          controller.text = displayDate; // Display format
+          if (isStartDate) {
+            _storedStartDate = formattedDate; // Store for backend use
+          } else {
+            _storedEndDate = formattedDate; // Store for backend use
+          }
         });
+      }
+    }
+  }
+
+  Future<void> _submitForm() async {
+    if (_formKey.currentState!.validate()) {
+      final tournamentData = {
+        'name': _nameController.text,
+        'description': _descriptionController.text,
+        'start_date': _storedStartDate,
+        'end_date': _storedEndDate,
+        'location': _locationController.text,
+        'latitude': _latitudeController.text.isEmpty
+            ? null
+            : double.tryParse(_latitudeController.text),
+        'longitude': _longitudeController.text.isEmpty
+            ? null
+            : double.tryParse(_longitudeController.text),
+        'private': _isPrivate,
+        'game_id': _selectedGameId,
+        'nb_player': int.tryParse(_nbPlayerController.text),
+      };
+
+      try {
+        final tournamentService =
+            Provider.of<ITournamentService>(context, listen: false);
+        await tournamentService.createTournament(tournamentData);
+        if (!mounted) return;
+        showCustomToast(
+            AppLocalizations.of(context).tournamentCreatedSuccessfully,
+            Colors.green);
+        if (!mounted) return;
+        Navigator.pop(context);
+      } catch (e) {
+        showCustomToast(
+            AppLocalizations.of(context).failedToCreateTournament, Colors.red);
       }
     }
   }
@@ -199,7 +211,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                 controller: _startDateController,
                 decoration: const InputDecoration(labelText: 'Start Date'),
                 readOnly: true,
-                onTap: () => _selectDateTime(context, _startDateController),
+                onTap: () =>
+                    _selectDateTime(context, _startDateController, true),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.startDateIsRequired;
@@ -211,7 +224,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                 controller: _endDateController,
                 decoration: const InputDecoration(labelText: 'End Date'),
                 readOnly: true,
-                onTap: () => _selectDateTime(context, _endDateController),
+                onTap: () =>
+                    _selectDateTime(context, _endDateController, false),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.endDateIsRequired;
@@ -219,20 +233,51 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                   return null;
                 },
               ),
-              TextFormField(
-                controller: _locationController,
+              GooglePlacesAutoCompleteTextFormField(
+                textEditingController: _locationController,
+                googleAPIKey: dotenv.env['GOOGLE_PLACES_API_KEY'] ?? '',
                 decoration: InputDecoration(labelText: l.location),
+                debounceTime: 800,
+                countries: const [],
+                isLatLngRequired: true,
+                getPlaceDetailWithLatLng: (prediction) {
+                  setState(() {
+                    _latitudeController.text = prediction.lat.toString();
+                    _longitudeController.text = prediction.lng.toString();
+                  });
+                },
+                itmClick: (prediction) {
+                  _locationController.text = prediction.description ?? '';
+                  _locationController.selection = TextSelection.fromPosition(
+                      TextPosition(
+                          offset: prediction.description?.length ?? 0));
+                },
               ),
               TextFormField(
                 controller: _latitudeController,
-                decoration: InputDecoration(labelText: l.latitude),
+                decoration: InputDecoration(
+                  labelText: l.latitude,
+                  enabled: false,
+                  labelStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
                 keyboardType: TextInputType.number,
+                readOnly: true,
+                focusNode: AlwaysDisabledFocusNode(),
               ),
               TextFormField(
-                controller: _longitudeController,
-                decoration: InputDecoration(labelText: l.longitude),
-                keyboardType: TextInputType.number,
-              ),
+                  controller: _longitudeController,
+                  decoration: InputDecoration(
+                    labelText: l.longitude,
+                    enabled: false,
+                    labelStyle: const TextStyle(color: Colors.grey),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  keyboardType: TextInputType.number,
+                  readOnly: true,
+                  focusNode: AlwaysDisabledFocusNode()),
               if (_games.isNotEmpty)
                 DropdownButtonFormField<int>(
                   decoration: InputDecoration(labelText: l.gameId),
@@ -301,6 +346,12 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       ),
     );
   }
+}
+
+// Extension pour désactiver le focus sur un TextFormField
+class AlwaysDisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
 }
 
 extension DateOnlyCompare on DateTime {

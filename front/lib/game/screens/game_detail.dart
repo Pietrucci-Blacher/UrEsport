@@ -57,6 +57,18 @@ class GameDetailPageState extends State<GameDetailPage> {
     }
   }
 
+  void _navigateToTournamentDetails(Tournament tournament) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => TournamentDetailsScreen(
+          tournament: tournament,
+          game: widget.game,
+        ),
+      ),
+    );
+  }
+
   Future<void> _checkIfLiked() async {
     if (_currentUser == null) {
       debugPrint('Current user is null, cannot check like status');
@@ -236,6 +248,11 @@ class GameDetailPageState extends State<GameDetailPage> {
                     return Center(child: Text('${l.error}: ${snapshot.error}'));
                   } else if (snapshot.hasData) {
                     final tournaments = snapshot.data!;
+                    debugPrint('Tournaments loaded: ${tournaments.length}');
+                    for (var tournament in tournaments) {
+                      debugPrint(
+                          'Tournament: ${tournament.name}, Participants: ${tournament.teams.length}');
+                    }
                     if (tournaments.isEmpty) {
                       return Center(
                         child: Column(
@@ -267,15 +284,7 @@ class GameDetailPageState extends State<GameDetailPage> {
                         final tournament = tournaments[index];
                         return GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => TournamentDetailsScreen(
-                                  tournament: tournament,
-                                  game: widget.game,
-                                ),
-                              ),
-                            );
+                            _navigateToTournamentDetails(tournament);
                           },
                           child: Card(
                             margin: const EdgeInsets.symmetric(vertical: 8.0),

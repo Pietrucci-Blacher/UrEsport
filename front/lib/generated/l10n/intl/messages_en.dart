@@ -301,6 +301,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "noLikedGames": MessageLookupByLibrary.simpleMessage("No liked games"),
         "noNotifications":
             MessageLookupByLibrary.simpleMessage("No notifications"),
+        "noParticipantsFound":
+            MessageLookupByLibrary.simpleMessage("No participants found"),
         "noRatingFetched":
             MessageLookupByLibrary.simpleMessage("No rating fetched"),
         "noTeamsAvailable":
@@ -308,7 +310,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "noTeamsAvailableForUser": MessageLookupByLibrary.simpleMessage(
             "No teams available for the current user."),
         "noTeamsFoundForUser":
-            MessageLookupByLibrary.simpleMessage("No teams found for the user"),
+            MessageLookupByLibrary.simpleMessage("No teams found"),
         "noTournamentForDate":
             MessageLookupByLibrary.simpleMessage("No tournament for this date"),
         "noTournamentsAvailable":

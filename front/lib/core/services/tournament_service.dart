@@ -1,14 +1,13 @@
 import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
-
-import 'cache_service.dart';
+import 'package:uresport/core/services/cache_service.dart';
 
 abstract class ITournamentService {
+  ValueNotifier<List<Tournament>> get tournamentsNotifier;
   Future<List<Tournament>> fetchTournaments(
       {int? limit, int? page, int? ownerId});
   Future<void> inviteUserToTournament(String tournamentId, String username);
@@ -17,10 +16,7 @@ abstract class ITournamentService {
   Future<void> joinTournament(int tournamentId, int teamId);
   Future<bool> hasJoinedTournament(int tournamentId, String username);
   Future<void> inviteTeamToTournament(
-    int tournamentId,
-    int teamId,
-    String teamName,
-  );
+      int tournamentId, int teamId, String teamName);
   Future<List<Team>> fetchTeams();
   Future<Tournament> fetchTournamentById(int tournamentId);
   Future<void> generateBracket(int tournamentId);
@@ -35,23 +31,24 @@ abstract class ITournamentService {
 class TournamentService implements ITournamentService {
   final Dio _dio;
   final CacheService _cacheService = CacheService.instance;
+  final ValueNotifier<List<Tournament>> _tournamentsNotifier =
+      ValueNotifier([]);
 
   TournamentService(this._dio);
+
+  @override
+  ValueNotifier<List<Tournament>> get tournamentsNotifier =>
+      _tournamentsNotifier;
 
   @override
   Future<List<Tournament>> fetchTournaments(
       {int? limit, int? page, int? ownerId}) async {
     try {
-      final Map<String, dynamic> queryParameters = {};
-      if (limit != null) {
-        queryParameters['limit'] = limit;
-      }
-      if (page != null) {
-        queryParameters['page'] = page;
-      }
-      if (ownerId != null) {
-        queryParameters['where[owner_id]'] = ownerId;
-      }
+      final Map<String, dynamic> queryParameters = {
+        if (limit != null) 'limit': limit,
+        if (page != null) 'page': page,
+        if (ownerId != null) 'where[owner_id]': ownerId,
+      };
 
       final response = await _dio.get(
         "${dotenv.env['API_ENDPOINT']}/tournaments/",
@@ -62,6 +59,9 @@ class TournamentService implements ITournamentService {
         final tournaments = (response.data as List)
             .map((json) => Tournament.fromJson(json))
             .toList();
+
+        _tournamentsNotifier.value =
+            tournaments; // Mise à jour du ValueNotifier
         return tournaments;
       } else {
         throw DioException(
@@ -70,14 +70,11 @@ class TournamentService implements ITournamentService {
           error: response.data['error'] ?? 'Failed to load tournaments',
           type: DioExceptionType.badResponse,
         );
+        // throw Exception('Failed to load tournaments');
       }
     } catch (e) {
       debugPrint('Error: $e');
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
-      }
+      throw Exception('Unexpected error occurred');
     }
   }
 
@@ -99,44 +96,7 @@ class TournamentService implements ITournamentService {
           error: response.data['error'] ?? 'Failed to invite user to tournament',
           type: DioExceptionType.badResponse,
         );
-      }
-    } catch (e) {
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
-      }
-    }
-  }
-
-  @override
-  Future<void> inviteTeamToTournament(
-      int tournamentId, int teamId, String teamName) async {
-    final token = await _cacheService.getString('token');
-    if (token == null) throw Exception('No token found');
-
-    try {
-      final response = await _dio.post(
-        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/invite",
-        data: {'name': teamName},
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-          validateStatus: (status) {
-            return status != null && status < 500;
-          },
-        ),
-      );
-
-      if (response.statusCode != 200 && response.statusCode != 204) {
-        throw DioException(
-          requestOptions: response.requestOptions,
-          response: response,
-          error: response.data['error'] ?? 'Failed to invite team to tournament',
-          type: DioExceptionType.badResponse,
-        );
+        // throw Exception('Failed to invite user to tournament');
       }
     } catch (e) {
       if (e is DioException) {
@@ -161,27 +121,15 @@ class TournamentService implements ITournamentService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          validateStatus: (status) {
-            return status != null && status < 500;
-          },
         ),
       );
 
       if (response.statusCode != 200 && response.statusCode != 204) {
-        throw DioException(
-          requestOptions: response.requestOptions,
-          response: response,
-          error:
-              'Failed to upvote tournament. Status code: ${response.statusCode}',
-          type: DioExceptionType.badResponse,
-        );
+        throw Exception('Failed to upvote tournament');
       }
     } catch (e) {
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
-      }
+      debugPrint('Error upvoting tournament: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 
@@ -212,13 +160,11 @@ class TournamentService implements ITournamentService {
           error: response.data['error'] ?? 'Failed to check upvote status',
           type: DioExceptionType.badResponse,
         );
+        // throw Exception('Failed to check if upvoted');
       }
     } catch (e) {
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
-      }
+      debugPrint('Error checking upvote status: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 
@@ -238,9 +184,6 @@ class TournamentService implements ITournamentService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          validateStatus: (status) {
-            return status != null && status < 500;
-          },
         ),
       );
 
@@ -251,13 +194,11 @@ class TournamentService implements ITournamentService {
           error: response.data['error'] ?? 'Failed to join tournament',
           type: DioExceptionType.badResponse,
         );
+        // throw Exception('Failed to join tournament');
       }
     } catch (e) {
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
-      }
+      debugPrint('Error joining tournament: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 
@@ -277,9 +218,6 @@ class TournamentService implements ITournamentService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          validateStatus: (status) {
-            return status != null && status < 500;
-          },
         ),
       );
 
@@ -292,31 +230,47 @@ class TournamentService implements ITournamentService {
           error: response.data['error'] ?? 'Failed to check if joined',
           type: DioExceptionType.badResponse,
         );
+        // throw Exception('Failed to check if joined tournament');
       }
     } catch (e) {
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
+      debugPrint('Error checking join status: $e');
+      throw Exception('Unexpected error occurred');
+    }
+  }
+
+  @override
+  Future<void> inviteTeamToTournament(
+      int tournamentId, int teamId, String teamName) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    try {
+      final response = await _dio.post(
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/invite",
+        data: {'name': teamName},
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json; charset=UTF-8',
+          },
+        ),
+      );
+
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw Exception('Failed to invite team to tournament');
       }
+    } catch (e) {
+      debugPrint('Error inviting team to tournament: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 
   @override
   Future<List<Team>> fetchTeams() async {
     try {
-      final response = await _dio.get(
-        "${dotenv.env['API_ENDPOINT']}/teams",
-      );
+      final response = await _dio.get("${dotenv.env['API_ENDPOINT']}/teams");
 
       if (response.statusCode == 200) {
-        if (response.data == null) {
-          throw Exception('Received null response from API');
-        } else if (response.data is! List) {
-          throw Exception(
-              'Expected a list but got ${response.data.runtimeType}');
-        }
-
         return (response.data as List)
             .map((json) => Team.fromJson(json))
             .toList();
@@ -327,15 +281,11 @@ class TournamentService implements ITournamentService {
           error: response.data['error'] ?? 'Failed to load teams',
           type: DioExceptionType.badResponse,
         );
+        // throw Exception('Failed to load teams');
       }
     } catch (e) {
-      if (e is DioException) {
-        debugPrint('DioException: ${e.message}');
-        rethrow;
-      } else {
-        debugPrint('Exception: ${e.toString()}');
-        throw Exception('Unexpected error occurred: ${e.toString()}');
-      }
+      debugPrint('Error fetching teams: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 
@@ -354,13 +304,11 @@ class TournamentService implements ITournamentService {
           error: response.data['error'] ?? 'Failed to load tournament',
           type: DioExceptionType.badResponse,
         );
+        // throw Exception('Failed to load tournament');
       }
     } catch (e) {
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
-      }
+      debugPrint('Error fetching tournament by ID: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 
@@ -377,9 +325,6 @@ class TournamentService implements ITournamentService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          validateStatus: (status) {
-            return status != null && status < 500;
-          },
         ),
       );
 
@@ -390,15 +335,11 @@ class TournamentService implements ITournamentService {
           error: response.data['error'] ?? 'Failed to generate bracket',
           type: DioExceptionType.badResponse,
         );
+        // throw Exception('Failed to generate bracket');
       }
-
-      return;
     } catch (e) {
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
-      }
+      debugPrint('Error generating bracket: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 
@@ -418,9 +359,6 @@ class TournamentService implements ITournamentService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          validateStatus: (status) {
-            return status != null && status < 500;
-          },
         ),
       );
 
@@ -431,13 +369,11 @@ class TournamentService implements ITournamentService {
           error: response.data['error'] ?? 'Failed to join tournament with team',
           type: DioExceptionType.badResponse,
         );
+        // throw Exception('Failed to join tournament with team');
       }
     } catch (e) {
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
-      }
+      debugPrint('Error joining tournament with team: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 
@@ -448,15 +384,12 @@ class TournamentService implements ITournamentService {
 
     try {
       final response = await _dio.post(
-        "${dotenv.env['API_ENDPOINT']}/tournaments/", // Ensure the URL ends with a trailing slash
+        "${dotenv.env['API_ENDPOINT']}/tournaments/",
         data: tournamentData,
         options: Options(
           headers: {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
-          },
-          validateStatus: (status) {
-            return status != null && status < 500;
           },
         ),
       );
@@ -470,11 +403,10 @@ class TournamentService implements ITournamentService {
         );
       }
     } catch (e) {
+      debugPrint('Error creating tournament: $e');
       if (e is DioException) {
-        debugPrint('DioException: ${e.message}');
         rethrow;
       } else {
-        debugPrint('Exception: ${e.toString()}');
         throw Exception('Unexpected error occurred');
       }
     }
@@ -493,9 +425,6 @@ class TournamentService implements ITournamentService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          validateStatus: (status) {
-            return status != null && status < 500;
-          },
         ),
       );
 
@@ -506,13 +435,11 @@ class TournamentService implements ITournamentService {
           error: response.data['error'] ?? 'Failed to leave tournament',
           type: DioExceptionType.badResponse,
         );
+        // throw Exception('Failed to leave the tournament');
       }
     } catch (e) {
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
-      }
+      debugPrint('Error leaving tournament: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 
@@ -530,9 +457,6 @@ class TournamentService implements ITournamentService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          validateStatus: (status) {
-            return status != null && status < 500;
-          },
         ),
       );
 
@@ -545,6 +469,7 @@ class TournamentService implements ITournamentService {
         );
       }
     } catch (e) {
+      debugPrint('Error updating tournament: $e');
       if (e is DioException) {
         rethrow;
       } else {
@@ -571,19 +496,11 @@ class TournamentService implements ITournamentService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'multipart/form-data',
           },
-          validateStatus: (status) {
-            return status != null && status < 500;
-          },
         ),
       );
 
       if (response.statusCode != 200) {
-        throw DioException(
-          requestOptions: response.requestOptions,
-          response: response,
-          error: response.data['error'] ?? 'Failed to upload tournament image',
-          type: DioExceptionType.badResponse,
-        );
+        throw Exception('Failed to upload tournament image');
       }
 
       final imageUrl = response.data['image'];
@@ -592,35 +509,28 @@ class TournamentService implements ITournamentService {
       }
       return imageUrl;
     } catch (e) {
-      if (e is DioException) {
-        debugPrint('DioException: ${e.response?.data}');
-        rethrow;
-      } else {
-        debugPrint('Unexpected error: $e');
-        throw Exception('Unexpected error occurred');
-      }
+      debugPrint('Error uploading tournament image: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 
   @override
   Future<List<Team>> getTeamsByTournamentId(int tournamentId) async {
     try {
-      final response = await _dio
-          .get('${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/teams');
+      final response = await _dio.get(
+        '${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/teams',
+      );
+
       if (response.statusCode == 200) {
-        if (response.data == null) {
-          return [];
-        }
-        List<Team> teams = (response.data as List<dynamic>)
-            .map((e) => Team.fromJson(e))
+        return (response.data as List)
+            .map((json) => Team.fromJson(json))
             .toList();
-        debugPrint('Parsed Teams: $teams');
-        return teams;
       } else {
         throw Exception('Failed to load teams');
       }
     } catch (e) {
-      throw Exception('Failed to load teams: $e');
+      debugPrint('Error fetching teams by tournament ID: $e');
+      throw Exception('Unexpected error occurred');
     }
   }
 }
