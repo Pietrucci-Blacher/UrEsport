@@ -644,5 +644,4 @@ class TournamentService implements ITournamentService {
       }
     }
   }
-
 }
