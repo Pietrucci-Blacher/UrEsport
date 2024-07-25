@@ -481,6 +481,12 @@ func AcceptTournamentInvitation(c *gin.Context) {
 		return
 	}
 
+	if tournament.IsUserHasTeamInTournament(team.OwnerID) {
+		models.ErrorLogf([]string{"tournament", "AcceptTournamentInvitation"}, "User %d already has a team in this tournament", team.OwnerID)
+		c.JSON(http.StatusConflict, gin.H{"error": "User already has a team in this tournament"})
+		return
+	}
+
 	if len(team.Members) != tournament.NbPlayer {
 		models.ErrorLogf([]string{"tournament", "AcceptTournamentInvitation"}, "Team %s must contain %d members", team.Name, tournament.NbPlayer)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -707,7 +713,7 @@ func GetTeamsToTournamentId(c *gin.Context) {
 //	@Success		200	{object}	bool
 //	@Failure		404	{object}	utils.HttpError
 //	@Failure		500	{object}	utils.HttpError
-//	@Router			tournaments/{id}/joined/{userid} [get]
+//	@Router			/tournaments/{id}/joined/{userid} [get]
 func GetHasJoinedTournament(c *gin.Context) {
 	connectedUser, _ := c.MustGet("connectedUser").(models.User)
 	tournament, _ := c.MustGet("tournament").(*models.Tournament)

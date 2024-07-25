@@ -14,6 +14,7 @@ import 'package:uresport/core/services/notification_service.dart';
 import 'package:uresport/core/services/rating_service.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/core/services/log_service.dart';
+import 'package:uresport/core/services/invit_service.dart';
 import 'package:uresport/core/services/feature_flipping_service.dart';
 import 'package:uresport/dashboard/bloc/dashboard_bloc.dart';
 import 'package:uresport/shared/provider/notification_provider.dart';
@@ -68,6 +69,7 @@ void main() async {
   final mapService = MapService(dio: dio, mapboxApiKey: mapsBoxApiKey);
   final teamService = TeamService(dio);
   final featureFlippingService = FeatureFlippingService(dio);
+  final invitService = InvitService(dio);
 
   connectWebsocket();
 
@@ -88,6 +90,7 @@ void main() async {
         Provider<ITeamService>.value(value: teamService),
         Provider<ILogService>.value(value: logService),
         Provider<IFeatureFlippingService>.value(value: featureFlippingService),
+        Provider<IInvitService>.value(value: invitService),
       ],
       child: MultiBlocProvider(
         providers: [

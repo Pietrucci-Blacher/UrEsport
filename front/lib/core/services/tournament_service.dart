@@ -63,11 +63,22 @@ class TournamentService implements ITournamentService {
             tournaments; // Mise à jour du ValueNotifier
         return tournaments;
       } else {
-        throw Exception('Failed to load tournaments');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to load tournaments',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to load tournaments');
       }
     } catch (e) {
       debugPrint('Error: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -83,11 +94,21 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 200) {
-        throw Exception('Failed to invite user to tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error:
+              response.data['error'] ?? 'Failed to invite user to tournament',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to invite user to tournament');
       }
     } catch (e) {
-      debugPrint('Error inviting user to tournament: $e');
-      throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -113,7 +134,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error upvoting tournament: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -138,11 +164,22 @@ class TournamentService implements ITournamentService {
       } else if (response.statusCode == 404) {
         return false;
       } else {
-        throw Exception('Failed to check if upvoted');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to check upvote status',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to check if upvoted');
       }
     } catch (e) {
       debugPrint('Error checking upvote status: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -187,7 +224,13 @@ class TournamentService implements ITournamentService {
       }
 
       if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Failed to join tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to join tournament',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to join tournament');
       }
     } catch (e) {
       debugPrint('Error joining tournament: $e');
@@ -222,22 +265,30 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode == 200) {
-        // Vérifiez que la réponse contient le champ 'joined' et qu'il est de type bool
-        if (response.data != null && response.data['joined'] != null) {
-          return response.data['joined'] as bool;
+        if (response.data != null && response.data['hasJoined'] != null) {
+          return response.data['hasJoined'] as bool;
         } else {
-          // Si le champ est manquant ou nul, retournez une valeur par défaut
           return false;
         }
       } else {
-        throw Exception('Failed to check if joined tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to check if joined',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to check if joined tournament');
       }
     } catch (e) {
       debugPrint('Error checking join status: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
-
 
   @override
   Future<void> inviteTeamToTournament(
@@ -254,30 +305,27 @@ class TournamentService implements ITournamentService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
           },
-          validateStatus: (status) {
-            return status! < 500; // Accept status codes less than 500
-          },
         ),
       );
 
-      if (response.statusCode == 409) {
-        throw Exception('Team already invited');
-      } else if (response.statusCode == 401) {
-        throw Exception('Unauthorized or team size issue');
-      } else if (response.statusCode == 404) {
-        throw Exception('Team not found');
-      } else if (response.statusCode == 500) {
-        throw Exception('Server error');
-      } else if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Unexpected error occurred');
+      if (response.statusCode != 200 && response.statusCode != 204) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to invite team to tournament',
+          type: DioExceptionType.badResponse,
+        );
       }
     } catch (e) {
       debugPrint('Error inviting team to tournament: $e');
-      throw Exception(e.toString());
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
-
-
 
   @override
   Future<List<Team>> fetchTeams() async {
@@ -289,11 +337,22 @@ class TournamentService implements ITournamentService {
             .map((json) => Team.fromJson(json))
             .toList();
       } else {
-        throw Exception('Failed to load teams');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to load teams',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to load teams');
       }
     } catch (e) {
       debugPrint('Error fetching teams: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -306,11 +365,22 @@ class TournamentService implements ITournamentService {
       if (response.statusCode == 200) {
         return Tournament.fromJson(response.data);
       } else {
-        throw Exception('Failed to load tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to load tournament',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to load tournament');
       }
     } catch (e) {
       debugPrint('Error fetching tournament by ID: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -331,11 +401,22 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 200) {
-        throw Exception('Failed to generate bracket');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to generate bracket',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to generate bracket');
       }
     } catch (e) {
       debugPrint('Error generating bracket: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -361,13 +442,22 @@ class TournamentService implements ITournamentService {
         _tournamentsNotifier.value = [
           ..._tournamentsNotifier.value,
           newTournament
-        ]; // Ajouter le nouveau tournoi
+        ];
       } else {
-        throw Exception('Failed to create tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to create tournament',
+          type: DioExceptionType.badResponse,
+        );
       }
     } catch (e) {
       debugPrint('Error creating tournament: $e');
-      throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -398,30 +488,24 @@ class TournamentService implements ITournamentService {
       }
 
       if (response.statusCode != 204) {
-        final errorMessage = response.data['error'] ?? 'Failed to leave the tournament';
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
+          error: response.data['error'] ?? 'Failed to leave tournament',
           type: DioExceptionType.badResponse,
-          error: errorMessage,
         );
+        // throw Exception('Failed to leave the tournament');
       }
     } catch (e) {
       debugPrint('Error leaving tournament: $e');
-
-      if (e is DioException && e.response?.statusCode == 404) {
-        final errorMessage = e.response?.data['error'] ?? 'Unknown error';
-        if ((errorMessage as String).contains('not found')) {
-          throw Exception('Team not found in this tournament');
-        }
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
       }
-
-      throw Exception('Unexpected error occurred');
     }
   }
-
-
-
 
   @override
   Future<void> updateTournament(Tournament tournament) async {
@@ -448,11 +532,20 @@ class TournamentService implements ITournamentService {
         _tournamentsNotifier.value =
             updatedTournaments; // Mise à jour du ValueNotifier
       } else {
-        throw Exception('Failed to update tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to update tournament',
+          type: DioExceptionType.badResponse,
+        );
       }
     } catch (e) {
       debugPrint('Error updating tournament: $e');
-      throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
