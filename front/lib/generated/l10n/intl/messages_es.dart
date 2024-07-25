@@ -174,8 +174,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Error al cargar los amigos"),
         "failedToLoadTournaments": MessageLookupByLibrary.simpleMessage(
             "No eres dueño de ningún torneo"),
-        "failedToLoadUserTeams": MessageLookupByLibrary.simpleMessage(
-            "Error al cargar los equipos del usuario"),
+        "failedToLoadUserTeams":
+            MessageLookupByLibrary.simpleMessage("Error al cargar los equipos"),
         "failedToLoadUsers": MessageLookupByLibrary.simpleMessage(
             "Error al cargar los usuarios"),
         "failedToUpdateFavoriteStatus": MessageLookupByLibrary.simpleMessage(
@@ -323,8 +323,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No hay equipos disponibles."),
         "noTeamsAvailableForUser": MessageLookupByLibrary.simpleMessage(
             "No hay equipos disponibles para el usuario actual."),
-        "noTeamsFoundForUser":
-            MessageLookupByLibrary.simpleMessage("No se encontraron equipos"),
+        "noTeamsFoundForUser": MessageLookupByLibrary.simpleMessage(
+            "No se encontraron equipos para el usuario"),
         "noTournamentForDate": MessageLookupByLibrary.simpleMessage(
             "No hay torneos para esta fecha"),
         "noTournamentsAvailable":

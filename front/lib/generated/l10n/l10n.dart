@@ -760,10 +760,10 @@ class S {
     );
   }
 
-  /// `No teams found for the user`
+  /// `No teams found`
   String get noTeamsFoundForUser {
     return Intl.message(
-      'No teams found for the user',
+      'No teams found',
       name: 'noTeamsFoundForUser',
       desc: '',
       args: [],
