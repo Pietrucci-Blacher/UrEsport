@@ -586,8 +586,7 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
       final errorMessage = e is DioException
           ? e.response?.data['error']
           : AppLocalizations.of(context).imageUploadError;
-      showNotificationToast(context, errorMessage,
-          backgroundColor: Colors.red);
+      showNotificationToast(context, errorMessage, backgroundColor: Colors.red);
     }
   }
 
