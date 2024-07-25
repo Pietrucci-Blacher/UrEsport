@@ -25,6 +25,7 @@ abstract class ITournamentService {
   Future<void> updateTournament(Tournament tournament);
   Future<String> uploadTournamentImage(int tournamentId, File image);
   Future<List<Team>> getTeamsByTournamentId(int tournamentId);
+  Future<void> deleteTournament(int tournamentId);
 }
 
 class TournamentService implements ITournamentService {
@@ -605,4 +606,43 @@ class TournamentService implements ITournamentService {
       throw Exception('Unexpected error occurred');
     }
   }
+
+  @override
+  Future<void> deleteTournament(int tournamentId) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    try {
+      final response = await _dio.delete(
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 204) {
+        _tournamentsNotifier.value = _tournamentsNotifier.value
+            .where((t) => t.id != tournamentId)
+            .toList();
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to delete tournament',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error deleting tournament: $e');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
+    }
+  }
+
 }

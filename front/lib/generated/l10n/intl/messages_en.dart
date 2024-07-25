@@ -90,6 +90,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteGameButton": MessageLookupByLibrary.simpleMessage("Delete Game"),
         "deleteTeamConfirmation": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to delete the team"),
+        "deleteTournament":
+            MessageLookupByLibrary.simpleMessage("Delete Tournament"),
+        "deleteTournamentConfirm": MessageLookupByLibrary.simpleMessage(
+            "Are you sure you want to delete this tournament? This action cannot be undone"),
+        "deleteTournamentError":
+            MessageLookupByLibrary.simpleMessage("Error deleting tournament"),
+        "deleteTournamentSucess": MessageLookupByLibrary.simpleMessage(
+            "Tournament deleted successfully"),
         "description": MessageLookupByLibrary.simpleMessage("Description:"),
         "descriptionGame": MessageLookupByLibrary.simpleMessage("Description:"),
         "descriptionIsRequired":
