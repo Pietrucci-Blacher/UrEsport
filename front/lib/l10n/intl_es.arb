@@ -369,5 +369,6 @@
   "publicText": "Público",
   "privateText": "Privado",
   "noParticipantsFound": "No se encontraron participantes",
-  "notEnoughtTeamtoTournament": "No hay suficientes equipos para generar un grupo"
+  "notEnoughtTeamtoTournament": "No hay suficientes equipos para generar un grupo",
+  "teamAllReadyInvite": "El equipo ya ha sido invitado"
 }

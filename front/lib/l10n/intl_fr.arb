@@ -369,5 +369,6 @@
   "publicText": "Public",
   "privateText": "Privé",
   "noParticipantsFound": "Aucun participant trouvé",
-  "notEnoughtTeamtoTournament": "Pas assez d'équipes pour générer un bracket"
+  "notEnoughtTeamtoTournament": "Pas assez d'équipes pour générer un bracket",
+  "teamAllReadyInvite": "Équipe déjà invitée"
 }

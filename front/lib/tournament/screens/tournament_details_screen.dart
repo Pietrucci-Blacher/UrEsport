@@ -359,8 +359,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
   }
 
   Future<void> _sendInvite(int teamId, String teamName) async {
-    final tournamentService =
-    Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
 
     try {
       await tournamentService.inviteTeamToTournament(
@@ -371,37 +370,40 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       if (!mounted) return;
       _loadParticipatingTeams();
       showNotificationToast(
-          context, AppLocalizations.of(context).invitationSentSuccessfully,
-          backgroundColor: Colors.green);
+        context,
+        AppLocalizations.of(context).invitationSentSuccessfully,
+        backgroundColor: Colors.green,
+      );
     } catch (e) {
-      debugPrint('Error sending invitation: $e');
+      debugPrint('Error inviting team to tournament: $e');
       if (!mounted) return;
 
+      String? errorMessage;
+
       if (e is DioException) {
-        if (e.response?.statusCode == 409) {
-          showNotificationToast(
-              context, AppLocalizations.of(context).invitationAllReadySend,
-              backgroundColor: Colors.red);
-        } else if (e.response?.statusCode == 401) {
-          showNotificationToast(
-              context,
-              '${AppLocalizations.of(context).teamContainPlayers} ${_tournament.nbPlayers} ${AppLocalizations.of(context).playersText}',
-              backgroundColor: Colors.red);
-        } else {
-          final errorMessage = e.response?.data['error'];
-          showNotificationToast(
-              context,
-              '${AppLocalizations.of(context).invitationSendError}: $errorMessage',
-              backgroundColor: Colors.red);
+        errorMessage = e.message; // Use the message from DioException
+      } else if (e is Exception) {
+        errorMessage = e.toString();
+        // Remove "Exception: " prefix if it exists
+        if (errorMessage.startsWith('Exception: ')) {
+          errorMessage = errorMessage.substring(11); // Removes "Exception: " prefix
         }
       } else {
-        showNotificationToast(
-            context,
-            '${AppLocalizations.of(context).invitationSendError}: $e',
-            backgroundColor: Colors.red);
+        errorMessage = 'An unexpected error occurred';
       }
+
+      showNotificationToast(
+        context,
+        errorMessage!,
+        backgroundColor: Colors.red,
+      );
     }
   }
+
+
+
+
+
 
   Future<void> _pickImage() async {
     final ImagePicker picker = ImagePicker();

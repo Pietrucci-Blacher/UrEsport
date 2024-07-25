@@ -254,17 +254,30 @@ class TournamentService implements ITournamentService {
             'Authorization': 'Bearer $token',
             'Content-Type': 'application/json; charset=UTF-8',
           },
+          validateStatus: (status) {
+            return status! < 500; // Accept status codes less than 500
+          },
         ),
       );
 
-      if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Failed to invite team to tournament');
+      if (response.statusCode == 409) {
+        throw Exception('Team already invited');
+      } else if (response.statusCode == 401) {
+        throw Exception('Unauthorized or team size issue');
+      } else if (response.statusCode == 404) {
+        throw Exception('Team not found');
+      } else if (response.statusCode == 500) {
+        throw Exception('Server error');
+      } else if (response.statusCode != 200 && response.statusCode != 204) {
+        throw Exception('Unexpected error occurred');
       }
     } catch (e) {
       debugPrint('Error inviting team to tournament: $e');
-      throw Exception('Unexpected error occurred');
+      throw Exception(e.toString());
     }
   }
+
+
 
   @override
   Future<List<Team>> fetchTeams() async {

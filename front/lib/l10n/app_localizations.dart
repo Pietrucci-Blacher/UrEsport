@@ -2741,6 +2741,14 @@ class AppLocalizations {
       desc: 'Message shown when not enough teams to start the tournament',
     );
   }
+
+  String get teamAllReadyInvite {
+    return Intl.message(
+      'Team already invited',
+      name: 'teamAllReadyInvite',
+      desc: 'Message shown when the team has already been invited or conflict',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

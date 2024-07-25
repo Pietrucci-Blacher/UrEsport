@@ -481,6 +481,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Puntuación del equipo 1"),
         "team2Score":
             MessageLookupByLibrary.simpleMessage("Puntuación del equipo 2"),
+        "teamAllReadyInvite": MessageLookupByLibrary.simpleMessage(
+            "El equipo ya ha sido invitado"),
         "teamAlreadyInTournament":
             MessageLookupByLibrary.simpleMessage("Equipo ya en este torneo"),
         "teamContainPlayers":

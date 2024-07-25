@@ -3369,6 +3369,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Team already invited`
+  String get teamAllReadyInvite {
+    return Intl.message(
+      'Team already invited',
+      name: 'teamAllReadyInvite',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
