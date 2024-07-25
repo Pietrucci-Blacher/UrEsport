@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'l10n/intl/messages_all.dart';
 
 // **************************************************************************
@@ -250,13 +251,13 @@ class S {
     );
   }
 
-  /// `Welcome to your profile, {username}!`
-  String profileScreenWelcome(Object username) {
+  /// `Welcome to your profile!`
+  String get profileScreenWelcome {
     return Intl.message(
-      'Welcome to your profile, $username!',
+      'Welcome to your profile!',
       name: 'profileScreenWelcome',
       desc: '',
-      args: [username],
+      args: [],
     );
   }
 
@@ -660,13 +661,13 @@ class S {
     );
   }
 
-  /// `+{count} more`
-  String moreTagsCount(Object count) {
+  /// `more`
+  String get moreTagsCount {
     return Intl.message(
-      '+$count more',
+      'more',
       name: 'moreTagsCount',
       desc: '',
-      args: [count],
+      args: [],
     );
   }
 
@@ -750,20 +751,20 @@ class S {
     );
   }
 
-  /// `You belong to no team`
+  /// `Failed to load user teams`
   String get failedToLoadUserTeams {
     return Intl.message(
-      'You belong to no team',
+      'Failed to load user teams',
       name: 'failedToLoadUserTeams',
       desc: '',
       args: [],
     );
   }
 
-  /// `No teams found for the user`
+  /// `No teams found`
   String get noTeamsFoundForUser {
     return Intl.message(
-      'No teams found for the user',
+      'No teams found',
       name: 'noTeamsFoundForUser',
       desc: '',
       args: [],
@@ -900,40 +901,40 @@ class S {
     );
   }
 
-  /// `Start: `
+  /// `Start`
   String get tournamentStartDate {
     return Intl.message(
-      'Start: ',
+      'Start',
       name: 'tournamentStartDate',
       desc: '',
       args: [],
     );
   }
 
-  /// `End: `
+  /// `End`
   String get tournamentEndDate {
     return Intl.message(
-      'End: ',
+      'End',
       name: 'tournamentEndDate',
       desc: '',
       args: [],
     );
   }
 
-  /// `Game: `
+  /// `Game `
   String get gameName {
     return Intl.message(
-      'Game: ',
+      'Game ',
       name: 'gameName',
       desc: '',
       args: [],
     );
   }
 
-  /// `Joueurs par team: `
+  /// `Players per team`
   String get teamPlayersCount {
     return Intl.message(
-      'Players per team: ',
+      'Players per team',
       name: 'teamPlayersCount',
       desc: '',
       args: [],
@@ -950,40 +951,40 @@ class S {
     );
   }
 
-  /// `Error loading current user: $e`
+  /// `Error loading current user:`
   String get errorLoadingCurrentUser {
     return Intl.message(
-      'Error loading current user: \$e',
+      'Error loading current user:',
       name: 'errorLoadingCurrentUser',
       desc: '',
       args: [],
     );
   }
 
-  /// `Error checking if upvoted: $e`
+  /// `Error checking if upvoted:`
   String get errorCheckingIfUpvoted {
     return Intl.message(
-      'Error checking if upvoted: \$e',
+      'Error checking if upvoted:',
       name: 'errorCheckingIfUpvoted',
       desc: '',
       args: [],
     );
   }
 
-  /// `Error checking if joined: $e`
+  /// `Error checking if joined:`
   String get errorCheckingIfJoined {
     return Intl.message(
-      'Error checking if joined: \$e',
+      'Error checking if joined:',
       name: 'errorCheckingIfJoined',
       desc: '',
       args: [],
     );
   }
 
-  /// `Error loading teams: $e`
+  /// `Error loading teams:`
   String get errorLoadingTeams {
     return Intl.message(
-      'Error loading teams: \$e',
+      'Error loading teams:',
       name: 'errorLoadingTeams',
       desc: '',
       args: [],
@@ -1170,20 +1171,20 @@ class S {
     );
   }
 
-  /// `Description:`
+  /// `Description`
   String get description {
     return Intl.message(
-      'Description:',
+      'Description',
       name: 'description',
       desc: '',
       args: [],
     );
   }
 
-  /// `Location:`
+  /// `Location`
   String get location {
     return Intl.message(
-      'Location:',
+      'Location',
       name: 'location',
       desc: '',
       args: [],
@@ -1215,16 +1216,6 @@ class S {
     return Intl.message(
       'End Date:',
       name: 'endDateText',
-      desc: '',
-      args: [],
-    );
-  }
-
-  /// `Location:`
-  String get locationText {
-    return Intl.message(
-      'Location:',
-      name: 'locationText',
       desc: '',
       args: [],
     );
@@ -1340,10 +1331,10 @@ class S {
     );
   }
 
-  /// `Error joining`
+  /// `Error to joining`
   String get joinError {
     return Intl.message(
-      'Error joining',
+      'Error to joining',
       name: 'joinError',
       desc: '',
       args: [],
@@ -1540,10 +1531,10 @@ class S {
     );
   }
 
-  /// `Please enter a game ID`
+  /// `Please enter a game`
   String get pleaseEnterGameId {
     return Intl.message(
-      'Please enter a game ID',
+      'Please enter a game',
       name: 'pleaseEnterGameId',
       desc: '',
       args: [],
@@ -1650,10 +1641,10 @@ class S {
     );
   }
 
-  /// `Game ID is required`
+  /// `Game is required`
   String get gameIdIsRequired {
     return Intl.message(
-      'Game ID is required',
+      'Game is required',
       name: 'gameIdIsRequired',
       desc: '',
       args: [],
@@ -1710,10 +1701,10 @@ class S {
     );
   }
 
-  /// `Are you sure you want to kick this user from the team?`
+  /// `Are you sure you want to kick this user from the team`
   String get confirmKickMessage {
     return Intl.message(
-      'Are you sure you want to kick this user from the team?',
+      'Are you sure you want to kick this user from the team',
       name: 'confirmKickMessage',
       desc: '',
       args: [],
@@ -1750,13 +1741,13 @@ class S {
     );
   }
 
-  /// `Error kicking user: {error}`
-  String errorKickingUser(Object error) {
+  /// `Error kicking user:`
+  String get errorKickingUser {
     return Intl.message(
-      'Error kicking user: $error',
+      'Error kicking user:',
       name: 'errorKickingUser',
       desc: '',
-      args: [error],
+      args: [],
     );
   }
 
@@ -2080,10 +2071,10 @@ class S {
     );
   }
 
-  /// `Are you sure you want to delete this friend?`
+  /// `Are you sure you want to delete this friend`
   String get confirmDeleteFriend {
     return Intl.message(
-      'Are you sure you want to delete this friend?',
+      'Are you sure you want to delete this friend',
       name: 'confirmDeleteFriend',
       desc: '',
       args: [],
@@ -2710,13 +2701,13 @@ class S {
     );
   }
 
-  /// `Error following the game: {error}`
-  String errorFollowingGame(Object error) {
+  /// `Error following the game`
+  String get errorFollowingGame {
     return Intl.message(
-      'Error following the game: $error',
+      'Error following the game',
       name: 'errorFollowingGame',
       desc: '',
-      args: [error],
+      args: [],
     );
   }
 
@@ -2740,13 +2731,13 @@ class S {
     );
   }
 
-  /// `Error unfollowing the game: {error}`
-  String errorUnfollowingGame(Object error) {
+  /// `Error unfollowing the game`
+  String get errorUnfollowingGame {
     return Intl.message(
-      'Error unfollowing the game: $error',
+      'Error unfollowing the game',
       name: 'errorUnfollowingGame',
       desc: '',
-      args: [error],
+      args: [],
     );
   }
 
@@ -2780,23 +2771,23 @@ class S {
     );
   }
 
-  /// `Start: {date}`
-  String start(Object date) {
+  /// `Start`
+  String get start {
     return Intl.message(
-      'Start: $date',
+      'Start',
       name: 'start',
       desc: '',
-      args: [date],
+      args: [],
     );
   }
 
-  /// `End: {date}`
-  String end(Object date) {
+  /// `End`
+  String get end {
     return Intl.message(
-      'End: $date',
+      'End',
       name: 'end',
       desc: '',
-      args: [date],
+      args: [],
     );
   }
 
@@ -2835,6 +2826,556 @@ class S {
     return Intl.message(
       'No tournaments for this game',
       name: 'nothingTournamentforGame',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No notifications`
+  String get noNotifications {
+    return Intl.message(
+      'No notifications',
+      name: 'noNotifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change Image`
+  String get changeImage {
+    return Intl.message(
+      'Change Image',
+      name: 'changeImage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tournament Schedule`
+  String get tournamentSchedule {
+    return Intl.message(
+      'Tournament Schedule',
+      name: 'tournamentSchedule',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Tournaments`
+  String get allTournaments {
+    return Intl.message(
+      'All Tournaments',
+      name: 'allTournaments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Now`
+  String get nowTournaments {
+    return Intl.message(
+      'Now',
+      name: 'nowTournaments',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select Date`
+  String get selectDate {
+    return Intl.message(
+      'Select Date',
+      name: 'selectDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No tournament for this date`
+  String get noTournamentForDate {
+    return Intl.message(
+      'No tournament for this date',
+      name: 'noTournamentForDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `My Teams`
+  String get myTeams {
+    return Intl.message(
+      'My Teams',
+      name: 'myTeams',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You left the team`
+  String get confirmLeaveTeam {
+    return Intl.message(
+      'You left the team',
+      name: 'confirmLeaveTeam',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `User is not login`
+  String get userIsNotLogin {
+    return Intl.message(
+      'User is not login',
+      name: 'userIsNotLogin',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sorry, you do not have permission to access this page.`
+  String get accessDeniedMessage {
+    return Intl.message(
+      'Sorry, you do not have permission to access this page.',
+      name: 'accessDeniedMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Back`
+  String get back {
+    return Intl.message(
+      'Back',
+      name: 'back',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error loading SVG`
+  String get svgLoadError {
+    return Intl.message(
+      'Error loading SVG',
+      name: 'svgLoadError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invitation sent successfully`
+  String get invitationSentSuccessfully {
+    return Intl.message(
+      'Invitation sent successfully',
+      name: 'invitationSentSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error sending invitation`
+  String get invitationSendError {
+    return Intl.message(
+      'Error sending invitation',
+      name: 'invitationSendError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Hello`
+  String get hello {
+    return Intl.message(
+      'Hello',
+      name: 'hello',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Success`
+  String get success {
+    return Intl.message(
+      'Success',
+      name: 'success',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failure`
+  String get failure {
+    return Intl.message(
+      'Failure',
+      name: 'failure',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error`
+  String get error {
+    return Intl.message(
+      'Error',
+      name: 'error',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You must be logged in to view notifications`
+  String get loginRequiredForNotifications {
+    return Intl.message(
+      'You must be logged in to view notifications',
+      name: 'loginRequiredForNotifications',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid current location`
+  String get invalidCurrentLocation {
+    return Intl.message(
+      'Invalid current location',
+      name: 'invalidCurrentLocation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to log out?`
+  String get logoutConfirmation {
+    return Intl.message(
+      'Are you sure you want to log out?',
+      name: 'logoutConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete your account? This action cannot be undone.`
+  String get deleteAccountConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete your account? This action cannot be undone.',
+      name: 'deleteAccountConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error deleting account`
+  String get errorDeletingAccount {
+    return Intl.message(
+      'Error deleting account',
+      name: 'errorDeletingAccount',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Photo Library`
+  String get photoLibrary {
+    return Intl.message(
+      'Photo Library',
+      name: 'photoLibrary',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Camera`
+  String get camera {
+    return Intl.message(
+      'Camera',
+      name: 'camera',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error picking image`
+  String get errorPickingImage {
+    return Intl.message(
+      'Error picking image',
+      name: 'errorPickingImage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Profile image updated`
+  String get profileImageUpdated {
+    return Intl.message(
+      'Profile image updated',
+      name: 'profileImageUpdated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error uploading profile image`
+  String get errorUploadingProfileImage {
+    return Intl.message(
+      'Error uploading profile image',
+      name: 'errorUploadingProfileImage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Data load failed`
+  String get dataLoadFailed {
+    return Intl.message(
+      'Data load failed',
+      name: 'dataLoadFailed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No tournaments available`
+  String get noTournamentsAvailable {
+    return Intl.message(
+      'No tournaments available',
+      name: 'noTournamentsAvailable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tournaments`
+  String get tournamentText {
+    return Intl.message(
+      'Tournaments',
+      name: 'tournamentText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `More`
+  String get more {
+    return Intl.message(
+      'More',
+      name: 'more',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Login disabled`
+  String get loginDisabled {
+    return Intl.message(
+      'Login disabled',
+      name: 'loginDisabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Register disabled`
+  String get registerDisabled {
+    return Intl.message(
+      'Register disabled',
+      name: 'registerDisabled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `General Information`
+  String get generalInformation {
+    return Intl.message(
+      'General Information',
+      name: 'generalInformation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Organizer`
+  String get organizer {
+    return Intl.message(
+      'Organizer',
+      name: 'organizer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Participating Teams`
+  String get participatingTeams {
+    return Intl.message(
+      'Participating Teams',
+      name: 'participatingTeams',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View Tournament Details`
+  String get viewTournamentDetails {
+    return Intl.message(
+      'View Tournament Details',
+      name: 'viewTournamentDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Get Directions`
+  String get getDirections {
+    return Intl.message(
+      'Get Directions',
+      name: 'getDirections',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Export Directions`
+  String get exportDirections {
+    return Intl.message(
+      'Export Directions',
+      name: 'exportDirections',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search for Tournaments`
+  String get searchForTournament {
+    return Intl.message(
+      'Search for Tournaments',
+      name: 'searchForTournament',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select a Team to Invite`
+  String get selectTeamToInvite {
+    return Intl.message(
+      'Select a Team to Invite',
+      name: 'selectTeamToInvite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invitation already sent to this team`
+  String get invitationAllReadySend {
+    return Intl.message(
+      'Invitation already sent to this team',
+      name: 'invitationAllReadySend',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The team must contain`
+  String get teamContainPlayers {
+    return Intl.message(
+      'The team must contain',
+      name: 'teamContainPlayers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Players`
+  String get playersText {
+    return Intl.message(
+      'Players',
+      name: 'playersText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Image uploaded successfully`
+  String get imageUploadSuccessfully {
+    return Intl.message(
+      'Image uploaded successfully',
+      name: 'imageUploadSuccessfully',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error uploading image`
+  String get imageUploadError {
+    return Intl.message(
+      'Error uploading image',
+      name: 'imageUploadError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to generate bracket`
+  String get failedToGenerateBracket {
+    return Intl.message(
+      'Failed to generate bracket',
+      name: 'failedToGenerateBracket',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All`
+  String get allText {
+    return Intl.message(
+      'All',
+      name: 'allText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Public`
+  String get publicText {
+    return Intl.message(
+      'Public',
+      name: 'publicText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Private`
+  String get privateText {
+    return Intl.message(
+      'Private',
+      name: 'privateText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No participants found`
+  String get noParticipantsFound {
+    return Intl.message(
+      'No participants found',
+      name: 'noParticipantsFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not enough teams to generate bracket`
+  String get notEnoughtTeamtoTournament {
+    return Intl.message(
+      'Not enough teams to generate bracket',
+      name: 'notEnoughtTeamtoTournament',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Team already invited`
+  String get teamAllReadyInvite {
+    return Intl.message(
+      'Team already invited',
+      name: 'teamAllReadyInvite',
       desc: '',
       args: [],
     );

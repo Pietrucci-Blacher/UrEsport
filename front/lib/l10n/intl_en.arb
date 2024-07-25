@@ -112,7 +112,7 @@
   "details": "Details",
   "bracket": "Bracket",
   "mustBeLoggedInToViewBracket": "You must be logged in to view your bracket",
-  "description": "Description:",
+  "description": "Description",
   "location": "Location",
   "game": "Game:",
   "startDateText": "Start Date:",

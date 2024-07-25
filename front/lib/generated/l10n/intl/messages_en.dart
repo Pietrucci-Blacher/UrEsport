@@ -90,7 +90,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteGameButton": MessageLookupByLibrary.simpleMessage("Delete Game"),
         "deleteTeamConfirmation": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to delete the team"),
-        "description": MessageLookupByLibrary.simpleMessage("Description:"),
+        "description": MessageLookupByLibrary.simpleMessage("Description"),
         "descriptionGame": MessageLookupByLibrary.simpleMessage("Description:"),
         "descriptionIsRequired":
             MessageLookupByLibrary.simpleMessage("Description is required"),
