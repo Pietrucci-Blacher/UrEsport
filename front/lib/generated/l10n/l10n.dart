@@ -3270,10 +3270,10 @@ class S {
     );
   }
 
-  /// `Team contains `
+  /// `The team must contain`
   String get teamContainPlayers {
     return Intl.message(
-      'Team contains ',
+      'The team must contain',
       name: 'teamContainPlayers',
       desc: '',
       args: [],

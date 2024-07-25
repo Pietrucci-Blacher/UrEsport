@@ -956,7 +956,7 @@ class AppLocalizations {
 
   String get teamNotRegistered {
     return Intl.message(
-      'Cette team n\'est pas inscrite dans le tournoi',
+      'This team is not registered in the tournament',
       name: 'teamNotRegistered',
       desc: 'Message displayed when team is not registered in the tournament',
     );

@@ -245,14 +245,14 @@ func (t *Tournament) HasTeam(team Team) bool {
 	return false
 }
 
-func (r *Tournament) IsUserHasTeamInTournament(userID int) bool {
+func (t *Tournament) IsUserHasTeamInTournament(userID int) bool {
 	teams, err := FindTeamsByUserID(userID)
 	if err != nil {
 		return false
 	}
 
 	for _, team := range teams {
-		if r.HasTeam(team) {
+		if t.HasTeam(team) {
 			return true
 		}
 	}

@@ -20,7 +20,6 @@ abstract class ITournamentService {
   Future<List<Team>> fetchTeams();
   Future<Tournament> fetchTournamentById(int tournamentId);
   Future<void> generateBracket(int tournamentId);
-  Future<void> joinTournamentWithTeam(int tournamentId, int teamId);
   Future<void> createTournament(Map<String, dynamic> tournamentData);
   Future<void> leaveTournament(int tournamentId, int teamId);
   Future<void> updateTournament(Tournament tournament);
@@ -166,12 +165,40 @@ class TournamentService implements ITournamentService {
         ),
       );
 
+      if (response.statusCode == 409) {
+        // Lever une exception spécifique pour les conflits
+        final errorMessage = response.data['error'] ?? 'Conflict';
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          type: DioExceptionType.badResponse,
+          error: errorMessage,
+        );
+      }
+
+      if (response.statusCode == 401) {
+        final errorMessage = response.data['error'] ?? 'Team must contain 5 members';
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          type: DioExceptionType.badResponse,
+          error: errorMessage,
+        );
+      }
+
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw Exception('Failed to join tournament');
       }
     } catch (e) {
       debugPrint('Error joining tournament: $e');
-      throw Exception('Unexpected error occurred');
+      if (e is DioException && e.response?.statusCode == 409) {
+        rethrow;
+      } else if (e is DioException && e.response?.statusCode == 401) {
+        rethrow;
+      }
+      else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -195,7 +222,13 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode == 200) {
-        return response.data['joined'] as bool;
+        // Vérifiez que la réponse contient le champ 'joined' et qu'il est de type bool
+        if (response.data != null && response.data['joined'] != null) {
+          return response.data['joined'] as bool;
+        } else {
+          // Si le champ est manquant ou nul, retournez une valeur par défaut
+          return false;
+        }
       } else {
         throw Exception('Failed to check if joined tournament');
       }
@@ -204,6 +237,7 @@ class TournamentService implements ITournamentService {
       throw Exception('Unexpected error occurred');
     }
   }
+
 
   @override
   Future<void> inviteTeamToTournament(
@@ -293,34 +327,6 @@ class TournamentService implements ITournamentService {
   }
 
   @override
-  Future<void> joinTournamentWithTeam(int tournamentId, int teamId) async {
-    final token = await _cacheService.getString('token');
-    if (token == null) throw Exception('No token found');
-
-    final url =
-        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
-
-    try {
-      final response = await _dio.post(
-        url,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-        ),
-      );
-
-      if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Failed to join tournament with team');
-      }
-    } catch (e) {
-      debugPrint('Error joining tournament with team: $e');
-      throw Exception('Unexpected error occurred');
-    }
-  }
-
-  @override
   Future<void> createTournament(Map<String, dynamic> tournamentData) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
@@ -368,14 +374,41 @@ class TournamentService implements ITournamentService {
         ),
       );
 
+      if (response.statusCode == 404) {
+        final errorMessage = response.data['error'] ?? 'Unknown error';
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          type: DioExceptionType.badResponse,
+          error: errorMessage,
+        );
+      }
+
       if (response.statusCode != 204) {
-        throw Exception('Failed to leave the tournament');
+        final errorMessage = response.data['error'] ?? 'Failed to leave the tournament';
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          type: DioExceptionType.badResponse,
+          error: errorMessage,
+        );
       }
     } catch (e) {
       debugPrint('Error leaving tournament: $e');
+
+      if (e is DioException && e.response?.statusCode == 404) {
+        final errorMessage = e.response?.data['error'] ?? 'Unknown error';
+        if ((errorMessage as String).contains('not found')) {
+          throw Exception('Team not found in this tournament');
+        }
+      }
+
       throw Exception('Unexpected error occurred');
     }
   }
+
+
+
 
   @override
   Future<void> updateTournament(Tournament tournament) async {

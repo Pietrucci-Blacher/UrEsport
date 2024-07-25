@@ -461,7 +461,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "teamAlreadyInTournament": MessageLookupByLibrary.simpleMessage(
             "Team already in this tournament"),
         "teamContainPlayers":
-            MessageLookupByLibrary.simpleMessage("Team contains "),
+            MessageLookupByLibrary.simpleMessage("The team must contain"),
         "teamCreatedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Team created successfully"),
         "teamDeleted":

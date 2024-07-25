@@ -284,7 +284,7 @@ func JoinTournament(c *gin.Context) {
 
 	if tournament.HasTeam(*team) {
 		models.ErrorLogf([]string{"tournament", "JoinTournament"}, "Team %s already in this tournament", team.Name)
-		c.JSON(http.StatusNotFound, gin.H{"error": "Team already in this tournament"})
+		c.JSON(http.StatusConflict, gin.H{"error": "Team already in this tournament"})
 		return
 	}
 
@@ -697,22 +697,23 @@ func GetTeamsToTournamentId(c *gin.Context) {
 	c.JSON(http.StatusOK, teams)
 }
 
-/*func GetTeamsToTournamentId(c *gin.Context) {
-	tournamentID := c.Param("id")
+// GetHasJoinedTournament godoc
+//
+//	@Summary		check if user has joined tournament
+//	@Description	check if user has joined tournament
+//	@Tags			tournament
+//	@Param			id		path	int	true	"Tournament ID"
+//	@Param			userid	path	int	true	"User ID"
+//	@Success		200	{object}	bool
+//	@Failure		404	{object}	utils.HttpError
+//	@Failure		500	{object}	utils.HttpError
+//	@Router			tournaments/{id}/joined/{userid} [get]
+func GetHasJoinedTournament(c *gin.Context) {
+	connectedUser, _ := c.MustGet("connectedUser").(models.User)
+	tournament, _ := c.MustGet("tournament").(*models.Tournament)
 
-	var tournament models.Tournament
-	if err := models.DB.Preload("Teams").First(&tournament, tournamentID).Error; err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			models.ErrorLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Tournament not found: %s", err.Error())
-			c.JSON(http.StatusNotFound, gin.H{"error": "Tournament not found"})
-		} else {
-			models.ErrorLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Database error: %s", err.Error())
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
-		}
-		return
-	}
+	hasJoined := tournament.IsUserHasTeamInTournament(connectedUser.ID)
 
-	teams := tournament.Teams
-	models.PrintLogf([]string{"tournament", "GetTeamsToTournamentId"}, "Fetched %d teams for tournament %s", len(teams), tournament.Name)
-	c.JSON(http.StatusOK, teams)
-}*/
+	models.PrintLogf([]string{"tournament", "GetHasJoinedTournament"}, "User %d has joined tournament %d: %t", connectedUser.ID, tournament.ID, hasJoined)
+	c.JSON(http.StatusOK, gin.H{"hasJoined": hasJoined})
+}
