@@ -1,5 +1,4 @@
 import 'package:equatable/equatable.dart';
-import 'package:uresport/core/models/tournament.dart';
 
 abstract class TournamentEvent extends Equatable {
   const TournamentEvent();
@@ -17,13 +16,4 @@ class LoadTournaments extends TournamentEvent {
 
   @override
   List<Object?> get props => [limit, page, ownerId];
-}
-
-class TournamentAdded extends TournamentEvent {
-  final Tournament newTournament;
-
-  const TournamentAdded(this.newTournament);
-
-  @override
-  List<Object?> get props => [newTournament];
 }

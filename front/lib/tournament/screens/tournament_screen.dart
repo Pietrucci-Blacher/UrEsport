@@ -3,13 +3,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:uresport/bracket/screens/custom_schedule.dart';
 import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/shared/map/map.dart';
 import 'package:uresport/shared/utils/filter_button.dart';
 import 'package:uresport/team/screen/add_team.dart';
 import 'package:uresport/team/screen/team_member.dart';
@@ -449,86 +452,131 @@ class TournamentScreenState extends State<TournamentScreen> {
     return BlocProvider(
       create: (context) => TournamentBloc(context.read<ITournamentService>())
         ..add(LoadTournaments(ownerId: ownerId)),
-      child: BlocBuilder<TournamentBloc, TournamentState>(
-        builder: (context, state) {
-          if (state is TournamentInitial || state is TournamentLoadInProgress) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (state is TournamentLoadSuccess) {
-            final filteredTournaments = state.tournaments.where((tournament) {
-              if (_currentFilter == l.publicText) {
-                return !tournament.isPrivate;
-              } else if (_currentFilter == l.privateText) {
-                return tournament.isPrivate;
-              } else {
-                return true;
-              }
-            }).toList();
+      child: Scaffold(
+        body: RefreshIndicator(
+          onRefresh: () async {
+            context
+                .read<TournamentBloc>()
+                .add(LoadTournaments(ownerId: ownerId));
+          },
+          child: BlocBuilder<TournamentBloc, TournamentState>(
+            builder: (context, state) {
+              AppLocalizations l = AppLocalizations.of(context);
 
-            return RefreshIndicator(
-              onRefresh: () async {
+              if (state is TournamentInitial) {
                 context
                     .read<TournamentBloc>()
                     .add(LoadTournaments(ownerId: ownerId));
-              },
-              child: Stack(
-                children: [
-                  ListView.builder(
-                    itemCount: filteredTournaments.length,
-                    itemBuilder: (context, index) {
-                      final tournament = filteredTournaments[index];
-                      return _buildTournamentCard(context, tournament);
-                    },
-                  ),
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          if (_isLoggedIn)
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is TournamentLoadInProgress) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (state is TournamentLoadSuccess) {
+                final filteredTournaments =
+                    state.tournaments.where((tournament) {
+                  if (_currentFilter == l.publicText) {
+                    return !tournament.isPrivate;
+                  } else if (_currentFilter == l.privateText) {
+                    return tournament.isPrivate;
+                  } else {
+                    return true;
+                  }
+                }).toList();
+
+                return Stack(
+                  children: [
+                    ListView.builder(
+                      itemCount: filteredTournaments.length,
+                      itemBuilder: (context, index) {
+                        final tournament = filteredTournaments[index];
+                        return _buildTournamentCard(context, tournament);
+                      },
+                    ),
+                    Align(
+                      alignment: Alignment.bottomRight,
+                      child: Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
                             FloatingActionButton(
-                              heroTag: 'create tournament',
-                              onPressed: () async {
-                                final tournamentBloc =
-                                    BlocProvider.of<TournamentBloc>(context);
-                                final l = AppLocalizations.of(context);
-                                final result = await Navigator.push(
+                              heroTag: 'map-fab',
+                              onPressed: () {
+                                Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => BlocProvider.value(
-                                      value: tournamentBloc,
-                                      child: const AddTournamentPage(),
+                                    builder: (context) => TournamentMapWidget(
+                                        tournaments: state.tournaments),
+                                  ),
+                                );
+                              },
+                              child: const Icon(Icons.map),
+                            ),
+                            const SizedBox(height: 16),
+                            if (_isLoggedIn)
+                              FloatingActionButton(
+                                heroTag: 'create tournament',
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (context) =>
+                                          const AddTournamentPage(),
+                                    ),
+                                  );
+                                },
+                                child: const Icon(Icons.add),
+                              ),
+                            const SizedBox(height: 16),
+                            FloatingActionButton(
+                              heroTag: 'schedule',
+                              onPressed: () {
+                                final dio = Dio();
+                                final gameService = GameService(dio);
+                                final tournamentService =
+                                    TournamentService(dio);
+
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => CustomSchedulePage(
+                                      gameService: gameService,
+                                      tournamentService: tournamentService,
                                     ),
                                   ),
                                 );
-                                if (!mounted) return;
-                                if (result == true) {
-                                  tournamentBloc
-                                      .add(LoadTournaments(ownerId: ownerId));
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                        content: Text(
-                                            l.tournamentCreatedSuccessfully)),
-                                  );
-                                }
                               },
-                              child: const Icon(Icons.add),
+                              child: const Icon(Icons.schedule),
                             ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
+                  ],
+                );
+              } else if (state is TournamentLoadFailure) {
+                return Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(
+                        Icons.emoji_events,
+                        size: 80,
+                        color: Colors.grey,
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        l.failedToLoadTournaments,
+                        style: const TextStyle(fontSize: 18),
+                        textAlign: TextAlign.center,
+                      ),
+                    ],
                   ),
-                ],
-              ),
-            );
-          } else if (state is TournamentLoadFailure) {
-            return Center(
-              child: Text(l.failedToLoadTournaments),
-            );
-          }
-          return Center(child: Text(l.unknownState));
-        },
+                );
+              }
+              return Center(child: Text(l.unknownState));
+            },
+          ),
+        ),
       ),
     );
   }
