@@ -42,6 +42,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
   late AnimationController _controller;
   bool _isLoggedIn = false;
   bool _isUploadingImage = false;
+  late ValueNotifier<List<tournament_model.Tournament>> _tournamentsNotifier;
+  late final VoidCallback _tournamentListener;
 
   @override
   void initState() {
@@ -51,9 +53,29 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       duration: const Duration(milliseconds: 500),
       vsync: this,
     );
+    _initListeners();
     _loadCurrentUser();
     _checkLoginStatus();
     _loadParticipatingTeams();
+  }
+
+  void _initListeners() {
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
+    _tournamentsNotifier = tournamentService.tournamentsNotifier;
+
+    _tournamentListener = () {
+      setState(() {
+        _tournament = _tournamentsNotifier.value.firstWhere((t) => t.id == _tournament.id);
+      });
+    };
+    _tournamentsNotifier.addListener(_tournamentListener);
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    _tournamentsNotifier.removeListener(_tournamentListener);
+    super.dispose();
   }
 
   Future<void> _checkLoginStatus() async {
@@ -69,19 +91,16 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
   Future<void> _loadCurrentUser() async {
     final authService = Provider.of<IAuthService>(context, listen: false);
-    Provider.of<ITeamService>(context, listen: false);
     try {
       final user = await authService.getUser();
       if (!mounted) return;
       setState(() {
         _currentUser = user;
       });
-      debugPrint('Current user: ${user.id}, ${user.username}');
       await _checkIfJoined();
       await _checkIfUpvoted();
     } catch (e) {
       if (kDebugMode) {
-        if (!mounted) return;
         debugPrint(AppLocalizations.of(context).errorLoadingCurrentUser);
       }
     }
@@ -89,20 +108,14 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
   Future<void> _checkIfUpvoted() async {
     if (_currentUser == null) return;
-    final tournamentService =
-    Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
-      final hasUpvoted =
-      await tournamentService.hasUpvoted(_tournament.id, _currentUser!.id);
+      final hasUpvoted = await tournamentService.hasUpvoted(_tournament.id, _currentUser!.id);
       if (!mounted) return;
       setState(() {
         _hasUpvoted = hasUpvoted;
       });
-      if (_hasUpvoted) {
-        _controller.forward();
-      } else {
-        _controller.reverse();
-      }
+      _hasUpvoted ? _controller.forward() : _controller.reverse();
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 404) {
         setState(() {
@@ -118,8 +131,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
   Future<void> _checkIfJoined() async {
     if (_currentUser == null) return;
-    final tournamentService =
-    Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
       final hasJoined = await tournamentService.hasJoinedTournament(
           _tournament.id, _currentUser!.id.toString());
@@ -131,14 +143,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       if (kDebugMode) {
         debugPrint(AppLocalizations.of(context).errorCheckingIfJoined);
       }
-      if (!mounted) return;
-      setState(() {});
     }
   }
 
   Future<void> _loadAllTeams() async {
-    final tournamentService =
-    Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
       final teams = await tournamentService.fetchTeams();
       if (!mounted) return;
@@ -149,7 +158,6 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       if (kDebugMode) {
         debugPrint(AppLocalizations.of(context).errorLoadingTeams);
       }
-      setState(() {});
       showNotificationToast(
           context, AppLocalizations.of(context).errorLoadingTeams,
           backgroundColor: Colors.red);
@@ -157,24 +165,17 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
   }
 
   Future<void> _loadParticipatingTeams() async {
-    final tournamentService =
-    Provider.of<ITournamentService>(context, listen: false);
+    final tournamentService = Provider.of<ITournamentService>(context, listen: false);
     try {
-      final teams =
-      await tournamentService.getTeamsByTournamentId(_tournament.id);
-      debugPrint(
-          'Teams from API: ${teams.map((team) => team.name).toList()}');
+      final teams = await tournamentService.getTeamsByTournamentId(_tournament.id);
       if (!mounted) return;
       setState(() {
         _participatingTeams = teams;
-        debugPrint(
-            'Teams loaded in TournamentDetailsScreen: ${_participatingTeams.map((team) => team.name).toList()}');
       });
     } catch (e) {
       if (kDebugMode) {
         debugPrint('Error loading teams: $e');
       }
-      setState(() {});
       showNotificationToast(
           context, AppLocalizations.of(context).errorLoadingTeams,
           backgroundColor: Colors.red);
@@ -183,7 +184,6 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
   void showNotificationToast(BuildContext context, String message,
       {Color? backgroundColor, Color? textColor}) {
-    debugPrint('Showing notification toast: $message');
     final overlay = Overlay.of(context);
     late OverlayEntry overlayEntry;
 
@@ -576,12 +576,6 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
             backgroundColor: Colors.red);
       }
     }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
   }
 
   @override

@@ -8,6 +8,8 @@ import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/l10n/app_localizations.dart';
 import 'package:uresport/core/models/game.dart';
+import 'package:google_places_autocomplete_text_field/google_places_autocomplete_text_field.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EditTournamentScreen extends StatefulWidget {
   final Tournament tournament;
@@ -32,6 +34,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
   bool _isPrivate = false;
   List<Game> _games = [];
   int? _selectedGameId;
+  String? _storedStartDate;
+  String? _storedEndDate;
 
   @override
   void initState() {
@@ -40,9 +44,9 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     _descriptionController =
         TextEditingController(text: widget.tournament.description);
     _startDateController = TextEditingController(
-        text: DateFormat('yyyy-MM-dd').format(widget.tournament.startDate));
+        text: DateFormat('yyyy-MM-dd HH:mm').format(widget.tournament.startDate));
     _endDateController = TextEditingController(
-        text: DateFormat('yyyy-MM-dd').format(widget.tournament.endDate));
+        text: DateFormat('yyyy-MM-dd HH:mm').format(widget.tournament.endDate));
     _locationController =
         TextEditingController(text: widget.tournament.location);
     _latitudeController =
@@ -55,6 +59,10 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
         TextEditingController(text: widget.tournament.nbPlayers.toString());
     _isPrivate = widget.tournament.isPrivate;
     _selectedGameId = widget.tournament.game.id;
+    _storedStartDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        .format(widget.tournament.startDate.toUtc());
+    _storedEndDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'")
+        .format(widget.tournament.endDate.toUtc());
     _loadGames();
   }
 
@@ -72,6 +80,117 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       if (!mounted) return;
       _showToast(context,
           '${AppLocalizations.of(context).failedToLoadGames} $e', Colors.red);
+    }
+  }
+
+  Future<void> _selectDateTime(
+      BuildContext context, TextEditingController controller, bool isStartDate) async {
+    final DateTime now = DateTime.now();
+
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: now,
+      firstDate: now,
+      lastDate: DateTime(2101),
+    );
+
+    if (pickedDate != null && context.mounted) {
+      TimeOfDay? pickedTime;
+      if (pickedDate.isSameDateAs(now)) {
+        pickedTime = await showTimePicker(
+          context: context,
+          initialTime:
+          TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data:
+              MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!,
+            );
+          },
+        );
+      } else {
+        pickedTime = await showTimePicker(
+          context: context,
+          initialTime: const TimeOfDay(hour: 0, minute: 0),
+          builder: (BuildContext context, Widget? child) {
+            return MediaQuery(
+              data:
+              MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+              child: child!,
+            );
+          },
+        );
+      }
+
+      if (pickedTime != null) {
+        final DateTime fullDateTime = DateTime(
+          pickedDate.year,
+          pickedDate.month,
+          pickedDate.day,
+          pickedTime.hour,
+          pickedTime.minute,
+        );
+        final formattedDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fullDateTime.toUtc());
+        final displayDate = DateFormat("yyyy-MM-dd HH:mm").format(fullDateTime);
+        setState(() {
+          controller.text = displayDate; // Display format
+          if (isStartDate) {
+            _storedStartDate = formattedDate; // Store for backend use
+          } else {
+            _storedEndDate = formattedDate; // Store for backend use
+          }
+        });
+      }
+    }
+  }
+
+  Future<void> _saveTournament() async {
+    if (_formKey.currentState!.validate()) {
+      final name = _nameController.text;
+      final description = _descriptionController.text;
+      final location = _locationController.text;
+      final latitude = _latitudeController.text.isNotEmpty
+          ? double.parse(_latitudeController.text)
+          : 0.0;
+      final longitude = _longitudeController.text.isNotEmpty
+          ? double.parse(_longitudeController.text)
+          : 0.0;
+      final isPrivate = _isPrivate;
+      final gameId = _selectedGameId;
+      final nbPlayers = int.parse(_nbPlayerController.text);
+
+      final updatedTournament = widget.tournament.copyWith(
+        name: name,
+        description: description,
+        startDate: DateTime.parse(_storedStartDate!),
+        endDate: DateTime.parse(_storedEndDate!),
+        location: location,
+        latitude: latitude,
+        longitude: longitude,
+        isPrivate: isPrivate,
+        game: widget.tournament.game.copyWith(id: gameId),
+        nbPlayers: nbPlayers,
+      );
+
+      final tournamentJson = updatedTournament.toJson();
+      debugPrint('Tournament JSON: ${jsonEncode(tournamentJson)}');
+
+      final tournamentService =
+      Provider.of<ITournamentService>(context, listen: false);
+      try {
+        await tournamentService.updateTournament(updatedTournament);
+        if (!mounted) return;
+        _showToast(
+            context,
+            AppLocalizations.of(context).tournamentUpdatedSuccessfully,
+            Colors.green);
+        Navigator.pop(context, updatedTournament);
+      } catch (e) {
+        debugPrint('Failed to update tournament: $e');
+        _showToast(context,
+            AppLocalizations.of(context).failedToUpdateTournament, Colors.red);
+      }
     }
   }
 
@@ -107,61 +226,6 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     Future.delayed(const Duration(seconds: 3), () {
       overlayEntry.remove();
     });
-  }
-
-  Future<void> _saveTournament() async {
-    if (_formKey.currentState!.validate()) {
-      final name = _nameController.text;
-      final description = _descriptionController.text;
-      final DateFormat dateFormat = DateFormat("yyyy-MM-ddTHH:mm:ss'Z'");
-      final startDate =
-          dateFormat.format(DateTime.parse(_startDateController.text));
-      final endDate =
-          dateFormat.format(DateTime.parse(_endDateController.text));
-      final location =
-          _locationController.text.isNotEmpty ? _locationController.text : '';
-      final latitude = _latitudeController.text.isNotEmpty
-          ? double.parse(_latitudeController.text)
-          : 0.0;
-      final longitude = _longitudeController.text.isNotEmpty
-          ? double.parse(_longitudeController.text)
-          : 0.0;
-      final isPrivate = _isPrivate;
-      final gameId = _selectedGameId;
-      final nbPlayers = int.parse(_nbPlayerController.text);
-
-      final updatedTournament = widget.tournament.copyWith(
-        name: name,
-        description: description,
-        startDate: DateTime.parse(startDate),
-        endDate: DateTime.parse(endDate),
-        location: location,
-        latitude: latitude,
-        longitude: longitude,
-        isPrivate: isPrivate,
-        game: widget.tournament.game.copyWith(id: gameId),
-        nbPlayers: nbPlayers,
-      );
-
-      final tournamentJson = updatedTournament.toJson();
-      debugPrint('Tournament JSON: ${jsonEncode(tournamentJson)}');
-
-      final tournamentService =
-          Provider.of<ITournamentService>(context, listen: false);
-      try {
-        await tournamentService.updateTournament(updatedTournament);
-        if (!mounted) return;
-        _showToast(
-            context,
-            AppLocalizations.of(context).tournamentUpdatedSuccessfully,
-            Colors.green);
-        Navigator.pop(context, updatedTournament);
-      } catch (e) {
-        debugPrint('Failed to update tournament: $e');
-        _showToast(context,
-            AppLocalizations.of(context).failedToUpdateTournament, Colors.red);
-      }
-    }
   }
 
   @override
@@ -207,6 +271,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               TextFormField(
                 controller: _startDateController,
                 decoration: InputDecoration(labelText: l.startDateText),
+                readOnly: true,
+                onTap: () => _selectDateTime(context, _startDateController, true),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.pleaseEnterStartDate;
@@ -217,6 +283,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
               TextFormField(
                 controller: _endDateController,
                 decoration: InputDecoration(labelText: l.endDateText),
+                readOnly: true,
+                onTap: () => _selectDateTime(context, _endDateController, false),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.pleaseEnterEndDate;
@@ -224,17 +292,50 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
                   return null;
                 },
               ),
-              TextFormField(
-                controller: _locationController,
+              GooglePlacesAutoCompleteTextFormField(
+                textEditingController: _locationController,
+                googleAPIKey: dotenv.env['GOOGLE_PLACES_API_KEY'] ?? '',
                 decoration: InputDecoration(labelText: l.location),
+                debounceTime: 800,
+                countries: const [],
+                isLatLngRequired: true,
+                getPlaceDetailWithLatLng: (prediction) {
+                  setState(() {
+                    _latitudeController.text = prediction.lat.toString();
+                    _longitudeController.text = prediction.lng.toString();
+                  });
+                },
+                itmClick: (prediction) {
+                  _locationController.text = prediction.description ?? '';
+                  _locationController.selection = TextSelection.fromPosition(
+                      TextPosition(offset: prediction.description?.length ?? 0));
+                },
               ),
               TextFormField(
                 controller: _latitudeController,
-                decoration: InputDecoration(labelText: l.latitude),
+                decoration: InputDecoration(
+                  labelText: l.latitude,
+                  enabled: false,
+                  labelStyle: const TextStyle(color: Colors.grey),
+                  filled: true,
+                  fillColor: Colors.grey[200],
+                ),
+                keyboardType: TextInputType.number,
+                readOnly: true,
+                focusNode: AlwaysDisabledFocusNode(),
               ),
               TextFormField(
-                controller: _longitudeController,
-                decoration: InputDecoration(labelText: l.longitude),
+                  controller: _longitudeController,
+                  decoration: InputDecoration(
+                    labelText: l.longitude,
+                    enabled: false,
+                    labelStyle: const TextStyle(color: Colors.grey),
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                  ),
+                  keyboardType: TextInputType.number,
+                  readOnly: true,
+                  focusNode: AlwaysDisabledFocusNode()
               ),
               SwitchListTile(
                 title: Text(l.private),
@@ -302,5 +403,17 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
         ),
       ),
     );
+  }
+}
+
+// Extension pour désactiver le focus sur un TextFormField
+class AlwaysDisabledFocusNode extends FocusNode {
+  @override
+  bool get hasFocus => false;
+}
+
+extension DateOnlyCompare on DateTime {
+  bool isSameDateAs(DateTime other) {
+    return year == other.year && month == other.month && day == other.day;
   }
 }

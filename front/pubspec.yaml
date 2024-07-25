@@ -42,6 +42,7 @@ dependencies:
   xml: ^6.5.0
   fl_chart: ^0.68.0
   syncfusion_flutter_datepicker: ^26.1.46
+  google_places_autocomplete_text_field: ^0.1.3
 
 dev_dependencies:
   flutter_test:
