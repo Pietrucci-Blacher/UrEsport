@@ -350,8 +350,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
               backgroundColor: Colors.red);
         } else {
           final errorMessage = e.response?.data['error'];
-          showNotificationToast(context,
-              errorMessage,
+          showNotificationToast(context, errorMessage,
               backgroundColor: Colors.red);
         }
       } else {
@@ -392,8 +391,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
         final errorMessage = e is DioException
             ? e.response?.data['error']
             : AppLocalizations.of(context).imageUploadError;
-        showNotificationToast(
-            context, errorMessage,
+        showNotificationToast(context, errorMessage,
             backgroundColor: Colors.red);
       }
     } else {
@@ -437,9 +435,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
           ? e.response?.data['error']
           : AppLocalizations.of(context).failedToGenerateBracket;
       if (!mounted) return;
-      showNotificationToast(
-          context, errorMessage,
-          backgroundColor: Colors.red);
+      showNotificationToast(context, errorMessage, backgroundColor: Colors.red);
     }
   }
 

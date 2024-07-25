@@ -23,11 +23,14 @@ class NotificationsTabState extends State<NotificationsTab> {
 
   _fetchInvitations() async {
     final invitService = Provider.of<IInvitService>(context, listen: false);
-    final notifProvider = Provider.of<NotificationProvider>(context, listen: false);
+    final notifProvider =
+        Provider.of<NotificationProvider>(context, listen: false);
     try {
       notifProvider.clearInvitations();
-      final teamInvitations = await invitService.fetchInvitations('tournaments', 'inbound');
-      final tournamentInvitations = await invitService.fetchInvitations('teams', 'inbound');
+      final teamInvitations =
+          await invitService.fetchInvitations('tournaments', 'inbound');
+      final tournamentInvitations =
+          await invitService.fetchInvitations('teams', 'inbound');
       notifProvider.addInvitations(teamInvitations);
       notifProvider.addInvitations(tournamentInvitations);
     } catch (e) {
@@ -37,30 +40,36 @@ class NotificationsTabState extends State<NotificationsTab> {
 
   _acceptInvitation(int id, Invit invitation) async {
     final invitService = Provider.of<IInvitService>(context, listen: false);
-    final notifProvider = Provider.of<NotificationProvider>(context, listen: false);
+    final notifProvider =
+        Provider.of<NotificationProvider>(context, listen: false);
     notifProvider.removeInvitation(id);
 
     if (invitation.type == 'team') {
       invitService.updateTeamInvitation(invitation.team.id, 'accept');
     } else {
-      invitService.updateTournamentInvitation(invitation.tournament.id, invitation.team.id, 'accept');
+      invitService.updateTournamentInvitation(
+          invitation.tournament.id, invitation.team.id, 'accept');
     }
 
-    showNotificationToast(context, 'Invitation acceptée', backgroundColor: Colors.green);
+    showNotificationToast(context, 'Invitation acceptée',
+        backgroundColor: Colors.green);
   }
 
   _rejectInvitation(int id, Invit invitation) async {
     final invitService = Provider.of<IInvitService>(context, listen: false);
-    final notifProvider = Provider.of<NotificationProvider>(context, listen: false);
+    final notifProvider =
+        Provider.of<NotificationProvider>(context, listen: false);
     notifProvider.removeInvitation(id);
 
     if (invitation.type == 'team') {
       invitService.updateTeamInvitation(invitation.team.id, 'reject');
     } else {
-      invitService.updateTournamentInvitation(invitation.tournament.id, invitation.team.id, 'reject');
+      invitService.updateTournamentInvitation(
+          invitation.tournament.id, invitation.team.id, 'reject');
     }
 
-    showNotificationToast(context, 'Invitation rejetée', backgroundColor: Colors.red);
+    showNotificationToast(context, 'Invitation rejetée',
+        backgroundColor: Colors.red);
   }
 
   @override

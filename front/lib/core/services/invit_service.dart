@@ -7,7 +7,8 @@ import 'cache_service.dart';
 
 abstract class IInvitService {
   Future<List<Invit>> fetchInvitations(String where, String inout);
-  Future<void> updateTournamentInvitation(int tournamentId, int teamId, String status);
+  Future<void> updateTournamentInvitation(
+      int tournamentId, int teamId, String status);
   Future<void> updateTeamInvitation(int teamId, String status);
 }
 
@@ -56,7 +57,8 @@ class InvitService implements IInvitService {
   }
 
   @override
-  Future<void> updateTournamentInvitation(int tournamentId, int teamId, String status) async {
+  Future<void> updateTournamentInvitation(
+      int tournamentId, int teamId, String status) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
