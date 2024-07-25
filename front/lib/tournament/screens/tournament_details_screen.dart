@@ -1077,10 +1077,97 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                 showCustomToast: showNotificationToast,
                 userId: _currentUser!.id,
               ),
+            const SizedBox(height: 16),
+            const Divider(
+              color: Colors.grey, // Color of the divider line
+              thickness: 1.0, // Thickness of the line
+              indent: 16.0, // Indentation from the leading edge
+              endIndent: 16.0, // Indentation from the trailing edge
+            ),
+            if (isOwner) _buildDangerZone(),
           ],
         ),
       ),
     );
+  }
+
+  Widget _buildDangerZone() {
+    AppLocalizations l = AppLocalizations.of(context);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l.dangerZone,
+          style: const TextStyle(
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+            color: Colors.red,
+          ),
+        ),
+        const SizedBox(height: 10),
+        _buildDangerZoneTile(
+          icon: Icons.delete,
+          label: l.deleteTournament,
+          onTap: _confirmDeleteTournament,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDangerZoneTile({
+    required IconData icon,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return ListTile(
+      leading: Icon(icon, color: Colors.red),
+      title: Text(label, style: const TextStyle(color: Colors.red)),
+      onTap: onTap,
+    );
+  }
+
+  void _confirmDeleteTournament() {
+    AppLocalizations l = AppLocalizations.of(context);
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(l.deleteTournament),
+          content: Text(l.deleteTournamentConfirm),
+          actions: <Widget>[
+            TextButton(
+              child: Text(l.cancel),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: Text(l.delete),
+              onPressed: () {
+                _deleteTournament();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _deleteTournament() async {
+    AppLocalizations l = AppLocalizations.of(context);
+    final tournamentService =
+        Provider.of<ITournamentService>(context, listen: false);
+    try {
+      await tournamentService.deleteTournament(_tournament.id);
+      if (!mounted) return;
+      Navigator.of(context).pop();
+      Navigator.of(context).pop();
+      showNotificationToast(context, l.deleteTournamentSucess,
+          backgroundColor: Colors.green);
+    } catch (e) {
+      showNotificationToast(context, l.deleteTournamentError,
+          backgroundColor: Colors.red);
+    }
   }
 
   Future<void> _joinTournament(

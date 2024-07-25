@@ -370,5 +370,9 @@
   "privateText": "Privé",
   "noParticipantsFound": "Aucun participant trouvé",
   "notEnoughtTeamtoTournament": "Pas assez d'équipes pour générer un bracket",
-  "teamAllReadyInvite": "Équipe déjà invitée"
+  "teamAllReadyInvite": "Équipe déjà invitée",
+  "deleteTournament": "Supprimer le tournoi",
+  "deleteTournamentConfirm": "Êtes-vous sûr de vouloir supprimer ce tournoi? Cette action ne peut pas être annulée",
+  "deleteTournamentSucess": "Tournoi supprimé avec succès",
+  "deleteTournamentError": "Erreur lors de la suppression du tournoi"
 }

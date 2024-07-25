@@ -582,11 +582,34 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
       );
     } catch (e) {
       debugPrint('Error uploading profile image: $e');
-      scaffoldMessenger.showSnackBar(
-        SnackBar(
-            content: Text('${localizations.errorUploadingProfileImage}: $e')),
-      );
+      if (!mounted) return;
+      final errorMessage = e is DioException
+          ? e.response?.data['error']
+          : AppLocalizations.of(context).imageUploadError;
+      showNotificationToast(context, errorMessage, backgroundColor: Colors.red);
     }
+  }
+
+  void showNotificationToast(BuildContext context, String message,
+      {Color? backgroundColor, Color? textColor}) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => CustomToast(
+        message: message,
+        backgroundColor: backgroundColor ?? Colors.blue,
+        textColor: textColor ?? Colors.white,
+        onClose: () {
+          overlayEntry.remove();
+        },
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
   }
 }
 

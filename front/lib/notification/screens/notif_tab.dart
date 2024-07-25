@@ -78,92 +78,94 @@ class NotificationsTabState extends State<NotificationsTab> {
       builder: (context, notificationProvider, child) {
         final notifications = notificationProvider.notifications;
         final invitations = notificationProvider.invitations;
-        return Stack(
-          children: [
-            if (notifications.isEmpty && invitations.isEmpty)
-              Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Icon(
-                      Icons.notifications_off,
-                      size: 80,
-                      color: Colors.grey,
-                    ),
-                    const SizedBox(height: 16),
-                    Text(
-                      AppLocalizations.of(context).noNotifications,
-                      style: const TextStyle(
-                        fontSize: 18,
-                        color: Colors.grey,
-                      ),
-                    ),
-                  ],
+
+        if (notifications.isEmpty && invitations.isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.notifications_off,
+                  size: 80,
+                  color: Colors.grey,
                 ),
+                const SizedBox(height: 16),
+                Text(
+                  AppLocalizations.of(context).noNotifications,
+                  style: const TextStyle(
+                    fontSize: 18,
+                    color: Colors.grey,
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        List<Widget> allNotifications = [];
+
+        for (var invitation in invitations) {
+          final index = invitations.indexOf(invitation);
+          allNotifications.add(
+            Dismissible(
+              key: UniqueKey(),
+              direction: DismissDirection.horizontal,
+              onDismissed: (direction) {
+                if (direction == DismissDirection.startToEnd) {
+                  _acceptInvitation(index, invitation);
+                } else if (direction == DismissDirection.endToStart) {
+                  _rejectInvitation(index, invitation);
+                }
+              },
+              background: Container(
+                color: Colors.green,
+                alignment: Alignment.centerLeft,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: const Icon(Icons.check, color: Colors.white),
               ),
-            if (invitations.isNotEmpty)
-              ListView.builder(
-                itemCount: invitations.length,
-                itemBuilder: (context, index) {
-                  final invitation = invitations[index];
-                  return Dismissible(
-                    key: UniqueKey(),
-                    direction: DismissDirection.horizontal,
-                    onDismissed: (direction) {
-                      if (direction == DismissDirection.endToStart) {
-                        _acceptInvitation(index, invitation);
-                      } else if (direction == DismissDirection.startToEnd) {
-                        _rejectInvitation(index, invitation);
-                      }
-                    },
-                    background: Container(
-                      color: Colors.red,
-                      alignment: Alignment.centerLeft,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Icon(Icons.delete, color: Colors.white),
-                    ),
-                    secondaryBackground: Container(
-                      color: Colors.green,
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Icon(Icons.check, color: Colors.white),
-                    ),
-                    child: NotificationCard(
-                      message: invitation.message,
-                      imageUrl: invitation.tournament.image,
-                    ),
-                  );
-                },
+              secondaryBackground: Container(
+                color: Colors.red,
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: const Icon(Icons.delete, color: Colors.white),
               ),
-            if (notifications.isNotEmpty)
-              ListView.builder(
-                itemCount: notifications.length,
-                itemBuilder: (context, index) {
-                  final notification = notifications[index];
-                  return Dismissible(
-                    key: UniqueKey(),
-                    direction: DismissDirection.endToStart,
-                    onDismissed: (direction) {
-                      notificationProvider.removeNotification(index);
-                      showNotificationToast(
-                        context,
-                        AppLocalizations.of(context).notificationDeleted,
-                      );
-                    },
-                    background: Container(
-                      color: Colors.red,
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Icon(Icons.delete, color: Colors.white),
-                    ),
-                    child: NotificationCard(
-                      message: notification,
-                      imageUrl: notification,
-                    ),
-                  );
-                },
+              child: NotificationCard(
+                message: invitation.message,
+                imageUrl: invitation.tournament.image,
               ),
-          ],
+            ),
+          );
+        }
+
+        for (var notification in notifications) {
+          final index = notifications.indexOf(notification);
+          allNotifications.add(
+            Dismissible(
+              key: UniqueKey(),
+              direction: DismissDirection.endToStart,
+              onDismissed: (direction) {
+                notificationProvider.removeNotification(index);
+                showNotificationToast(
+                  context,
+                  AppLocalizations.of(context).notificationDeleted,
+                );
+              },
+              background: Container(
+                color: Colors.red,
+                alignment: Alignment.centerRight,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: const Icon(Icons.delete, color: Colors.white),
+              ),
+              child: NotificationCard(
+                message: notification,
+                imageUrl: notification,
+              ),
+            ),
+          );
+        }
+
+        return ListView(
+          children: allNotifications,
         );
       },
     );

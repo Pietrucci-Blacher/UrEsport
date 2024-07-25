@@ -98,6 +98,14 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Eliminar el juego"),
         "deleteTeamConfirmation": MessageLookupByLibrary.simpleMessage(
             "¿Estás seguro de que quieres eliminar este equipo"),
+        "deleteTournament":
+            MessageLookupByLibrary.simpleMessage("Eliminar torneo"),
+        "deleteTournamentConfirm": MessageLookupByLibrary.simpleMessage(
+            "¿Estás seguro de que quieres eliminar este torneo? Esta acción no se puede deshacer"),
+        "deleteTournamentError":
+            MessageLookupByLibrary.simpleMessage("Error al eliminar el torneo"),
+        "deleteTournamentSucess":
+            MessageLookupByLibrary.simpleMessage("Torneo eliminado con éxito"),
         "description": MessageLookupByLibrary.simpleMessage("Descripción"),
         "descriptionGame": MessageLookupByLibrary.simpleMessage("Descripción:"),
         "descriptionIsRequired": MessageLookupByLibrary.simpleMessage(
