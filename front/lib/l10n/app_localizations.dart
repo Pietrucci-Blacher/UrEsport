@@ -2749,6 +2749,38 @@ class AppLocalizations {
       desc: 'Message shown when the team has already been invited or conflict',
     );
   }
+
+  String get deleteTournament {
+    return Intl.message(
+      'Delete Tournament',
+      name: 'deleteTournament',
+      desc: 'Title for the delete tournament confirmation dialog',
+    );
+  }
+
+  String get deleteTournamentConfirm {
+    return Intl.message(
+      'Are you sure you want to delete this tournament? This action cannot be undone.',
+      name: 'deleteTournamentConfirm',
+      desc: 'Confirmation message for deleting a tournament',
+    );
+  }
+
+  String get deleteTournamentSucess {
+    return Intl.message(
+      'Tournament deleted successfully',
+      name: 'deleteTournamentSucess',
+      desc: 'Message shown when the tournament is deleted successfully',
+    );
+  }
+
+  String get deleteTournamentError {
+    return Intl.message(
+      'Error deleting tournament',
+      name: 'deleteTournamentError',
+      desc: 'Message shown when the tournament deletion fails',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

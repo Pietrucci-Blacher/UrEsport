@@ -3379,6 +3379,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Delete Tournament`
+  String get deleteTournament {
+    return Intl.message(
+      'Delete Tournament',
+      name: 'deleteTournament',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete this tournament? This action cannot be undone`
+  String get deleteTournamentConfirm {
+    return Intl.message(
+      'Are you sure you want to delete this tournament? This action cannot be undone',
+      name: 'deleteTournamentConfirm',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tournament deleted successfully`
+  String get deleteTournamentSucess {
+    return Intl.message(
+      'Tournament deleted successfully',
+      name: 'deleteTournamentSucess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error deleting tournament`
+  String get deleteTournamentError {
+    return Intl.message(
+      'Error deleting tournament',
+      name: 'deleteTournamentError',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
