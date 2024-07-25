@@ -760,10 +760,10 @@ class S {
     );
   }
 
-  /// `No teams found for the user`
+  /// `No teams found`
   String get noTeamsFoundForUser {
     return Intl.message(
-      'No teams found for the user',
+      'No teams found',
       name: 'noTeamsFoundForUser',
       desc: '',
       args: [],
@@ -3345,6 +3345,16 @@ class S {
     return Intl.message(
       'Private',
       name: 'privateText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No participants found`
+  String get noParticipantsFound {
+    return Intl.message(
+      'No participants found',
+      name: 'noParticipantsFound',
       desc: '',
       args: [],
     );

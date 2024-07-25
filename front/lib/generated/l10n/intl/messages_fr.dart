@@ -322,6 +322,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "noLikeToDelete":
             MessageLookupByLibrary.simpleMessage("Aucun like à supprimer"),
         "noLikedGames": MessageLookupByLibrary.simpleMessage("Aucun jeu aimé"),
+        "noNotifications":
+            MessageLookupByLibrary.simpleMessage("Aucune notification"),
+        "noParticipantsFound":
+            MessageLookupByLibrary.simpleMessage("Aucun participant trouvé"),
         "noRatingFetched":
             MessageLookupByLibrary.simpleMessage("Aucune note récupérée"),
         "noTeamsAvailable":
