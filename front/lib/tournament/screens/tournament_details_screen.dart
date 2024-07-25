@@ -186,7 +186,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       setState(() {
         _teams = teams;
       });
-      print('Loaded user teams: ${_teams.length} teams');
+      debugPrint('Loaded user teams: ${_teams.length} teams');
     } catch (e) {
       if (kDebugMode) {
         print('Error loading user teams: $e');
@@ -376,8 +376,6 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       debugPrint('Error inviting team to tournament: $e');
       if (!mounted) return;
 
-      String? errorMessage;
-
       if (e is DioException) {
         if (e.response?.statusCode == 409) {
           showNotificationToast(
@@ -532,7 +530,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
               ? Text(AppLocalizations.of(context).noTeamsAvailable)
               : Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: _currentUser!.teams.map((team) {
+                  children: _getUserTeamInTournament().map((team) {
                     return ListTile(
                       title: Text(team.name),
                       onTap: () {
@@ -554,6 +552,10 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
         );
       },
     );
+  }
+
+  List<team_model.Team> _getUserTeamInTournament () {
+    return _currentUser!.teams.where((team) => _participatingTeams.any((t) => t.id == team.id)).toList();
   }
 
   Future<void> _confirmLeaveTournament(
