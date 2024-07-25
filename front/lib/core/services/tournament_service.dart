@@ -74,7 +74,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -129,7 +134,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error upvoting tournament: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -164,7 +174,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error checking upvote status: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -198,7 +213,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error joining tournament: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -234,7 +254,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error checking join status: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -261,7 +286,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error inviting team to tournament: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -285,7 +315,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error fetching teams: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -308,7 +343,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error fetching tournament by ID: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -339,7 +379,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error generating bracket: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -373,7 +418,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error joining tournament with team: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -439,7 +489,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error leaving tournament: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
