@@ -112,7 +112,7 @@
   "details": "Details",
   "bracket": "Bracket",
   "mustBeLoggedInToViewBracket": "You must be logged in to view your bracket",
-  "description": "Description:",
+  "description": "Description",
   "location": "Location",
   "game": "Game:",
   "startDateText": "Start Date:",
@@ -332,5 +332,9 @@
   "privateText": "Private",
   "noParticipantsFound": "No participants found",
   "notEnoughtTeamtoTournament": "Not enough teams to generate bracket",
-  "teamAllReadyInvite": "Team already invited"
+  "teamAllReadyInvite": "Team already invited",
+  "deleteTournament": "Delete Tournament",
+  "deleteTournamentConfirm": "Are you sure you want to delete this tournament? This action cannot be undone",
+  "deleteTournamentSucess": "Tournament deleted successfully",
+  "deleteTournamentError": "Error deleting tournament"
 }

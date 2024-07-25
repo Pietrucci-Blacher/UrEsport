@@ -582,11 +582,34 @@ class ProfileAvatarWidgetState extends State<ProfileAvatarWidget> {
       );
     } catch (e) {
       debugPrint('Error uploading profile image: $e');
-      scaffoldMessenger.showSnackBar(
-        SnackBar(
-            content: Text('${localizations.errorUploadingProfileImage}: $e')),
-      );
+      if (!mounted) return;
+      final errorMessage = e is DioException
+          ? e.response?.data['error']
+          : AppLocalizations.of(context).imageUploadError;
+      showNotificationToast(context, errorMessage, backgroundColor: Colors.red);
     }
+  }
+
+  void showNotificationToast(BuildContext context, String message,
+      {Color? backgroundColor, Color? textColor}) {
+    final overlay = Overlay.of(context);
+    late OverlayEntry overlayEntry;
+
+    overlayEntry = OverlayEntry(
+      builder: (context) => CustomToast(
+        message: message,
+        backgroundColor: backgroundColor ?? Colors.blue,
+        textColor: textColor ?? Colors.white,
+        onClose: () {
+          overlayEntry.remove();
+        },
+      ),
+    );
+
+    overlay.insert(overlayEntry);
+    Future.delayed(const Duration(seconds: 3), () {
+      overlayEntry.remove();
+    });
   }
 }
 
@@ -733,21 +756,48 @@ class EditableFieldsSectionState extends State<EditableFieldsSection> {
   }
 }
 
-class LikedGamesList extends StatelessWidget {
+class LikedGamesList extends StatefulWidget {
   final int? userId;
 
   const LikedGamesList({super.key, this.userId});
 
   @override
+  LikedGamesListState createState() => LikedGamesListState();
+}
+
+class LikedGamesListState extends State<LikedGamesList> {
+  late Future<List<Like>> _likedGamesFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _likedGamesFuture = _fetchLikedGames();
+  }
+
+  Future<List<Like>> _fetchLikedGames() async {
+    if (widget.userId == null) {
+      return [];
+    }
+    final likeService = LikeService(Dio());
+    return await likeService.getLikesByUserID(widget.userId!);
+  }
+
+  void _refreshLikedGames() {
+    setState(() {
+      _likedGamesFuture = _fetchLikedGames();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     AppLocalizations l = AppLocalizations.of(context);
 
-    if (userId == null) {
+    if (widget.userId == null) {
       return Center(child: Text(l.mustBeLoggedIn));
     }
 
     return FutureBuilder<List<Like>>(
-      future: _fetchLikedGames(userId!),
+      future: _likedGamesFuture,
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -788,6 +838,7 @@ class LikedGamesList extends StatelessWidget {
                   if (!context.mounted) return;
                   _showToast(context,
                       '${game.name}: ${l.removedFromLikedGames}', Colors.red);
+                  _refreshLikedGames();
                 },
                 background: Container(
                   color: Colors.red,
@@ -818,11 +869,6 @@ class LikedGamesList extends StatelessWidget {
         return const Center(child: CircularProgressIndicator());
       },
     );
-  }
-
-  Future<List<Like>> _fetchLikedGames(int userId) async {
-    final likeService = LikeService(Dio());
-    return await likeService.getLikesByUserID(userId);
   }
 
   void _showToast(BuildContext context, String message, Color backgroundColor) {

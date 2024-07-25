@@ -187,7 +187,7 @@ class FriendsTabState extends State<FriendsTab> {
                                                 return AlertDialog(
                                                   title: Text(l.confirm),
                                                   content: Text(
-                                                      '${l.confirmDeleteFriend} ${friend.firstname} ?'),
+                                                      '${l.confirmDeleteFriend} ${friend.firstname} ${friend.lastname}?'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () =>
@@ -207,33 +207,46 @@ class FriendsTabState extends State<FriendsTab> {
                                             ) ??
                                             false;
                                       } else {
-                                        return true;
+                                        context.read<FriendsBloc>().add(
+                                            ToggleFavorite(
+                                                friend, _currentUser!.id));
+                                        return false;
                                       }
                                     },
                                     onDismissed: (direction) {
                                       if (direction ==
-                                          DismissDirection.endToStart) {
+                                          DismissDirection.startToEnd) {
                                         context.read<FriendsBloc>().add(
                                             DeleteFriend(
-                                                friend, _currentUser!.id));
-                                      } else {
-                                        context.read<FriendsBloc>().add(
-                                            ToggleFavorite(
                                                 friend, _currentUser!.id));
                                       }
                                     },
                                     background: Container(
                                       color: Colors.red,
-                                      alignment: Alignment.centerRight,
+                                      alignment: Alignment.centerLeft,
                                       padding: const EdgeInsets.symmetric(
                                           horizontal: 20),
                                       child: const Icon(Icons.remove_circle,
                                           color: Colors.white),
                                     ),
+                                    secondaryBackground: Container(
+                                      color: Colors.red,
+                                      alignment: Alignment.centerRight,
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 20),
+                                      child: const Icon(Icons.delete,
+                                          color: Colors.white),
+                                    ),
                                     child: GestureDetector(
+                                      onTap: () {
+                                        context.read<FriendsBloc>().add(
+                                            ToggleFavorite(
+                                                friend, _currentUser!.id));
+                                      },
                                       child: FriendListTile(
-                                          name:
-                                              "${friend.firstname} ${friend.lastname}"),
+                                        name:
+                                            "${friend.firstname} ${friend.lastname}",
+                                      ),
                                     ),
                                   )),
                             ];
@@ -272,7 +285,7 @@ class FriendsTabState extends State<FriendsTab> {
                                                   title: const Text(
                                                       'Confirmation'),
                                                   content: Text(
-                                                      '${l.confirmDeleteFriend} ${friend.firstname} ${friend.lastname} ?'),
+                                                      '${l.confirmDeleteFriend} ${friend.firstname} ${friend.lastname}?'),
                                                   actions: [
                                                     TextButton(
                                                       onPressed: () =>
@@ -292,18 +305,17 @@ class FriendsTabState extends State<FriendsTab> {
                                             ) ??
                                             false;
                                       } else {
-                                        return true;
+                                        context.read<FriendsBloc>().add(
+                                            ToggleFavorite(
+                                                friend, _currentUser!.id));
+                                        return false;
                                       }
                                     },
                                     onDismissed: (direction) {
                                       if (direction ==
-                                          DismissDirection.endToStart) {
+                                          DismissDirection.startToEnd) {
                                         context.read<FriendsBloc>().add(
                                             DeleteFriend(
-                                                friend, _currentUser!.id));
-                                      } else {
-                                        context.read<FriendsBloc>().add(
-                                            ToggleFavorite(
                                                 friend, _currentUser!.id));
                                       }
                                     },
@@ -324,9 +336,15 @@ class FriendsTabState extends State<FriendsTab> {
                                           color: Colors.white),
                                     ),
                                     child: GestureDetector(
+                                      onTap: () {
+                                        context.read<FriendsBloc>().add(
+                                            ToggleFavorite(
+                                                friend, _currentUser!.id));
+                                      },
                                       child: FriendListTile(
-                                          name:
-                                              "${friend.firstname} ${friend.lastname}"),
+                                        name:
+                                            "${friend.firstname} ${friend.lastname}",
+                                      ),
                                     ),
                                   )),
                             ];

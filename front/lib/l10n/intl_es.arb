@@ -148,7 +148,7 @@
   "details": "Detalles",
   "bracket": "Soporte",
   "mustBeLoggedInToViewBracket": "Debes estar conectado para ver tu soporte",
-  "description": "Descripción:",
+  "description": "Descripción",
   "location": "Ubicación",
   "startDateText": "Fecha de inicio:",
   "endDateText": "Fecha de fin:",
@@ -370,5 +370,9 @@
   "privateText": "Privado",
   "noParticipantsFound": "No se encontraron participantes",
   "notEnoughtTeamtoTournament": "No hay suficientes equipos para generar un grupo",
-  "teamAllReadyInvite": "El equipo ya ha sido invitado"
+  "teamAllReadyInvite": "El equipo ya ha sido invitado",
+  "deleteTournament": "Eliminar torneo",
+  "deleteTournamentConfirm": "¿Estás seguro de que quieres eliminar este torneo? Esta acción no se puede deshacer",
+  "deleteTournamentSucess": "Torneo eliminado con éxito",
+  "deleteTournamentError": "Error al eliminar el torneo"
 }

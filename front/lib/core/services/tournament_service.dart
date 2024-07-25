@@ -25,6 +25,7 @@ abstract class ITournamentService {
   Future<void> updateTournament(Tournament tournament);
   Future<String> uploadTournamentImage(int tournamentId, File image);
   Future<List<Team>> getTeamsByTournamentId(int tournamentId);
+  Future<void> deleteTournament(int tournamentId);
 }
 
 class TournamentService implements ITournamentService {
@@ -572,7 +573,7 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 200) {
-        throw Exception('Failed to upload tournament image');
+        throw Exception(response.data['error'] ?? 'Failed to upload image');
       }
 
       final imageUrl = response.data['image'];
@@ -582,7 +583,7 @@ class TournamentService implements ITournamentService {
       return imageUrl;
     } catch (e) {
       debugPrint('Error uploading tournament image: $e');
-      throw Exception('Unexpected error occurred');
+      rethrow;
     }
   }
 
@@ -598,11 +599,49 @@ class TournamentService implements ITournamentService {
             .map((json) => Team.fromJson(json))
             .toList();
       } else {
-        throw Exception('Failed to load teams');
+        throw Exception(response.data['error'] ?? 'Failed to load teams');
       }
     } catch (e) {
       debugPrint('Error fetching teams by tournament ID: $e');
-      throw Exception('Unexpected error occurred');
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> deleteTournament(int tournamentId) async {
+    final token = await _cacheService.getString('token');
+    if (token == null) throw Exception('No token found');
+
+    try {
+      final response = await _dio.delete(
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId",
+        options: Options(
+          headers: {
+            'Authorization': 'Bearer $token',
+            'Content-Type': 'application/json',
+          },
+        ),
+      );
+
+      if (response.statusCode == 204) {
+        _tournamentsNotifier.value = _tournamentsNotifier.value
+            .where((t) => t.id != tournamentId)
+            .toList();
+      } else {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to delete tournament',
+          type: DioExceptionType.badResponse,
+        );
+      }
+    } catch (e) {
+      debugPrint('Error deleting tournament: $e');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 }
