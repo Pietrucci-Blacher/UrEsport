@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -11,6 +12,7 @@ import 'package:uresport/core/models/team.dart' as team_model;
 import 'package:uresport/core/models/tournament.dart' as tournament_model;
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/game/screens/game_detail.dart';
 import 'package:uresport/l10n/app_localizations.dart';
@@ -19,7 +21,6 @@ import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/widgets/rating.dart';
-import 'package:uresport/core/services/team_services.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
@@ -76,7 +77,6 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       setState(() {
         _currentUser = user;
       });
-      debugPrint('Current user: ${user.id}, ${user.username}');
       await _checkIfJoined();
       await _checkIfUpvoted();
     } catch (e) {
