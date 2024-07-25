@@ -64,11 +64,22 @@ class TournamentService implements ITournamentService {
             tournaments; // Mise à jour du ValueNotifier
         return tournaments;
       } else {
-        throw Exception('Failed to load tournaments');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to load tournaments',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to load tournaments');
       }
     } catch (e) {
       debugPrint('Error: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -84,11 +95,20 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 200) {
-        throw Exception('Failed to invite user to tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to invite user to tournament',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to invite user to tournament');
       }
     } catch (e) {
-      debugPrint('Error inviting user to tournament: $e');
-      throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -114,7 +134,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error upvoting tournament: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -139,11 +164,22 @@ class TournamentService implements ITournamentService {
       } else if (response.statusCode == 404) {
         return false;
       } else {
-        throw Exception('Failed to check if upvoted');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to check upvote status',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to check if upvoted');
       }
     } catch (e) {
       debugPrint('Error checking upvote status: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -167,11 +203,22 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Failed to join tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to join tournament',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to join tournament');
       }
     } catch (e) {
       debugPrint('Error joining tournament: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -197,11 +244,22 @@ class TournamentService implements ITournamentService {
       if (response.statusCode == 200) {
         return response.data['joined'] as bool;
       } else {
-        throw Exception('Failed to check if joined tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to check if joined',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to check if joined tournament');
       }
     } catch (e) {
       debugPrint('Error checking join status: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -228,7 +286,12 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error inviting team to tournament: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -242,11 +305,22 @@ class TournamentService implements ITournamentService {
             .map((json) => Team.fromJson(json))
             .toList();
       } else {
-        throw Exception('Failed to load teams');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to load teams',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to load teams');
       }
     } catch (e) {
       debugPrint('Error fetching teams: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -259,11 +333,22 @@ class TournamentService implements ITournamentService {
       if (response.statusCode == 200) {
         return Tournament.fromJson(response.data);
       } else {
-        throw Exception('Failed to load tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to load tournament',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to load tournament');
       }
     } catch (e) {
       debugPrint('Error fetching tournament by ID: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -284,11 +369,22 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 200) {
-        throw Exception('Failed to generate bracket');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to generate bracket',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to generate bracket');
       }
     } catch (e) {
       debugPrint('Error generating bracket: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -312,11 +408,22 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Failed to join tournament with team');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to join tournament with team',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to join tournament with team');
       }
     } catch (e) {
       debugPrint('Error joining tournament with team: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -337,18 +444,21 @@ class TournamentService implements ITournamentService {
         ),
       );
 
-      if (response.statusCode == 201) {
-        final newTournament = Tournament.fromJson(response.data);
-        _tournamentsNotifier.value = [
-          ..._tournamentsNotifier.value,
-          newTournament
-        ]; // Ajouter le nouveau tournoi
-      } else {
-        throw Exception('Failed to create tournament');
+      if (response.statusCode != 201) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to create tournament',
+          type: DioExceptionType.badResponse,
+        );
       }
     } catch (e) {
       debugPrint('Error creating tournament: $e');
-      throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -369,11 +479,22 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 204) {
-        throw Exception('Failed to leave the tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to leave tournament',
+          type: DioExceptionType.badResponse,
+        );
+        // throw Exception('Failed to leave the tournament');
       }
     } catch (e) {
       debugPrint('Error leaving tournament: $e');
-      throw Exception('Unexpected error occurred');
+      // throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 
@@ -394,19 +515,21 @@ class TournamentService implements ITournamentService {
         ),
       );
 
-      if (response.statusCode == 200) {
-        final updatedTournaments = _tournamentsNotifier.value.map((t) {
-          return t.id == tournament.id ? Tournament.fromJson(response.data) : t;
-        }).toList();
-
-        _tournamentsNotifier.value =
-            updatedTournaments; // Mise à jour du ValueNotifier
-      } else {
-        throw Exception('Failed to update tournament');
+      if (response.statusCode != 200) {
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error: response.data['error'] ?? 'Failed to update tournament',
+          type: DioExceptionType.badResponse,
+        );
       }
     } catch (e) {
       debugPrint('Error updating tournament: $e');
-      throw Exception('Unexpected error occurred');
+      if (e is DioException) {
+        rethrow;
+      } else {
+        throw Exception('Unexpected error occurred');
+      }
     }
   }
 

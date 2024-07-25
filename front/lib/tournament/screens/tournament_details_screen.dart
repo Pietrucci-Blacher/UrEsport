@@ -351,12 +351,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
         } else {
           final errorMessage = e.response?.data['error'];
           showNotificationToast(context,
-              '${AppLocalizations.of(context).invitationSendError}: $errorMessage',
+              errorMessage,
               backgroundColor: Colors.red);
         }
       } else {
         showNotificationToast(
-            context, '${AppLocalizations.of(context).invitationSendError}: $e',
+            context, AppLocalizations.of(context).invitationSendError,
             backgroundColor: Colors.red);
       }
     }
@@ -389,8 +389,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
           _isUploadingImage = false;
         });
         if (!mounted) return;
+        final errorMessage = e is DioException
+            ? e.response?.data['error']
+            : AppLocalizations.of(context).imageUploadError;
         showNotificationToast(
-            context, '${AppLocalizations.of(context).imageUploadError}: $e',
+            context, errorMessage,
             backgroundColor: Colors.red);
       }
     } else {
@@ -430,9 +433,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
           backgroundColor: Colors.green);
     } catch (e) {
       debugPrint('Error generating bracket: $e');
+      final errorMessage = e is DioException
+          ? e.response?.data['error']
+          : AppLocalizations.of(context).failedToGenerateBracket;
       if (!mounted) return;
       showNotificationToast(
-          context, AppLocalizations.of(context).failedToGenerateBracket,
+          context, errorMessage,
           backgroundColor: Colors.red);
     }
   }
