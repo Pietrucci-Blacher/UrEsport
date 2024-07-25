@@ -174,8 +174,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Error al cargar los amigos"),
         "failedToLoadTournaments": MessageLookupByLibrary.simpleMessage(
             "No eres dueño de ningún torneo"),
-        "failedToLoadUserTeams": MessageLookupByLibrary.simpleMessage(
-            "Error al cargar los equipos del usuario"),
+        "failedToLoadUserTeams":
+            MessageLookupByLibrary.simpleMessage("Error al cargar los equipos"),
         "failedToLoadUsers": MessageLookupByLibrary.simpleMessage(
             "Error al cargar los usuarios"),
         "failedToUpdateFavoriteStatus": MessageLookupByLibrary.simpleMessage(
@@ -313,6 +313,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "No te has unido a ningún torneo"),
         "noLikeToDelete": MessageLookupByLibrary.simpleMessage(
             "No hay me gusta para eliminar"),
+        "noNotifications":
+            MessageLookupByLibrary.simpleMessage("No tienes notificaciones"),
+        "noParticipantsFound": MessageLookupByLibrary.simpleMessage(
+            "No se encontraron participantes"),
         "noRatingFetched": MessageLookupByLibrary.simpleMessage(
             "No se pudo recuperar la calificación"),
         "noTeamsAvailable":
@@ -333,6 +337,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No se encontraron usuarios"),
         "noWinnerYet":
             MessageLookupByLibrary.simpleMessage("Aún no hay ganador"),
+        "notEnoughtTeamtoTournament": MessageLookupByLibrary.simpleMessage(
+            "No hay suficientes equipos para generar un grupo"),
         "nothingTournamentforGame": MessageLookupByLibrary.simpleMessage(
             "No hay torneos para este juego"),
         "notificationDeleted":
@@ -475,6 +481,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Puntuación del equipo 1"),
         "team2Score":
             MessageLookupByLibrary.simpleMessage("Puntuación del equipo 2"),
+        "teamAllReadyInvite": MessageLookupByLibrary.simpleMessage(
+            "El equipo ya ha sido invitado"),
         "teamAlreadyInTournament":
             MessageLookupByLibrary.simpleMessage("Equipo ya en este torneo"),
         "teamContainPlayers":

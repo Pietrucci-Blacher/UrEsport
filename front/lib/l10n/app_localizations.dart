@@ -956,7 +956,7 @@ class AppLocalizations {
 
   String get teamNotRegistered {
     return Intl.message(
-      'Cette team n\'est pas inscrite dans le tournoi',
+      'This team is not registered in the tournament',
       name: 'teamNotRegistered',
       desc: 'Message displayed when team is not registered in the tournament',
     );
@@ -2723,6 +2723,30 @@ class AppLocalizations {
       'Private',
       name: 'privateText',
       desc: 'Private text',
+    );
+  }
+
+  String get noParticipantsFound {
+    return Intl.message(
+      'No participants found',
+      name: 'noParticipantsFound',
+      desc: 'Message shown when no participants are found',
+    );
+  }
+
+  String get notEnoughtTeamtoTournament {
+    return Intl.message(
+      'Not enough teams to generate bracket',
+      name: 'notEnoughtTeamtoTournament',
+      desc: 'Message shown when not enough teams to start the tournament',
+    );
+  }
+
+  String get teamAllReadyInvite {
+    return Intl.message(
+      'Team already invited',
+      name: 'teamAllReadyInvite',
+      desc: 'Message shown when the team has already been invited or conflict',
     );
   }
 }

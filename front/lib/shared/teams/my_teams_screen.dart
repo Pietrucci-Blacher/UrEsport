@@ -20,6 +20,7 @@ class MyTeamsScreen extends StatefulWidget {
 
 class MyTeamsScreenState extends State<MyTeamsScreen> {
   User? _currentUser;
+  List<Team>? _teams;
 
   Future<void> _loadCurrentUser() async {
     final authService = Provider.of<IAuthService>(context, listen: false);
@@ -34,10 +35,27 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
     }
   }
 
+  Future<void> _loadUserTeams() async {
+    if (_currentUser == null) return;
+    final teamService = Provider.of<ITeamService>(context, listen: false);
+    try {
+      final teams = await teamService.getUserTeams(_currentUser!.id);
+      if (!mounted) return;
+      setState(() {
+        _teams = teams;
+      });
+    } catch (e) {
+      debugPrint('Error loading user teams: $e');
+      setState(() {
+        _teams = [];
+      });
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _loadCurrentUser();
+    _loadCurrentUser().then((_) => _loadUserTeams());
   }
 
   @override
@@ -57,81 +75,89 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
       appBar: AppBar(
         title: Text(l.myTeams),
       ),
-      body: FutureBuilder(
-        future: _loadUserTeams(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            debugPrint('Error in FutureBuilder: ${snapshot.error}');
-            return Center(child: Text(l.failedToLoadUserTeams));
-          } else if (!snapshot.hasData ||
-              (snapshot.data as List<Team>).isEmpty) {
-            return Center(child: Text(l.noTeamsFoundForUser));
-          } else {
-            final teams = snapshot.data as List<Team>;
-            return ListView.builder(
-              itemCount: teams.length,
-              itemBuilder: (context, index) {
-                final team = teams[index];
-                return ExpansionTile(
-                  title: Text(team.name,
-                      style: const TextStyle(
-                          fontSize: 18, fontWeight: FontWeight.bold)),
-                  subtitle: Text(
-                      '${l.membersInTeam}: ${team.members.length} | ${l.tournamentsInTeam}: ${team.tournaments.length}',
-                      style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                  trailing: IconButton(
-                    icon: const Icon(Icons.exit_to_app, color: Colors.red),
-                    onPressed: () => _confirmLeaveTeam(team.id, team.name),
+      body: _teams == null
+          ? const Center(child: CircularProgressIndicator())
+          : _teams!.isEmpty
+              ? Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.group, size: 80, color: Colors.grey),
+                      const SizedBox(height: 16),
+                      Text(l.noTeamsFoundForUser,
+                          style: const TextStyle(
+                              fontSize: 18, color: Colors.grey)),
+                    ],
                   ),
-                  children: team.tournaments.map((tournamentJson) {
-                    Tournament tournament = Tournament.fromJson(tournamentJson);
-                    return Card(
-                      margin: const EdgeInsets.symmetric(
-                          vertical: 8.0, horizontal: 16.0),
-                      child: ListTile(
-                        contentPadding: const EdgeInsets.all(10.0),
-                        leading: Image.network(tournament.image,
-                            width: 50, height: 50, fit: BoxFit.cover),
-                        title: Text(tournament.name,
+                )
+              : RefreshIndicator(
+                  onRefresh: _loadUserTeams,
+                  child: ListView.builder(
+                    itemCount: _teams!.length,
+                    itemBuilder: (context, index) {
+                      final team = _teams![index];
+                      return ExpansionTile(
+                        title: Text(team.name,
                             style: const TextStyle(
-                                fontSize: 16, fontWeight: FontWeight.w600)),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                                '${l.start}: ${DateFormat.yMMMd().format(tournament.startDate)}',
-                                style: const TextStyle(fontSize: 14)),
-                            Text(
-                                '${l.end}: ${DateFormat.yMMMd().format(tournament.endDate)}',
-                                style: const TextStyle(fontSize: 14)),
-                            Text(tournament.description,
-                                style: const TextStyle(
-                                    fontSize: 12, color: Colors.grey),
-                                overflow: TextOverflow.ellipsis),
-                          ],
+                                fontSize: 18, fontWeight: FontWeight.bold)),
+                        subtitle: Text(
+                            '${l.membersInTeam}: ${team.members.length} | ${l.tournamentsInTeam}: ${team.tournaments.length}',
+                            style: const TextStyle(
+                                fontSize: 14, color: Colors.grey)),
+                        trailing: IconButton(
+                          icon:
+                              const Icon(Icons.exit_to_app, color: Colors.red),
+                          onPressed: () =>
+                              _confirmLeaveTeam(team.id, team.name),
                         ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => TournamentDetailsScreen(
-                                tournament: tournament,
-                                game: tournament.game,
+                        children: team.tournaments.map((tournamentJson) {
+                          Tournament tournament =
+                              Tournament.fromJson(tournamentJson);
+                          return Card(
+                            margin: const EdgeInsets.symmetric(
+                                vertical: 8.0, horizontal: 16.0),
+                            child: ListTile(
+                              contentPadding: const EdgeInsets.all(10.0),
+                              leading: Image.network(tournament.image,
+                                  width: 50, height: 50, fit: BoxFit.cover),
+                              title: Text(tournament.name,
+                                  style: const TextStyle(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.w600)),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                      '${l.start}: ${DateFormat.yMMMd().format(tournament.startDate)}',
+                                      style: const TextStyle(fontSize: 14)),
+                                  Text(
+                                      '${l.end}: ${DateFormat.yMMMd().format(tournament.endDate)}',
+                                      style: const TextStyle(fontSize: 14)),
+                                  Text(tournament.description,
+                                      style: const TextStyle(
+                                          fontSize: 12, color: Colors.grey),
+                                      overflow: TextOverflow.ellipsis),
+                                ],
                               ),
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        TournamentDetailsScreen(
+                                      tournament: tournament,
+                                      game: tournament.game,
+                                    ),
+                                  ),
+                                );
+                              },
                             ),
                           );
-                        },
-                      ),
-                    );
-                  }).toList(),
-                );
-              },
-            );
-          }
-        },
-      ),
+                        }).toList(),
+                      );
+                    },
+                  ),
+                ),
     );
   }
 
@@ -171,9 +197,7 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
     final teamService = Provider.of<ITeamService>(context, listen: false);
     try {
       await teamService.leaveTeam(userId, teamId);
-      setState(() {
-        _loadUserTeams();
-      });
+      _loadUserTeams();
       _showToast('${l.confirmLeaveTeam} $teamName', Colors.green);
     } catch (e) {
       if (e is DioException && e.response?.statusCode == 409) {
@@ -209,16 +233,5 @@ class MyTeamsScreenState extends State<MyTeamsScreen> {
     Future.delayed(const Duration(seconds: 3), () {
       overlayEntry.remove();
     });
-  }
-
-  Future<List<Team>> _loadUserTeams() async {
-    AppLocalizations l = AppLocalizations.of(context);
-    if (_currentUser == null) {
-      throw Exception(l.userIsNotLogin);
-    }
-
-    final userId = _currentUser!.id;
-    final teamService = Provider.of<ITeamService>(context, listen: false);
-    return await teamService.getUserTeams(userId);
   }
 }

@@ -318,7 +318,7 @@
   "nowTournaments": "Aujourd'hui",
   "selectDate": "Sélectionner une date",
   "noTournamentForDate": "Aucun tournoi pour cette date",
-  "noTeamsFoundForUser": "Aucune équipe trouvée pour cet utilisateur",
+  "noTeamsFoundForUser": "Aucune équipe trouvée",
   "confirmAction": "Confirmer l'action",
   "delete": "Supprimer",
   "leave": "Quitter",
@@ -367,5 +367,8 @@
   "failedToGenerateBracket": "Échec de la génération du bracket",
   "allText": "Tous",
   "publicText": "Public",
-    "privateText": "Privé"
+  "privateText": "Privé",
+  "noParticipantsFound": "Aucun participant trouvé",
+  "notEnoughtTeamtoTournament": "Pas assez d'équipes pour générer un bracket",
+  "teamAllReadyInvite": "Équipe déjà invitée"
 }

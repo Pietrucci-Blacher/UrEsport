@@ -8,7 +8,7 @@ import (
 )
 
 var (
-	IMAGE = []string{"jpg", "png"}
+	IMAGE = []string{"jpg", "jpeg", "png", "heic"}
 	PDF   = []string{"pdf"}
 
 	SIZE_1KB   = 1 << 10

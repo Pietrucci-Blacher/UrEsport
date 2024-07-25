@@ -760,10 +760,10 @@ class S {
     );
   }
 
-  /// `No teams found for the user`
+  /// `No teams found`
   String get noTeamsFoundForUser {
     return Intl.message(
-      'No teams found for the user',
+      'No teams found',
       name: 'noTeamsFoundForUser',
       desc: '',
       args: [],
@@ -3270,10 +3270,10 @@ class S {
     );
   }
 
-  /// `Team contains `
+  /// `The team must contain`
   String get teamContainPlayers {
     return Intl.message(
-      'Team contains ',
+      'The team must contain',
       name: 'teamContainPlayers',
       desc: '',
       args: [],
@@ -3345,6 +3345,36 @@ class S {
     return Intl.message(
       'Private',
       name: 'privateText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No participants found`
+  String get noParticipantsFound {
+    return Intl.message(
+      'No participants found',
+      name: 'noParticipantsFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not enough teams to generate bracket`
+  String get notEnoughtTeamtoTournament {
+    return Intl.message(
+      'Not enough teams to generate bracket',
+      name: 'notEnoughtTeamtoTournament',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Team already invited`
+  String get teamAllReadyInvite {
+    return Intl.message(
+      'Team already invited',
+      name: 'teamAllReadyInvite',
       desc: '',
       args: [],
     );

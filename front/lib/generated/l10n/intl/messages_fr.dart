@@ -322,14 +322,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "noLikeToDelete":
             MessageLookupByLibrary.simpleMessage("Aucun like à supprimer"),
         "noLikedGames": MessageLookupByLibrary.simpleMessage("Aucun jeu aimé"),
+        "noNotifications":
+            MessageLookupByLibrary.simpleMessage("Aucune notification"),
+        "noParticipantsFound":
+            MessageLookupByLibrary.simpleMessage("Aucun participant trouvé"),
         "noRatingFetched":
             MessageLookupByLibrary.simpleMessage("Aucune note récupérée"),
         "noTeamsAvailable":
             MessageLookupByLibrary.simpleMessage("Aucune équipe disponible."),
         "noTeamsAvailableForUser": MessageLookupByLibrary.simpleMessage(
             "Aucune équipe disponible pour l\'utilisateur actuel."),
-        "noTeamsFoundForUser": MessageLookupByLibrary.simpleMessage(
-            "Aucune équipe trouvée pour cet utilisateur"),
+        "noTeamsFoundForUser":
+            MessageLookupByLibrary.simpleMessage("Aucune équipe trouvée"),
         "noTournamentForDate": MessageLookupByLibrary.simpleMessage(
             "Aucun tournoi pour cette date"),
         "noTournamentsAvailable":
@@ -342,6 +346,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Aucun utilisateur trouvé"),
         "noWinnerYet":
             MessageLookupByLibrary.simpleMessage("Pas encore de gagnant"),
+        "notEnoughtTeamtoTournament": MessageLookupByLibrary.simpleMessage(
+            "Pas assez d\'équipes pour générer un bracket"),
         "nothingTournamentforGame":
             MessageLookupByLibrary.simpleMessage("Aucun tournoi pour ce jeu"),
         "notificationDeleted":
@@ -488,6 +494,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Score de l\'équipe 1"),
         "team2Score":
             MessageLookupByLibrary.simpleMessage("Score de l\'équipe 2"),
+        "teamAllReadyInvite":
+            MessageLookupByLibrary.simpleMessage("Équipe déjà invitée"),
         "teamAlreadyInTournament":
             MessageLookupByLibrary.simpleMessage("Équipe déjà dans ce tournoi"),
         "teamContainPlayers":

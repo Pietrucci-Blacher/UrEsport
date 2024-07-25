@@ -8,6 +8,7 @@ class Team {
   final bool isPrivate;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final bool hasJoined; // Nouvelle propriété
 
   Team({
     required this.id,
@@ -19,6 +20,7 @@ class Team {
     required this.isPrivate,
     required this.createdAt,
     required this.updatedAt,
+    required this.hasJoined, // Assurez-vous d'initialiser cette propriété
   });
 
   factory Team.fromJson(Map<String, dynamic> json) {
@@ -32,6 +34,7 @@ class Team {
       isPrivate: json['private'],
       createdAt: DateTime.parse(json['created_at']),
       updatedAt: DateTime.parse(json['updated_at']),
+      hasJoined: json['hasJoined'] ?? false, // Lecture de la propriété
     );
   }
 
@@ -46,6 +49,7 @@ class Team {
       'private': isPrivate,
       'created_at': createdAt.toIso8601String(),
       'updated_at': updatedAt.toIso8601String(),
+      'hasJoined': hasJoined, // Écriture de la propriété
     };
   }
 

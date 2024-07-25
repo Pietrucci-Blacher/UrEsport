@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:uresport/bracket/screens/custom_schedule.dart';
 import 'package:uresport/core/models/team.dart';
 import 'package:uresport/core/models/tournament.dart';
 import 'package:uresport/core/models/user.dart';
 import 'package:uresport/core/services/auth_service.dart';
+import 'package:uresport/core/services/game_service.dart';
 import 'package:uresport/core/services/team_services.dart';
 import 'package:uresport/core/services/tournament_service.dart';
 import 'package:uresport/l10n/app_localizations.dart';
@@ -21,9 +23,6 @@ import 'package:uresport/tournament/screens/add_tournament.dart';
 import 'package:uresport/tournament/screens/tournament_details_screen.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
-
-import 'package:uresport/bracket/screens/custom_schedule.dart';
-import 'package:uresport/core/services/game_service.dart';
 
 class TournamentScreen extends StatefulWidget {
   const TournamentScreen({super.key});
@@ -168,9 +167,19 @@ class TournamentScreenState extends State<TournamentScreen> {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError) {
           debugPrint('Error in FutureBuilder: ${snapshot.error}');
-          return Center(child: Text(l.failedToLoadUserTeams));
-        } else if (!snapshot.hasData || (snapshot.data as List<Team>).isEmpty) {
           return Center(child: Text(l.noTeamsFoundForUser));
+        } else if (!snapshot.hasData || (snapshot.data as List<Team>).isEmpty) {
+          return Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(Icons.group, size: 80, color: Colors.grey),
+                const SizedBox(height: 16),
+                Text(l.noTeamsFoundForUser,
+                    style: const TextStyle(fontSize: 18, color: Colors.grey)),
+              ],
+            ),
+          );
         } else {
           final teams = snapshot.data as List<Team>;
           return RefreshIndicator(
@@ -295,7 +304,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                   '${l.tournamentStartDate}: ${dateFormat.format(tournament.startDate)}',
                                   style: const TextStyle(fontSize: 14)),
                               Text(
-                                  '${l.tournamentEndDate}: ${dateFormat.format(tournament.startDate)}',
+                                  '${l.tournamentEndDate}: ${dateFormat.format(tournament.endDate)}',
                                   style: const TextStyle(fontSize: 14)),
                               Text(tournament.description,
                                   style: const TextStyle(
@@ -428,7 +437,8 @@ class TournamentScreenState extends State<TournamentScreen> {
     }
 
     final teamService = Provider.of<ITeamService>(context, listen: false);
-    return await teamService.getUserTeams(_currentUser!.id);
+    final teams = await teamService.getUserTeams(_currentUser!.id);
+    return teams;
   }
 
   Widget _buildTournamentList(BuildContext context, bool isOwner) {
@@ -694,7 +704,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    '${l.teamPlayersCount}: ${tournament.nbPlayers}',
+                                    '${tournament.nbPlayers}',
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),
