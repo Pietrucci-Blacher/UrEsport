@@ -29,8 +29,10 @@ class AddTournamentPageState extends State<AddTournamentPage> {
   bool _isPrivate = false;
   int? _selectedGameId;
   List<Game> _games = [];
-  String? _storedStartDate;  // Variable to store the formatted start date for backend
-  String? _storedEndDate;    // Variable to store the formatted end date for backend
+  String?
+      _storedStartDate; // Variable to store the formatted start date for backend
+  String?
+      _storedEndDate; // Variable to store the formatted end date for backend
 
   @override
   void initState() {
@@ -54,8 +56,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
     }
   }
 
-  Future<void> _selectDateTime(
-      BuildContext context, TextEditingController controller, bool isStartDate) async {
+  Future<void> _selectDateTime(BuildContext context,
+      TextEditingController controller, bool isStartDate) async {
     final DateTime now = DateTime.now();
 
     final DateTime? pickedDate = await showDatePicker(
@@ -71,11 +73,11 @@ class AddTournamentPageState extends State<AddTournamentPage> {
         pickedTime = await showTimePicker(
           context: context,
           initialTime:
-          TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
+              TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
           builder: (BuildContext context, Widget? child) {
             return MediaQuery(
               data:
-              MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
               child: child!,
             );
           },
@@ -87,7 +89,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
           builder: (BuildContext context, Widget? child) {
             return MediaQuery(
               data:
-              MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
               child: child!,
             );
           },
@@ -102,7 +104,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
           pickedTime.hour,
           pickedTime.minute,
         );
-        final formattedDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fullDateTime.toUtc());
+        final formattedDate =
+            DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fullDateTime.toUtc());
         final displayDate = DateFormat("yyyy-MM-dd HH:mm").format(fullDateTime);
         setState(() {
           controller.text = displayDate; // Display format
@@ -137,7 +140,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
 
       try {
         final tournamentService =
-        Provider.of<ITournamentService>(context, listen: false);
+            Provider.of<ITournamentService>(context, listen: false);
         await tournamentService.createTournament(tournamentData);
         if (!mounted) return;
         showCustomToast(
@@ -208,7 +211,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                 controller: _startDateController,
                 decoration: const InputDecoration(labelText: 'Start Date'),
                 readOnly: true,
-                onTap: () => _selectDateTime(context, _startDateController, true),
+                onTap: () =>
+                    _selectDateTime(context, _startDateController, true),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.startDateIsRequired;
@@ -220,7 +224,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                 controller: _endDateController,
                 decoration: const InputDecoration(labelText: 'End Date'),
                 readOnly: true,
-                onTap: () => _selectDateTime(context, _endDateController, false),
+                onTap: () =>
+                    _selectDateTime(context, _endDateController, false),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.endDateIsRequired;
@@ -244,7 +249,8 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                 itmClick: (prediction) {
                   _locationController.text = prediction.description ?? '';
                   _locationController.selection = TextSelection.fromPosition(
-                      TextPosition(offset: prediction.description?.length ?? 0));
+                      TextPosition(
+                          offset: prediction.description?.length ?? 0));
                 },
               ),
               TextFormField(
@@ -271,9 +277,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
                   ),
                   keyboardType: TextInputType.number,
                   readOnly: true,
-                  focusNode: AlwaysDisabledFocusNode()
-              ),
-
+                  focusNode: AlwaysDisabledFocusNode()),
               if (_games.isNotEmpty)
                 DropdownButtonFormField<int>(
                   decoration: InputDecoration(labelText: l.gameId),
@@ -313,7 +317,7 @@ class AddTournamentPageState extends State<AddTournamentPage> {
               TextFormField(
                 controller: _nbPlayerController,
                 decoration:
-                InputDecoration(labelText: l.numberOfPlayersPerTeam),
+                    InputDecoration(labelText: l.numberOfPlayersPerTeam),
                 keyboardType: TextInputType.number,
                 validator: (value) {
                   if (value == null || value.isEmpty) {

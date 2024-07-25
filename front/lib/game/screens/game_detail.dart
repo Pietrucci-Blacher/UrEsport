@@ -250,7 +250,8 @@ class GameDetailPageState extends State<GameDetailPage> {
                     final tournaments = snapshot.data!;
                     debugPrint('Tournaments loaded: ${tournaments.length}');
                     for (var tournament in tournaments) {
-                      debugPrint('Tournament: ${tournament.name}, Participants: ${tournament.teams.length}');
+                      debugPrint(
+                          'Tournament: ${tournament.name}, Participants: ${tournament.teams.length}');
                     }
                     if (tournaments.isEmpty) {
                       return Center(
