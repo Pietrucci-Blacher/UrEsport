@@ -322,7 +322,7 @@
   "searchForTournament": "Search for Tournaments",
   "selectTeamToInvite": "Select a Team to Invite",
   "invitationAllReadySend": "Invitation already sent to this team",
-  "teamContainPlayers": "Team contains ",
+  "teamContainPlayers": "The team must contain",
   "playersText": "Players",
   "imageUploadSuccessfully": "Image uploaded successfully",
   "imageUploadError": "Error uploading image",
@@ -330,5 +330,7 @@
   "allText": "All",
   "publicText": "Public",
   "privateText": "Private",
-  "noParticipantsFound": "No participants found"
+  "noParticipantsFound": "No participants found",
+  "notEnoughtTeamtoTournament": "Not enough teams to generate bracket",
+  "teamAllReadyInvite": "Team already invited"
 }

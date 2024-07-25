@@ -20,7 +20,6 @@ abstract class ITournamentService {
   Future<List<Team>> fetchTeams();
   Future<Tournament> fetchTournamentById(int tournamentId);
   Future<void> generateBracket(int tournamentId);
-  Future<void> joinTournamentWithTeam(int tournamentId, int teamId);
   Future<void> createTournament(Map<String, dynamic> tournamentData);
   Future<void> leaveTournament(int tournamentId, int teamId);
   Future<void> updateTournament(Tournament tournament);
@@ -203,6 +202,28 @@ class TournamentService implements ITournamentService {
         ),
       );
 
+      if (response.statusCode == 409) {
+        // Lever une exception spécifique pour les conflits
+        final errorMessage = response.data['error'] ?? 'Conflict';
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          type: DioExceptionType.badResponse,
+          error: errorMessage,
+        );
+      }
+
+      if (response.statusCode == 401) {
+        final errorMessage =
+            response.data['error'] ?? 'Team must contain 5 members';
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          type: DioExceptionType.badResponse,
+          error: errorMessage,
+        );
+      }
+
       if (response.statusCode != 200 && response.statusCode != 204) {
         throw DioException(
           requestOptions: response.requestOptions,
@@ -214,8 +235,9 @@ class TournamentService implements ITournamentService {
       }
     } catch (e) {
       debugPrint('Error joining tournament: $e');
-      // throw Exception('Unexpected error occurred');
-      if (e is DioException) {
+      if (e is DioException && e.response?.statusCode == 409) {
+        rethrow;
+      } else if (e is DioException && e.response?.statusCode == 401) {
         rethrow;
       } else {
         throw Exception('Unexpected error occurred');
@@ -243,7 +265,11 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode == 200) {
-        return response.data['joined'] as bool;
+        if (response.data != null && response.data['hasJoined'] != null) {
+          return response.data['hasJoined'] as bool;
+        } else {
+          return false;
+        }
       } else {
         throw DioException(
           requestOptions: response.requestOptions,
@@ -283,7 +309,13 @@ class TournamentService implements ITournamentService {
       );
 
       if (response.statusCode != 200 && response.statusCode != 204) {
-        throw Exception('Failed to invite team to tournament');
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          error:
+              response.data['error'] ?? 'Failed to invite team to tournament',
+          type: DioExceptionType.badResponse,
+        );
       }
     } catch (e) {
       debugPrint('Error inviting team to tournament: $e');
@@ -390,46 +422,6 @@ class TournamentService implements ITournamentService {
   }
 
   @override
-  Future<void> joinTournamentWithTeam(int tournamentId, int teamId) async {
-    final token = await _cacheService.getString('token');
-    if (token == null) throw Exception('No token found');
-
-    final url =
-        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
-
-    try {
-      final response = await _dio.post(
-        url,
-        options: Options(
-          headers: {
-            'Authorization': 'Bearer $token',
-            'Content-Type': 'application/json; charset=UTF-8',
-          },
-        ),
-      );
-
-      if (response.statusCode != 200 && response.statusCode != 204) {
-        throw DioException(
-          requestOptions: response.requestOptions,
-          response: response,
-          error:
-              response.data['error'] ?? 'Failed to join tournament with team',
-          type: DioExceptionType.badResponse,
-        );
-        // throw Exception('Failed to join tournament with team');
-      }
-    } catch (e) {
-      debugPrint('Error joining tournament with team: $e');
-      // throw Exception('Unexpected error occurred');
-      if (e is DioException) {
-        rethrow;
-      } else {
-        throw Exception('Unexpected error occurred');
-      }
-    }
-  }
-
-  @override
   Future<void> createTournament(Map<String, dynamic> tournamentData) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
@@ -446,7 +438,13 @@ class TournamentService implements ITournamentService {
         ),
       );
 
-      if (response.statusCode != 201) {
+      if (response.statusCode == 201) {
+        final newTournament = Tournament.fromJson(response.data);
+        _tournamentsNotifier.value = [
+          ..._tournamentsNotifier.value,
+          newTournament
+        ];
+      } else {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
@@ -479,6 +477,16 @@ class TournamentService implements ITournamentService {
           },
         ),
       );
+
+      if (response.statusCode == 404) {
+        final errorMessage = response.data['error'] ?? 'Unknown error';
+        throw DioException(
+          requestOptions: response.requestOptions,
+          response: response,
+          type: DioExceptionType.badResponse,
+          error: errorMessage,
+        );
+      }
 
       if (response.statusCode != 204) {
         throw DioException(
@@ -517,7 +525,14 @@ class TournamentService implements ITournamentService {
         ),
       );
 
-      if (response.statusCode != 200) {
+      if (response.statusCode == 200) {
+        final updatedTournaments = _tournamentsNotifier.value.map((t) {
+          return t.id == tournament.id ? Tournament.fromJson(response.data) : t;
+        }).toList();
+
+        _tournamentsNotifier.value =
+            updatedTournaments; // Mise à jour du ValueNotifier
+      } else {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,

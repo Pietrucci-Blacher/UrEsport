@@ -321,6 +321,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No tournaments found"),
         "noUsersFound": MessageLookupByLibrary.simpleMessage("No users found"),
         "noWinnerYet": MessageLookupByLibrary.simpleMessage("No winner yet"),
+        "notEnoughtTeamtoTournament": MessageLookupByLibrary.simpleMessage(
+            "Not enough teams to generate bracket"),
         "nothingTournamentforGame": MessageLookupByLibrary.simpleMessage(
             "No tournaments for this game"),
         "notificationDeleted":
@@ -456,10 +458,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "team": MessageLookupByLibrary.simpleMessage("Team"),
         "team1Score": MessageLookupByLibrary.simpleMessage("Team 1 Score"),
         "team2Score": MessageLookupByLibrary.simpleMessage("Team 2 Score"),
+        "teamAllReadyInvite":
+            MessageLookupByLibrary.simpleMessage("Team already invited"),
         "teamAlreadyInTournament": MessageLookupByLibrary.simpleMessage(
             "Team already in this tournament"),
         "teamContainPlayers":
-            MessageLookupByLibrary.simpleMessage("Team contains "),
+            MessageLookupByLibrary.simpleMessage("The team must contain"),
         "teamCreatedSuccessfully":
             MessageLookupByLibrary.simpleMessage("Team created successfully"),
         "teamDeleted":

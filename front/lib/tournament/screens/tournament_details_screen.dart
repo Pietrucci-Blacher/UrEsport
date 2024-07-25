@@ -20,6 +20,7 @@ import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/widgets/rating.dart';
+import 'package:uresport/core/services/team_services.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
@@ -88,7 +89,11 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       _isLoggedIn = isLoggedIn;
     });
     if (_isLoggedIn) {
-      _loadCurrentUser();
+      await _loadCurrentUser();
+      await _checkIfJoined();
+      await _checkIfUpvoted();
+      await _loadUserTeams();
+      await _loadParticipatingTeams();
     }
   }
 
@@ -165,6 +170,26 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     } catch (e) {
       if (kDebugMode) {
         debugPrint(AppLocalizations.of(context).errorLoadingTeams);
+      }
+      showNotificationToast(
+          context, AppLocalizations.of(context).errorLoadingTeams,
+          backgroundColor: Colors.red);
+    }
+  }
+
+  Future<void> _loadUserTeams() async {
+    if (_currentUser == null) return;
+    final teamService = Provider.of<ITeamService>(context, listen: false);
+    try {
+      final teams = await teamService.getUserTeams(_currentUser!.id);
+      if (!mounted) return;
+      setState(() {
+        _teams = teams;
+      });
+      debugPrint('Loaded user teams: ${_teams.length} teams');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error loading user teams: $e');
       }
       showNotificationToast(
           context, AppLocalizations.of(context).errorLoadingTeams,
@@ -271,7 +296,14 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     );
   }
 
-  void _showTeamsModal() {
+  void _showTeamsModal({bool isUserTeams = false}) {
+    if (_teams.isEmpty) {
+      showNotificationToast(
+          context, AppLocalizations.of(context).noTeamsAvailable,
+          backgroundColor: Colors.red);
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -283,36 +315,41 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                AppLocalizations.of(context).selectTeamToInvite,
+                isUserTeams
+                    ? AppLocalizations.of(context).selectTeamToJoin
+                    : AppLocalizations.of(context).selectTeamToInvite,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 8),
-              _teams.isEmpty
-                  ? Text(AppLocalizations.of(context).noTeamsAvailable)
-                  : Expanded(
-                      child: ListView.builder(
-                        itemCount: _teams.length,
-                        itemBuilder: (context, index) {
-                          final team = _teams[index];
-                          return ListTile(
-                            leading: CircleAvatar(
-                              radius: 16,
-                              backgroundColor: Colors.blueAccent,
-                              child: Text(
-                                team.name[0],
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            title: Text(
-                                '${team.name} (${team.members.length} ${AppLocalizations.of(context).membersInTeam})'),
-                            onTap: () async {
-                              Navigator.pop(context);
-                              await _sendInvite(team.id, team.name);
-                            },
-                          );
-                        },
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _teams.length,
+                  itemBuilder: (context, index) {
+                    final team = _teams[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.blueAccent,
+                        child: Text(
+                          team.name[0],
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
-                    ),
+                      title: Text(
+                          '${team.name} (${team.members.length} ${AppLocalizations.of(context).membersInTeam})'),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        if (isUserTeams) {
+                          await _joinTournament(
+                              context, _tournament.id, team.id);
+                        } else {
+                          await _sendInvite(team.id, team.name);
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         );
@@ -331,12 +368,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
         teamName,
       );
       if (!mounted) return;
-      _loadParticipatingTeams(); // Recharger les équipes après l'invitation
+      _loadParticipatingTeams();
       showNotificationToast(
           context, AppLocalizations.of(context).invitationSentSuccessfully,
           backgroundColor: Colors.green);
     } catch (e) {
-      debugPrint('Error sending invitation: $e');
+      debugPrint('Error inviting team to tournament: $e');
       if (!mounted) return;
 
       if (e is DioException) {
@@ -493,7 +530,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
               ? Text(AppLocalizations.of(context).noTeamsAvailable)
               : Column(
                   mainAxisSize: MainAxisSize.min,
-                  children: _currentUser!.teams.map((team) {
+                  children: _getUserTeamInTournament().map((team) {
                     return ListTile(
                       title: Text(team.name),
                       onTap: () {
@@ -515,6 +552,12 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
         );
       },
     );
+  }
+
+  List<team_model.Team> _getUserTeamInTournament() {
+    return _currentUser!.teams
+        .where((team) => _participatingTeams.any((t) => t.id == team.id))
+        .toList();
   }
 
   Future<void> _confirmLeaveTournament(
@@ -584,7 +627,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
         }
       } else {
         showNotificationToast(
-            context, AppLocalizations.of(context).unknownError,
+            context, AppLocalizations.of(context).leaveTournamentError,
             backgroundColor: Colors.red);
       }
     }
@@ -993,7 +1036,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                   child: Text(l.generateBracket),
                 ),
               ),
-            if (_tournament.ownerId != _currentUser?.id &&
+            if (!_hasJoined &&
+                _tournament.ownerId != _currentUser?.id &&
                 !_tournament.isPrivate)
               Center(
                 child: ElevatedButton(
@@ -1045,37 +1089,39 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
         Provider.of<ITournamentService>(context, listen: false);
     AppLocalizations l = AppLocalizations.of(context);
 
-    final joinedTournamentMessage = l.joinedTournament;
-    final teamAlreadyInTournamentMessage = l.teamAlreadyInTournament;
-    final alreadyJoinedTournamentMessage = l.alreadyJoinedTournament;
-    final joinErrorMessage = l.joinError;
-    final unknownJoinErrorMessage = l.unknownJoinError;
-
     try {
       await tournamentService.joinTournament(tournamentId, teamId);
       if (!mounted) return;
-      _showNotificationToast(joinedTournamentMessage, Colors.green);
+      _showNotificationToast(l.joinedTournament, Colors.green);
       setState(() {
         _hasJoined = true;
       });
     } catch (e) {
       if (!mounted) return;
       if (e is DioException) {
-        if (e.response != null && e.response?.data != null) {
-          final errorMessage = e.response?.data['error'];
-          if (errorMessage == teamAlreadyInTournamentMessage) {
-            _showNotificationToast(alreadyJoinedTournamentMessage, Colors.red);
-            setState(() {
-              _hasJoined = true;
-            });
+        final errorMessage = e.response?.data['error'];
+        if (e.response?.statusCode == 409) {
+          if (errorMessage == "You already have a team in this tournament") {
+            _showNotificationToast(l.alreadyJoinedTournament, Colors.red);
           } else {
-            _showNotificationToast(joinErrorMessage, Colors.red);
+            _showNotificationToast(l.alreadyJoinedTournament, Colors.red);
+          }
+        } else if (e.response?.statusCode == 401) {
+          final requiredMembers = _tournament.nbPlayers;
+          if (errorMessage != null &&
+              errorMessage
+                  .contains("Team must contain $requiredMembers members")) {
+            _showNotificationToast(
+                '${l.teamContainPlayers} $requiredMembers ${l.membersInTeam}',
+                Colors.red);
+          } else {
+            _showNotificationToast(l.joinError, Colors.red);
           }
         } else {
-          _showNotificationToast(joinErrorMessage, Colors.red);
+          _showNotificationToast(l.joinError, Colors.red);
         }
       } else {
-        _showNotificationToast(unknownJoinErrorMessage, Colors.red);
+        _showNotificationToast(l.joinError, Colors.red);
       }
     }
   }

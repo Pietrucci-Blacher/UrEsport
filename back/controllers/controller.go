@@ -304,6 +304,12 @@ func RegisterRoutes(r *gin.Engine) {
 				middlewares.Get[*models.Tournament]("tournament"),
 				GetTeamsToTournamentId,
 			)
+			tournaments.GET("/:tournament/joined/:user",
+				middlewares.IsLoggedIn(true),
+				middlewares.Get[*models.Tournament]("tournament"),
+				middlewares.Get[*models.User]("user"),
+				GetHasJoinedTournament,
+			)
 		}
 
 		teams := api.Group("/teams")
