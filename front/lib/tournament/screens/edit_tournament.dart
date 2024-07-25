@@ -44,7 +44,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     _descriptionController =
         TextEditingController(text: widget.tournament.description);
     _startDateController = TextEditingController(
-        text: DateFormat('yyyy-MM-dd HH:mm').format(widget.tournament.startDate));
+        text:
+            DateFormat('yyyy-MM-dd HH:mm').format(widget.tournament.startDate));
     _endDateController = TextEditingController(
         text: DateFormat('yyyy-MM-dd HH:mm').format(widget.tournament.endDate));
     _locationController =
@@ -83,8 +84,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
     }
   }
 
-  Future<void> _selectDateTime(
-      BuildContext context, TextEditingController controller, bool isStartDate) async {
+  Future<void> _selectDateTime(BuildContext context,
+      TextEditingController controller, bool isStartDate) async {
     final DateTime now = DateTime.now();
 
     final DateTime? pickedDate = await showDatePicker(
@@ -100,11 +101,11 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
         pickedTime = await showTimePicker(
           context: context,
           initialTime:
-          TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
+              TimeOfDay.fromDateTime(now.add(const Duration(minutes: 1))),
           builder: (BuildContext context, Widget? child) {
             return MediaQuery(
               data:
-              MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
               child: child!,
             );
           },
@@ -116,7 +117,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
           builder: (BuildContext context, Widget? child) {
             return MediaQuery(
               data:
-              MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
+                  MediaQuery.of(context).copyWith(alwaysUse24HourFormat: true),
               child: child!,
             );
           },
@@ -131,7 +132,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
           pickedTime.hour,
           pickedTime.minute,
         );
-        final formattedDate = DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fullDateTime.toUtc());
+        final formattedDate =
+            DateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'").format(fullDateTime.toUtc());
         final displayDate = DateFormat("yyyy-MM-dd HH:mm").format(fullDateTime);
         setState(() {
           controller.text = displayDate; // Display format
@@ -177,7 +179,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
       debugPrint('Tournament JSON: ${jsonEncode(tournamentJson)}');
 
       final tournamentService =
-      Provider.of<ITournamentService>(context, listen: false);
+          Provider.of<ITournamentService>(context, listen: false);
       try {
         await tournamentService.updateTournament(updatedTournament);
         if (!mounted) return;
@@ -272,7 +274,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
                 controller: _startDateController,
                 decoration: InputDecoration(labelText: l.startDateText),
                 readOnly: true,
-                onTap: () => _selectDateTime(context, _startDateController, true),
+                onTap: () =>
+                    _selectDateTime(context, _startDateController, true),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.pleaseEnterStartDate;
@@ -284,7 +287,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
                 controller: _endDateController,
                 decoration: InputDecoration(labelText: l.endDateText),
                 readOnly: true,
-                onTap: () => _selectDateTime(context, _endDateController, false),
+                onTap: () =>
+                    _selectDateTime(context, _endDateController, false),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return l.pleaseEnterEndDate;
@@ -308,7 +312,8 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
                 itmClick: (prediction) {
                   _locationController.text = prediction.description ?? '';
                   _locationController.selection = TextSelection.fromPosition(
-                      TextPosition(offset: prediction.description?.length ?? 0));
+                      TextPosition(
+                          offset: prediction.description?.length ?? 0));
                 },
               ),
               TextFormField(
@@ -335,8 +340,7 @@ class EditTournamentScreenState extends State<EditTournamentScreen> {
                   ),
                   keyboardType: TextInputType.number,
                   readOnly: true,
-                  focusNode: AlwaysDisabledFocusNode()
-              ),
+                  focusNode: AlwaysDisabledFocusNode()),
               SwitchListTile(
                 title: Text(l.private),
                 value: _isPrivate,

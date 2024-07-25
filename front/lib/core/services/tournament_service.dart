@@ -8,13 +8,15 @@ import 'package:uresport/core/services/cache_service.dart';
 
 abstract class ITournamentService {
   ValueNotifier<List<Tournament>> get tournamentsNotifier;
-  Future<List<Tournament>> fetchTournaments({int? limit, int? page, int? ownerId});
+  Future<List<Tournament>> fetchTournaments(
+      {int? limit, int? page, int? ownerId});
   Future<void> inviteUserToTournament(String tournamentId, String username);
   Future<void> upvoteTournament(int tournamentId, String username);
   Future<bool> hasUpvoted(int tournamentId, int userId);
   Future<void> joinTournament(int tournamentId, int teamId);
   Future<bool> hasJoinedTournament(int tournamentId, String username);
-  Future<void> inviteTeamToTournament(int tournamentId, int teamId, String teamName);
+  Future<void> inviteTeamToTournament(
+      int tournamentId, int teamId, String teamName);
   Future<List<Team>> fetchTeams();
   Future<Tournament> fetchTournamentById(int tournamentId);
   Future<void> generateBracket(int tournamentId);
@@ -29,15 +31,18 @@ abstract class ITournamentService {
 class TournamentService implements ITournamentService {
   final Dio _dio;
   final CacheService _cacheService = CacheService.instance;
-  final ValueNotifier<List<Tournament>> _tournamentsNotifier = ValueNotifier([]);
+  final ValueNotifier<List<Tournament>> _tournamentsNotifier =
+      ValueNotifier([]);
 
   TournamentService(this._dio);
 
   @override
-  ValueNotifier<List<Tournament>> get tournamentsNotifier => _tournamentsNotifier;
+  ValueNotifier<List<Tournament>> get tournamentsNotifier =>
+      _tournamentsNotifier;
 
   @override
-  Future<List<Tournament>> fetchTournaments({int? limit, int? page, int? ownerId}) async {
+  Future<List<Tournament>> fetchTournaments(
+      {int? limit, int? page, int? ownerId}) async {
     try {
       final Map<String, dynamic> queryParameters = {
         if (limit != null) 'limit': limit,
@@ -55,7 +60,8 @@ class TournamentService implements ITournamentService {
             .map((json) => Tournament.fromJson(json))
             .toList();
 
-        _tournamentsNotifier.value = tournaments; // Mise à jour du ValueNotifier
+        _tournamentsNotifier.value =
+            tournaments; // Mise à jour du ValueNotifier
         return tournaments;
       } else {
         throw Exception('Failed to load tournaments');
@@ -67,12 +73,14 @@ class TournamentService implements ITournamentService {
   }
 
   @override
-  Future<void> inviteUserToTournament(String tournamentId, String username) async {
+  Future<void> inviteUserToTournament(
+      String tournamentId, String username) async {
     try {
       final response = await _dio.post(
         "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/invite",
         data: {'username': username},
-        options: Options(headers: {'Content-Type': 'application/json; charset=UTF-8'}),
+        options: Options(
+            headers: {'Content-Type': 'application/json; charset=UTF-8'}),
       );
 
       if (response.statusCode != 200) {
@@ -144,7 +152,8 @@ class TournamentService implements ITournamentService {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
-    final url = "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
+    final url =
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
 
     try {
       final response = await _dio.post(
@@ -171,7 +180,8 @@ class TournamentService implements ITournamentService {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
-    final url = "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/joined/$username";
+    final url =
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/joined/$username";
 
     try {
       final response = await _dio.get(
@@ -196,7 +206,8 @@ class TournamentService implements ITournamentService {
   }
 
   @override
-  Future<void> inviteTeamToTournament(int tournamentId, int teamId, String teamName) async {
+  Future<void> inviteTeamToTournament(
+      int tournamentId, int teamId, String teamName) async {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
@@ -242,7 +253,8 @@ class TournamentService implements ITournamentService {
   @override
   Future<Tournament> fetchTournamentById(int tournamentId) async {
     try {
-      final response = await _dio.get("${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId");
+      final response = await _dio
+          .get("${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId");
 
       if (response.statusCode == 200) {
         return Tournament.fromJson(response.data);
@@ -285,7 +297,8 @@ class TournamentService implements ITournamentService {
     final token = await _cacheService.getString('token');
     if (token == null) throw Exception('No token found');
 
-    final url = "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
+    final url =
+        "${dotenv.env['API_ENDPOINT']}/tournaments/$tournamentId/team/$teamId/join";
 
     try {
       final response = await _dio.post(
@@ -326,7 +339,10 @@ class TournamentService implements ITournamentService {
 
       if (response.statusCode == 201) {
         final newTournament = Tournament.fromJson(response.data);
-        _tournamentsNotifier.value = [..._tournamentsNotifier.value, newTournament]; // Ajouter le nouveau tournoi
+        _tournamentsNotifier.value = [
+          ..._tournamentsNotifier.value,
+          newTournament
+        ]; // Ajouter le nouveau tournoi
       } else {
         throw Exception('Failed to create tournament');
       }
@@ -383,7 +399,8 @@ class TournamentService implements ITournamentService {
           return t.id == tournament.id ? Tournament.fromJson(response.data) : t;
         }).toList();
 
-        _tournamentsNotifier.value = updatedTournaments; // Mise à jour du ValueNotifier
+        _tournamentsNotifier.value =
+            updatedTournaments; // Mise à jour du ValueNotifier
       } else {
         throw Exception('Failed to update tournament');
       }
