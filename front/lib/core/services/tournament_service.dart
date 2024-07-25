@@ -98,7 +98,8 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: response.data['error'] ?? 'Failed to invite user to tournament',
+          error:
+              response.data['error'] ?? 'Failed to invite user to tournament',
           type: DioExceptionType.badResponse,
         );
         // throw Exception('Failed to invite user to tournament');
@@ -411,7 +412,8 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: response.data['error'] ?? 'Failed to join tournament with team',
+          error:
+              response.data['error'] ?? 'Failed to join tournament with team',
           type: DioExceptionType.badResponse,
         );
         // throw Exception('Failed to join tournament with team');
