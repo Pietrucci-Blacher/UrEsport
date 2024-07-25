@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_places_autocomplete_text_field/google_places_autocomplete_text_field.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:uresport/core/services/tournament_service.dart';
-import 'package:uresport/core/services/game_service.dart';
-import 'package:uresport/l10n/app_localizations.dart';
-import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/core/models/game.dart';
+import 'package:uresport/core/services/game_service.dart';
+import 'package:uresport/core/services/tournament_service.dart';
+import 'package:uresport/l10n/app_localizations.dart';
+import 'package:uresport/tournament/bloc/tournament_bloc.dart';
+import 'package:uresport/tournament/bloc/tournament_event.dart';
+import 'package:uresport/widgets/custom_toast.dart';
 
 class AddTournamentPage extends StatefulWidget {
   const AddTournamentPage({super.key});
@@ -141,14 +144,21 @@ class AddTournamentPageState extends State<AddTournamentPage> {
       try {
         final tournamentService =
             Provider.of<ITournamentService>(context, listen: false);
-        await tournamentService.createTournament(tournamentData);
+        final newTournament =
+            await tournamentService.createTournament(tournamentData);
+
         if (!mounted) return;
+
+        BlocProvider.of<TournamentBloc>(context, listen: false)
+            .add(TournamentAdded(newTournament));
+
         showCustomToast(
             AppLocalizations.of(context).tournamentCreatedSuccessfully,
             Colors.green);
-        if (!mounted) return;
+
         Navigator.pop(context);
       } catch (e) {
+        if (!mounted) return;
         showCustomToast(
             AppLocalizations.of(context).failedToCreateTournament, Colors.red);
       }

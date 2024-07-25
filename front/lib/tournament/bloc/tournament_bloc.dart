@@ -20,5 +20,14 @@ class TournamentBloc extends Bloc<TournamentEvent, TournamentState> {
         emit(TournamentLoadFailure());
       }
     });
+
+    on<TournamentAdded>((event, emit) async {
+      if (state is TournamentLoadSuccess) {
+        final currentTournaments = (state as TournamentLoadSuccess).tournaments;
+        emit(TournamentLoadSuccess(
+          tournaments: [event.newTournament, ...currentTournaments],
+        ));
+      }
+    });
   }
 }
