@@ -214,7 +214,8 @@ class TournamentService implements ITournamentService {
       }
 
       if (response.statusCode == 401) {
-        final errorMessage = response.data['error'] ?? 'Team must contain 5 members';
+        final errorMessage =
+            response.data['error'] ?? 'Team must contain 5 members';
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
@@ -238,8 +239,7 @@ class TournamentService implements ITournamentService {
         rethrow;
       } else if (e is DioException && e.response?.statusCode == 401) {
         rethrow;
-      }
-      else {
+      } else {
         throw Exception('Unexpected error occurred');
       }
     }
@@ -312,7 +312,8 @@ class TournamentService implements ITournamentService {
         throw DioException(
           requestOptions: response.requestOptions,
           response: response,
-          error: response.data['error'] ?? 'Failed to invite team to tournament',
+          error:
+              response.data['error'] ?? 'Failed to invite team to tournament',
           type: DioExceptionType.badResponse,
         );
       }

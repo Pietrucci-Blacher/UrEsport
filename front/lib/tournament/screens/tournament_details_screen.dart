@@ -265,29 +265,29 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                 _teams.isEmpty
                     ? Text(AppLocalizations.of(context).noTeamsAvailable)
                     : ListView.builder(
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  itemCount: _teams.length,
-                  itemBuilder: (context, index) {
-                    final team = _teams[index];
-                    return ListTile(
-                      leading: CircleAvatar(
-                        radius: 16,
-                        backgroundColor: Colors.blueAccent,
-                        child: Text(
-                          team.name[0],
-                          style: const TextStyle(color: Colors.white),
-                        ),
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        itemCount: _teams.length,
+                        itemBuilder: (context, index) {
+                          final team = _teams[index];
+                          return ListTile(
+                            leading: CircleAvatar(
+                              radius: 16,
+                              backgroundColor: Colors.blueAccent,
+                              child: Text(
+                                team.name[0],
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                            title: Text(
+                                '${team.name} (${team.members.length} ${AppLocalizations.of(context).membersInTeam})'),
+                            onTap: () {
+                              Navigator.pop(context);
+                              _joinTournament(context, _tournament.id, team.id);
+                            },
+                          );
+                        },
                       ),
-                      title: Text(
-                          '${team.name} (${team.members.length} ${AppLocalizations.of(context).membersInTeam})'),
-                      onTap: () {
-                        Navigator.pop(context);
-                        _joinTournament(context, _tournament.id, team.id);
-                      },
-                    );
-                  },
-                ),
               ],
             ),
           ),
@@ -554,8 +554,10 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     );
   }
 
-  List<team_model.Team> _getUserTeamInTournament () {
-    return _currentUser!.teams.where((team) => _participatingTeams.any((t) => t.id == team.id)).toList();
+  List<team_model.Team> _getUserTeamInTournament() {
+    return _currentUser!.teams
+        .where((team) => _participatingTeams.any((t) => t.id == team.id))
+        .toList();
   }
 
   Future<void> _confirmLeaveTournament(
@@ -1034,7 +1036,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                   child: Text(l.generateBracket),
                 ),
               ),
-            if (!_hasJoined && _tournament.ownerId != _currentUser?.id &&
+            if (!_hasJoined &&
+                _tournament.ownerId != _currentUser?.id &&
                 !_tournament.isPrivate)
               Center(
                 child: ElevatedButton(
@@ -1099,17 +1102,15 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
         final errorMessage = e.response?.data['error'];
         if (e.response?.statusCode == 409) {
           if (errorMessage == "You already have a team in this tournament") {
-            _showNotificationToast(
-                l.alreadyJoinedTournament,
-                Colors.red);
+            _showNotificationToast(l.alreadyJoinedTournament, Colors.red);
           } else {
             _showNotificationToast(l.alreadyJoinedTournament, Colors.red);
           }
         } else if (e.response?.statusCode == 401) {
           final requiredMembers = _tournament.nbPlayers;
           if (errorMessage != null &&
-              errorMessage.contains(
-                  "Team must contain $requiredMembers members")) {
+              errorMessage
+                  .contains("Team must contain $requiredMembers members")) {
             _showNotificationToast(
                 '${l.teamContainPlayers} $requiredMembers ${l.membersInTeam}',
                 Colors.red);
