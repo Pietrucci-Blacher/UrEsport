@@ -704,7 +704,7 @@ class TournamentScreenState extends State<TournamentScreen> {
                                 const SizedBox(width: 5),
                                 Expanded(
                                   child: Text(
-                                    '${l.teamPlayersCount}: ${tournament.nbPlayers}',
+                                    '${tournament.nbPlayers}',
                                     style: const TextStyle(fontSize: 16),
                                     overflow: TextOverflow.ellipsis,
                                   ),

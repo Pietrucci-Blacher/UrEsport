@@ -20,6 +20,7 @@ import 'package:uresport/tournament/screens/tournament_particip.dart';
 import 'package:uresport/widgets/custom_toast.dart';
 import 'package:uresport/widgets/gradient_icon.dart';
 import 'package:uresport/widgets/rating.dart';
+import 'package:uresport/core/services/team_services.dart';
 
 class TournamentDetailsScreen extends StatefulWidget {
   final tournament_model.Tournament tournament;
@@ -58,6 +59,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     _loadCurrentUser();
     _checkLoginStatus();
     _loadParticipatingTeams();
+    _loadUserTeams();
   }
 
   void _initListeners() {
@@ -102,6 +104,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
       });
       await _checkIfJoined();
       await _checkIfUpvoted();
+      await _loadUserTeams();
     } catch (e) {
       if (kDebugMode) {
         if (!mounted) return;
@@ -172,6 +175,26 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     }
   }
 
+  Future<void> _loadUserTeams() async {
+    final teamService = Provider.of<ITeamService>(context, listen: false);
+    try {
+      final teams = await teamService.getUserTeams(_currentUser!.id);
+      if (!mounted) return;
+      setState(() {
+        _teams = teams;
+      });
+      print('Loaded user teams: ${_teams.length} teams');
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error loading user teams: $e');
+      }
+      showNotificationToast(
+          context, AppLocalizations.of(context).errorLoadingTeams,
+          backgroundColor: Colors.red);
+    }
+  }
+
+
   Future<void> _loadParticipatingTeams() async {
     final tournamentService =
         Provider.of<ITournamentService>(context, listen: false);
@@ -218,7 +241,8 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     if (_currentUser == null || _teams.isEmpty) {
       showNotificationToast(
           context, AppLocalizations.of(context).noTeamsAvailableForUser,
-          backgroundColor: Colors.red);
+          backgroundColor: Colors.red
+      );
       return;
     }
 
@@ -240,29 +264,29 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
                 _teams.isEmpty
                     ? Text(AppLocalizations.of(context).noTeamsAvailable)
                     : ListView.builder(
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: _teams.length,
-                        itemBuilder: (context, index) {
-                          final team = _teams[index];
-                          return ListTile(
-                            leading: CircleAvatar(
-                              radius: 16,
-                              backgroundColor: Colors.blueAccent,
-                              child: Text(
-                                team.name[0],
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            title: Text(
-                                '${team.name} (${team.members.length} ${AppLocalizations.of(context).membersInTeam})'),
-                            onTap: () {
-                              Navigator.pop(context);
-                              _joinTournament(context, _tournament.id, team.id);
-                            },
-                          );
-                        },
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: _teams.length,
+                  itemBuilder: (context, index) {
+                    final team = _teams[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.blueAccent,
+                        child: Text(
+                          team.name[0],
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
+                      title: Text(
+                          '${team.name} (${team.members.length} ${AppLocalizations.of(context).membersInTeam})'),
+                      onTap: () {
+                        Navigator.pop(context);
+                        _joinTournament(context, _tournament.id, team.id);
+                      },
+                    );
+                  },
+                ),
               ],
             ),
           ),
@@ -271,7 +295,15 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
     );
   }
 
-  void _showTeamsModal() {
+
+  void _showTeamsModal({bool isUserTeams = false}) {
+    if (_teams.isEmpty) {
+      showNotificationToast(
+          context, AppLocalizations.of(context).noTeamsAvailable,
+          backgroundColor: Colors.red);
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -283,42 +315,51 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                AppLocalizations.of(context).selectTeamToInvite,
+                isUserTeams
+                    ? AppLocalizations.of(context).selectTeamToJoin
+                    : AppLocalizations.of(context).selectTeamToInvite,
                 style: Theme.of(context).textTheme.headlineSmall,
               ),
               const SizedBox(height: 8),
-              _teams.isEmpty
-                  ? Text(AppLocalizations.of(context).noTeamsAvailable)
-                  : Expanded(
-                      child: ListView.builder(
-                        itemCount: _teams.length,
-                        itemBuilder: (context, index) {
-                          final team = _teams[index];
-                          return ListTile(
-                            leading: CircleAvatar(
-                              radius: 16,
-                              backgroundColor: Colors.blueAccent,
-                              child: Text(
-                                team.name[0],
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            title: Text(
-                                '${team.name} (${team.members.length} ${AppLocalizations.of(context).membersInTeam})'),
-                            onTap: () async {
-                              Navigator.pop(context);
-                              await _sendInvite(team.id, team.name);
-                            },
-                          );
-                        },
+              Expanded(
+                child: ListView.builder(
+                  itemCount: _teams.length,
+                  itemBuilder: (context, index) {
+                    final team = _teams[index];
+                    return ListTile(
+                      leading: CircleAvatar(
+                        radius: 16,
+                        backgroundColor: Colors.blueAccent,
+                        child: Text(
+                          team.name[0],
+                          style: const TextStyle(color: Colors.white),
+                        ),
                       ),
-                    ),
+                      title: Text(
+                          '${team.name} (${team.members.length} ${AppLocalizations.of(context).membersInTeam})'
+                      ),
+                      onTap: () async {
+                        Navigator.pop(context);
+                        if (isUserTeams) {
+                          // Rejoindre le tournoi
+                          await _joinTournament(context, _tournament.id, team.id);
+                        } else {
+                          // Inviter l'équipe au tournoi
+                          await _sendInvite(team.id, team.name);
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
             ],
           ),
         );
       },
     );
   }
+
+
 
   Future<void> _sendInvite(int teamId, String teamName) async {
     final tournamentService =
@@ -665,6 +706,7 @@ class TournamentDetailsScreenState extends State<TournamentDetailsScreen>
 
     return null;
   }
+
 
   Widget _pageDetail() {
     final DateFormat dateFormat = DateFormat.yMMMd();

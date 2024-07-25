@@ -330,5 +330,6 @@
   "allText": "All",
   "publicText": "Public",
   "privateText": "Private",
-  "noParticipantsFound": "No participants found"
+  "noParticipantsFound": "No participants found",
+  "notEnoughtTeamtoTournament": "Not enough teams to generate bracket"
 }

@@ -368,5 +368,6 @@
   "allText": "Todos",
   "publicText": "Público",
   "privateText": "Privado",
-  "noParticipantsFound": "No se encontraron participantes"
+  "noParticipantsFound": "No se encontraron participantes",
+  "notEnoughtTeamtoTournament": "No hay suficientes equipos para generar un grupo"
 }

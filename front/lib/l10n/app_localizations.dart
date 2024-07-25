@@ -2733,6 +2733,14 @@ class AppLocalizations {
       desc: 'Message shown when no participants are found',
     );
   }
+
+  String get notEnoughtTeamtoTournament {
+    return Intl.message(
+      'Not enough teams to generate bracket',
+      name: 'notEnoughtTeamtoTournament',
+      desc: 'Message shown when not enough teams to start the tournament',
+    );
+  }
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

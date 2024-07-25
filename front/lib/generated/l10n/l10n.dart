@@ -3359,6 +3359,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Not enough teams to generate bracket`
+  String get notEnoughtTeamtoTournament {
+    return Intl.message(
+      'Not enough teams to generate bracket',
+      name: 'notEnoughtTeamtoTournament',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

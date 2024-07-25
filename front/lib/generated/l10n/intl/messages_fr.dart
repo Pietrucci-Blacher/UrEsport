@@ -346,6 +346,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Aucun utilisateur trouvé"),
         "noWinnerYet":
             MessageLookupByLibrary.simpleMessage("Pas encore de gagnant"),
+        "notEnoughtTeamtoTournament": MessageLookupByLibrary.simpleMessage(
+            "Pas assez d\'équipes pour générer un bracket"),
         "nothingTournamentforGame":
             MessageLookupByLibrary.simpleMessage("Aucun tournoi pour ce jeu"),
         "notificationDeleted":
