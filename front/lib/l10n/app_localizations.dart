@@ -2781,7 +2781,6 @@ class AppLocalizations {
       desc: 'Message shown when the tournament deletion fails',
     );
   }
-
 }
 
 class AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

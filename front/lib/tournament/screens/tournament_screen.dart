@@ -566,8 +566,7 @@ class TournamentScreenState extends State<TournamentScreen> {
 
   Widget _buildTournamentCard(BuildContext context, Tournament tournament) {
     AppLocalizations l = AppLocalizations.of(context);
-    final DateFormat dateFormat =
-        DateFormat.yMMMd();
+    final DateFormat dateFormat = DateFormat.yMMMd();
 
     return GestureDetector(
       onTap: () {
