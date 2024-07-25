@@ -332,8 +332,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Aucune équipe disponible."),
         "noTeamsAvailableForUser": MessageLookupByLibrary.simpleMessage(
             "Aucune équipe disponible pour l\'utilisateur actuel."),
-        "noTeamsFoundForUser": MessageLookupByLibrary.simpleMessage(
-            "Aucune équipe trouvée pour cet utilisateur"),
+        "noTeamsFoundForUser":
+            MessageLookupByLibrary.simpleMessage("Aucune équipe trouvée"),
         "noTournamentForDate": MessageLookupByLibrary.simpleMessage(
             "Aucun tournoi pour cette date"),
         "noTournamentsAvailable":

@@ -35,8 +35,6 @@ class RatingWidgetState extends State<RatingWidget> {
   Future<void> _fetchRating() async {
     final ratingService = Provider.of<IRatingService>(context, listen: false);
     try {
-      debugPrint(
-          'Fetching rating for tournamentId=${widget.tournamentId}, userId=${widget.userId}');
       final ratingData = await ratingService.fetchRatingDetails(
           widget.tournamentId, widget.userId);
       if (!mounted) return;
@@ -45,15 +43,6 @@ class RatingWidgetState extends State<RatingWidget> {
         _ratingId = ratingData['ratingId'];
         _isLoading = false;
       });
-      if (_currentRating == 0.0) {
-        widget.showCustomToast(
-            context, AppLocalizations.of(context).noRatingFetched,
-            backgroundColor: Colors.orange);
-      } else {
-        widget.showCustomToast(
-            context, AppLocalizations.of(context).ratingFetchedSuccessfully,
-            backgroundColor: Colors.green);
-      }
     } catch (e) {
       debugPrint('Error while fetching rating: $e');
       if (!mounted) return;

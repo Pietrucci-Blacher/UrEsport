@@ -318,7 +318,7 @@
   "nowTournaments": "Aujourd'hui",
   "selectDate": "Sélectionner une date",
   "noTournamentForDate": "Aucun tournoi pour cette date",
-  "noTeamsFoundForUser": "Aucune équipe trouvée pour cet utilisateur",
+  "noTeamsFoundForUser": "Aucune équipe trouvée",
   "confirmAction": "Confirmer l'action",
   "delete": "Supprimer",
   "leave": "Quitter",
