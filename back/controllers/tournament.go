@@ -481,6 +481,12 @@ func AcceptTournamentInvitation(c *gin.Context) {
 		return
 	}
 
+	if tournament.IsUserHasTeamInTournament(team.OwnerID) {
+		models.ErrorLogf([]string{"tournament", "AcceptTournamentInvitation"}, "User %d already has a team in this tournament", team.OwnerID)
+		c.JSON(http.StatusConflict, gin.H{"error": "User already has a team in this tournament"})
+		return
+	}
+
 	if len(team.Members) != tournament.NbPlayer {
 		models.ErrorLogf([]string{"tournament", "AcceptTournamentInvitation"}, "Team %s must contain %d members", team.Name, tournament.NbPlayer)
 		c.JSON(http.StatusUnauthorized, gin.H{
