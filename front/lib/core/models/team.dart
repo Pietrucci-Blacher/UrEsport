@@ -1,5 +1,3 @@
-import 'package:uresport/core/models/user.dart';
-
 class Team {
   final int id;
   final String name;
