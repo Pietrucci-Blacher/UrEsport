@@ -283,6 +283,10 @@ func (t *Tournament) FindOne(key string, value any) error {
 }
 
 func (t *Tournament) Delete() error {
+	if err := t.RemoveAllTeams(); err != nil {
+		return err
+	}
+
 	del := time.Now()
 	t.DeletedAt = &del
 	t.Name = "[deleted]"
